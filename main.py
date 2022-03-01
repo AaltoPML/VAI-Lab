@@ -2,7 +2,7 @@
 """
 Created on Mon Feb 21 16:21:01 2022
 
-@author: sevillc1
+@author: sevisal
 """
 
 from tkinter import *
@@ -38,11 +38,10 @@ def input_data(cl, root, destroy = True):
 my_label = Label(text = 'Choose your prefered method to give feedback to the model.' , pady= 10, font=("Arial", 12), bg = bg_colour, fg = 'white')
 my_label.grid(column = 0, row = 11,columnspan = 4)
 
-button_speak = Button(root, text = 'Speak', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.speak_mlbl, root)).grid(column = 0,row = 19)
-button_write = Button(root, text = 'Write', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.writen_mlbl, root)).grid(column = 1,row = 19)
+button_speak = Button(root, text = 'Speak', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.speak_mlbl, root, False)).grid(column = 0,row = 19)
+button_write = Button(root, text = 'Write', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.writen_mlbl, root, False)).grid(column = 1,row = 19)
 button_manual = Button(root, text = 'Manual input', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.manual_mlbl, root)).grid(column = 2,row = 19)
-button_upload = Button(root, text = 'Upoad file', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.upload_mlbl, root, False)).grid(column = 3,row = 19)
+button_canvas = Button(root, text = 'Interact with canvas', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.canvas_sa, root)).grid(column = 3,row = 19)
+button_upload = Button(root, text = 'Upoad file', fg = 'white', font=("Arial", 12), bg = bg_colour, height = 3, width = 20, command = lambda:  input_data(Inputs.upload_mlbl, root, False)).grid(column = 0,row = 20)
 
 root.mainloop()
-
-# print(binary_data)
