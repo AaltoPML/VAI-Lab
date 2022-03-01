@@ -9,7 +9,8 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 from tkinter.filedialog import asksaveasfile, askopenfile
-from PIL import Image, ImageTk
+from PIL import Image
+from PIL import ImageTk
 import os
 import numpy as np
 import pandas as pd
@@ -22,10 +23,10 @@ bg_colour ='#19232d'
 # Define the root TKinter window
 root = Tk()
 root.title('User feedback adaptation')
-root.iconbitmap(dirpath+'\\Icons\\UFAIcon.ico')
+# root.iconbitmap(os.path.join(dirpath, 'Icons','UFAIcon.ico'))
 root['bg'] = bg_colour
 
-my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(dirpath, 'Icons\\UFAIcon_name.png')).resize((600, 400)))
+my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(dirpath, 'Icons','UFAIcon_name.png')).resize((600, 400)))
 my_label = Label(image = my_img1, bg = bg_colour)
 my_label.grid(column = 0, row = 0, rowspan = 10, columnspan = 4)
 
