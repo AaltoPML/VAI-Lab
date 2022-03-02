@@ -79,12 +79,12 @@ class PageManual(tk.Frame):
         self.my_label = tk.Label(self, image=self.image_list[image_number-1])
         
         # Update button commands
-        self.button_forw = tk.Button(self, image = self.forw_img, bg = self.master['bg'], command = lambda: self.forward_back(image_number+1)).grid(column = 2,row = 19)
-        self.button_back = tk.Button(self, image = self.back_img, bg = self.master['bg'], command = lambda: self.forward_back(image_number-1)).grid(column = 0,row = 19)
+        self.button_forw = tk.Button(self, image = self.forw_img, bg = self.parent['bg'], command = lambda: self.forward_back(image_number+1)).grid(column = 2,row = 19)
+        self.button_back = tk.Button(self, image = self.back_img, bg = self.parent['bg'], command = lambda: self.forward_back(image_number-1)).grid(column = 0,row = 19)
         if image_number == self.N:
-            self.button_forw = tk.Button(self, image = self.forw_img, bg = self.master['bg'], state = tk.DISABLED).grid(column = 2,row = 19)
+            self.button_forw = tk.Button(self, image = self.forw_img, bg = self.parent['bg'], state = tk.DISABLED).grid(column = 2,row = 19)
         if image_number == 1:
-            self.button_back = tk.Button(self, image = self.back_img, bg = self.master['bg'], state = tk.DISABLED).grid(column = 0,row = 19)
+            self.button_back = tk.Button(self, image = self.back_img, bg = self.parent['bg'], state = tk.DISABLED).grid(column = 0,row = 19)
             
         self.my_label.grid(column=0, row=0, rowspan = 10, columnspan=3)
         
@@ -94,35 +94,51 @@ class PageManual(tk.Frame):
             # print(binary_data[image_number-1,i])
             var[i] = tk.IntVar(value = self.binary_data[image_number-1,i])
             # I can not make this be selected when going backwards or forward if it was previously selected.
-            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.master['bg'], selectcolor = 'black', height = 3, width = 20, variable = var[i], command=(lambda i=i: self.onPress(image_number-1,i)))
+            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], selectcolor = 'black', height = 3, width = 20, variable = var[i], command=(lambda i=i: self.onPress(image_number-1,i)))
             self.button_cl[cl].grid(column = 4,row = i)
             
         # Status bar    
-        status = tk.Label(self, text='Image ' + str(image_number) + ' of '+str(self.N), bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', bg = self.master['bg'])
+        status = tk.Label(self, text='Image ' + str(image_number) + ' of '+str(self.N), bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', bg = self.parent['bg'])
         status.grid(row=20, column=0, columnspan=4, pady = 10, sticky = tk.W+tk.E)
-    
+            
+    def update_table(self):
+        
+        # Create a horizontal scrollbar
+        self.h = tk.Scrollbar(self, orient = 'horizontal')
+        self.h.grid(row = 10, column = 5, columnspan = 4, sticky = 'wes')
+  
+        # Create a vertical scrollbar
+        self.v = tk.Scrollbar(self)
+        self.v.grid(row = 0, column = 9, rowspan = 10, sticky = 'nse')
+          
+        # Insert text
+        self.t = tk.Text(self, wrap = tk.NONE,
+                 xscrollcommand = self.h.set,
+                 yscrollcommand = self.v.set, fg = 'white', bg = self.parent['bg'])
+        df = pd.DataFrame(self.binary_data, columns = self.class_list, dtype = int)
+        str_data = (df.set_index('idx'+df.index.astype(str))).to_string()
+        
+        self.t.insert(tk.END, str_data)
+  
+        self.t.grid(row = 0, column = 5, columnspan = 4, rowspan = 10)
+
+        self.h.config(command = self.t.xview)
+  
+        self.v.config(command = self.t.yview)  
+        
+
+        
     # Classes buttons
     def onPress(self, n,i):
         global saved              
         self.binary_data[n,i] = not self.binary_data[n,i]
+        self.update_table()
         saved = False
-
-
-
-    # def __init__(self, parent, controller):
-    #     tk.Frame.__init__(self, parent, bg = bg_colour)
-    #     self.controller = controller
-    #     label = tk.Label(self, text="This is page 1", font=controller.title_font)
-    #     label.pack(side="top", fill="x", pady=10)
-    #     button = tk.Button(self, text="Go to the start page",
-    #                        command=lambda: controller.show_frame("StartPage"))
-    #     button.pack()
-
-
 
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
+        self.parent = parent
         
         dirpath = os.getcwd()
         
@@ -144,7 +160,7 @@ class PageManual(tk.Frame):
         
         # Inital window
         self.my_label = tk.Label(self, image = self.image_list[0], bg = parent['bg'])
-        self.my_label.grid(column = 0, row = 0, rowspan = 10, columnspan = 3)   
+        self.my_label.grid(column = 0, row = 0, rowspan = 10, columnspan = 3)
     
         # Buttons initialisation
         self.back_img = ImageTk.PhotoImage(Image.open(dirpath+'\\Icons\\back_arrow.png').resize((150, 50)))
@@ -170,7 +186,8 @@ class PageManual(tk.Frame):
                                              height = 3, width = 20, variable = var[i], onvalue=1, offvalue=0, 
                                              command=(lambda i=i: self.onPress(0,i)))
             self.button_cl[cl].grid(column = 4,row = i)
-            
+        
+        self.update_table()
 
 # class writen_mlbl:
 #     def __init__(self, master):
@@ -212,12 +229,14 @@ class PageCanvas(tk.Frame):
                 self.canvas.create_oval(event.x-3, event.y-3, event.x+3, event.y+3, fill="black", width=0)
                 self.out_data['state_x'].append(event.x)
                 self.out_data['state_y'].append(event.y)
+                self.state.set('action')
             elif self.state.get()  == 'action':
                 # self.canvas.create_oval(-3, event.y-3, event.x+3, event.y+3, fill="red", width=0)
                 self.canvas.create_line(self.out_data['state_x'][-1], self.out_data['state_y'][-1], event.x, event.y, 
                                         fill="red", arrow=tk.LAST)
                 self.out_data['action_x'].append(event.x)
                 self.out_data['action_y'].append(event.y)
+                self.state.set('state')
 
     def on_drag(self, event):
         if self.draw.get()  == 'drag' and self.canvas.selected:
@@ -337,16 +356,14 @@ class PageCanvas(tk.Frame):
         self.draw = tk.StringVar()
         self.draw.set('draw')
         self.state = tk.StringVar()
-        self.state.set('state')        
+        self.state.set('state')    
         # Buttons under the canvas
         self.button_draw = tk.Radiobutton(self, text = 'Draw', fg = 'white', bg = parent['bg'], height = 3, 
-                                          width = 20, var = self.draw, selectcolor = 'black', value = 'draw').grid(column = 0,row = 38)
+                                          width = 20, var = self.draw,
+                                          selectcolor = 'black', value = 'draw').grid(column = 0,row = 38, columnspan = 2)
         self.button_drag = tk.Radiobutton(self, text = 'Move', fg = 'white', bg = parent['bg'], height = 3, 
-                                          width = 20, var = self.draw, selectcolor = 'black', value = 'drag').grid(column = 1,row = 38)
-        self.button_state = tk.Radiobutton(self, text = 'State', fg = 'white', bg = parent['bg'], height = 3, 
-                                           width = 20, var = self.state, selectcolor = 'black', value = 'state').grid(column = 2,row = 38)
-        self.button_action = tk.Radiobutton(self, text = 'Action', fg = 'white', bg = parent['bg'], height = 3, 
-                                            width = 20, var = self.state, selectcolor = 'black', value = 'action').grid(column = 3,row = 38)
+                                          width = 20, var = self.draw, 
+                                          selectcolor = 'black', value = 'drag').grid(column = 2,row = 38, columnspan = 2)
         self.button_save = tk.Button(self, text = 'Save', fg = 'white', bg = parent['bg'], height = 3, 
                                      width = 20, command = self.save_file).grid(column = 1,row = 39)
         self.button_upload = tk.Button(self, text = 'Upload coordinates', fg = 'white', bg = parent['bg'], height = 3,
@@ -356,3 +373,22 @@ class PageCanvas(tk.Frame):
         button_main = tk.Button(self, text="Go to the main page", fg = 'white', bg = parent['bg'], 
                                      height = 3, width = 20,
                             command = self.check_quit).grid(column = 3,row = 39)
+
+        # Data points list display
+        my_scrollbar = tk.Scrollbar(self, orient = tk.VERTICAL)
+        self.my_listbox = tk.Listbox(self, width=50, yscrollcommand = my_scrollbar.set, selectmode = tk.SINGLE)
+        #configure scrollbar
+        my_scrollbar.config(command = self.my_listbox.yview)
+        my_scrollbar.grid(row = 2, column = 8, rowspan = 28, sticky="nse")
+        
+        self.my_listbox.grid(row = 2, column = 4, columnspan = 4, rowspan = 28)  
+        
+        #Add item to listbox
+        self.my_listbox.insert(tk.END, "This is an item")
+        self.my_listbox.insert(tk.END, "Second Item!")
+        
+        # Add list of items
+        my_list = ["One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", ]
+        
+        for item in my_list:
+        	self.my_listbox.insert(tk.END, item)
