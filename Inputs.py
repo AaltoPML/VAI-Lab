@@ -90,14 +90,17 @@ class PageManual(tk.Frame):
         self.my_label.grid(column=0, row=0, rowspan = 10, columnspan=3)
         
         # Classes buttons
-        var = {}
+        # var = {}
         for i,cl in enumerate(self.class_list):
             # print(out_data[image_number-1,i])
-            var[i] = tk.IntVar(value = self.out_data[image_number-1,i])
+            self.var[image_number-1,i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
+            # var[i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
             # I can not make this be selected when going backwards or forward if it was previously selected.
-            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], selectcolor = 'black', height = 3, width = 20, variable = var[i], command=(lambda i=i: self.onPress(image_number-1,i)))
+            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], 
+                                                selectcolor = 'black', height = 3, width = 20, 
+                                                variable = self.var[image_number-1,i], command=(lambda i=i: self.onPress(image_number-1,i)))
             self.button_cl[cl].grid(column = 4,row = i)
-            
+
         # Status bar    
         status = tk.Label(self, text='Image ' + str(image_number) + ' of '+str(self.N), bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', bg = self.parent['bg'])
         status.grid(row=20, column=0, columnspan=4, pady = 10, sticky = tk.W+tk.E)
@@ -160,11 +163,12 @@ class PageManual(tk.Frame):
         
         self.out_data = np.zeros((self.N, len(self.class_list)))
         self.button_cl = {}
-        var = {}
+        
+        self.var = {}
         for i,cl in enumerate(self.class_list):
-            var[i] = tk.IntVar(value=self.out_data[0,i])
+            self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
             self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = parent['bg'], selectcolor = 'black', 
-                                             height = 3, width = 20, variable = var[i], onvalue=1, offvalue=0, 
+                                             height = 3, width = 20, variable = self.var[0,i], 
                                              command=(lambda i=i: self.onPress(0,i)))
             self.button_cl[cl].grid(column = 4,row = i)
         
@@ -272,7 +276,6 @@ class PageCanvas(tk.Frame):
                 self.state.set('state')
                 n = int(self.tree.selection()[0])
                 self.tree.item(self.tree.get_children()[n], text = n+1, values = tuple(self.dict2mat(self.out_data)[n,:].astype(int)))
-
 
     def on_drag(self, event):
         if self.draw.get()  == 'drag' and self.canvas.selected:
