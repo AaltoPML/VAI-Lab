@@ -165,10 +165,10 @@ class PageManual(tk.Frame):
         # Buttons initialisation
         self.back_img = ImageTk.PhotoImage(Image.open(os.path.join(dirpath,'Icons','back_arrow.png')).resize((150, 50)))
         self.forw_img = ImageTk.PhotoImage(Image.open(os.path.join(dirpath,'Icons','forw_arrow.png')).resize((150, 50)))
-        self.button_back = Button(self.master, image = self.back_img, bg = self.master['bg'], state = DISABLED).grid(column = 0,row = 19)
-        self.button_save = Button(self.master, text = 'Save', fg = 'white', bg = master['bg'], height = 3, width = 20, command = self.save_file).grid(column = 1,row = 19)
-        self.button_forw = Button(self.master, image = self.forw_img, bg = self.master['bg'], command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
-        self.button_quit = Button(self.master, text = 'Exit', fg = 'white', bg = self.master['bg'], height = 3, width = 20, command = self.check_quit).grid(column = 4,row = 19)
+        self.button_back = tk.Button(self.master, image = self.back_img, bg = self.master['bg'], state = tk.DISABLED).grid(column = 0,row = 19)
+        self.button_save = tk.Button(self.master, text = 'Save', fg = 'white', bg = self.master['bg'], height = 3, width = 20, command = self.save_file).grid(column = 1,row = 19)
+        self.button_forw = tk.Button(self.master, image = self.forw_img, bg = self.master['bg'], command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
+        self.button_quit = tk.Button(self.master, text = 'Exit', fg = 'white', bg = self.master['bg'], height = 3, width = 20, command = self.check_quit).grid(column = 4,row = 19)
             
         
         self.binary_data = np.zeros((self.N, len(self.class_list)))
