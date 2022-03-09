@@ -8,7 +8,9 @@ Created on Fri Feb 25 11:47:53 2022
 import tkinter as tk                # python 3
 import os
 from PIL import Image, ImageTk
+
 from tkinter import messagebox, ttk
+
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
@@ -92,6 +94,7 @@ class PageManual(tk.Frame):
         # Classes buttons
         # var = {}
         for i,cl in enumerate(self.class_list):
+
             # print(out_data[image_number-1,i])
             self.var[image_number-1,i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
             # var[i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
@@ -99,16 +102,19 @@ class PageManual(tk.Frame):
             self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], 
                                                 selectcolor = 'black', height = 3, width = 20, 
                                                 variable = self.var[image_number-1,i], command=(lambda i=i: self.onPress(image_number-1,i)))
+
             self.button_cl[cl].grid(column = 4,row = i)
 
         # Status bar    
         status = tk.Label(self, text='Image ' + str(image_number) + ' of '+str(self.N), bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', bg = self.parent['bg'])
         status.grid(row=20, column=0, columnspan=4, pady = 10, sticky = tk.W+tk.E)
             
+
     def onPress(self, n,i):
         "Updates the stored values on clicking the checkbutton."
         
         global saved              
+
         self.out_data[n,i] = not self.out_data[n,i]
         self.tree.item(self.tree.get_children()[n], text = n+1, values = tuple(self.out_data[n,:].astype(int)))
         saved = False
@@ -118,6 +124,7 @@ class PageManual(tk.Frame):
         
         item = self.tree.selection()[0]
         self.forward_back(self.tree.item(item,"text"))
+
 
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])
@@ -166,6 +173,7 @@ class PageManual(tk.Frame):
         
         self.var = {}
         for i,cl in enumerate(self.class_list):
+
             self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
             self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = parent['bg'], selectcolor = 'black', 
                                              height = 3, width = 20, variable = self.var[0,i], 
@@ -230,6 +238,7 @@ class PageManual(tk.Frame):
 #         if master.filename is not None:
 #             messagebox.showinfo("Success", "Feedback correctly uploaded.")
             
+
 class PageCanvas(tk.Frame):
 
     global save_path
@@ -249,6 +258,7 @@ class PageCanvas(tk.Frame):
                 self.canvas.selected = None
 
         if self.draw.get()  == 'draw':
+
             # Draw an oval in the given coordinates
             global saved
             saved = False
@@ -276,6 +286,7 @@ class PageCanvas(tk.Frame):
                 self.state.set('state')
                 n = int(self.tree.selection()[0])
                 self.tree.item(self.tree.get_children()[n], text = n+1, values = tuple(self.dict2mat(self.out_data)[n,:].astype(int)))
+
 
     def on_drag(self, event):
         if self.draw.get()  == 'drag' and self.canvas.selected:
@@ -330,7 +341,9 @@ class PageCanvas(tk.Frame):
         if save_path == '':
             save_path = asksaveasfile(defaultextension = '.txt', filetypes = [('Text file', '.txt'), ('CSV file', '.csv'), ('All Files', '*.*')])
         if save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
+
             filedata = pd.DataFrame(self.out_data, columns = ['State_x', 'State_y', 'Action_x', 'Action_y']).to_string()
+
             save_path.seek(0) # Move to the first row to overwrite it
             save_path.write(filedata)
             save_path.flush() # Save without closing
@@ -353,6 +366,7 @@ class PageCanvas(tk.Frame):
             data = open(filename,'r')
             read = False
             self.draw.set('drag')
+
             for n, point in enumerate(data):
                 if read: # Not elegant at all, just to omit the header.
                     i, sx, sy, ax, ay = point.split()
@@ -368,6 +382,7 @@ class PageCanvas(tk.Frame):
                     self.tree.insert(parent = '', index = 'end', iid = len(self.out_data['Action_x'])-1, text = len(self.out_data['Action_x']), 
                                       values = tuple(self.dict2mat(self.out_data)[len(self.out_data['Action_x'])-1,:].astype(int)))
                     self.tree.selection_set(str(len(self.out_data['Action_x'])-1))
+
                 else:
                     read = True
     def reset(self):
@@ -378,6 +393,7 @@ class PageCanvas(tk.Frame):
             self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
             for record in self.tree.get_children():
                 self.tree.delete(record)
+
             
     #windows zoom
     def zoomer(self, event):
@@ -395,6 +411,7 @@ class PageCanvas(tk.Frame):
         self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion = self.canvas.bbox("all"))
         
+
     def dict2mat(self, X):
         max_size = 0
         for key in X:
@@ -412,12 +429,15 @@ class PageCanvas(tk.Frame):
         self.controller = controller
         
         self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
+
         
         # Create a canvas widget
         self.width, self.height = 600, 600
         self.canvas = tk.Canvas(self, width=self.width, height=self.height, background="white")
+
         self.canvas.grid(row=0, column=0, columnspan=4, rowspan = 2)
         # self.checkered(10)
+
         self.canvas.bind('<Button-1>', self.draw_dot)
         self.canvas.bind("<B1-Motion>", self.on_drag)
         # #linux scroll
@@ -426,6 +446,7 @@ class PageCanvas(tk.Frame):
         # #windows scroll
         # self.canvas.bind("<MouseWheel>",self.zoomer)
         
+
         # Booleans to identify what the user wants to do
         self.draw = tk.StringVar()
         self.draw.set('draw')
@@ -489,3 +510,4 @@ class PageCanvas(tk.Frame):
         
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
+
