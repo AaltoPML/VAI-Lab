@@ -496,6 +496,3 @@ class PageCanvas(tk.Frame):
             result[:len(X[key]), k]  = X[key]
             
         return result
-    
-    
-
