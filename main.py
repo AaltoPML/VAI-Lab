@@ -20,6 +20,8 @@ class UFA(tk.Tk):
         super().__init__(*args, **kwargs)
 
         self.title_font = tkfont.Font(family='Helvetica', size=14, weight="bold")#, slant="italic")
+        self.pages_font = tkfont.nametofont("TkDefaultFont")
+
 
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
