@@ -8,17 +8,105 @@ Created on Fri Feb 25 11:47:53 2022
 import tkinter as tk                # python 3
 import os
 from PIL import Image, ImageTk
-from tkinter import messagebox
+
+from tkinter import messagebox, ttk
+
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
 
 class PageManual(tk.Frame):
+
+    def __init__(self, parent, controller):
+        super().__init__(parent, bg = parent['bg'])
+        self.controller = controller
+        
+        self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
+
+        
+        # Create a canvas widget
+        self.width, self.height = 600, 600
+        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background="white")
+
+        self.canvas.grid(row=0, column=0, columnspan=4, rowspan = 2)
+        # self.checkered(10)
+
+        self.canvas.bind('<Button-1>', self.draw_dot)
+        self.canvas.bind("<B1-Motion>", self.on_drag)
+        # #linux scroll
+        # self.canvas.bind("<Button-4>", self.zoomerP)
+        # self.canvas.bind("<Button-5>", self.zoomerM)
+        # #windows scroll
+        # self.canvas.bind("<MouseWheel>",self.zoomer)
+        
+
+        # Booleans to identify what the user wants to do
+        self.draw = tk.StringVar()
+        self.draw.set('draw')
+        self.state = tk.StringVar()
+        self.state.set('state')    
+        # Buttons under the canvas
+        self.button_draw = tk.Radiobutton(self, text = 'Draw', fg = 'white', bg = parent['bg'], height = 3, 
+                                          width = 20, var = self.draw,
+                                          selectcolor = 'black', value = 'draw').grid(column = 4,row = 3)
+        self.button_drag = tk.Radiobutton(self, text = 'Move', fg = 'white', bg = parent['bg'], height = 3, 
+                                          width = 20, var = self.draw, 
+                                          selectcolor = 'black', value = 'drag').grid(column = 5,row = 3)
+        self.button_edit = tk.Radiobutton(self, text = 'Edit', fg = 'white', bg = parent['bg'], height = 3, 
+                                          width = 20, var = self.draw, 
+                                          selectcolor = 'black', value = 'edit').grid(column = 6,row = 3)
+        self.button_save = tk.Button(self, text = 'Save', fg = 'white', bg = parent['bg'], height = 3, 
+                                     width = 20, command = self.save_file).grid(column = 1,row = 3)
+        self.button_upload = tk.Button(self, text = 'Upload coordinates', fg = 'white', bg = parent['bg'], height = 3,
+                                       width = 20, command = self.upload_sa).grid(column = 0, row = 3)
+        self.button_reset = tk.Button(self, text = 'Reset', fg = 'white', bg = parent['bg'], height = 3, 
+                                      width = 20, command = self.reset).grid(column = 2, row = 3)
+        button_main = tk.Button(self, text="Go to the main page", fg = 'white', bg = parent['bg'], 
+                                     height = 3, width = 20,
+                            command = self.check_quit).grid(column = 3, row = 3)
+
+        #Tree defintion. Output display
+        style = ttk.Style()
+        style.configure("Treeview", background = 'white', foreground = 'white', rowheight = 25, 
+                        fieldbackground = 'white', font = self.controller.pages_font)
+        style.configure("Treeview.Heading", font = self.controller.pages_font)
+        style.map('Treeview', background = [('selected', 'grey')])
+        
+
+        tree_frame = tk.Frame(self)
+        tree_frame.grid(row = 0, column = 4, columnspan = 3, rowspan = 2)
+        
+        tree_scrollx = tk.Scrollbar(tree_frame, orient = 'horizontal')
+        tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
+        tree_scrolly = tk.Scrollbar(tree_frame)
+        tree_scrolly.pack(side = tk.RIGHT, fill = tk.Y)
+        
+        self.tree = ttk.Treeview(tree_frame, yscrollcommand = tree_scrolly.set, xscrollcommand = tree_scrollx.set)
+        self.tree.pack()
+        
+        tree_scrollx.config(command = self.tree.xview)
+        tree_scrolly.config(command = self.tree.yview)
+        
+        self.class_list = ['State_x', 'State_y', 'Action_x', 'Action_y']
+        self.tree['columns'] = self.class_list
+        
+        
+        # Format columns
+        self.tree.column("#0", width = 50)
+        for n, cl in enumerate(self.class_list):
+            self.tree.column(cl, width = int(self.controller.pages_font.measure(str(cl)))+20, minwidth = 50, anchor = tk.CENTER)
+                
+        # Headings
+        self.tree.heading("#0", text = "Sample", anchor = tk.CENTER)
+        for cl in self.class_list:
+            self.tree.heading(cl, text = cl, anchor = tk.CENTER)
+        
+        # Define double-click on row action
+        self.tree.bind("<Double-1>", self.OnDoubleClick)
     
-    global save_path
-    global saved
-    save_path = ''
-    saved = True
+        self.save_path = ''
+        self.saved = True
+    
     
     def expand2square(self, pil_img, background_color):
         " Adds padding to make the image a square."
@@ -35,8 +123,7 @@ class PageManual(tk.Frame):
             return result
 
     def check_quit(self):
-        global saved
-        if not saved:
+        if not self.saved:
             response = messagebox.askokcancel("Are you sure you want to leave?", "Do you want to leave the program without saving?")
             if response:
                 self.controller.show_frame("StartPage")
@@ -44,36 +131,33 @@ class PageManual(tk.Frame):
             self.controller.show_frame("StartPage")
     
     def open_file(self):
-        global save_path
-        save_path = askopenfile(mode='r+')
-        if save_path is not None:
-            t = save_path.read()
+        self.save_path = askopenfile(mode='r+')
+        if self.save_path is not None:
+            t = self.save_path.read()
             # textentry.delete('0.0', 'end')
             # textentry.insert('0.0', t)
             # textentry.focus()
             
     def save_file_as(self):
-        global save_path
-        save_path = asksaveasfile(mode='w')
+        self.save_path = asksaveasfile(mode='w')
         self.save_file()
         
     def save_file(self):
-        global save_path
-        global saved
-        if save_path == '':
-            save_path = asksaveasfile(defaultextension = '.txt', filetypes = [('Text file', '.txt'), ('CSV file', '.csv'), ('All Files', '*.*')])
-        if save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
-            filedata = pd.DataFrame(self.binary_data, columns = self.class_list).to_string()
-            save_path.seek(0) # Move to the first row to overwrite it
-            save_path.write(filedata)
-            save_path.flush() # Save without closing
+        if self.save_path == '':
+            self.save_path = asksaveasfile(defaultextension = '.txt', filetypes = [('Text file', '.txt'), ('CSV file', '.csv'), ('All Files', '*.*')])
+        if self.save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
+            filedata = pd.DataFrame(self.out_data, columns = self.class_list).to_string()
+            self.save_path.seek(0) # Move to the first row to overwrite it
+            self.save_path.write(filedata)
+            self.save_path.flush() # Save without closing
             # typically the above line would do. however this is used to ensure that the file is written
             os.fsync(save_path.fileno())
-            saved = True
+            self.saved = True
             
     def forward_back(self, image_number):
         " Forward button to continue to the next image in the folder."
         
+        self.tree.selection_set(str(int(image_number-1)))
         # Print the corresponding image
         self.my_label.grid_forget()
         self.my_label = tk.Label(self, image=self.image_list[image_number-1])
@@ -89,51 +173,38 @@ class PageManual(tk.Frame):
         self.my_label.grid(column=0, row=0, rowspan = 10, columnspan=3)
         
         # Classes buttons
-        var = {}
+        # var = {}
         for i,cl in enumerate(self.class_list):
-            # print(binary_data[image_number-1,i])
-            var[i] = tk.IntVar(value = self.binary_data[image_number-1,i])
+
+            # print(out_data[image_number-1,i])
+            self.var[image_number-1,i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
+            # var[i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
             # I can not make this be selected when going backwards or forward if it was previously selected.
-            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], selectcolor = 'black', height = 3, width = 20, variable = var[i], command=(lambda i=i: self.onPress(image_number-1,i)))
+            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], 
+                                                selectcolor = 'black', height = 3, width = 20, 
+                                                variable = self.var[image_number-1,i], command=(lambda i=i: self.onPress(image_number-1,i)))
+
             self.button_cl[cl].grid(column = 4,row = i)
-            
+
         # Status bar    
         status = tk.Label(self, text='Image ' + str(image_number) + ' of '+str(self.N), bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', bg = self.parent['bg'])
         status.grid(row=20, column=0, columnspan=4, pady = 10, sticky = tk.W+tk.E)
             
-    def update_table(self):
-        
-        # Create a horizontal scrollbar
-        self.h = tk.Scrollbar(self, orient = 'horizontal')
-        self.h.grid(row = 10, column = 5, columnspan = 4, sticky = 'wes')
-  
-        # Create a vertical scrollbar
-        self.v = tk.Scrollbar(self)
-        self.v.grid(row = 0, column = 9, rowspan = 10, sticky = 'nse')
-          
-        # Insert text
-        self.t = tk.Text(self, wrap = tk.NONE,
-                 xscrollcommand = self.h.set,
-                 yscrollcommand = self.v.set, fg = 'white', bg = self.parent['bg'])
-        df = pd.DataFrame(self.binary_data, columns = self.class_list, dtype = int)
-        str_data = (df.set_index('idx'+df.index.astype(str))).to_string()
-        
-        self.t.insert(tk.END, str_data)
-  
-        self.t.grid(row = 0, column = 5, columnspan = 4, rowspan = 10)
 
-        self.h.config(command = self.t.xview)
-  
-        self.v.config(command = self.t.yview)  
-        
-
-        
-    # Classes buttons
     def onPress(self, n,i):
-        global saved              
-        self.binary_data[n,i] = not self.binary_data[n,i]
-        self.update_table()
-        saved = False
+        "Updates the stored values on clicking the checkbutton."
+        
+
+        self.out_data[n,i] = not self.out_data[n,i]
+        self.tree.item(self.tree.get_children()[n], text = n+1, values = tuple(self.out_data[n,:].astype(int)))
+        self.saved = False
+        
+    def OnDoubleClick(self, event):
+        "Moves to the image corresponding to the row clicked on the tree."
+        
+        item = self.tree.selection()[0]
+        self.forward_back(self.tree.item(item,"text"))
+
 
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])
@@ -165,23 +236,73 @@ class PageManual(tk.Frame):
         # Buttons initialisation
         self.back_img = ImageTk.PhotoImage(Image.open(os.path.join(dirpath,'Icons','back_arrow.png')).resize((150, 50)))
         self.forw_img = ImageTk.PhotoImage(Image.open(os.path.join(dirpath,'Icons','forw_arrow.png')).resize((150, 50)))
-        self.button_back = tk.Button(self.master, image = self.back_img, bg = self.master['bg'], state = tk.DISABLED).grid(column = 0,row = 19)
-        self.button_save = tk.Button(self.master, text = 'Save', fg = 'white', bg = self.master['bg'], height = 3, width = 20, command = self.save_file).grid(column = 1,row = 19)
-        self.button_forw = tk.Button(self.master, image = self.forw_img, bg = self.master['bg'], command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
-        self.button_quit = tk.Button(self.master, text = 'Exit', fg = 'white', bg = self.master['bg'], height = 3, width = 20, command = self.check_quit).grid(column = 4,row = 19)
-            
+        self.button_back = tk.Button(self, image = self.back_img, bg = parent['bg'], 
+                                     state = tk.DISABLED).grid(column = 0,row = 19)
+        self.button_save = tk.Button(self, text = 'Save', fg = 'white', bg = parent['bg'], 
+                                     height = 3, width = 20, command = self.save_file).grid(column = 1,row = 19)
+        self.button_forw = tk.Button(self, image = self.forw_img, bg = parent['bg'], 
+                                     command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
+        # self.button_quit = tk.Button(self, text = 'Exit', fg = 'white', bg = parent['bg'], 
+                                     # height = 3, width = 20, command = self.check_quit).grid(column = 4,row = 20)
+        button_main = tk.Button(self, text="Go to the main page", fg = 'white', bg = parent['bg'], 
+                                     height = 3, width = 20,
+                            command = self.check_quit).grid(column = 4,row = 19)       
         
-        self.binary_data = np.zeros((self.N, len(self.class_list)))
+        self.out_data = np.zeros((self.N, len(self.class_list)))
         self.button_cl = {}
-        var = {}
+        
+        self.var = {}
         for i,cl in enumerate(self.class_list):
-            var[i] = tk.IntVar(value=self.binary_data[0,i])
+
+            self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
             self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = parent['bg'], selectcolor = 'black', 
-                                             height = 3, width = 20, variable = var[i], onvalue=1, offvalue=0, 
+                                             height = 3, width = 20, variable = self.var[0,i], 
                                              command=(lambda i=i: self.onPress(0,i)))
             self.button_cl[cl].grid(column = 4,row = i)
         
-        self.update_table()
+        #Tree defintion. Output display
+        style = ttk.Style()
+        style.configure("Treeview", background = 'white', foreground = 'white', rowheight = 25, 
+                        fieldbackground = 'white', font = self.controller.pages_font)
+        style.configure("Treeview.Heading", font = self.controller.pages_font)
+        style.map('Treeview', background = [('selected', 'grey')])
+        
+
+        tree_frame = tk.Frame(self)
+        tree_frame.grid(row = 0, column = 5, columnspan = 4, rowspan = 10)
+        
+        tree_scrollx = tk.Scrollbar(tree_frame, orient = 'horizontal')
+        tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
+        tree_scrolly = tk.Scrollbar(tree_frame)
+        tree_scrolly.pack(side = tk.RIGHT, fill = tk.Y)
+        
+        self.tree = ttk.Treeview(tree_frame, yscrollcommand = tree_scrolly.set, xscrollcommand = tree_scrollx.set)
+        self.tree.pack()
+        
+        tree_scrollx.config(command = self.tree.xview)
+        tree_scrolly.config(command = self.tree.yview)
+        
+        self.tree['columns'] = self.class_list
+        
+        # Format columns
+        self.tree.column("#0", width = 50)
+        for n, cl in enumerate(self.class_list):
+            self.tree.column(cl, width = int(self.controller.pages_font.measure(str(cl)))+20, minwidth = 50, anchor = tk.CENTER)
+                
+        # Headings
+        self.tree.heading("#0", text = "Image", anchor = tk.CENTER)
+        for cl in self.class_list:
+            self.tree.heading(cl, text = cl, anchor = tk.CENTER)
+            
+        # Add data
+        for n, sample in enumerate(self.out_data):
+            self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, values = tuple(sample.astype(int)))
+        
+        # Select the current row
+        self.tree.selection_set(str(int(0)))
+        
+        # Define double-click on row action
+        self.tree.bind("<Double-1>", self.OnDoubleClick)
 
 # class writen_mlbl:
 #     def __init__(self, master):
@@ -197,49 +318,77 @@ class PageManual(tk.Frame):
 #         if master.filename is not None:
 #             messagebox.showinfo("Success", "Feedback correctly uploaded.")
             
-class PageCanvas(tk.Frame):
 
-    global save_path
-    global saved
-    global selected
-    save_path = ''
-    saved = True
+class PageCanvas(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent, bg = parent['bg'])
+        self.save_path = ''
+        self.saved = True
         
     def draw_dot(self, event):    
         
         if self.draw.get() == 'drag':
             selected = self.canvas.find_overlapping(event.x-10, event.y-10, event.x+10, event.y+10)
             if selected:
-                self.canvas.selected = selected[-1]  # select the top-most item
+                self.canvas.selected = selected[0]  # select the top-most item
                 self.canvas.startxy = (event.x, event.y)
             else:
                 self.canvas.selected = None
 
         if self.draw.get()  == 'draw':
-            # Draw an oval in the given co-ordinates
-            global saved
-            saved = False
-            if self.state.get()  == 'state':
-                self.canvas.create_oval(event.x-3, event.y-3, event.x+3, event.y+3, fill="black", width=0)
-                self.out_data['state_x'].append(event.x)
-                self.out_data['state_y'].append(event.y)
+
+            # Draw an oval in the given coordinates
+            self.saved = False
+            if self.state.get()  == 'state': # Write state coordinates
+                self.canvas.create_oval(event.x-3, event.y-3, event.x+3, event.y+3, fill="black", width=0, 
+                                        tags=("state-" + str(len(self.out_data['State_x']))))
+                self.out_data['State_x'].append(event.x)
+                self.out_data['State_y'].append(event.y)
                 self.state.set('action')
+                if self.tree.selection(): # Update coordinates in corresponding row if exists.
+                    n = int(self.tree.selection()[0]) + 1
+                    self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, 
+                                     values = tuple(self.dict2mat(self.out_data)[n,:].astype(int)))
+                    self.tree.selection_set(str(n))
+                else:
+                    self.tree.insert(parent = '', index = 'end', iid = 0, text = 1, 
+                                     values = tuple(self.dict2mat(self.out_data)[0,:].astype(int)))
+                    self.tree.selection_set(str(0))
+                
             elif self.state.get()  == 'action':
-                # self.canvas.create_oval(-3, event.y-3, event.x+3, event.y+3, fill="red", width=0)
-                self.canvas.create_line(self.out_data['state_x'][-1], self.out_data['state_y'][-1], event.x, event.y, 
-                                        fill="red", arrow=tk.LAST)
-                self.out_data['action_x'].append(event.x)
-                self.out_data['action_y'].append(event.y)
+                self.canvas.create_line(self.out_data['State_x'][-1], self.out_data['State_y'][-1], event.x, event.y, 
+                                        fill="red", arrow=tk.LAST, tags=("action-" + str(len(self.out_data['Action_x']))))
+                self.out_data['Action_x'].append(event.x)
+                self.out_data['Action_y'].append(event.y)
                 self.state.set('state')
+                n = int(self.tree.selection()[0])
+                self.tree.item(self.tree.get_children()[n], text = n+1, values = tuple(self.dict2mat(self.out_data)[n,:].astype(int)))
+
 
     def on_drag(self, event):
         if self.draw.get()  == 'drag' and self.canvas.selected:
             # calculate distance moved from last position
-            dx, dy = event.x-self.canvas.startxy[0], event.y-self.canvas.startxy[1]
+            dx, dy = event.x - self.canvas.startxy[0], event.y - self.canvas.startxy[1]
             # move the selected item
-            self.canvas.move(self.canvas.selected, dx, dy)
+            print(self.canvas.gettags("current"))
+            n = int(self.canvas.gettags("current")[0].split('-')[1])
+            # If state, updates both the state placement and the arrow
+            if self.canvas.gettags("current")[0].split('-')[0] == 'state':
+                self.canvas.move(self.canvas.selected, dx, dy)
+                self.canvas.coords('action-'+str(n), (event.x, event.y, self.out_data['Action_x'][n], 
+                                                                       self.out_data['Action_y'][n]))
+                self.out_data['State_x'][n] = event.x
+                self.out_data['State_y'][n] = event.y  
+            elif self.canvas.gettags("current")[0].split('-')[0] == 'action': # If action, updates the arrow end of the line position
+                self.canvas.coords(self.canvas.gettags("current")[0], (self.out_data['State_x'][n], 
+                                                                       self.out_data['State_y'][n], event.x, event.y))
+                self.out_data['Action_x'][n] = event.x
+                self.out_data['Action_y'][n] = event.y
             # update last position
-            self.canvas.startxy = (event.x, event.y)
+            self.canvas.startxy = (event.x, event.y)                
+            self.tree.item(self.tree.get_children()[n], text = n+1, 
+                           values = tuple(self.dict2mat(self.out_data)[n,:].astype(int)))
+            self.tree.selection_set(str(n))
             
     def checkered(self, line_distance):        
         # vertical lines at an interval of "line_distance" pixel
@@ -250,8 +399,7 @@ class PageCanvas(tk.Frame):
             self.canvas.create_line(0, y, self.width, y, fill="#476042")   
             
     def check_quit(self):
-        global saved
-        if not saved:
+        if not self.saved:
             response = messagebox.askokcancel("Are you sure you want to leave?", "Do you want to leave the program without saving?")
             if response:
                 self.controller.show_frame("StartPage")
@@ -259,51 +407,69 @@ class PageCanvas(tk.Frame):
             self.controller.show_frame("StartPage")
             
     def save_file_as(self):
-        global save_path
-        save_path = asksaveasfile(mode='w')
+        self.save_path = asksaveasfile(mode='w')
         self.save_file()
         
     def save_file(self):
-        global save_path
-        global saved
-        if save_path == '':
-            save_path = asksaveasfile(defaultextension = '.txt', filetypes = [('Text file', '.txt'), ('CSV file', '.csv'), ('All Files', '*.*')])
-        if save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
-            filedata = pd.DataFrame(self.out_data, columns = ['state_x', 'state_y', 'action_x', 'action_y']).to_string()
-            save_path.seek(0) # Move to the first row to overwrite it
-            save_path.write(filedata)
-            save_path.flush() # Save without closing
+        if self.save_path == '':
+            self.save_path = asksaveasfile(defaultextension = '.txt', filetypes = [('Text file', '.txt'), ('CSV file', '.csv'), ('All Files', '*.*')])
+        if self.save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
+
+            filedata = pd.DataFrame(self.out_data, columns = ['State_x', 'State_y', 'Action_x', 'Action_y']).to_string()
+
+            self.save_path.seek(0) # Move to the first row to overwrite it
+            self.save_path.write(filedata)
+            self.save_path.flush() # Save without closing
             # typically the above line would do. however this is used to ensure that the file is written
             os.fsync(save_path.fileno())
-            saved = True
-    
+            self.saved = True
+            
+    def OnDoubleClick(self, event):
+        "Moves to the image corresponding to the row clicked on the tree."
+        
+        print('What to do?...')
+        # item = self.tree.selection()[0]
+        # self.canvas.itemconfig("state-"+str(item), fill="blue")
+        
+        
+        
     def upload_sa(self):
         filename = askopenfilename(initialdir = os.getcwd(), title = 'Select a file', defaultextension = '.txt', filetypes = [('Text file', '.txt'), ('CSS file', '.css'), ('All Files', '*.*')])
         if filename is not None:
             data = open(filename,'r')
             read = False
             self.draw.set('drag')
-            for point in data:
+
+            for n, point in enumerate(data):
                 if read: # Not elegant at all, just to omit the header.
                     i, sx, sy, ax, ay = point.split()
-                    # Draw an oval in the given co-ordinates
-                    self.canvas.create_oval(float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3, fill="black", width=0)
-                    self.canvas.create_line(float(sx), float(sy), float(ax), float(ay), fill="red", arrow=tk.LAST)
-                    self.out_data['state_x'].append(sx)
-                    self.out_data['state_y'].append(sy)
-                    self.out_data['action_x'].append(ax)
-                    self.out_data['action_y'].append(ay)
+                    # Draw an oval in the given coordinates
+                    self.canvas.create_oval(float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3, fill="black", width=0, 
+                                            tags=("state-" + str(len(self.out_data['State_x']))))
+                    self.canvas.create_line(float(sx), float(sy), float(ax), float(ay), fill="red", arrow=tk.LAST, 
+                                            tags=("action-" + str(len(self.out_data['Action_x']))))
+                    self.out_data['State_x'].append(sx)
+                    self.out_data['State_y'].append(sy)
+                    self.out_data['Action_x'].append(ax)
+                    self.out_data['Action_y'].append(ay)
+                    self.tree.insert(parent = '', index = 'end', iid = len(self.out_data['Action_x'])-1, text = len(self.out_data['Action_x']), 
+                                      values = tuple(self.dict2mat(self.out_data)[len(self.out_data['Action_x'])-1,:].astype(int)))
+                    self.tree.selection_set(str(len(self.out_data['Action_x'])-1))
+
                 else:
                     read = True
     def reset(self):
         msg = messagebox.askyesnocancel('Info', 'Are you sure you want to reset the canvas?')
         if msg:
             self.canvas.delete(tk.ALL)
-            self.checkered(10)
-            self.out_data = {'state_x': [], 'state_y': [], 'action_x': [], 'action_y': []} #coordinates
+            # self.checkered(10)
+            self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
+            for record in self.tree.get_children():
+                self.tree.delete(record)
+
             
     #windows zoom
-    def zoomer(self,event):
+    def zoomer(self, event):
         if (event.delta > 0):
             self.canvas.scale("all", event.x, event.y, 1.1, 1.1)
         elif (event.delta < 0):
@@ -311,78 +477,22 @@ class PageCanvas(tk.Frame):
         self.canvas.configure(scrollregion = self.canvas.bbox("all"))
 
     #linux zoom
-    def zoomerP(self,event):
+    def zoomerP(self, event):
         self.canvas.scale("all", event.x, event.y, 1.1, 1.1)
         self.canvas.configure(scrollregion = self.canvas.bbox("all"))
-    def zoomerM(self,event):
+    def zoomerM(self, event):
         self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion = self.canvas.bbox("all"))
         
-    def __init__(self, parent, controller):
-        super().__init__(parent, bg = parent['bg'])
-        self.controller = controller
-        
-        self.out_data = {'state_x': [], 'state_y': [], 'action_x': [], 'action_y': []} #coordinates
-        
-        # Create a canvas widget
-        self.width, self.height = 600, 600
-        self.canvas = tk.Canvas(self, width=self.width, height=self.height, background="white")
-        self.canvas.grid(row=0, column=0, columnspan=4, rowspan = 30)
-        self.checkered(10)
-        self.canvas.bind('<Button-1>', self.draw_dot)
-        self.canvas.bind("<B1-Motion>", self.on_drag)
-        # #linux scroll
-        # self.canvas.bind("<Button-4>", self.zoomerP)
-        # self.canvas.bind("<Button-5>", self.zoomerM)
-        # #windows scroll
-        # self.canvas.bind("<MouseWheel>",self.zoomer)
-        
-        self.row = 0
-        label_states = tk.Label(self, text = 'States', bg = parent['bg'], fg = 'white').grid(column = 4, row = self.row, columnspan = 2)
-        label_actions = tk.Label(self, text = 'Actions', bg = parent['bg'], fg = 'white').grid(column = 6, row = self.row, columnspan = 2)
-        self.row = 1
-        label_sx = tk.Label(self, text = 'x axis', bg = parent['bg'], fg = 'white').grid(column = 4, row = self.row)
-        label_sy = tk.Label(self, text = 'y axis', bg = parent['bg'], fg = 'white').grid(column = 5, row = self.row)
-        label_ax = tk.Label(self, text = 'x axis', bg = parent['bg'], fg = 'white').grid(column = 6, row = self.row)
-        label_ay = tk.Label(self, text = 'y axis', bg = parent['bg'], fg = 'white').grid(column = 7, row = self.row)
-        
-        # Booleans to identify what the user wants to do
-        self.draw = tk.StringVar()
-        self.draw.set('draw')
-        self.state = tk.StringVar()
-        self.state.set('state')    
-        # Buttons under the canvas
-        self.button_draw = tk.Radiobutton(self, text = 'Draw', fg = 'white', bg = parent['bg'], height = 3, 
-                                          width = 20, var = self.draw,
-                                          selectcolor = 'black', value = 'draw').grid(column = 0,row = 38, columnspan = 2)
-        self.button_drag = tk.Radiobutton(self, text = 'Move', fg = 'white', bg = parent['bg'], height = 3, 
-                                          width = 20, var = self.draw, 
-                                          selectcolor = 'black', value = 'drag').grid(column = 2,row = 38, columnspan = 2)
-        self.button_save = tk.Button(self, text = 'Save', fg = 'white', bg = parent['bg'], height = 3, 
-                                     width = 20, command = self.save_file).grid(column = 1,row = 39)
-        self.button_upload = tk.Button(self, text = 'Upload coordinates', fg = 'white', bg = parent['bg'], height = 3,
-                                       width = 20, command = self.upload_sa).grid(column = 0, row = 39)
-        self.button_reset = tk.Button(self, text = 'Reset', fg = 'white', bg = parent['bg'], height = 3, 
-                                      width = 20, command = self.reset).grid(column = 2, row = 39)
-        button_main = tk.Button(self, text="Go to the main page", fg = 'white', bg = parent['bg'], 
-                                     height = 3, width = 20,
-                            command = self.check_quit).grid(column = 3,row = 39)
 
-        # Data points list display
-        my_scrollbar = tk.Scrollbar(self, orient = tk.VERTICAL)
-        self.my_listbox = tk.Listbox(self, width=50, yscrollcommand = my_scrollbar.set, selectmode = tk.SINGLE)
-        #configure scrollbar
-        my_scrollbar.config(command = self.my_listbox.yview)
-        my_scrollbar.grid(row = 2, column = 8, rowspan = 28, sticky="nse")
-        
-        self.my_listbox.grid(row = 2, column = 4, columnspan = 4, rowspan = 28)  
-        
-        #Add item to listbox
-        self.my_listbox.insert(tk.END, "This is an item")
-        self.my_listbox.insert(tk.END, "Second Item!")
-        
-        # Add list of items
-        my_list = ["One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", "One", "Two", "Three", ]
-        
-        for item in my_list:
-        	self.my_listbox.insert(tk.END, item)
+    def dict2mat(self, X):
+        max_size = 0
+        for key in X:
+            if len(X[key]) > max_size:
+                max_size = len(X[key])
+
+        result = -np.ones((max_size, len(X)))
+        for k, key in enumerate(X):
+            result[:len(X[key]), k]  = X[key]
+            
+        return result

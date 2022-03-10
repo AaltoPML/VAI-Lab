@@ -20,6 +20,8 @@ class UFA(tk.Tk):
         super().__init__(*args, **kwargs)
 
         self.title_font = tkfont.Font(family='Helvetica', size=14, weight="bold")#, slant="italic")
+        self.pages_font = tkfont.nametofont("TkDefaultFont")
+
 
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
@@ -56,7 +58,7 @@ class StartPage(tk.Frame):
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
         self.controller.title('User feedback adaptation')
-        # self.controller.iconbitmap(os.path.join(os.getcwd(),'Icons','UFAIcon.ico'))
+        self.controller.iconbitmap(os.path.join(os.getcwd(),'Icons','UFAIcon.ico'))
         
         self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(os.getcwd(), 'Icons', 'UFAIcon_name.png')).resize((600, 400)))
         self.my_label = tk.Label(self, image = self.my_img1, bg = parent['bg'])
