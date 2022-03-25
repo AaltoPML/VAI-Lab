@@ -318,10 +318,10 @@ class PageCanvas(tk.Frame):
             saved = False
             # Angle of the selected point with respect to the circle center
             if self.type[ii] == 'Rotating':
-                alpha = np.arctan((event.y-self.y_ini)/(event.x-self.x_ini))
-                + ((event.x - self.x_ini) < 0) * math.pi
-                x_o, y_o = self.r * np.cos(alpha) 
-                + self.x_ini, self.r * np.sin(alpha) + self.y_ini
+                alpha = np.arctan((event.y-self.y_ini)/(event.x-self.x_ini)) 
+                alpha += ((event.x - self.x_ini) < 0) * math.pi
+                x_o = self.r * np.cos(alpha) + self.x_ini
+                y_o = self.r * np.sin(alpha) + self.y_ini
                 if self.state[ii].get()  == 'state': # Write state coordinates
                     self.canvas[ii].create_oval(
                         x_o-3, y_o-3, x_o+3, y_o+3, fill="black", width=0, 
