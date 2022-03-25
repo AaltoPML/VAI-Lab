@@ -271,7 +271,11 @@ class PageManual(tk.Frame):
                                  values = tuple(sample.astype(int)), tags = ('even',))
             else:
                 self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, 
-                                 values = tuple(sample.astype(int)), tags = ('odd',))
+                                 values = tuple(sample.astype(int)), tags = ('odd',))            
+        # Add data
+        for n, sample in enumerate(self.out_data):
+            self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, 
+                             values = tuple(sample.astype(int)))
         
         # Select the current row
         self.tree.selection_set(str(int(0)))
