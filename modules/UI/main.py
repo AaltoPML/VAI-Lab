@@ -13,7 +13,7 @@ from tkinter import messagebox
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
-from Inputs import PageManual, PageCanvas
+from .Inputs import PageManual, PageCanvas
 
 class UFA(tk.Tk):
     def __init__(self, *args, **kwargs):
