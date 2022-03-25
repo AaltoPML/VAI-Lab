@@ -58,7 +58,7 @@ class StartPage(tk.Frame):
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
         self.controller.title('User feedback adaptation')
-        self.controller.iconbitmap(os.path.join(os.getcwd(),'Icons','UFAIcon.ico'))
+        # self.controller.iconbitmap(os.path.join(os.getcwd(),'Icons','UFAIcon.ico'))
         
         self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(os.getcwd(), 'Icons', 'UFAIcon_name.png')).resize((600, 400)))
         self.my_label = tk.Label(self, image = self.my_img1, bg = parent['bg'])
