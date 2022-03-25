@@ -234,7 +234,6 @@ class PageManual(tk.Frame):
         style.configure("Treeview.Heading", font = self.controller.pages_font)
         style.map('Treeview', background = [('selected', 'blue')])
         
-
         tree_frame = tk.Frame(self)
         tree_frame.grid(row = 0, column = 5, columnspan = 4, rowspan = 10)
         
@@ -259,12 +258,20 @@ class PageManual(tk.Frame):
             self.tree.column(
                 cl, width = int(self.controller.pages_font.measure(str(cl)))+20, 
                 minwidth = 50, anchor = tk.CENTER)
-                
         # Headings
         self.tree.heading("#0", text = "Image", anchor = tk.CENTER)
         for cl in self.class_list:
             self.tree.heading(cl, text = cl, anchor = tk.CENTER)
-            
+        self.tree.tag_configure('odd', foreground = 'red', background='#E8E8E8')
+        self.tree.tag_configure('even', foreground = 'red', background='#DFDFDF')
+        # Add data
+        for n, sample in enumerate(self.out_data):
+            if n%2 == 0:
+                self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, 
+                                 values = tuple(sample.astype(int)), tags = ('even',))
+            else:
+                self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, 
+                                 values = tuple(sample.astype(int)), tags = ('odd',))            
         # Add data
         for n, sample in enumerate(self.out_data):
             self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, 
