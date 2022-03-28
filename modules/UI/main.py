@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Mar  2 12:51:28 2022
-
-@author: Sevisal
-"""
 
 import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
 import os
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
-import numpy as np
-import pandas as pd
-from .Inputs import PageManual, PageCanvas
+from tkinter.filedialog import askopenfilename
+# import numpy as np
+# import pandas as pd
+from . import PageCanvas
+from . import PageManual
 
 class UFA(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -60,7 +56,9 @@ class StartPage(tk.Frame):
         self.controller.title('User feedback adaptation')
         # self.controller.iconbitmap(os.path.join(os.getcwd(),'Icons','UFAIcon.ico'))
         
-        self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(os.getcwd(), 'Icons', 'UFAIcon_name.png')).resize((600, 400)))
+        script_dir = os.path.dirname(__file__)
+        # self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(os.getcwd(), 'resources', 'Assets', 'UFAIcon_name.png')).resize((600, 400)))
+        self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(script_dir, 'resources', 'Assets', 'UFAIcon_name.png')).resize((600, 400)))
         self.my_label = tk.Label(self, image = self.my_img1, bg = parent['bg'])
         self.my_label.grid(column = 0, row = 0, rowspan = 10, columnspan = 4)
         
