@@ -38,17 +38,22 @@ class PageCanvas(tk.Frame):
         self.draw = []
         self.state = []
         self.type = []
+        self.clock = []
 
         for ii in np.arange(len(self.class_list)):
             self.frame.append(tk.Frame(self, bg = parent['bg']))
             self.frame[-1].grid(row=0, column=0, sticky="nsew", pady = 15)
             if self.class_list[ii][0].split('_')[1] == 'a':
                 self.type.append('Rotating')
+                self.clock.append(tk.StringVar())
+                self.clock[ii].set('clock')
             else:
                 self.type.append('Sliding')
+                self.clock.append(-1)
             self.notebook.add(
                 self.frame[-1], 
                 text = 'Object '+ str(ii) + ' - ' + self.type[-1])
+                
             
             # Create a canvas widget
             self.width, self.height = 600, 600
@@ -56,7 +61,6 @@ class PageCanvas(tk.Frame):
                 self.frame[-1], width=self.width, 
                 height=self.height, background="white"))
             self.canvas[-1].grid(row=0, column=0, columnspan=4, rowspan = 2)
-            # self.checkered(10)
             self.canvas[-1].bind('<Button-1>', self.draw_dot)
             self.canvas[-1].bind("<B1-Motion>", self.on_drag)
             # self.canvas[-1].bind('<Motion>', self.motion)
@@ -70,19 +74,27 @@ class PageCanvas(tk.Frame):
             self.button_draw = tk.Radiobutton(
                 self.frame[-1], text = 'Draw', fg = 'white', bg = parent['bg'],
                 height = 3, width = 20, var = self.draw[ii], 
-                selectcolor = 'black', value = 'draw').grid(column = 4,row = 3)
+                selectcolor = 'black', value = 'draw').grid(column = 4, row = 3)
             self.button_drag = tk.Radiobutton(
                 self.frame[-1], text = 'Move', fg = 'white', bg = parent['bg'],
                 height = 3, width = 20, var = self.draw[ii], 
-                selectcolor = 'black', value = 'drag').grid(column = 5,row = 3)
-            self.button_edit = tk.Radiobutton(
-                self.frame[-1], text = 'Edit', fg = 'white', bg = parent['bg'],
-                height = 3, width = 20, var = self.draw[ii], 
-                selectcolor = 'black', value = 'edit').grid(column = 6,row = 3)
+                selectcolor = 'black', value = 'drag').grid(column = 5, row = 3)
+            self.clock_arc = tk.Radiobutton(
+                self.frame[-1], text = 'Clockwise', fg = 'white', bg = parent['bg'],
+                height = 3, width = 20, var = self.clock[ii], 
+                selectcolor = 'black', value = 'clock').grid(column = 6, row = 3)            
+            self.countclock_arc = tk.Radiobutton(
+                self.frame[-1], text = 'Counterclockwise', fg = 'white', bg = parent['bg'],
+                height = 3, width = 20, var = self.clock[ii], 
+                selectcolor = 'black', value = 'countclock').grid(column = 7, row = 3)
+            # self.button_edit = tk.Radiobutton(
+            #     self.frame[-1], text = 'Edit', fg = 'white', bg = parent['bg'],
+            #     height = 3, width = 20, var = self.draw[ii], 
+            #     selectcolor = 'black', value = 'edit').grid(column = 6,row = 3)
             self.button_save = tk.Button(
                 self.frame[-1], text = 'Save', fg = 'white', bg = parent['bg'],
                 height = 3, width = 20, 
-                command = self.save_file).grid(column = 1,row = 3)
+                command = self.save_file).grid(column = 1, row = 3)
             self.button_upload = tk.Button(
                 self.frame[-1], text = 'Upload coordinates', fg = 'white', 
                 bg = parent['bg'], height = 3, width = 20, 
@@ -147,6 +159,12 @@ class PageCanvas(tk.Frame):
             for cl in self.class_list[ii]:
                 self.tree[-1].heading(cl, text = cl, anchor = tk.CENTER)
             
+            
+            self.tree[-1].tag_configure('odd', foreground = 'red', 
+                                        background='#E8E8E8')
+            self.tree[-1].tag_configure('even', foreground = 'red', 
+                                        background='#DFDFDF')
+        
             # Define double-click on row action
             self.tree[-1].bind("<Double-1>", self.OnDoubleClick)
             
@@ -157,8 +175,8 @@ class PageCanvas(tk.Frame):
         
         ii = self.notebook.index(self.notebook.select())
         if self.draw[ii].get() == 'drag':
-            self.selected = self.canvas[ii].find_overlapping(event.x-10, event.y-10, 
-                                                        event.x+10, event.y+10)
+            self.selected = self.canvas[ii].find_overlapping(
+                event.x-10, event.y-10, event.x+10, event.y+10)
             if self.selected:
                 self.canvas[ii].selected = self.selected[0]  # select the top-most item
                 self.canvas[ii].startxy = (event.x, event.y)
@@ -172,6 +190,7 @@ class PageCanvas(tk.Frame):
             if self.type[ii] == 'Rotating':
                 alpha = np.arctan((event.y-self.y_ini)/(event.x-self.x_ini)) 
                 alpha += ((event.x - self.x_ini) < 0) * math.pi
+                alpha += (alpha < 0) * 2*math.pi
                 x_o = self.r * np.cos(alpha) + self.x_ini
                 y_o = self.r * np.sin(alpha) + self.y_ini
                 if self.state[ii].get()  == 'state': # Write state coordinates
@@ -184,34 +203,35 @@ class PageCanvas(tk.Frame):
                     self.state[ii].set('action')
                     if self.tree[ii].selection(): # Update coordinates in corresponding row if exists.
                         n = int(self.tree[ii].selection()[0]) + 1
+                        if n%2 == 0:
+                            tag = ('even',)
+                        else:
+                            tag = ('odd',)
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = n, text = n+1, 
                             values = tuple(self.dict2mat(
-                                self.out_data[ii])[n,:].astype(int)))
+                                self.out_data[ii])[n,:].astype(int)), 
+                            tags = tag)
                         self.tree[ii].selection_set(str(n))
                     else:
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = 0, text = 1, 
                             values = tuple(self.dict2mat(
-                                self.out_data[ii])[0,:].astype(int)))
+                                self.out_data[ii])[0,:].astype(int)), 
+                                tags = ('even',))
                         self.tree[ii].selection_set(str(0))
                     
                 elif self.state[ii].get()  == 'action':
-                    if (self.out_data[ii]['State_a'][-1] 
-                        - (-np.rad2deg(alpha)+360)%360)%180 > 0:
-                        self.create_circle_arc(
-                            self.x_ini, self.y_ini, self.r, fill = "", 
-                            outline = "red", start = 
-                            self.out_data[ii]['State_a'][-1], end = 
-                            np.rad2deg(-alpha), width=2, style = tk.ARC, 
-                            tags=("action"+str(ii)+'-'+ str(len(
-                                self.out_data[ii]['State_a']))))
+                    if self.clock[ii].get()  == 'clock':
+                        start = self.out_data[ii]['State_a'][-1]
+                        end = np.rad2deg(-alpha)
                     else:
-                        self.create_circle_arc(
-                            self.x_ini, self.y_ini, self.r, fill = "", 
-                            outline = "red", start = np.rad2deg(-alpha), 
-                            end = self.out_data[ii]['State_a'][-1], width=2, 
-                            style = tk.ARC)                   
+                        start = self.out_data[ii]['State_a'][-1] - 360
+                        end = 360 - np.rad2deg(alpha)
+                    self.create_circle_arc(
+                        self.x_ini, self.y_ini, self.r, fill = "", 
+                        outline = "red", start = start, end = end, width=2, 
+                        style = tk.ARC)                   
                     self.out_data[ii]['Action_a'].append((
                         -np.rad2deg(alpha)+360)%360)
                     self.state[ii].set('state')
@@ -397,7 +417,6 @@ class PageCanvas(tk.Frame):
             read = False
             self.draw[ii].set('drag')
             for n, point in enumerate(data):
-                print(point)
                 if read: # Not elegant at all, just to omit the header.
                     i, sx, sy, ax, ay = point.split()
                     # Draw an oval in the given coordinates
@@ -420,8 +439,9 @@ class PageCanvas(tk.Frame):
                         iid = len(self.out_data[ii]['Action_x'])-1, 
                         text = len(self.out_data[ii]['Action_x']), 
                         values = tuple(self.dict2mat(
-                            self.out_data[ii])[len(
-                                self.out_data[ii]['Action_x'])-1,:].astype(int)))
+                            self.out_data[ii])
+                            [len(self.out_data[ii]
+                                 ['Action_x'])-1,:].astype(int)))
                     self.tree.selection_set(str(len(
                         self.out_data[ii]['Action_x'])-1))
                 else:
@@ -469,6 +489,8 @@ class PageCanvas(tk.Frame):
         
         if "start" in kwargs and "end" in kwargs:
             kwargs["extent"] = kwargs["end"] - kwargs["start"]
+            # if self.clock == 'countclock':
+            #     kwargs["extent"] += (kwargs["extent"] < 0) * 360
             del kwargs["end"]
         return self.canvas[self.notebook.index(
             self.notebook.select())].create_arc(x-r, y-r, x+r, y+r, **kwargs)
