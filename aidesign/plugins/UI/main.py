@@ -18,7 +18,10 @@ class UFA(tk.Tk):
         self.title_font = tkfont.Font(family='Helvetica', size=14, weight="bold")#, slant="italic")
         self.pages_font = tkfont.nametofont("TkDefaultFont")
 
+    def set_class_list(self,class_list):
+        self._class_list = class_list
 
+    def launch(self):
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
@@ -31,6 +34,8 @@ class UFA(tk.Tk):
         for F in (StartPage, PageManual, PageCanvas):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
+            if page_name == "PageManual":
+                frame.class_list(self._class_list)
             self.frames[page_name] = frame
 
             # put all of the pages in the same location;
@@ -39,12 +44,13 @@ class UFA(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("StartPage")
+        self.mainloop()
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
         frame.tkraise()
-
+    
 
 class StartPage(tk.Frame):
 

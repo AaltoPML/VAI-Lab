@@ -1,14 +1,14 @@
-import tkinter as tk                # python 3
-import os
-from PIL import Image, ImageTk
+from . import __modules__
 
-from tkinter import messagebox, ttk
+import os
+import tkinter as tk
+from PIL import Image, ImageTk
 
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
 
-class PageManual(tk.Frame):
+class PageManual(tk.Frame,__modules__.UI):
     
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])
@@ -18,8 +18,9 @@ class PageManual(tk.Frame):
         self.dirpath = os.path.dirname(__file__)
         self.assets_path = os.path.join(self.dirpath,'resources','Assets')
         
-        self.class_list = ['Atelectasis', 'Cardiomelagy', 'Effusion', 'Infiltration', 
-                      'Mass', 'Nodule', 'Pneumonia', 'Pneumothorax']
+        # self._class_list = ['Atelectasis', 'Cardiomelagy', 'Effusion', 'Infiltration', 
+        #               'Mass', 'Nodule', 'Pneumonia', 'Pneumothorax']
+        self._class_list = None
         
         pixels = 500
         path = os.path.join(self.dirpath, 'resources', 'example_radiography_images')
@@ -52,20 +53,20 @@ class PageManual(tk.Frame):
                                      height = 3, width = 20,
                             command = self.check_quit).grid(column = 4,row = 19)       
         
-        self.out_data = np.zeros((self.N, len(self.class_list)))
-        self.button_cl = {}
+        # self.out_data = np.zeros((self.N, len(self._class_list)))
+        # self.button_cl = {}
         
-        self.var = {}
-        for i,cl in enumerate(self.class_list):
+        # self.var = {}
+        # for i,cl in enumerate(self._class_list):
 
-            self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
-            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = parent['bg'], selectcolor = 'black', 
-                                             height = 3, width = 20, variable = self.var[0,i], 
-                                             command=(lambda i=i: self.onPress(0,i)))
-            self.button_cl[cl].grid(column = 4,row = i)
+        #     self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
+        #     self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = parent['bg'], selectcolor = 'black', 
+        #                                      height = 3, width = 20, variable = self.var[0,i], 
+        #                                      command=(lambda i=i: self.on_press(0,i)))
+        #     self.button_cl[cl].grid(column = 4,row = i)
         
         #Tree defintion. Output display
-        style = ttk.Style()
+        style = tk.ttk.Style()
         style.configure("Treeview", background = 'white', foreground = 'white', rowheight = 25, 
                         fieldbackground = 'white', font = self.controller.pages_font)
         style.configure("Treeview.Heading", font = self.controller.pages_font)
@@ -80,22 +81,59 @@ class PageManual(tk.Frame):
         tree_scrolly = tk.Scrollbar(tree_frame)
         tree_scrolly.pack(side = tk.RIGHT, fill = tk.Y)
         
-        self.tree = ttk.Treeview(tree_frame, yscrollcommand = tree_scrolly.set, xscrollcommand = tree_scrollx.set)
+        self.tree = tk.ttk.Treeview(tree_frame, yscrollcommand = tree_scrolly.set, xscrollcommand = tree_scrollx.set)
         self.tree.pack()
         
         tree_scrollx.config(command = self.tree.xview)
         tree_scrolly.config(command = self.tree.yview)
         
-        self.tree['columns'] = self.class_list
+        # self.tree['columns'] = self._class_list
         
         # Format columns
-        self.tree.column("#0", width = 50)
-        for n, cl in enumerate(self.class_list):
-            self.tree.column(cl, width = int(self.controller.pages_font.measure(str(cl)))+20, minwidth = 50, anchor = tk.CENTER)
+        # self.tree.column("#0", width = 50)
+        # for n, cl in enumerate(self._class_list):
+        #     self.tree.column(cl, width = int(self.controller.pages_font.measure(str(cl)))+20, minwidth = 50, anchor = tk.CENTER)
                 
         # Headings
+        # self.tree.heading("#0", text = "Image", anchor = tk.CENTER)
+        # for cl in self._class_list:
+        #     self.tree.heading(cl, text = cl, anchor = tk.CENTER)
+            
+        # # Add data
+        # for n, sample in enumerate(self.out_data):
+        #     self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, values = tuple(sample.astype(int)))
+        
+        # # Select the current row
+        # self.tree.selection_set(str(int(0)))
+        
+        # # Define double-click on row action
+        # self.tree.bind("<Double-1>", self.OnDoubleClick)
+
+        self.save_path = ''
+        self.saved = True
+
+    def class_list(self):
+        return self._class_list
+
+    def class_list(self,value):
+        self._class_list = value
+        self.out_data = np.zeros((self.N, len(self._class_list)))
+        self.button_cl = {}
+        self.tree['columns'] = self._class_list
+        self.var = {}
+        for i,cl in enumerate(self._class_list):
+
+            self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
+            self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], selectcolor = 'black', 
+                                             height = 3, width = 20, variable = self.var[0,i], 
+                                             command=(lambda i=i: self.on_press(0,i)))
+            self.button_cl[cl].grid(column = 4,row = i)
+            
+        self.tree.column("#0", width = 50)
+        for n, cl in enumerate(self._class_list):
+            self.tree.column(cl, width = int(self.controller.pages_font.measure(str(cl)))+20, minwidth = 50, anchor = tk.CENTER)
         self.tree.heading("#0", text = "Image", anchor = tk.CENTER)
-        for cl in self.class_list:
+        for cl in self._class_list:
             self.tree.heading(cl, text = cl, anchor = tk.CENTER)
             
         # Add data
@@ -107,9 +145,6 @@ class PageManual(tk.Frame):
         
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
-
-        self.save_path = ''
-        self.saved = True
 
 
     def expand2square(self, pil_img, background_color):
@@ -128,7 +163,7 @@ class PageManual(tk.Frame):
 
     def check_quit(self):
         if not self.saved:
-            response = messagebox.askokcancel("Are you sure you want to leave?", "Do you want to leave the program without saving?")
+            response = tk.messagebox.askokcancel("Are you sure you want to leave?", "Do you want to leave the program without saving?")
             if response:
                 self.controller.show_frame("StartPage")
         else:
@@ -150,7 +185,7 @@ class PageManual(tk.Frame):
         if self.save_path == '':
             self.save_path = asksaveasfile(defaultextension = '.txt', filetypes = [('Text file', '.txt'), ('CSV file', '.csv'), ('All Files', '*.*')])
         if self.save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
-            filedata = pd.DataFrame(self.out_data, columns = self.class_list).to_string()
+            filedata = pd.DataFrame(self.out_data, columns = self._class_list).to_string()
             self.save_path.seek(0) # Move to the first row to overwrite it
             self.save_path.write(filedata)
             self.save_path.flush() # Save without closing
@@ -178,7 +213,7 @@ class PageManual(tk.Frame):
         
         # Classes buttons
         # var = {}
-        for i,cl in enumerate(self.class_list):
+        for i,cl in enumerate(self._class_list):
 
             # print(out_data[image_number-1,i])
             self.var[image_number-1,i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
@@ -186,7 +221,7 @@ class PageManual(tk.Frame):
             # I can not make this be selected when going backwards or forward if it was previously selected.
             self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = self.parent['bg'], 
                                                 selectcolor = 'black', height = 3, width = 20, 
-                                                variable = self.var[image_number-1,i], command=(lambda i=i: self.onPress(image_number-1,i)))
+                                                variable = self.var[image_number-1,i], command=(lambda i=i: self.on_press(image_number-1,i)))
 
             self.button_cl[cl].grid(column = 4,row = i)
 
@@ -195,7 +230,7 @@ class PageManual(tk.Frame):
         status.grid(row=20, column=0, columnspan=4, pady = 10, sticky = tk.W+tk.E)
             
 
-    def onPress(self, n,i):
+    def on_press(self, n,i):
         "Updates the stored values on clicking the checkbutton."
         
 
