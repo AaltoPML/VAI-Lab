@@ -112,7 +112,7 @@ class PageCanvas(tk.Frame):
             style = ttk.Style()
             style.configure(
                 "Treeview", background = 'white', foreground = 'white', 
-                rowheight = 25, fieldbackground = 'orange', 
+                rowheight = 25, fieldbackground = 'white', 
                 font = self.controller.pages_font)
             style.configure("Treeview.Heading", 
                             font = self.controller.pages_font)
@@ -160,9 +160,9 @@ class PageCanvas(tk.Frame):
                 self.tree[-1].heading(cl, text = cl, anchor = tk.CENTER)
             
             
-            self.tree[-1].tag_configure('odd', foreground = 'red', 
+            self.tree[-1].tag_configure('odd', foreground = 'white', 
                                         background='#E8E8E8')
-            self.tree[-1].tag_configure('even', foreground = 'red', 
+            self.tree[-1].tag_configure('even', foreground = 'white', 
                                         background='#DFDFDF')
         
             # Define double-click on row action
@@ -178,7 +178,10 @@ class PageCanvas(tk.Frame):
             self.selected = self.canvas[ii].find_overlapping(
                 event.x-10, event.y-10, event.x+10, event.y+10)
             if self.selected:
-                self.canvas[ii].selected = self.selected[0]  # select the top-most item
+                if len(self.selected) > 2:
+                    self.canvas[ii].selected = self.selected[-2]
+                else:
+                    self.canvas[ii].selected = self.selected[-1]
                 self.canvas[ii].startxy = (event.x, event.y)
             else:
                 self.canvas[ii].selected = None
@@ -188,11 +191,9 @@ class PageCanvas(tk.Frame):
             self.saved = False
             # Angle of the selected point with respect to the circle center
             if self.type[ii] == 'Rotating':
-                alpha = np.arctan((event.y-self.y_ini)/(event.x-self.x_ini)) 
-                alpha += ((event.x - self.x_ini) < 0) * math.pi
-                alpha += (alpha < 0) * 2*math.pi
-                x_o = self.r * np.cos(alpha) + self.x_ini
-                y_o = self.r * np.sin(alpha) + self.y_ini
+                alpha, x_o, y_o = self.angle_calc(event.x, event.y, 
+                                                  circxy=True)
+
                 if self.state[ii].get()  == 'state': # Write state coordinates
                     self.canvas[ii].create_oval(
                         x_o-3, y_o-3, x_o+3, y_o+3, fill="black", width=0, 
@@ -231,7 +232,8 @@ class PageCanvas(tk.Frame):
                     self.create_circle_arc(
                         self.x_ini, self.y_ini, self.r, fill = "", 
                         outline = "red", start = start, end = end, width=2, 
-                        style = tk.ARC)                   
+                        style = tk.ARC, tags = ("action"+str(ii)+'-' + str(len(
+                            self.out_data[ii]['Action_a']))))              
                     self.out_data[ii]['Action_a'].append((
                         -np.rad2deg(alpha)+360)%360)
                     self.state[ii].set('state')
@@ -278,8 +280,8 @@ class PageCanvas(tk.Frame):
                     self.tree[ii].item(
                         self.tree[ii].get_children()[n], text = n+1, 
                         values = tuple(self.dict2mat(
-                            self.out_data[ii])[n,:].astype(int)))                
-
+                            self.out_data[ii])[n,:].astype(int)))
+        
     def on_drag(self, event):
         
         ii = self.notebook.index(self.notebook.select())
@@ -288,28 +290,54 @@ class PageCanvas(tk.Frame):
             n = int(self.canvas[ii].gettags("current")[0].split('-')[1])
             
             if self.type[ii] == 'Rotating':
-                alpha = np.arctan((event.y-self.y_ini)/(event.x-self.x_ini))
-                +((event.x-self.x_ini) < 0) * math.pi
-                dx = self.r * np.cos(alpha) + self.x_ini
-                dy = self.r * np.sin(alpha) + self.y_ini
+                alpha, dx, dy = self.angle_calc(event.x, event.y, circxy=True)
+                _, dx_pr, dy_pr = self.angle_calc(
+                    self.canvas[ii].startxy[0], self.canvas[ii].startxy[1], 
+                    circxy=True)
+                xa = self.r * np.cos(
+                    np.deg2rad(self.out_data[ii]['Action_a'][n])) + self.x_ini
+                ya = self.r * np.sin(
+                    np.deg2rad(self.out_data[ii]['Action_a'][n])) + self.y_ini
                 if self.canvas[ii].gettags(
                         "current")[0].split('-')[0] == 'state'+str(ii): # If state, updates both the state placement and the arrow
                     self.canvas[ii].move(
-                        self.canvas[ii].selected, dx-self.canvas[ii].startxy[0], 
-                        dy - self.canvas[ii].startxy[1])
-                    self.canvas[ii].coords(
-                        "action"+str(ii)+'-'+str(n), 
-                        (event.x, event.y, self.out_data[ii]['Action_x'][n],
-                         self.out_data[ii]['Action_y'][n]))
-                    self.out_data[ii]['State_a'][n] = alpha
+                        self.canvas[ii].selected, dx-dx_pr, 
+                        dy-dy_pr)
+                    self.out_data[ii]['State_a'][n] = (360-np.rad2deg(alpha))%360
+                    
+                    self.canvas[ii].delete("action"+str(ii)+'-'+str(n))
+
+                    if self.clock[ii].get()  == 'clock':
+                        start = self.out_data[ii]['Action_a'][-1]
+                        end = np.rad2deg(-alpha)
+                    else:
+                        start = self.out_data[ii]['Action_a'][-1] - 360
+                        end = 360 - np.rad2deg(alpha)
+                    self.create_circle_arc(
+                        self.x_ini, self.y_ini, self.r, fill = "", 
+                        outline = "red", start = start, end = end, width=2, 
+                        style = tk.ARC, tags = ("action"+str(ii)+'-' + str(n)))
+
+                    
                 elif self.canvas[ii].gettags(
                         "current")[0].split('-')[0] == 'action'+str(ii): # If action, updates the arrow end of the line position
-                    self.canvas[ii].coords(
-                        self.canvas[ii].gettags("current")[0], 
-                        (self.out_data[ii]['State_x'][n], 
-                        self.out_data[ii]['State_y'][n], event.x, event.y))
-                    self.out_data[ii]['Action_x'][n] = event.x
-                    self.out_data[ii]['Action_y'][n] = event.y               
+                    
+                    print("action"+str(ii)+'-'+str(n))
+                    self.out_data[ii]['Action_a'][n] = (360-np.rad2deg(alpha))%360
+                    self.canvas[ii].delete("action"+str(ii)+'-'+str(n))
+
+                    if self.clock[ii].get()  == 'clock':
+                        start = self.out_data[ii]['State_a'][-1]
+                        end = np.rad2deg(-alpha)
+                    else:
+                        start = self.out_data[ii]['State_a'][-1] - 360
+                        end = 360 - np.rad2deg(alpha)
+                    self.create_circle_arc(
+                        self.x_ini, self.y_ini, self.r, fill = "", 
+                        outline = "red", start = start, end = end, width=2, 
+                        style = tk.ARC, tags = ("action"+str(ii)+'-' + str(n)))
+                    
+                    
             else:
                 # calculate distance moved from last position
                 dx = event.x - self.canvas[ii].startxy[0]
@@ -428,7 +456,7 @@ class PageCanvas(tk.Frame):
                     self.canvas[ii].create_line(
                         float(sx), float(sy), float(ax), float(ay), 
                         fill="red", arrow=tk.LAST, 
-                        tags=("action-" + str(len(
+                        tags=("action"+str(ii)+"-"+ str(len(
                             self.out_data[ii]['Action_x']))))
                     self.out_data[ii]['State_x'].append(sx)
                     self.out_data[ii]['State_y'].append(sy)
@@ -480,6 +508,17 @@ class PageCanvas(tk.Frame):
             
         return result
     
+    def angle_calc(self, x, y, circxy = False):
+        alpha = np.arctan((y-self.y_ini)/(x-self.x_ini))
+        alpha += ((x-self.x_ini) < 0) * math.pi
+        alpha += (alpha < 0) * 2*math.pi
+        if circxy:
+            cx = self.r * np.cos(alpha) + self.x_ini
+            cy = self.r * np.sin(alpha) + self.y_ini
+            return alpha, cx, cy
+        else:
+            return alpha   
+        
     def create_circle(self, x, y, r, **kwargs):
         
         return self.canvas[self.notebook.index(
