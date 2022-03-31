@@ -13,109 +13,144 @@ class PageManual(tk.Frame,__modules__.UI):
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
+        self.controller.title('Manual Input')
         self.parent = parent
         
         self.dirpath = os.path.dirname(__file__)
         self.assets_path = os.path.join(self.dirpath,'resources','Assets')
         
-        # self._class_list = ['Atelectasis', 'Cardiomelagy', 'Effusion', 'Infiltration', 
-        #               'Mass', 'Nodule', 'Pneumonia', 'Pneumothorax']
         self._class_list = None
         
         pixels = 500
         path = os.path.join(self.dirpath, 'resources', 'example_radiography_images')
         self.N = len(os.listdir(path))
+
         # Create a list with all the available (I have tried reading the file when placing it but wasn't able to)
         self.image_list = []
         for f in os.listdir(path):
-            self.image_list.append(ImageTk.PhotoImage(self.expand2square(Image.open(os.path.join(path, f)), (0, 0, 0)).resize((pixels, pixels)))) # (0, 0, 0) is the padding colour
+            self.image_list.append(
+                        ImageTk.PhotoImage(self.expand2square(
+                        Image.open(
+                        os.path.join(path, f)),(0, 0, 0) ).resize((pixels, pixels)))) # (0, 0, 0) is the padding colour
         
         # Status bar in the lower part of the window
-        status = tk.Label(self, text='Image 1 of '+str(self.N), bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', bg = parent['bg'])
-        status.grid(row=20, column=0, columnspan=4, pady = 10, sticky = tk.W+tk.E)
+        status = tk.Label(self,
+                        text='Image 1 of '+str(self.N),
+                        bd = 1,
+                        relief = tk.SUNKEN,
+                        anchor = tk.E,
+                        fg = 'white',
+                        bg = parent['bg']
+                        )
+        status.grid(row=20,
+                        column=0,
+                        columnspan=4,
+                        pady = 10,
+                        sticky = tk.W+tk.E
+                        )
         
         # Inital window
-        self.my_label = tk.Label(self, image = self.image_list[0], bg = parent['bg'])
-        self.my_label.grid(column = 0, row = 0, rowspan = 10, columnspan = 3)
+        self.my_label = tk.Label(self, 
+                        image = self.image_list[0],
+                        bg = parent['bg']
+                        )
+                                    
+        self.my_label.grid(column = 0,
+                        row = 0,
+                        rowspan = 10,
+                        columnspan = 3
+                        )
     
         # Buttons initialisation
         self.back_img = ImageTk.PhotoImage(Image.open(os.path.join(self.assets_path,'back_arrow.png')).resize((150, 50)))
         self.forw_img = ImageTk.PhotoImage(Image.open(os.path.join(self.assets_path,'forw_arrow.png')).resize((150, 50)))
-        self.button_back = tk.Button(self, image = self.back_img, bg = parent['bg'], 
-                                     state = tk.DISABLED).grid(column = 0,row = 19)
-        self.button_save = tk.Button(self, text = 'Save', fg = 'white', bg = parent['bg'], 
-                                     height = 3, width = 20, command = self.save_file).grid(column = 1,row = 19)
-        self.button_forw = tk.Button(self, image = self.forw_img, bg = parent['bg'], 
-                                     command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
-        # self.button_quit = tk.Button(self, text = 'Exit', fg = 'white', bg = parent['bg'], 
-                                     # height = 3, width = 20, command = self.check_quit).grid(column = 4,row = 20)
-        button_main = tk.Button(self, text="Go to the main page", fg = 'white', bg = parent['bg'], 
-                                     height = 3, width = 20,
-                            command = self.check_quit).grid(column = 4,row = 19)       
-        
-        # self.out_data = np.zeros((self.N, len(self._class_list)))
-        # self.button_cl = {}
-        
-        # self.var = {}
-        # for i,cl in enumerate(self._class_list):
+        self.button_back = tk.Button(self,
+                                    image = self.back_img,
+                                    bg = parent['bg'], 
+                                    state = tk.DISABLED
+                                    ).grid(column = 0,row = 19)
 
-        #     self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
-        #     self.button_cl[cl] = tk.Checkbutton(self, text = cl, fg = 'white', bg = parent['bg'], selectcolor = 'black', 
-        #                                      height = 3, width = 20, variable = self.var[0,i], 
-        #                                      command=(lambda i=i: self.on_press(0,i)))
-        #     self.button_cl[cl].grid(column = 4,row = i)
+        self.button_save = tk.Button(self,
+                                    text = 'Save',
+                                    fg = 'white',
+                                    bg = parent['bg'],
+                                    height = 3,
+                                    width = 20,
+                                    command = self.save_file
+                                    ).grid(column = 1,row = 19)
+
+        self.button_forw = tk.Button(self,
+                                    image = self.forw_img,
+                                    bg = parent['bg'], 
+                                    command = lambda: self.forward_back(2)
+                                    ).grid(column = 2,row = 19)
+
+        if self.controller.startpage_exist:
+            self.button_main = tk.Button(self,
+                                    text="Go to the main page",
+                                    fg = 'white',
+                                    bg = parent['bg'], 
+                                    height = 3,
+                                    width = 20,
+                                    command = self.check_quit
+                                    ).grid(column = 4,row = 19)       
+        
         
         #Tree defintion. Output display
         style = tk.ttk.Style()
-        style.configure("Treeview", background = 'white', foreground = 'white', rowheight = 25, 
-                        fieldbackground = 'white', font = self.controller.pages_font)
-        style.configure("Treeview.Heading", font = self.controller.pages_font)
-        style.map('Treeview', background = [('selected', 'grey')])
+        style.configure("Treeview",
+                            background = 'white',
+                            foreground = 'white',
+                            rowheight = 25, 
+                            fieldbackground = 'white',
+                            font = self.controller.pages_font
+                            )
+        style.configure("Treeview.Heading",
+                            font = self.controller.pages_font
+                            )
+        style.map('Treeview',
+                            background = [('selected', 'grey')]
+                            )
         
 
         tree_frame = tk.Frame(self)
-        tree_frame.grid(row = 0, column = 5, columnspan = 4, rowspan = 10)
+        tree_frame.grid(row = 0,
+                        column = 5,
+                        columnspan = 4,
+                        rowspan = 10
+                        )
         
         tree_scrollx = tk.Scrollbar(tree_frame, orient = 'horizontal')
         tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
         tree_scrolly = tk.Scrollbar(tree_frame)
         tree_scrolly.pack(side = tk.RIGHT, fill = tk.Y)
         
-        self.tree = tk.ttk.Treeview(tree_frame, yscrollcommand = tree_scrolly.set, xscrollcommand = tree_scrollx.set)
+        self.tree = tk.ttk.Treeview(tree_frame,
+                                        yscrollcommand = tree_scrolly.set,
+                                        xscrollcommand = tree_scrollx.set
+                                        )
         self.tree.pack()
         
         tree_scrollx.config(command = self.tree.xview)
         tree_scrolly.config(command = self.tree.yview)
         
-        # self.tree['columns'] = self._class_list
-        
-        # Format columns
-        # self.tree.column("#0", width = 50)
-        # for n, cl in enumerate(self._class_list):
-        #     self.tree.column(cl, width = int(self.controller.pages_font.measure(str(cl)))+20, minwidth = 50, anchor = tk.CENTER)
-                
-        # Headings
-        # self.tree.heading("#0", text = "Image", anchor = tk.CENTER)
-        # for cl in self._class_list:
-        #     self.tree.heading(cl, text = cl, anchor = tk.CENTER)
-            
-        # # Add data
-        # for n, sample in enumerate(self.out_data):
-        #     self.tree.insert(parent = '', index = 'end', iid = n, text = n+1, values = tuple(sample.astype(int)))
-        
-        # # Select the current row
-        # self.tree.selection_set(str(int(0)))
-        
-        # # Define double-click on row action
-        # self.tree.bind("<Double-1>", self.OnDoubleClick)
-
         self.save_path = ''
         self.saved = True
 
     def class_list(self):
+        """Getter for required _class_list variable
+        
+        :return: list of class labels
+        :rtype: list of strings
+        """
         return self._class_list
 
     def class_list(self,value):
+        """Setter for required _class_list variable
+        
+        :param value: class labels for binary classification
+        :type value: list of strings
+        """
         self._class_list = value
         self.out_data = np.zeros((self.N, len(self._class_list)))
         self.button_cl = {}
@@ -202,14 +237,34 @@ class PageManual(tk.Frame,__modules__.UI):
         self.my_label = tk.Label(self, image=self.image_list[image_number-1])
         
         # Update button commands
-        self.button_forw = tk.Button(self, image = self.forw_img, bg = self.parent['bg'], command = lambda: self.forward_back(image_number+1)).grid(column = 2,row = 19)
-        self.button_back = tk.Button(self, image = self.back_img, bg = self.parent['bg'], command = lambda: self.forward_back(image_number-1)).grid(column = 0,row = 19)
+        self.button_forw = tk.Button(self, 
+                                    image = self.forw_img,
+                                    bg = self.parent['bg'],
+                                    command = lambda: self.forward_back(image_number+1)
+                                    ).grid(column = 2,row = 19)
+        self.button_back = tk.Button(self, 
+                                    image = self.back_img,
+                                    bg = self.parent['bg'],
+                                    command = lambda: self.forward_back(image_number-1)
+                                    ).grid(column = 0,row = 19)
         if image_number == self.N:
-            self.button_forw = tk.Button(self, image = self.forw_img, bg = self.parent['bg'], state = tk.DISABLED).grid(column = 2,row = 19)
+            self.button_forw = tk.Button(self,
+                                    image = self.forw_img,
+                                    bg = self.parent['bg'],
+                                    state = tk.DISABLED
+                                    ).grid(column = 2,row = 19)
         if image_number == 1:
-            self.button_back = tk.Button(self, image = self.back_img, bg = self.parent['bg'], state = tk.DISABLED).grid(column = 0,row = 19)
+            self.button_back = tk.Button(self, 
+                                    image = self.back_img,
+                                    bg = self.parent['bg'],
+                                    state = tk.DISABLED
+                                    ).grid(column = 0,row = 19)
             
-        self.my_label.grid(column=0, row=0, rowspan = 10, columnspan=3)
+        self.my_label.grid(column=0,
+                            row=0,
+                            rowspan = 10,
+                            columnspan=3
+                            )
         
         # Classes buttons
         # var = {}
@@ -232,8 +287,6 @@ class PageManual(tk.Frame,__modules__.UI):
 
     def on_press(self, n,i):
         "Updates the stored values on clicking the checkbutton."
-        
-
         self.out_data[n,i] = not self.out_data[n,i]
         self.tree.item(self.tree.get_children()[n], text = n+1, values = tuple(self.out_data[n,:].astype(int)))
         self.saved = False

@@ -12,9 +12,7 @@ class PageCanvas(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
-        
-        self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
-
+        self.controller.title('Canvas Input')
         
         # Create a canvas widget
         self.width, self.height = 600, 600
@@ -36,57 +34,138 @@ class PageCanvas(tk.Frame):
         self.draw = tk.StringVar()
         self.draw.set('draw')
         self.state = tk.StringVar()
-        self.state.set('state')    
+        self.state.set('state')
+
         # Buttons under the canvas
-        self.button_draw = tk.Radiobutton(self, text = 'Draw', fg = 'white', bg = parent['bg'], height = 3, 
-                                          width = 20, var = self.draw,
-                                          selectcolor = 'black', value = 'draw').grid(column = 4,row = 3)
-        self.button_drag = tk.Radiobutton(self, text = 'Move', fg = 'white', bg = parent['bg'], height = 3, 
-                                          width = 20, var = self.draw, 
-                                          selectcolor = 'black', value = 'drag').grid(column = 5,row = 3)
-        self.button_edit = tk.Radiobutton(self, text = 'Edit', fg = 'white', bg = parent['bg'], height = 3, 
-                                          width = 20, var = self.draw, 
-                                          selectcolor = 'black', value = 'edit').grid(column = 6,row = 3)
-        self.button_save = tk.Button(self, text = 'Save', fg = 'white', bg = parent['bg'], height = 3, 
-                                     width = 20, command = self.save_file).grid(column = 1,row = 3)
-        self.button_upload = tk.Button(self, text = 'Upload coordinates', fg = 'white', bg = parent['bg'], height = 3,
-                                       width = 20, command = self.upload_sa).grid(column = 0, row = 3)
-        self.button_reset = tk.Button(self, text = 'Reset', fg = 'white', bg = parent['bg'], height = 3, 
-                                      width = 20, command = self.reset).grid(column = 2, row = 3)
-        button_main = tk.Button(self, text="Go to the main page", fg = 'white', bg = parent['bg'], 
-                                     height = 3, width = 20,
-                            command = self.check_quit).grid(column = 3, row = 3)
+        self.button_draw = tk.Radiobutton(self,
+                                            text = 'Draw', 
+                                            fg = 'white',
+                                            bg = parent['bg'], 
+                                            height = 3,
+                                            width = 20, 
+                                            var = self.draw,
+                                            selectcolor = 'black',
+                                            value = 'draw'
+                                            ).grid(column = 4,row = 3)
+        self.button_drag = tk.Radiobutton(self,
+                                            text = 'Move',
+                                            fg = 'white',
+                                            bg = parent['bg'],
+                                            height = 3, 
+                                            width = 20,
+                                            var = self.draw,
+                                            selectcolor = 'black',
+                                            value = 'drag'
+                                            ).grid(column = 5,row = 3)
+        self.button_edit = tk.Radiobutton(self,
+                                            text = 'Edit',
+                                            fg = 'white',
+                                            bg = parent['bg'],
+                                            height = 3, 
+                                            width = 20,
+                                            var = self.draw, 
+                                            selectcolor = 'black',
+                                            value = 'edit'
+                                            ).grid(column = 6,row = 3)
+        self.button_save = tk.Button(self,
+                                            text = 'Save',
+                                            fg = 'white',
+                                            bg = parent['bg'],
+                                            height = 3, 
+                                            width = 20,
+                                            command = self.save_file
+                                            ).grid(column = 1,row = 3)
+        self.button_upload = tk.Button(self,
+                                            text = 'Upload coordinates',
+                                            fg = 'white',
+                                            bg = parent['bg'],
+                                            height = 3,
+                                            width = 20,
+                                            command = self.upload_sa
+                                            ).grid(column = 0, row = 3)
+        self.button_reset = tk.Button(self, 
+                                            text = 'Reset',
+                                            fg = 'white',
+                                            bg = parent['bg'],
+                                            height = 3, 
+                                            width = 20,
+                                            command = self.reset
+                                            ).grid(column = 2, row = 3)
+        if self.controller.startpage_exist:
+            self.button_main = tk.Button(self, 
+                                                text="Go to the main page",
+                                                fg = 'white',
+                                                bg = parent['bg'], 
+                                                height = 3, 
+                                                width = 20,
+                                                command = self.check_quit
+                                                ).grid(column = 3, row = 3)
 
         #Tree defintion. Output display
         style = ttk.Style()
-        style.configure("Treeview", background = 'white', foreground = 'white', rowheight = 25, 
-                        fieldbackground = 'white', font = self.controller.pages_font)
-        style.configure("Treeview.Heading", font = self.controller.pages_font)
-        style.map('Treeview', background = [('selected', 'grey')])
+        style.configure("Treeview",
+                            background = 'white', 
+                            foreground = 'white',
+                            rowheight = 25, 
+                            fieldbackground = 'white',
+                            font = self.controller.pages_font)
+        style.configure("Treeview.Heading",
+                            font = self.controller.pages_font)
+        style.map('Treeview', 
+                            background = [('selected', 'grey')])
         
 
         tree_frame = tk.Frame(self)
-        tree_frame.grid(row = 0, column = 4, columnspan = 3, rowspan = 2)
+        tree_frame.grid(row = 0,
+                        column = 4,
+                        columnspan = 3,
+                        rowspan = 2)
         
         tree_scrollx = tk.Scrollbar(tree_frame, orient = 'horizontal')
         tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
         tree_scrolly = tk.Scrollbar(tree_frame)
         tree_scrolly.pack(side = tk.RIGHT, fill = tk.Y)
         
-        self.tree = ttk.Treeview(tree_frame, yscrollcommand = tree_scrolly.set, xscrollcommand = tree_scrollx.set)
+        self.tree = ttk.Treeview(tree_frame,
+                                    yscrollcommand = tree_scrolly.set,
+                                    xscrollcommand = tree_scrollx.set
+                                    )
         self.tree.pack()
         
         tree_scrollx.config(command = self.tree.xview)
         tree_scrolly.config(command = self.tree.yview)
         
-        self.class_list = ['State_x', 'State_y', 'Action_x', 'Action_y']
+        self.save_path = ''
+        self.saved = True
+
+    def class_list(self):
+        """Getter for required _class_list variable
+        
+        :return: list of class labels
+        :rtype: list of strings
+        """
+        return self._class_list
+
+    def class_list(self,value):
+        """Setter for required _class_list variable
+        
+        :param value: labels for state-action pair headers
+        :type value: list of strings
+        """
+        self.class_list = value
+        # self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
+        self.out_data = dict.fromkeys(self.class_list,[]) #coordinates
         self.tree['columns'] = self.class_list
         
         
         # Format columns
         self.tree.column("#0", width = 50)
         for n, cl in enumerate(self.class_list):
-            self.tree.column(cl, width = int(self.controller.pages_font.measure(str(cl)))+20, minwidth = 50, anchor = tk.CENTER)
+            self.tree.column(cl,
+                            width = int(self.controller.pages_font.measure(str(cl)))+20,
+                            minwidth = 50,
+                            anchor = tk.CENTER
+                            )
                 
         # Headings
         self.tree.heading("#0", text = "Sample", anchor = tk.CENTER)
@@ -95,15 +174,15 @@ class PageCanvas(tk.Frame):
         
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
-    
-        self.save_path = ''
-        self.saved = True
-
 
     def draw_dot(self, event):    
         
         if self.draw.get() == 'drag':
-            selected = self.canvas.find_overlapping(event.x-10, event.y-10, event.x+10, event.y+10)
+            selected = self.canvas.find_overlapping(event.x-10,
+                                                    event.y-10,
+                                                    event.x+10,
+                                                    event.y+10
+                                                    )
             if selected:
                 self.canvas.selected = selected[0]  # select the top-most item
                 self.canvas.startxy = (event.x, event.y)
@@ -174,12 +253,13 @@ class PageCanvas(tk.Frame):
             self.canvas.create_line(0, y, self.width, y, fill="#476042")   
             
     def check_quit(self):
-        if not self.saved:
+        if self.saved:
+            self.controller.show_frame("StartPage")
+        else:
             response = messagebox.askokcancel("Are you sure you want to leave?", "Do you want to leave the program without saving?")
             if response:
                 self.controller.show_frame("StartPage")
-        else:
-            self.controller.show_frame("StartPage")
+            
             
     def save_file_as(self):
         self.save_path = asksaveasfile(mode='w')
@@ -196,7 +276,7 @@ class PageCanvas(tk.Frame):
             self.save_path.write(filedata)
             self.save_path.flush() # Save without closing
             # typically the above line would do. however this is used to ensure that the file is written
-            os.fsync(save_path.fileno())
+            os.fsync(self.save_path.fileno())
             self.saved = True
             
     def OnDoubleClick(self, event):
@@ -238,7 +318,7 @@ class PageCanvas(tk.Frame):
         if msg:
             self.canvas.delete(tk.ALL)
             # self.checkered(10)
-            self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
+            self.out_data = dict.fromkeys(self.class_list,[]) #coordinates
             for record in self.tree.get_children():
                 self.tree.delete(record)
 
