@@ -95,11 +95,11 @@ class PageManual(tk.Frame):
         #Tree defintion. Output display
         style = ttk.Style()
         style.configure(
-            "Treeview", background = 'white', foreground = 'black', 
+            "Treeview", background = 'white', foreground = 'white', 
             rowheight = 25, fieldbackground = 'white', 
             font = self.controller.pages_font)
         style.configure("Treeview.Heading", font = self.controller.pages_font)
-        style.map('Treeview', background = [('selected', 'blue')])
+        style.map('Treeview', background = [('selected', 'grey')])
         
         tree_frame = tk.Frame(self)
         tree_frame.grid(row = 0, column = 5, columnspan = 4, rowspan = 10)
@@ -129,8 +129,10 @@ class PageManual(tk.Frame):
         self.tree.heading("#0", text = "Image", anchor = tk.CENTER)
         for cl in self.class_list:
             self.tree.heading(cl, text = cl, anchor = tk.CENTER)
-        self.tree.tag_configure('odd', foreground = 'red', background='#E8E8E8')
-        self.tree.tag_configure('even', foreground = 'red', background='#DFDFDF')
+        self.tree.tag_configure('odd', foreground = 'white', 
+                                background='#E8E8E8')
+        self.tree.tag_configure('even', foreground = 'white', 
+                                background='#DFDFDF')
         # Add data
         for n, sample in enumerate(self.out_data):
             if n%2 == 0:
