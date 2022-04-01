@@ -122,9 +122,9 @@ class PageManual(tk.Frame):
         self.tree.heading("#0", text = "Image", anchor = tk.CENTER)
         for cl in self.class_list:
             self.tree.heading(cl, text = cl, anchor = tk.CENTER)
-        self.tree.tag_configure('odd', foreground = 'white', 
+        self.tree.tag_configure('odd', foreground = 'black', 
                                 background='#E8E8E8')
-        self.tree.tag_configure('even', foreground = 'white', 
+        self.tree.tag_configure('even', foreground = 'black', 
                                 background='#DFDFDF')
         # Add data
         for n, sample in enumerate(self.out_data):

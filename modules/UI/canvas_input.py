@@ -160,9 +160,9 @@ class PageCanvas(tk.Frame):
                 self.tree[-1].heading(cl, text = cl, anchor = tk.CENTER)
             
             
-            self.tree[-1].tag_configure('odd', foreground = 'white', 
+            self.tree[-1].tag_configure('odd', foreground = 'black', 
                                         background='#E8E8E8')
-            self.tree[-1].tag_configure('even', foreground = 'white', 
+            self.tree[-1].tag_configure('even', foreground = 'black', 
                                         background='#DFDFDF')
         
             # Define double-click on row action
