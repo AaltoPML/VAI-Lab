@@ -254,16 +254,22 @@ class PageCanvas(tk.Frame):
                     self.state[ii].set('action')
                     if self.tree[ii].selection(): # Update coordinates in corresponding row if exists.
                         n = int(self.tree[ii].selection()[0]) + 1
+                        if n%2 == 0:
+                            tag = ('even',)
+                        else:
+                            tag = ('odd',)
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = n, text = n+1, 
                             values = tuple(self.dict2mat(
-                                self.out_data[ii])[n,:].astype(int)))
+                                self.out_data[ii])[n,:].astype(int)), 
+                            tags = tag)
                         self.tree[ii].selection_set(str(n))
                     else:
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = 0, text = 1, 
                             values = tuple(self.dict2mat(
-                                self.out_data[ii])[0,:].astype(int)))
+                                self.out_data[ii])[0,:].astype(int)), 
+                                tags = ('even',))
                         self.tree[ii].selection_set(str(0))
                     
                 elif self.state[ii].get()  == 'action':
@@ -304,40 +310,34 @@ class PageCanvas(tk.Frame):
                         self.canvas[ii].selected, dx-dx_pr, 
                         dy-dy_pr)
                     self.out_data[ii]['State_a'][n] = (360-np.rad2deg(alpha))%360
-                    
-                    self.canvas[ii].delete("action"+str(ii)+'-'+str(n))
 
                     if self.clock[ii].get()  == 'clock':
-                        start = self.out_data[ii]['Action_a'][-1]
+                        start = self.out_data[ii]['Action_a'][n]
                         end = np.rad2deg(-alpha)
                     else:
-                        start = self.out_data[ii]['Action_a'][-1] - 360
+                        start = self.out_data[ii]['Action_a'][n] - 360
                         end = 360 - np.rad2deg(alpha)
-                    self.create_circle_arc(
-                        self.x_ini, self.y_ini, self.r, fill = "", 
-                        outline = "red", start = start, end = end, width=2, 
-                        style = tk.ARC, tags = ("action"+str(ii)+'-' + str(n)))
 
+                    self.canvas[ii].itemconfigure(
+                        "action"+str(ii)+'-'+str(n), start = start, 
+                        extent = end - start)
                     
                 elif self.canvas[ii].gettags(
                         "current")[0].split('-')[0] == 'action'+str(ii): # If action, updates the arrow end of the line position
                     
-                    print("action"+str(ii)+'-'+str(n))
                     self.out_data[ii]['Action_a'][n] = (360-np.rad2deg(alpha))%360
-                    self.canvas[ii].delete("action"+str(ii)+'-'+str(n))
 
                     if self.clock[ii].get()  == 'clock':
-                        start = self.out_data[ii]['State_a'][-1]
+                        start = self.out_data[ii]['State_a'][n]
                         end = np.rad2deg(-alpha)
                     else:
-                        start = self.out_data[ii]['State_a'][-1] - 360
+                        start = self.out_data[ii]['State_a'][n] - 360
                         end = 360 - np.rad2deg(alpha)
-                    self.create_circle_arc(
-                        self.x_ini, self.y_ini, self.r, fill = "", 
-                        outline = "red", start = start, end = end, width=2, 
-                        style = tk.ARC, tags = ("action"+str(ii)+'-' + str(n)))
                     
-                    
+                    self.canvas[ii].itemconfigure(
+                        "action"+str(ii)+'-'+str(n), start = start, 
+                        extent = end - start)
+
             else:
                 # calculate distance moved from last position
                 dx = event.x - self.canvas[ii].startxy[0]
@@ -509,9 +509,14 @@ class PageCanvas(tk.Frame):
         return result
     
     def angle_calc(self, x, y, circxy = False):
-        alpha = np.arctan((y-self.y_ini)/(x-self.x_ini))
-        alpha += ((x-self.x_ini) < 0) * math.pi
-        alpha += (alpha < 0) * 2*math.pi
+        if (x == self.x_ini) & (y < self.y_ini):
+            alpha = math.pi/2
+        elif (x == self.x_ini) & (y > self.y_ini):
+            alpha = 3*math.pi/2
+        else:
+            alpha = np.arctan((y-self.y_ini)/(x-self.x_ini))
+            alpha += ((x-self.x_ini) < 0) * math.pi
+            alpha += (alpha < 0) * 2*math.pi
         if circxy:
             cx = self.r * np.cos(alpha) + self.x_ini
             cy = self.r * np.sin(alpha) + self.y_ini
