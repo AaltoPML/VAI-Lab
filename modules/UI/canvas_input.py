@@ -538,4 +538,4 @@ class PageCanvas(tk.Frame):
             del kwargs["end"]
         return self.canvas[self.notebook.index(
             self.notebook.select())].create_arc(x-r, y-r, x+r, y+r, **kwargs)
-    
+ 

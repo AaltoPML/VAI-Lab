@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Feb 25 11:47:53 2022
-
-@author: Sevisal
-"""
-
 import tkinter as tk                # python 3
 import os
 from PIL import Image, ImageTk

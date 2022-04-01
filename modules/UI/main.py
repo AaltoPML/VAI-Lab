@@ -9,15 +9,12 @@ from . import PageCanvas
 from . import PageManual
 
 class UFA(tk.Tk):
-    
-    """  """
-    
+
+  
     def __init__(self, *args, **kwargs):
-        
         super().__init__(*args, **kwargs)
 
-        self.title_font = tkfont.Font(family='Helvetica', 
-                                      size=14, weight="bold")#, slant="italic")
+        self.title_font = tkfont.Font(family='Helvetica', size=14, weight="bold")#, slant="italic")
         self.pages_font = tkfont.nametofont("TkDefaultFont")
 
         # the container is where we'll stack a bunch of frames
@@ -27,7 +24,7 @@ class UFA(tk.Tk):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-        
+
         self.frames = {}
         for F in (StartPage, PageManual, PageCanvas):
             page_name = F.__name__
@@ -42,7 +39,7 @@ class UFA(tk.Tk):
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
-        
+
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
         frame.tkraise()
@@ -50,7 +47,7 @@ class UFA(tk.Tk):
 
 class StartPage(tk.Frame):
 
-    
+  
     def __init__(self, parent, controller):
         
         " Here we define the main frame displayed upon opening the program."
@@ -114,6 +111,7 @@ class StartPage(tk.Frame):
                                                     ('All Files', '*.*')])
         if filename is not None:
             messagebox.showinfo("Success", "Feedback correctly uploaded.")
+
 
 if __name__ == "__main__":
     app = UFA()
