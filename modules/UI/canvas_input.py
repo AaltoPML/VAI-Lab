@@ -475,10 +475,10 @@ class PageCanvas(tk.Frame):
             
     def OnDoubleClick(self, event):
         
-        "Moves to the image corresponding to the row clicked on the tree."
+        """ Executed when a row is double clicked.
+        Opens an entry box to edit a cell and updates the canvas and the 
+        stored data. """
         
-        # item = self.tree.selection()[0]
-        # self.canvas.itemconfig("state-"+str(item), fill="blue")
         ii = self.notebook.index(self.notebook.select())
         self.treerow = int(self.tree[ii].identify_row(event.y))
         self.treecol = self.tree[ii].identify_column(event.x)
@@ -487,30 +487,26 @@ class PageCanvas(tk.Frame):
         x, y, width, height = self.tree[ii].bbox(self.treerow, self.treecol)
     
         # y-axis offset
-        # pady = height // 2
-        pady = 0
-    
-        # place Entry popup properly         
-        # text = self.tree[ii].item(rowid, 'text')
-        # self.entryPopup = EntryPopup(self.tree[ii], rowid, column, text)
-        # self.entryPopup.place(x = 0, y = y+pady, anchor = tk.W, relwidth = 1)
+        pady = height // 2
+        # pady = 0
         
-        self.entry = tk.Entry(self) 
-                # def __init__(self, parent, iid, col, text, **kw):
-        #     ''' If relwidth is set, then width is ignored '''
-        #     super().__init__(parent, **kw)
-
+        if hasattr(self, 'entry'):
+            self.entry.destroy()
+            
+        self.entry = tk.Entry(self.tree[ii], justify='center') 
         
         self.entry.insert(
             0, self.tree[ii].item(self.treerow)['values'][int(str(self.treecol[1:]))-1])
+        # self.entry['selectbackground'] = '#123456'
         self.entry['exportselection'] = False
 
         self.entry.focus_force()
         self.entry.bind("<Return>", self.on_return)
-        # self.entry.bind("<Control-a>", self.select_all)
         self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
         
-        self.entry.place(x = x, y = y+pady, anchor = tk.W, relwidth = 1)
+        self.entry.place(x = x, 
+                         y = y + pady, 
+                         anchor = tk.W, width = width)
 
     def upload_sa(self):
         
