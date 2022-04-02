@@ -23,6 +23,8 @@ class PageCanvas(tk.Frame):
                            ['State_x', 'State_y', 'Action_x', 'Action_y'], 
                            ['State_x', 'State_y', 'Action_x', 'Action_y']]
         
+        N = 4 # Number of samples
+        
         self.out_data = {}
         for ii in np.arange(len(self.class_list)):
             self.out_data[ii] = {}
@@ -159,6 +161,10 @@ class PageCanvas(tk.Frame):
             for cl in self.class_list[ii]:
                 self.tree[-1].heading(cl, text = cl, anchor = tk.CENTER)
             
+            # for nn in np.arange(N):
+            #     self.tree[-1].insert(
+            #                 parent = '', index = 'end', iid = (nn+1)*1000, text = 'Trial '+str(nn), 
+            #                 values = tuple())
             
             self.tree[-1].tag_configure('odd', foreground = 'black', 
                                         background='#E8E8E8')
@@ -193,7 +199,6 @@ class PageCanvas(tk.Frame):
             if self.type[ii] == 'Rotating':
                 alpha, x_o, y_o = self.angle_calc(event.x, event.y, 
                                                   circxy=True)
-
                 if self.state[ii].get()  == 'state': # Write state coordinates
                     self.canvas[ii].create_oval(
                         x_o-3, y_o-3, x_o+3, y_o+3, fill="black", width=0, 
@@ -421,15 +426,91 @@ class PageCanvas(tk.Frame):
             # typically the above line would do. however this is used to ensure that the file is written
             os.fsync(self.save_path.fileno())
             self.saved = True
+         
+    def on_return(self, event):
+        ii = self.notebook.index(self.notebook.select())
+        val = self.tree[ii].item(self.treerow)['values']
+        val[int(self.treecol[1:])-1] = int(self.entry.get())
+        self.tree[ii].item(self.treerow, values = val)
+        self.entry.destroy()
+        
+        self.saved = False
+        # Angle of the selected point with respect to the circle center
+        
+        if self.type[ii] == 'Rotating':
+            dx, dy = self.coord_calc(val[0])
+            dx_pr, dy_pr = self.coord_calc(self.out_data[ii]['State_a'][self.treerow])
+            print(dx, dx_pr)
+            self.out_data[ii]['State_a'][self.treerow] = val[0]
+            self.canvas[ii].move("state"+str(ii)+'-'+str(self.treerow), dx-dx_pr, 
+                dy-dy_pr)
+
+            self.out_data[ii]['Action_a'][self.treerow] = val[1]
+            if self.clock[ii].get()  == 'clock':
+                start = self.out_data[ii]['State_a'][self.treerow]
+                end = self.out_data[ii]['Action_a'][self.treerow]
+            else:
+                start = self.out_data[ii]['State_a'][self.treerow] - 360
+                end = self.out_data[ii]['Action_a'][self.treerow]
+            
+            self.canvas[ii].itemconfigure(
+                "action"+str(ii)+'-'+str(self.treerow), start = start, 
+                extent = end - start)
+        else:
+            # calculate distance moved from last position
+            dx_s = val[0] - self.out_data[ii]['State_x'][self.treerow]
+            dy_s = val[1] - self.out_data[ii]['State_y'][self.treerow]
+
+            self.canvas[ii].move("state"+str(ii)+'-'+str(self.treerow), dx_s, dy_s)
+
+            self.out_data[ii]['State_x'][self.treerow] = val[0]
+            self.out_data[ii]['State_y'][self.treerow] = val[1]
+
+            self.canvas[ii].coords(
+                "action"+str(ii)+'-'+str(self.treerow), 
+                (self.out_data[ii]['State_x'][self.treerow], 
+                  self.out_data[ii]['State_y'][self.treerow], val[2], val[3]))
+            self.out_data[ii]['Action_x'][self.treerow] = val[2]
+            self.out_data[ii]['Action_y'][self.treerow] = val[3]
             
     def OnDoubleClick(self, event):
         
         "Moves to the image corresponding to the row clicked on the tree."
         
-        print('What to do?...')
         # item = self.tree.selection()[0]
         # self.canvas.itemconfig("state-"+str(item), fill="blue")
+        ii = self.notebook.index(self.notebook.select())
+        self.treerow = int(self.tree[ii].identify_row(event.y))
+        self.treecol = self.tree[ii].identify_column(event.x)
         
+        # get column position info
+        x, y, width, height = self.tree[ii].bbox(self.treerow, self.treecol)
+    
+        # y-axis offset
+        # pady = height // 2
+        pady = 0
+    
+        # place Entry popup properly         
+        # text = self.tree[ii].item(rowid, 'text')
+        # self.entryPopup = EntryPopup(self.tree[ii], rowid, column, text)
+        # self.entryPopup.place(x = 0, y = y+pady, anchor = tk.W, relwidth = 1)
+        
+        self.entry = tk.Entry(self) 
+                # def __init__(self, parent, iid, col, text, **kw):
+        #     ''' If relwidth is set, then width is ignored '''
+        #     super().__init__(parent, **kw)
+
+        
+        self.entry.insert(
+            0, self.tree[ii].item(self.treerow)['values'][int(str(self.treecol[1:]))-1])
+        self.entry['exportselection'] = False
+
+        self.entry.focus_force()
+        self.entry.bind("<Return>", self.on_return)
+        # self.entry.bind("<Control-a>", self.select_all)
+        self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+        
+        self.entry.place(x = x, y = y+pady, anchor = tk.W, relwidth = 1)
 
     def upload_sa(self):
         
@@ -518,11 +599,16 @@ class PageCanvas(tk.Frame):
             alpha += ((x-self.x_ini) < 0) * math.pi
             alpha += (alpha < 0) * 2*math.pi
         if circxy:
-            cx = self.r * np.cos(alpha) + self.x_ini
-            cy = self.r * np.sin(alpha) + self.y_ini
+            cx, cy = self.coord_calc(alpha)
             return alpha, cx, cy
         else:
-            return alpha   
+            return alpha
+        
+    def coord_calc(self, alpha):
+        cx = self.r * np.cos(alpha) + self.x_ini
+        cy = self.r * np.sin(alpha) + self.y_ini
+        return cx, cy
+
         
     def create_circle(self, x, y, r, **kwargs):
         
@@ -538,4 +624,3 @@ class PageCanvas(tk.Frame):
             del kwargs["end"]
         return self.canvas[self.notebook.index(
             self.notebook.select())].create_arc(x-r, y-r, x+r, y+r, **kwargs)
- 
