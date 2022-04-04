@@ -430,22 +430,21 @@ class PageCanvas(tk.Frame):
     def on_return(self, event):
         ii = self.notebook.index(self.notebook.select())
         val = self.tree[ii].item(self.treerow)['values']
-        val[int(self.treecol[1:])-1] = int(self.entry.get())
+        val = [float(i) for i in val]
+        val[int(self.treecol[1:])-1] = float(self.entry.get())
         self.tree[ii].item(self.treerow, values = val)
-        self.entry.destroy()
-        
+        self.entry.destroy()        
         self.saved = False
-        # Angle of the selected point with respect to the circle center
         
+        print(val)
         if self.type[ii] == 'Rotating':
-            dx, dy = self.coord_calc(val[0])
-            dx_pr, dy_pr = self.coord_calc(self.out_data[ii]['State_a'][self.treerow])
-            print(dx, dx_pr)
-            self.out_data[ii]['State_a'][self.treerow] = val[0]
+            dx, dy = self.coord_calc(np.deg2rad(360 - val[0]))
+            dx_pr, dy_pr = self.coord_calc(np.deg2rad(360 - self.out_data[ii]['State_a'][self.treerow]))            
+            self.out_data[ii]['State_a'][self.treerow] = float(val[0])
             self.canvas[ii].move("state"+str(ii)+'-'+str(self.treerow), dx-dx_pr, 
                 dy-dy_pr)
-
-            self.out_data[ii]['Action_a'][self.treerow] = val[1]
+            
+            self.out_data[ii]['Action_a'][self.treerow] = float(val[1])
             if self.clock[ii].get()  == 'clock':
                 start = self.out_data[ii]['State_a'][self.treerow]
                 end = self.out_data[ii]['Action_a'][self.treerow]
@@ -495,18 +494,19 @@ class PageCanvas(tk.Frame):
             
         self.entry = tk.Entry(self.tree[ii], justify='center') 
         
-        self.entry.insert(
-            0, self.tree[ii].item(self.treerow)['values'][int(str(self.treecol[1:]))-1])
-        # self.entry['selectbackground'] = '#123456'
-        self.entry['exportselection'] = False
-
-        self.entry.focus_force()
-        self.entry.bind("<Return>", self.on_return)
-        self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
-        
-        self.entry.place(x = x, 
-                         y = y + pady, 
-                         anchor = tk.W, width = width)
+        if int(self.treecol[1:]) > 0:
+            self.entry.insert(
+                0, self.tree[ii].item(self.treerow)['values'][int(str(self.treecol[1:]))-1])
+            # self.entry['selectbackground'] = '#123456'
+            self.entry['exportselection'] = False
+    
+            self.entry.focus_force()
+            self.entry.bind("<Return>", self.on_return)
+            self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+            
+            self.entry.place(x = x, 
+                             y = y + pady, 
+                             anchor = tk.W, width = width)
 
     def upload_sa(self):
         
