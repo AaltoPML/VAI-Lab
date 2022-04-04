@@ -1,4 +1,4 @@
-from . import __modules__
+from . import UI
 
 import tkinter as tk                # python 3
 import os
@@ -10,7 +10,7 @@ from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
 
-class PageCanvas(tk.Frame,__modules__.UI):
+class PageCanvas(tk.Frame,UI):
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller

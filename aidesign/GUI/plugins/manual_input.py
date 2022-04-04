@@ -1,4 +1,4 @@
-from . import __modules__
+from . import UI
 
 import os
 import tkinter as tk
@@ -8,7 +8,7 @@ from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
 
-class PageManual(tk.Frame,__modules__.UI):
+class PageManual(tk.Frame,UI):
     
     def __init__(self, parent, controller):
         super().__init__(parent, bg = parent['bg'])

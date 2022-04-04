@@ -1,2 +1,1 @@
-from . import modules
-from . import plugins
+from . import GUI
