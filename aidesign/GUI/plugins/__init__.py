@@ -8,4 +8,4 @@ from ..UserInterfaceClass import UI
 from .canvas_input import PageCanvas
 from .manual_input import PageManual
 from .startpage import StartPage
-from .main import Container
+# from .main import Container
