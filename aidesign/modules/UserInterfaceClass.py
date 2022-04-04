@@ -25,6 +25,6 @@ class UI(ABC):
     def save_file_as(self):
         pass
 
-    @abstractmethod
-    def on_press(self):
-        pass
+    # @abstractmethod
+    # def on_press(self):
+    #     pass
