@@ -32,12 +32,27 @@ class Container(tk.Tk):
             "PageManual":{
                             "name":"manual",
                             "layer_priority":2,
-                            "required_children":None
+                            "required_children":None,
+                            #temporary fix so startpage still works:
+                            "default_class_list" : ['Atelectasis',
+                                                        'Cardiomelagy',
+                                                        'Effusion',
+                                                        'Infiltration',
+                                                        'Mass',
+                                                        'Nodule',
+                                                        'Pneumonia',
+                                                        'Pneumothorax'
+                                                        ]
                             },
             "PageCanvas":{
                             "name":"canvas",
                             "layer_priority":2,
-                            "required_children":None
+                            "required_children":None,
+                            #temporary fix so startpage still works:
+                            "default_class_list" : ['State_x',
+                                                        'State_y',
+                                                        'Action_x',
+                                                        'Action_y']
                             }
         }
 
@@ -111,12 +126,16 @@ class Container(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        # for F in (StartPage, PageManual, PageCanvas):
         for F in self.desired_ui_types:
             page_name = F.__name__
             frame = F(parent=container, controller=self)
-            if page_name != "StartPage":
+            if not self.startpage_exist:
                 frame.class_list(self._class_list)
+            elif self.startpage_exist and page_name != "StartPage":
+                default_class_list = self.available_ui_types\
+                                                [page_name]\
+                                                ["default_class_list"]
+                frame.class_list(default_class_list)
             self.frames[page_name] = frame
 
             # put all of the pages in the same location;
