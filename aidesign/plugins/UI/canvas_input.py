@@ -152,15 +152,15 @@ class PageCanvas(tk.Frame):
         :param value: labels for state-action pair headers
         :type value: list of strings
         """
-        self.class_list = value
+        self._class_list = value
         # self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
-        self.out_data = dict.fromkeys(self.class_list,[]) #coordinates
-        self.tree['columns'] = self.class_list
+        self.out_data = {out: [] for out in self._class_list} #coordinates
+        self.tree['columns'] = self._class_list
         
         
         # Format columns
         self.tree.column("#0", width = 50)
-        for n, cl in enumerate(self.class_list):
+        for n, cl in enumerate(self._class_list):
             self.tree.column(cl,
                             width = int(self.controller.pages_font.measure(str(cl)))+20,
                             minwidth = 50,
@@ -169,7 +169,7 @@ class PageCanvas(tk.Frame):
                 
         # Headings
         self.tree.heading("#0", text = "Sample", anchor = tk.CENTER)
-        for cl in self.class_list:
+        for cl in self._class_list:
             self.tree.heading(cl, text = cl, anchor = tk.CENTER)
         
         # Define double-click on row action
@@ -318,7 +318,7 @@ class PageCanvas(tk.Frame):
         if msg:
             self.canvas.delete(tk.ALL)
             # self.checkered(10)
-            self.out_data = dict.fromkeys(self.class_list,[]) #coordinates
+            self.out_data = dict.fromkeys(self._class_list,[]) #coordinates
             for record in self.tree.get_children():
                 self.tree.delete(record)
 
