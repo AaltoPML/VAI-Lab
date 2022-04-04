@@ -1,4 +1,4 @@
-import aidesign.plugins as plug
+import aidesign as ai
 
 test_cases = {
     "manual": {
@@ -19,14 +19,14 @@ test_cases = {
                                 'Action_y']
                 },
     "startpage": {
-                "class_list":[] #need to find way of making multiple methods work
+                "class_list":[] # This is currently set by default in the main.py (need to find a better method)
                 }
 }
 
 test_name = "startpage"
 
-ui_app = plug.UI.Container()
-ui_app.set_UI_type(test_name)
+ui_app = ai.GUI()
+ui_app.plugin_name(test_name)
 ui_app.set_class_list(test_cases[test_name]["class_list"])
 
 ui_app.launch()

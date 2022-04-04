@@ -4,5 +4,5 @@
 
 Let's look for a more automatic way of doing this when we have more modules
 """
-from .GUI import GUI
+from .GUI_core import GUI
 from .UserInterfaceClass import UI
