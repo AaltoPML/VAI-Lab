@@ -50,10 +50,9 @@ class GUI(tk.Tk):
                             "layer_priority":2,
                             "required_children":None,
                             #temporary fix so startpage still works:
-                            "default_class_list" : ['State_x',
-                                                        'State_y',
-                                                        'Action_x',
-                                                        'Action_y']
+                            "default_class_list" : [['State_a', 'Action_a'], 
+                                                    ['State_x', 'State_y', 'Action_x', 'Action_y'], 
+                                                    ['State_x', 'State_y', 'Action_x', 'Action_y']]
                             }
         }
 

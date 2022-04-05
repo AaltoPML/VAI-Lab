@@ -13,10 +13,10 @@ test_cases = {
                                 ]
                 },
     "canvas": {
-                "class_list":['State_x',
-                                'State_y',
-                                'Action_x',
-                                'Action_y']
+                "class_list":[['State_a', 'Action_a'], 
+                            ['State_x', 'State_y', 'Action_x', 'Action_y'], 
+                           ['State_x', 'State_y', 'Action_x', 'Action_y']]
+
                 },
     "startpage": {
                 "class_list":[] # This is currently set by default in the main.py (need to find a better method)
