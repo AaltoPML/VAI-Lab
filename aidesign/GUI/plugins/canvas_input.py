@@ -1,3 +1,4 @@
+from . import UI
 import tkinter as tk                # python 3
 import os
 from PIL import Image, ImageTk
@@ -10,27 +11,12 @@ import pandas as pd
 import math
 
 class PageCanvas(tk.Frame):
-
-    
-    
     def __init__(self, parent, controller):
-        
-        super().__init__(parent, bg = parent['bg'])
+        self.parent = parent
+        super().__init__(self.parent, bg = self.parent['bg'])
         self.controller = controller
         
-        # Define the different inputs we want feedback from
-        self.class_list = [['State_a', 'Action_a'], 
-                           ['State_x', 'State_y', 'Action_x', 'Action_y'], 
-                           ['State_x', 'State_y', 'Action_x', 'Action_y']]
-        
-        N = 4 # Number of samples
-        
-        self.out_data = {}
-        for ii in np.arange(len(self.class_list)):
-            self.out_data[ii] = {}
-            for key in self.class_list[ii]:
-                self.out_data[ii][key] = []
-                
+        self.controller.title('Canvas Input')
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, columnspan=7, 
                            rowspan = 12, pady = 15)
@@ -42,10 +28,37 @@ class PageCanvas(tk.Frame):
         self.type = []
         self.clock = []
 
-        for ii in np.arange(len(self.class_list)):
-            self.frame.append(tk.Frame(self, bg = parent['bg']))
+        self.save_path = ''
+        self.saved = True
+    
+    def class_list(self):
+        """Getter for required _class_list variable
+        
+        :return: list of class labels
+        :rtype: list of strings
+        """
+        return self._class_list
+
+    def class_list(self,value):
+        """Setter for required _class_list variable
+        
+        :param value: labels for state-action pair headers
+        :type value: list of strings
+        """
+        self._class_list = value
+        # self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
+        # self.out_data = {out: [] for out in self._class_list} #coordinates
+        #Tree defintion. Output display
+        self.out_data = {}
+        for ii in np.arange(len(self._class_list)):
+            self.out_data[ii] = {}
+            for key in self._class_list[ii]:
+                self.out_data[ii][key] = []
+
+        for ii in np.arange(len(self._class_list)):
+            self.frame.append(tk.Frame(self, bg = self.parent['bg']))
             self.frame[-1].grid(row=0, column=0, sticky="nsew", pady = 15)
-            if self.class_list[ii][0].split('_')[1] == 'a':
+            if self._class_list[ii][0].split('_')[1] == 'a':
                 self.type.append('Rotating')
                 self.clock.append(tk.StringVar())
                 self.clock[ii].set('clock')
@@ -74,43 +87,41 @@ class PageCanvas(tk.Frame):
             self.state[ii].set('state')    
             # Buttons under the canvas
             self.button_draw = tk.Radiobutton(
-                self.frame[-1], text = 'Draw', fg = 'white', bg = parent['bg'],
+                self.frame[-1], text = 'Draw', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.draw[ii], 
                 selectcolor = 'black', value = 'draw').grid(column = 4, row = 3)
             self.button_drag = tk.Radiobutton(
-                self.frame[-1], text = 'Move', fg = 'white', bg = parent['bg'],
+                self.frame[-1], text = 'Move', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.draw[ii], 
                 selectcolor = 'black', value = 'drag').grid(column = 5, row = 3)
             self.clock_arc = tk.Radiobutton(
-                self.frame[-1], text = 'Clockwise', fg = 'white', bg = parent['bg'],
+                self.frame[-1], text = 'Clockwise', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.clock[ii], 
                 selectcolor = 'black', value = 'clock').grid(column = 6, row = 3)            
             self.countclock_arc = tk.Radiobutton(
-                self.frame[-1], text = 'Counterclockwise', fg = 'white', bg = parent['bg'],
+                self.frame[-1], text = 'Counterclockwise', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.clock[ii], 
                 selectcolor = 'black', value = 'countclock').grid(column = 7, row = 3)
             # self.button_edit = tk.Radiobutton(
-            #     self.frame[-1], text = 'Edit', fg = 'white', bg = parent['bg'],
+            #     self.frame[-1], text = 'Edit', fg = 'white', bg = self.parent['bg'],
             #     height = 3, width = 20, var = self.draw[ii], 
             #     selectcolor = 'black', value = 'edit').grid(column = 6,row = 3)
             self.button_save = tk.Button(
-                self.frame[-1], text = 'Save', fg = 'white', bg = parent['bg'],
+                self.frame[-1], text = 'Save', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, 
                 command = self.save_file).grid(column = 1, row = 3)
             self.button_upload = tk.Button(
                 self.frame[-1], text = 'Upload coordinates', fg = 'white', 
-                bg = parent['bg'], height = 3, width = 20, 
+                bg = self.parent['bg'], height = 3, width = 20, 
                 command = self.upload_sa).grid(column = 0, row = 3)
             self.button_reset = tk.Button(
                 self.frame[-1], text = 'Reset', fg = 'white', 
-                bg = parent['bg'], height = 3, width = 20, 
+                bg = self.parent['bg'], height = 3, width = 20, 
                 command = self.reset).grid(column = 2, row = 3)
             button_main = tk.Button(
                 self.frame[-1], text="Go to the main page", fg = 'white', 
-                bg = parent['bg'], height = 3, width = 20,
+                bg = self.parent['bg'], height = 3, width = 20,
                 command = self.check_quit).grid(column = 3, row = 3)
-    
-            #Tree defintion. Output display
             style = ttk.Style()
             style.configure(
                 "Treeview", background = 'white', foreground = 'white', 
@@ -120,7 +131,7 @@ class PageCanvas(tk.Frame):
                             font = self.controller.pages_font)
             style.map('Treeview', background = [('selected', 'grey')])
             
-    
+
             tree_frame = tk.Frame(self.frame[-1])
             tree_frame.grid(row = 0, column = 4, columnspan = 3, rowspan = 10)
             
@@ -142,15 +153,15 @@ class PageCanvas(tk.Frame):
                 self.x_ini, self.y_ini = int(self.width/2), int(self.height/2)
                 self.r = int(np.min([self.x_ini, self.y_ini])/1.5)
                 self.create_circle(self.x_ini, self.y_ini, 4, 
-                                   fill="#DDD", outline="", width=4)
+                                    fill="#DDD", outline="", width=4)
                 self.create_circle(self.x_ini, self.y_ini, self.r, 
-                                   fill="", outline="#DDD", width=4)
+                                    fill="", outline="#DDD", width=4)
                 
-            self.tree[-1]['columns'] = self.class_list[ii]
+            self.tree[-1]['columns'] = self._class_list[ii]
             
             # Format columns
             self.tree[-1].column("#0", width = 50)
-            for n, cl in enumerate(self.class_list[ii]):
+            for n, cl in enumerate(self._class_list[ii]):
                 self.tree[-1].column(
                     cl, width = int(
                         self.controller.pages_font.measure(str(cl)))+20, 
@@ -158,7 +169,7 @@ class PageCanvas(tk.Frame):
                     
             # Headings
             self.tree[-1].heading("#0", text = "Sample", anchor = tk.CENTER)
-            for cl in self.class_list[ii]:
+            for cl in self._class_list[ii]:
                 self.tree[-1].heading(cl, text = cl, anchor = tk.CENTER)
             
             # for nn in np.arange(N):
@@ -173,10 +184,7 @@ class PageCanvas(tk.Frame):
         
             # Define double-click on row action
             self.tree[-1].bind("<Double-1>", self.OnDoubleClick)
-            
-        self.save_path = ''
-        self.saved = True
-    
+
     def draw_dot(self, event):
         
         ii = self.notebook.index(self.notebook.select())
@@ -385,14 +393,12 @@ class PageCanvas(tk.Frame):
         
         # Should it also reset the canvas?
         
-        if not self.saved:
-            response = messagebox.askokcancel(
-                "Are you sure you want to leave?",
-                "Do you want to leave the program without saving?")
+        if self.saved:
+            self.controller.show_frame("StartPage")
+        else:
+            response = messagebox.askokcancel("Are you sure you want to leave?", "Do you want to leave the program without saving?")
             if response:
                 self.controller.show_frame("StartPage")
-        else:
-            self.controller.show_frame("StartPage")
             
     def save_file_as(self):
         
@@ -561,7 +567,7 @@ class PageCanvas(tk.Frame):
             self.canvas[ii].delete(tk.ALL) # Reset canvas
             self.state[ii].set('state')
             self.out_data[ii] = {}
-            for key in self.class_list[ii]:
+            for key in self._class_list[ii]:
                 self.out_data[ii][key] = []
                     
             for record in self.tree[ii].get_children(): #Reset treeview
