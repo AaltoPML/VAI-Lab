@@ -3,8 +3,6 @@ import os
 from PIL import Image, ImageTk
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
-# from . import PageCanvas
-# from . import PageManual
 
 class StartPage(tk.Frame):
 
