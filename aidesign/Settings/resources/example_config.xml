@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Settings>
+    <pipeline name="test">
+        <GUI name="My First Input Module">
+            <plugin type="manual">
+                <class_list>
+                    Atelectasis
+                    Cardiomelagy
+                    Effusion
+                    Infiltration
+                    Mass
+                    Nodule
+                    Pneumonia
+                    Pneumothorax
+                </class_list>
+            </plugin>
+        </GUI>
+        <GUI name="My Second Input Module">
+            <plugin type="canvas">
+                <class_list>
+                    State_x
+                    State_y
+                    Action_x
+                    Action_y
+                </class_list>
+            </plugin>
+        </GUI>
+    </pipeline>
+    <datastructure name="datatest">
+        <headings>
+            test
+        </headings>
+    </datastructure>
+</Settings>
