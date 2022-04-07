@@ -27,6 +27,7 @@ class AID(tk.Tk):
             "aidCanvas":{
                             "name":"aidcanvas",
                             "layer_priority":1,
+                            "required_children":None
                             }
         }
 

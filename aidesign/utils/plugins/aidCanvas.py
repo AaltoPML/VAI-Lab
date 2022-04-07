@@ -20,19 +20,14 @@ class aidCanvas(tk.Frame):
         self.bg = parent['bg']
         self.controller = controller
         self.controller.title('Assisted Design Display')
-        # self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
-        #     file = os.path.join(os.path.join(
-        #         os.getcwd(), 'modules', 'UI', 
-        #         'resources', 'Assets', 'ADDIcon.ico'))))
-        # self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(
-        #         os.getcwd(), 'modules', 'UI', 
-        #         'resources', 'Assets', 'ADDIcon_name.png')).resize((600, 400)))
         
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
             file = os.path.join(os.path.join(
-                os.getcwd(), 'resources', 'Assets', 'ADDIcon.ico'))))
+                os.getcwd(), 'aidesign', 'utils', 'plugins', 
+                'resources', 'Assets', 'AIDIcon.ico'))))
         self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(
-                os.getcwd(), 'assets', 'ADDIcon_name.png')).resize((250, 200)))
+                os.getcwd(), 'aidesign', 'utils', 'plugins', 
+                'resources', 'Assets', 'AIDIcon_name.png')).resize((250, 200)))
         
         self.my_label = tk.Label(self, image = self.my_img1, bg = parent['bg'])
         self.my_label.grid(column = 5, row = 0)
@@ -268,5 +263,5 @@ class aidCanvas(tk.Frame):
 # AI Design
 # XML design
 if __name__ == "__main__":
-    app = ADD()
+    app = aidCanvas()
     app.mainloop()
