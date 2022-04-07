@@ -1,9 +1,8 @@
-<?xml version="1.0"?>
 <Settings>
-    <pipeline name="test">
-        <GUI name="My First Input Module">
-            <plugin type="manual">
-                <class_list>
+  <pipeline>
+    <GUI name="My First Input Module">
+      <plugin type="manual">
+        <class_list>
                     Atelectasis
                     Cardiomelagy
                     Effusion
@@ -13,21 +12,21 @@
                     Pneumonia
                     Pneumothorax
                 </class_list>
-            </plugin>
-        </GUI>
-        <GUI name="My Second Input Module">
-            <plugin type="canvas">
-                <class_list>
+      </plugin>
+    </GUI>
+    <GUI name="My Second Input Module">
+      <plugin type="canvas">
+        <class_list>
                     State_x
                     State_y
                     Action_x
                     Action_y
                 </class_list>
-            </plugin>
-        </GUI>
-    </pipeline>
-    <datastructure name="datatest">
-        <data_fields>
+      </plugin>
+    </GUI>
+  </pipeline>
+  <datastructure name="datatest">
+    <data_fields>
             State_0
             State_1
             Action
@@ -35,5 +34,6 @@
             Termination
             Goal
         </data_fields>
-    </datastructure>
+    <replay_buffer>1</replay_buffer>
+  </datastructure>
 </Settings>

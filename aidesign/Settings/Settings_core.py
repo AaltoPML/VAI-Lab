@@ -1,5 +1,7 @@
+from typing import Any
 import xml.etree.ElementTree as ET
 from os import path
+
 
 class Settings(object):
     def __init__(self):
@@ -9,9 +11,9 @@ class Settings(object):
         self.loaded_modules = {}
         self.loaded_data_options = {}
 
-    def load_XML(self,filename):
+    def load_XML(self, filename: str):
         if filename[0] == ".":
-            self.filename = path.join(path.dirname(__file__),filename)
+            self.filename = path.join(path.dirname(__file__), filename)
         elif filename[0] == "/":
             self.filename = filename
         self.tree = ET.parse(self.filename)
@@ -22,13 +24,12 @@ class Settings(object):
         self.parse_pipeline()
         self.parse_data_structure()
 
-    def parse_text_to_list(self,element):
+    def parse_text_to_list(self, element: ET.Element):
         out = []
         new = element.text.replace(" ", "")
         out = new.split("\n")
-        out = [item for item in out if item != "" ]
+        out = [item for item in out if item != ""]
         return out
-        
 
     def parse_pipeline(self):
         self.pipeline_tree = self.root.find("pipeline")
@@ -39,19 +40,18 @@ class Settings(object):
             plugin_name = plugin.attrib["type"]
             class_list = self.parse_text_to_list(plugin.find("class_list"))
             self.loaded_modules[module_name] = {
-                "module_type" : module_type,
-                "plugin_name" : plugin_name,
-                "class_list" : class_list
+                "module_type": module_type,
+                "plugin_name": plugin_name,
+                "class_list": class_list
             }
 
     def parse_data_structure(self):
         self.data_tree = self.root.find("datastructure")
         for child in self.data_tree:
             self.loaded_data_options[child.tag]\
-                            = self.parse_text_to_list(child)
-            
-        
-    def print_pretty(self,element):
+                = self.parse_text_to_list(child)
+
+    def print_pretty(self, element: ET.Element):
         from pprint import PrettyPrinter
         pp = PrettyPrinter(sort_dicts=False)
         pp.pprint(element)
@@ -62,6 +62,75 @@ class Settings(object):
     def print_loaded_data_structure(self):
         self.print_pretty(s.loaded_data_options)
 
+    def append_to_XML(self):
+        """Formats XML Tree correctly, then writes to filename
+        """
+        self.indent(self.root)
+        self.tree.write(self.filename)
+
+    def indent(self,
+               elem: ET.Element,
+               level: int = 0):
+        """Formats XML tree to be human-readable before writing to file
+
+        :param elem:
+        """
+        i = "\n" + level*"  "
+        if len(elem):
+            if not elem.text or not elem.text.strip():
+                elem.text = i + "  "
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+            for elem in elem:
+                self.indent(elem, level+1)
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+        else:
+            if level and (not elem.tail or not elem.tail.strip()):
+                elem.tail = i
+
+    def add_pipeline_module(self,
+                            module_type: str,
+                            module_name: str,
+                            plugin_type: str,
+                            class_list: list
+                            ):
+        """Append new pipeline module to existing XML file
+        :param module_type: string declare type of module (GUI,data_processing etc)
+        :param module_name: string give module a user-defined name
+        :param plugin_type: string type of plugin to be loaded into module
+        :param class_list: list(string) of class labels for plugin
+        TODO: This is very specific to the GUI module - need to make more generic
+        """
+        new_mod = ET.Element(module_type)
+        new_mod.set('name', module_name)
+
+        new_plugin = ET.SubElement(new_mod, "plugin")
+        new_plugin.set('type', plugin_type)
+
+        new_class_list = ET.SubElement(new_plugin, "class_list")
+        new_class_list.text = class_list
+
+        self.pipeline_tree.append(new_mod)
+        self.append_to_XML()
+
+    def add_data_structure_field(self,
+                                 field_type: str, 
+                                 value:list,
+                                 field_name:str=None):
+        new_field = ET.Element(field_type)
+        if field_name is not None:
+            new_field.set('name', field_name)
+        new_field.text = value
+        self.data_tree.append(new_field)
+        self.append_to_XML()
+
+
 s = Settings()
 s.load_XML("./resources/example_config.xml")
-s.print_loaded_data_structure()
+s.print_loaded_modules()
+# s.add_pipeline_module("GUI",
+#                       "added_mod",
+#                       "startpage",
+#                       "no+class_list")
+s.add_data_structure_field("replay_buffer","1")
