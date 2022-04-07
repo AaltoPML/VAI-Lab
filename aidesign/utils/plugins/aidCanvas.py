@@ -122,6 +122,7 @@ class aidCanvas(tk.Frame):
         
         self.canvas.move('o'+str(self.m), dx, dy) #Plugin
         
+        print(self.canvas.find_withtag('o'+str(self.m)))
         # if any(self.out_data.iloc[self.m].values) or any(
         #         self.out_data[self.out_data.columns[self.m]].values):
         #     out = np.arange(self.out_data.values.shape[0])[
@@ -135,7 +136,6 @@ class aidCanvas(tk.Frame):
     def plugin_out(self, name):
         name_list = list(self.out_data.columns)
         m_num = [n.split('-')[1] for n in name_list if n.split('-')[0]==name]
-        print(m_num)
         name_list.append(name + '-' + str(len(m_num)))
         values = self.out_data.values
         values = np.vstack((
@@ -147,9 +147,6 @@ class aidCanvas(tk.Frame):
     
     def add_plugin(self, boxName):
         """ Creates a plugin rectangle with the corresponding text inside."""
-        # self.canvas.find_overlapping(
-        #     event.x-10, event.y-10, event.x+10, event.y+10)
-        
         text_w = self.controller.pages_font.measure(boxName)+10
         self.canvas.create_rectangle(
             self.width/2 - text_w/2 , 
@@ -217,21 +214,16 @@ class aidCanvas(tk.Frame):
         if self.canvas.selected and not(self.m == 0):
             self.canvas.delete('o'+str(self.m))
             
-            self.out_data = self.out_data.drop(
-                index = self.out_data.columns[self.m], 
-                columns = self.out_data.columns[self.m])
-            
-            # self.modules -= 1
-    
+            col = self.out_data.columns[self.m]
+            self.out_data[col] = 0
+            self.out_data.loc[col] = 0
+                
     def join_plugins(self, event):
         if self.draw:
             tags = self.canvas.gettags(self.canvas.find_overlapping(
             event.x-self.cr, event.y-self.cr, 
             event.x+self.cr, event.y+self.cr)[-1])
-            if len(tags) > 2:
-                tag2 = tags[2]
-            else:
-                tag2 = tags[0]
+            tag2 = tags[-2] if tags[-1] == "current" else tags[-1]
             self.canvas.create_line(
                         self.canvas.linestartxy[0] + self.cr, 
                         self.canvas.linestartxy[1] + self.cr, 
@@ -242,21 +234,14 @@ class aidCanvas(tk.Frame):
                         tags=('o'+str(int(self.tag[1:])), 
                               'o'+str(int(tag2[1:])), 
                               self.tag + '-' + tag2))
-            print(self.tag + '-' + tag2)
             self.draw = False
             self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
             
         else:
-            print(self.canvas.gettags(self.canvas.find_overlapping(
-            event.x-self.cr, event.y-self.cr, 
-            event.x+self.cr, event.y+self.cr)[-1]))
             tags = self.canvas.gettags(self.canvas.find_overlapping(
             event.x-self.cr, event.y-self.cr, 
             event.x+self.cr, event.y+self.cr)[-1])
-            if len(tags) > 2:
-                self.tag = tags[2]
-            else:
-                self.tag = tags[0]
+            self.tag = tags[-2] if tags[-1] == "current" else tags[-1]
             self.canvas.linestartxy = self.canvas.coords(self.tag)#(event.x, event.y)
             self.draw = True
 
