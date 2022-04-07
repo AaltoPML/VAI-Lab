@@ -44,6 +44,8 @@ class aidCanvas(tk.Frame):
         self.out_data = pd.DataFrame(np.zeros((1,1)), 
                                      columns = ['Initialisation'], 
                                      index = ['Initialisation'])
+        self.connections = {}
+        self.connections[0] = {}
         # Create plugin
         self.w, self.h = 100, 50
         x0 = self.width/2 - (
@@ -122,15 +124,32 @@ class aidCanvas(tk.Frame):
         
         self.canvas.move('o'+str(self.m), dx, dy) #Plugin
         
-        print(self.canvas.find_withtag('o'+str(self.m)))
-        # if any(self.out_data.iloc[self.m].values) or any(
-        #         self.out_data[self.out_data.columns[self.m]].values):
-        #     out = np.arange(self.out_data.values.shape[0])[
-        #         self.out_data.values[self.m,:]==1]
-        #     for i, o in enumerate(out):
-        #         self.canvas.coords(, 
-        #                 (event.x, event.y))
-                
+        if any(self.out_data.iloc[self.m].values) or any(
+                self.out_data[self.out_data.columns[self.m]].values):
+            out = np.arange(self.out_data.values.shape[0])[
+                self.out_data.values[self.m, :]==1]
+            for o in out:
+                xycoord_i = self.canvas.coords(
+                    self.connections[self.m][o].split('-')[0])
+                xycoord_o = self.canvas.coords(
+                    self.connections[self.m][o].split('-')[1])
+                self.canvas.coords(self.connections[self.m][o], 
+                        (xycoord_i[0] + self.cr, 
+                         xycoord_i[1] + self.cr, 
+                         xycoord_o[0] + self.cr, 
+                         xycoord_o[1] + self.cr))
+            inp = np.arange(self.out_data.values.shape[0])[
+                self.out_data.values[:, self.m]==1]
+            for i in inp:
+                xycoord_i = self.canvas.coords(
+                    self.connections[i][self.m].split('-')[0])
+                xycoord_o = self.canvas.coords(
+                    self.connections[i][self.m].split('-')[1])
+                self.canvas.coords(self.connections[i][self.m], 
+                        (xycoord_i[0] + self.cr, 
+                         xycoord_i[1] + self.cr, 
+                         xycoord_o[0] + self.cr, 
+                         xycoord_o[1] + self.cr))
         self.canvas.startxy[self.m] = (event.x, event.y)
     
     def plugin_out(self, name):
@@ -206,6 +225,7 @@ class aidCanvas(tk.Frame):
                              "<Button-1>", self.join_plugins)
         self.canvas.startxy.append((self.width/2, 
                                     self.height/2))
+        self.connections[self.modules] = {}
         self.modules += 1
         self.plugin_out(boxName)
 
@@ -219,24 +239,27 @@ class aidCanvas(tk.Frame):
             self.out_data.loc[col] = 0
                 
     def join_plugins(self, event):
+        """ Draws a connecting line between two connecting circles. """
         if self.draw:
             tags = self.canvas.gettags(self.canvas.find_overlapping(
             event.x-self.cr, event.y-self.cr, 
             event.x+self.cr, event.y+self.cr)[-1])
             tag2 = tags[-2] if tags[-1] == "current" else tags[-1]
-            self.canvas.create_line(
-                        self.canvas.linestartxy[0] + self.cr, 
-                        self.canvas.linestartxy[1] + self.cr, 
-                        self.canvas.coords(tag2)[0] + self.cr, 
-                        self.canvas.coords(tag2)[1] + self.cr,
-                        fill="red", 
-                        arrow=tk.LAST, 
-                        tags=('o'+str(int(self.tag[1:])), 
-                              'o'+str(int(tag2[1:])), 
-                              self.tag + '-' + tag2))
+            if tag2[0] in ['d', 'l', 'u', 'r'] and int(
+                    tag2[1:]) != int(self.tag[1:]):
+                self.canvas.create_line(
+                            self.canvas.linestartxy[0] + self.cr, 
+                            self.canvas.linestartxy[1] + self.cr, 
+                            self.canvas.coords(tag2)[0] + self.cr, 
+                            self.canvas.coords(tag2)[1] + self.cr,
+                            fill = "red", 
+                            arrow = tk.LAST, 
+                            tags = ('o'+str(int(self.tag[1:])), 
+                                  'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
+                self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
+                self.connections[
+                    int(self.tag[1:])][int(tag2[1:])] = self.tag + '-' + tag2
             self.draw = False
-            self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
-            
         else:
             tags = self.canvas.gettags(self.canvas.find_overlapping(
             event.x-self.cr, event.y-self.cr, 
