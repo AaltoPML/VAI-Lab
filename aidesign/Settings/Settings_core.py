@@ -12,6 +12,8 @@ class Settings(object):
         self.loaded_data_options = {}
 
     def load_XML(self, filename: str):
+        """Loads XML file into class. Converts relative paths into absolute first.
+        """
         if filename[0] == ".":
             self.filename = path.join(path.dirname(__file__), filename)
         elif filename[0] == "/":
@@ -24,8 +26,7 @@ class Settings(object):
         self.parse_pipeline()
         self.parse_data_structure()
 
-    def parse_text_to_list(self, element: ET.Element):
-        out = []
+    def parse_text_to_list(self, element: ET.Element) -> list:
         new = element.text.replace(" ", "")
         out = new.split("\n")
         out = [item for item in out if item != ""]
@@ -57,10 +58,10 @@ class Settings(object):
         pp.pprint(element)
 
     def print_loaded_modules(self):
-        self.print_pretty(s.loaded_modules)
+        self.print_pretty(self.loaded_modules)
 
     def print_loaded_data_structure(self):
-        self.print_pretty(s.loaded_data_options)
+        self.print_pretty(self.loaded_data_options)
 
     def append_to_XML(self):
         """Formats XML Tree correctly, then writes to filename
@@ -73,7 +74,8 @@ class Settings(object):
                level: int = 0):
         """Formats XML tree to be human-readable before writing to file
 
-        :param elem:
+        :param elem: xml.etree.ElementTree.Element to be indented
+        :param level: int, level of initial indentation
         """
         i = "\n" + level*"  "
         if len(elem):
@@ -115,9 +117,9 @@ class Settings(object):
         self.append_to_XML()
 
     def add_data_structure_field(self,
-                                 field_type: str, 
-                                 value:list,
-                                 field_name:str=None):
+                                 field_type: str,
+                                 value: list,
+                                 field_name: str = None):
         new_field = ET.Element(field_type)
         if field_name is not None:
             new_field.set('name', field_name)
@@ -133,4 +135,5 @@ s.print_loaded_modules()
 #                       "added_mod",
 #                       "startpage",
 #                       "no+class_list")
-s.add_data_structure_field("replay_buffer","1")
+# s.add_data_structure_field("replay_buffer", "1")
+s.print_loaded_data_structure()
