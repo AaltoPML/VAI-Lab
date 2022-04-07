@@ -17,10 +17,9 @@
         <GUI name="My Second Input Module">
             <plugin type="canvas">
                 <class_list>
-                    State_x
-                    State_y
-                    Action_x
-                    Action_y
+                    ['State_a', 'Action_a']
+                    ['State_x', 'State_y', 'Action_x', 'Action_y']
+                    ['State_x', 'State_y', 'Action_x', 'Action_y']
                 </class_list>
             </plugin>
         </GUI>

@@ -1,7 +1,7 @@
 from typing import Any
 import xml.etree.ElementTree as ET
 from os import path
-
+from ast import literal_eval
 
 class Settings(object):
     def __init__(self):
@@ -30,6 +30,9 @@ class Settings(object):
         new = element.text.replace(" ", "")
         out = new.split("\n")
         out = [item for item in out if item != ""]
+        for idx in range(0,len(out)):
+            if "[" in out[idx] and "]" in out[idx]:
+                out[idx] = literal_eval(out[idx])
         return out
 
     def parse_pipeline(self):
