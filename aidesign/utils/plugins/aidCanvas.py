@@ -72,6 +72,12 @@ class aidCanvas(tk.Frame):
         self.canvas.bind("<B1-Motion>", self.on_drag)
         self.canvas.bind('<Button-1>', self.select)
         
+        self.l = 0 #number of loops
+        self.isLoop = False
+        self.canvas.bind("<ButtonPress-1>", self.on_button_press)
+        # self.canvas.bind("<B1-Motion>", self.on_move_press)
+        self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
+        
         # modules = ['Data preprocessing', 'Modelling', 'Decision making', 'User Feedback Adaptation']
         
         self.modules = 1
@@ -115,7 +121,27 @@ class aidCanvas(tk.Frame):
         
         self.save_path = ''
         self.saved = True
-        
+    
+    def on_button_press(self, event):
+        # save mouse drag start position
+        self.start_x = self.canvas.canvasx(event.x)
+        self.start_y = self.canvas.canvasy(event.y)
+
+        self.selected = self.canvas.find_overlapping(
+                    event.x-5, event.y-5, event.x+5, event.y+5)
+
+        # create rectangle if not yet exist
+        if not self.selected:
+            self.rect = self.canvas.create_rectangle(event.x, event.y, 
+                                         event.x, event.y, 
+                                         outline='red',
+                                         tag = 'loop-'+str(self.l))
+            self.isLoop = True
+
+    def on_button_release(self, event):
+        self.isLoop = False
+        pass    
+    
     def select(self, event):
         """ Selects the module at the mouse location. """
         self.selected = self.canvas.find_overlapping(
@@ -128,7 +154,6 @@ class aidCanvas(tk.Frame):
             # self.canvas.startxy = (event.x, event.y)
         else:
             self.canvas.selected = None
-            
         self.m = int(self.canvas.gettags("current")[0][1:])
         
     def on_drag(self, event):
@@ -136,42 +161,59 @@ class aidCanvas(tk.Frame):
         At the same time, it looks up if there are any connection to this
         module and subsequently moves the connection."""
         
-        self.select(event)
-        
-        self.m = int(self.canvas.gettags("current")[0][1:])
-        dx = event.x - self.canvas.startxy[self.m][0]
-        dy = event.y - self.canvas.startxy[self.m][1]
-        # module
-        self.canvas.move('o'+str(self.m), dx, dy) 
-        # Connections
-        if any(self.out_data.iloc[self.m].values) or any(
-                self.out_data[self.out_data.columns[self.m]].values):
-            out = np.arange(self.out_data.values.shape[0])[
-                self.out_data.values[self.m, :]==1]
-            for o in out:
-                xycoord_i = self.canvas.coords(
-                    self.connections[self.m][o].split('-')[0])
-                xycoord_o = self.canvas.coords(
-                    self.connections[self.m][o].split('-')[1])
-                self.canvas.coords(self.connections[self.m][o], 
-                        (xycoord_i[0] + self.cr, 
-                         xycoord_i[1] + self.cr, 
-                         xycoord_o[0] + self.cr, 
-                         xycoord_o[1] + self.cr))
-            inp = np.arange(self.out_data.values.shape[0])[
-                self.out_data.values[:, self.m]==1]
-            for i in inp:
-                xycoord_i = self.canvas.coords(
-                    self.connections[i][self.m].split('-')[0])
-                xycoord_o = self.canvas.coords(
-                    self.connections[i][self.m].split('-')[1])
-                self.canvas.coords(self.connections[i][self.m], 
-                        (xycoord_i[0] + self.cr, 
-                         xycoord_i[1] + self.cr, 
-                         xycoord_o[0] + self.cr, 
-                         xycoord_o[1] + self.cr))
-        # Update module location
-        self.canvas.startxy[self.m] = (event.x, event.y)
+        if self.isLoop:
+            curX = self.canvas.canvasx(event.x)
+            curY = self.canvas.canvasy(event.y)
+    
+            # w, h = self.canvas.winfo_width(), self.canvas.winfo_height()
+            # if event.x > 0.9*w:
+            #     self.canvas.xview_scroll(1, 'units') 
+            # elif event.x < 0.1*w:
+            #     self.canvas.xview_scroll(-1, 'units')
+            # if event.y > 0.9*h:
+            #     self.canvas.yview_scroll(1, 'units') 
+            # elif event.y < 0.1*h:
+            #     self.canvas.yview_scroll(-1, 'units')
+    
+            # expand rectangle as you drag the mouse
+            self.canvas.coords(self.rect, self.start_x, self.start_y, curX, curY)
+        else:
+            self.select(event)
+            
+            self.m = int(self.canvas.gettags("current")[0][1:])
+            dx = event.x - self.canvas.startxy[self.m][0]
+            dy = event.y - self.canvas.startxy[self.m][1]
+            # module
+            self.canvas.move('o'+str(self.m), dx, dy) 
+            # Connections
+            if any(self.out_data.iloc[self.m].values) or any(
+                    self.out_data[self.out_data.columns[self.m]].values):
+                out = np.arange(self.out_data.values.shape[0])[
+                    self.out_data.values[self.m, :]==1]
+                for o in out:
+                    xycoord_i = self.canvas.coords(
+                        self.connections[self.m][o].split('-')[0])
+                    xycoord_o = self.canvas.coords(
+                        self.connections[self.m][o].split('-')[1])
+                    self.canvas.coords(self.connections[self.m][o], 
+                            (xycoord_i[0] + self.cr, 
+                             xycoord_i[1] + self.cr, 
+                             xycoord_o[0] + self.cr, 
+                             xycoord_o[1] + self.cr))
+                inp = np.arange(self.out_data.values.shape[0])[
+                    self.out_data.values[:, self.m]==1]
+                for i in inp:
+                    xycoord_i = self.canvas.coords(
+                        self.connections[i][self.m].split('-')[0])
+                    xycoord_o = self.canvas.coords(
+                        self.connections[i][self.m].split('-')[1])
+                    self.canvas.coords(self.connections[i][self.m], 
+                            (xycoord_i[0] + self.cr, 
+                             xycoord_i[1] + self.cr, 
+                             xycoord_o[0] + self.cr, 
+                             xycoord_o[1] + self.cr))
+            # Update module location
+            self.canvas.startxy[self.m] = (event.x, event.y)
     
     def module_out(self, name):
         """ Updates the output DataFrame.
@@ -289,7 +331,6 @@ class aidCanvas(tk.Frame):
                             tags = ('o'+str(int(self.tag[1:])), 
                                   'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
                 self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
-                print(self.out_data.values)
                 self.connections[
                     int(self.tag[1:])][int(tag2[1:])] = self.tag + '-' + tag2
             self.draw = False
@@ -320,9 +361,7 @@ class aidCanvas(tk.Frame):
                    + np.sum(data.values, axis = 1)) < 1
             col = data.columns
             for c in np.arange(len(idx))[idx]:
-                data = data.drop(columns=col[c], index=col[c])
-            print(data.values)
-            
+                data = data.drop(columns=col[c], index=col[c])            
             filedata = pd.DataFrame(data, columns = data.keys()).to_string()
             self.save_path.seek(0) # Move to the first row to overwrite it
             self.save_path.write(filedata)
