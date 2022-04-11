@@ -1,10 +1,10 @@
 <Settings>
     <pipeline>
-        <Initialise name = "Init">
-            <initial_data file = "../resources/intial_data_test.csv"/>>
-            <goal file = "../resources/design_goals_test.csv"/>>
+        <Initialise name="Init">
+            <initial_data file="../resources/intial_data_test.csv" />
+            <goal file="../resources/design_goals_test.csv" />&gt;
             <relationships>
-                <child name = "My First GUI Module"/>
+                <child name="My First GUI Module" />
             </relationships>
         </Initialise>
         <GUI name="My First GUI Module">
@@ -21,65 +21,58 @@
                 </class_list>
             </plugin>
             <relationships>
-                <parent name = "Init"/>
-                <child name = "Data Processing 1"/>
+                <parent name="Init" />
+                <child name="Data Processing 1" />
             </relationships>
         </GUI>
-
-        <loop type= "for" condition = "10" name = "For Loop 1" >
-        <!-- <loop type= "while" condition = "a <= b" name = "While Loop" > -->
-        <!-- <loop type= "manual" condition = "user_defined" name = "Manual  Loop" > -->
-
-            <DataProcessing name = "Data Processing 1">
-                <plugin type = "interpolation">
-                    <interpolation_resolution value = "10" />
+        <loop type="for" condition="10" name="For Loop 1">
+            <DataProcessing name="Data Processing 1">
+                <plugin type="interpolation">
+                    <interpolation_resolution value="10" />
                 </plugin>
                 <relationships>
-                    <parent name = "My First GUI Module"/>
-                    <parent name = "My Second GUI Module"/>
-                    <child name = "My Second GUI Module"/>
+                    <parent name="My First GUI Module" />
+                    <parent name="My Second GUI Module" />
+                    <child name="My Second GUI Module" />
                 </relationships>
             </DataProcessing>
-
             <GUI name="My Second GUI Module">
                 <plugin type="canvas">
                     <class_list>
-                        ['State_a', 'Action_a']
-                        ['State_x', 'State_y', 'Action_x', 'Action_y']
-                        ['State_x', 'State_y', 'Action_x', 'Action_y']
+                        ['State_a','Action_a']
+                        ['State_x','State_y','Action_x','Action_y']
+                        ['State_x','State_y','Action_x','Action_y']
                     </class_list>
                 </plugin>
                 <relationships>
-                    <parent name = "Data Processing 1"/>
-                    <child name = "Data Processing 1"/>
-                    <child name = "Output"/>
+                    <parent name="Data Processing 1" />
+                    <child name="Data Processing 1" />
+                    <child name="Output" />
                 </relationships>
             </GUI>
-            <loop type= "while 1" condition = "a= b" name = "While Loop">
-
-                <DataProcessing name = "Data Processing 2">
-                    <plugin type = "interpolation">
-                        <interpolation_resolution value = "10" />
+            <loop type="while 1" condition="a= b" name="While Loop">
+                <DataProcessing name="Data Processing 2">
+                    <plugin type="interpolation">
+                        <interpolation_resolution value="10" />
                     </plugin>
                     <relationships>
-                        <parent name = "My First GUI Module"/>
-                        <parent name = "My Second GUI Module"/>
-                        <child name = "My Second GUI Module"/>
+                        <parent name="My First GUI Module" />
+                        <parent name="My Second GUI Module" />
+                        <child name="My Second GUI Module" />
                     </relationships>
                 </DataProcessing>
-
                 <GUI name="My Third GUI Module">
                     <plugin type="canvas">
                         <class_list>
-                            ['State_a', 'Action_a']
-                            ['State_x', 'State_y', 'Action_x', 'Action_y']
-                            ['State_x', 'State_y', 'Action_x', 'Action_y']
+                            ['State_a','Action_a']
+                            ['State_x','State_y','Action_x','Action_y']
+                            ['State_x','State_y','Action_x','Action_y']
                         </class_list>
                     </plugin>
                     <relationships>
-                        <parent name = "Data Processing 1"/>
-                        <child name = "Data Processing 1"/>
-                        <child name = "Output"/>
+                        <parent name="Data Processing 1" />
+                        <child name="Data Processing 1" />
+                        <child name="Output" />
                     </relationships>
                 </GUI>
             </loop>
@@ -88,17 +81,12 @@
             <out_data>
                 all
             </out_data>
-            <save_to file = "../resources/output_test.csv"/>
+            <save_to file="../resources/output_test.csv" />
             <relationships>
-                <parent name = "My Second GUI Module"/>
+                <parent name="My Second GUI Module" />
             </relationships>
         </Output>
-
     </pipeline>
-
-
-
-
     <datastructure name="datatest">
         <data_fields>
             State_0

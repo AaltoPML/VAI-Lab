@@ -63,19 +63,18 @@ class Settings(object):
         parent[module_name] = {
             "module_type": module_type,
             "plugin_name": plugin_name,
-            "options":{}
+            "options": {}
         }
         self.parse_plugin_options(plugin, parent[module_name]["options"])
         self.add_relationships(element, parent[module_name])
 
     def parse_plugin_options(self, element, parent):
         for child in element:
-            if child.text != None: 
+            if child.text != None:
                 val = self.parse_text_to_list(child)
             elif child.attrib["value"] != None:
                 val = child.attrib["value"]
             parent[child.tag] = val
-            
 
     def add_entry_point(self, element, parent):
         initialiser_name = element.attrib["name"]
@@ -88,10 +87,10 @@ class Settings(object):
 
     def add_exit_point(self, element, parent):
         parent["output"] = {}
-        parent["output"]["save_fields"] = self.parse_text_to_list(element.find("out_data"))
+        parent["output"]["save_fields"] = self.parse_text_to_list(
+            element.find("out_data"))
         parent["output"]["save_dir"] = element.find("save_to").attrib["file"]
         self.add_relationships(element, parent["output"])
-        
 
     def add_loop(self, element, parent):
         loop_name = element.attrib["name"]
@@ -117,12 +116,14 @@ class Settings(object):
                 = self.parse_text_to_list(child)
 
     def parse_text_to_list(self, element: ET.Element) -> list:
-        new = element.text.replace(" ", "")
+        new = element.text.strip().replace(" ", "")
         out = new.split("\n")
-        out = [item for item in out if item != ""]
+        raw_elem_text = str()
         for idx in range(0, len(out)):
+            raw_elem_text = (raw_elem_text+"\n{}").format(out[idx])
             if "[" in out[idx] and "]" in out[idx]:
                 out[idx] = literal_eval(out[idx])
+        element.text = raw_elem_text
         return out
 
     def print_pretty(self, element: ET.Element):
@@ -136,7 +137,7 @@ class Settings(object):
     def print_loaded_data_structure(self):
         self.print_pretty(self.loaded_data_options)
 
-    def append_to_XML(self):
+    def write_to_XML(self):
         """Formats XML Tree correctly, then writes to filename
         """
         self.indent(self.root)
@@ -150,10 +151,11 @@ class Settings(object):
         :param elem: xml.etree.ElementTree.Element to be indented
         :param level: int, level of initial indentation
         """
-        i = "\n" + level*"  "
+        sep = "    "
+        i = "\n" + level*sep
         if len(elem):
             if not elem.text or not elem.text.strip():
-                elem.text = i + "  "
+                elem.text = i + sep
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for elem in elem:
@@ -163,18 +165,21 @@ class Settings(object):
         else:
             if level and (not elem.tail or not elem.tail.strip()):
                 elem.tail = i
+            if elem.text:
+                elem.text = elem.text.replace("\n",("\n" + (level+1)*sep))
+                elem.text = ("{0}{1}").format(elem.text,i)
 
     def append_pipeline_module_to_file(self,
                                        module_type: str,
                                        module_name: str,
                                        plugin_type: str,
-                                       class_list: list
+                                       plugin_options: dict
                                        ):
         """Append new pipeline module to existing XML file
         :param module_type: string declare type of module (GUI,data_processing etc)
         :param module_name: string give module a user-defined name
         :param plugin_type: string type of plugin to be loaded into module
-        :param class_list: list(string) of class labels for plugin
+        :param plugin_options: dict where keys & values are options & values
         TODO: This is very specific to the GUI module - need to make more generic
         """
         new_mod = ET.Element(module_type)
@@ -183,11 +188,19 @@ class Settings(object):
         new_plugin = ET.SubElement(new_mod, "plugin")
         new_plugin.set('type', plugin_type)
 
-        new_class_list = ET.SubElement(new_plugin, "class_list")
-        new_class_list.text = class_list
+        # new_options = 
+        for key in plugin_options.keys():
+            new_option = ET.SubElement(new_plugin, key)
+            if isinstance(plugin_options[key],list):
+                # option_text = ("\n\t\t\t{}\n\t\t".format("\n\t\t\t".join([*plugin_options[key]])))
+                option_text = ("\n{}".format("\n".join([*plugin_options[key]])))
+                new_option.text = option_text
+
+            elif isinstance(plugin_options[key],str):
+                new_option.set('value', plugin_options[key])
 
         self.pipeline_tree.append(new_mod)
-        self.append_to_XML()
+        self.write_to_XML()
 
     def append_data_structure_field_to_file(self,
                                             field_type: str,
@@ -198,15 +211,16 @@ class Settings(object):
             new_field.set('name', field_name)
         new_field.text = value
         self.data_tree.append(new_field)
-        self.append_to_XML()
+        self.write_to_XML()
 
 
 s = Settings()
 s.load_XML("./resources/example_config.xml")
-s.print_loaded_modules()
+s.write_to_XML()
+# s.print_loaded_modules()
 # s.append_pipeline_module_to_file("GUI",
 #                       "added_mod",
 #                       "startpage",
-#                       "no+class_list")
+#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]})
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()
