@@ -74,6 +74,8 @@ class aidCanvas(tk.Frame):
         
         self.l = 0 #number of loops
         self.drawLoop = False
+        self.loops = []
+        
         # self.canvas.bind("<ButtonPress-1>", self.on_button_press)
         self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
         
@@ -122,12 +124,39 @@ class aidCanvas(tk.Frame):
         self.saved = True
 
     def on_button_release(self, event):
+        """ Finishes drawing the rectangle for loop definition. 
+            Once the rectangle is drawn, it stores the information of the 
+            modules inside the loop.
+        """
         if self.drawLoop:
             self.drawLoop = False
             self.l += 1
+            loopMod = self.canvas.find_enclosed(self.start_x, self.start_y, 
+                                                self.curX, self.curY)
+            self.loops.append({'modules': [], 
+                               'coord': (self.start_x, self.start_y, 
+                                         self.curX, self.curY)})
+            for mod in loopMod[1::6]:
+                self.loops[-1]['modules'].append(self.canvas.itemcget(
+                    mod, 'text'))
+            print(self.loops)
         else:
             pass
     
+    # def updateLoops(self, ):
+    #     """ Checks if, after some movement, a module is included in an existing
+    #         loop
+    #     """
+    #     for l, loop in enumerate(self.loops):
+    #         coord = loop['coord']
+    #         loopMod = self.canvas.find_enclosed(coord[0], coord[1],
+    #                                             coord[2], coord[3])
+    #         self.loops[l]['modules'] = []
+    #         for mod in loopMod[1::6]:
+    #             self.loops[l]['modules'].append(self.canvas.itemcget(
+    #                 mod, 'text'))
+    #     print(self.loops)
+        
     def select(self, event):
         """ Selects the module at the mouse location. """
         self.selected = self.canvas.find_overlapping(
@@ -157,13 +186,14 @@ class aidCanvas(tk.Frame):
                 self.drawLoop = True
                 self.canvas.tag_lower('loop-'+str(self.l))
         
-        if (len(self.canvas.gettags("current")[0].split('-')) > 1) and (
+        if len(self.canvas.gettags("current")) > 0:
+            if(len(self.canvas.gettags("current")[0].split('-')) > 1) and (
                 self.canvas.gettags("current")[0].split('-')[0] == 'loop'):
-            self.isLoop = True
-            self.m = int(self.canvas.gettags("current")[0].split('-')[1])
-        else:
-            self.isLoop = False
-            self.m = int(self.canvas.gettags("current")[0][1:])
+                self.isLoop = True
+                self.m = int(self.canvas.gettags("current")[0].split('-')[1])
+            else:
+                self.isLoop = False
+                self.m = int(self.canvas.gettags("current")[0][1:])
     
     def on_drag(self, event):
         """ Uses the mouse location to move the module and its text. 
@@ -171,8 +201,8 @@ class aidCanvas(tk.Frame):
         module and subsequently moves the connection."""
         
         if self.drawLoop:
-            curX = self.canvas.canvasx(event.x)
-            curY = self.canvas.canvasy(event.y)
+            self.curX = self.canvas.canvasx(event.x)
+            self.curY = self.canvas.canvasy(event.y)
     
             # w, h = self.canvas.winfo_width(), self.canvas.winfo_height()
             # if event.x > 0.9*w:
@@ -186,7 +216,7 @@ class aidCanvas(tk.Frame):
     
             # expand rectangle as you drag the mouse
             self.canvas.coords('loop-'+str(self.l), self.start_x, 
-                               self.start_y, curX, curY)
+                               self.start_y, self.curX, self.curY)
         else:
             self.select(event)
             
@@ -197,7 +227,8 @@ class aidCanvas(tk.Frame):
                 # self.canvas.move('loop-'+str(self.m), dx, dy) 
             # else:
             # module
-            self.canvas.move('o'+str(self.m), dx, dy) 
+            self.canvas.move('o'+str(self.m), dx, dy)
+            # self.updateLoops()
             # Connections
             if any(self.out_data.iloc[self.m].values) or any(
                     self.out_data[self.out_data.columns[self.m]].values):
@@ -368,6 +399,7 @@ class aidCanvas(tk.Frame):
         if self.canvas.selected:
             if self.isLoop:
                 self.canvas.delete('loop-'+str(self.m))
+                self.loops[self.m] = -1
             elif not(self.m == 0):
                 self.canvas.delete('o'+str(self.m))
                 
@@ -511,7 +543,10 @@ class aidCanvas(tk.Frame):
                                         y0 + self.h/2))
             self.connections = {}
             self.connections[0] = {}
+            self.loops = []
+            self.drawLoop = False
             self.modules = 1
+            self.l = 0
             self.saved = False
     
 if __name__ == "__main__":
