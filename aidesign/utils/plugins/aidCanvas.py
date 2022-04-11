@@ -73,9 +73,8 @@ class aidCanvas(tk.Frame):
         self.canvas.bind('<Button-1>', self.select)
         
         self.l = 0 #number of loops
-        self.isLoop = False
-        self.canvas.bind("<ButtonPress-1>", self.on_button_press)
-        # self.canvas.bind("<B1-Motion>", self.on_move_press)
+        self.drawLoop = False
+        # self.canvas.bind("<ButtonPress-1>", self.on_button_press)
         self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
         
         # modules = ['Data preprocessing', 'Modelling', 'Decision making', 'User Feedback Adaptation']
@@ -121,26 +120,13 @@ class aidCanvas(tk.Frame):
         
         self.save_path = ''
         self.saved = True
-    
-    def on_button_press(self, event):
-        # save mouse drag start position
-        self.start_x = self.canvas.canvasx(event.x)
-        self.start_y = self.canvas.canvasy(event.y)
-
-        self.selected = self.canvas.find_overlapping(
-                    event.x-5, event.y-5, event.x+5, event.y+5)
-
-        # create rectangle if not yet exist
-        if not self.selected:
-            self.rect = self.canvas.create_rectangle(event.x, event.y, 
-                                         event.x, event.y, 
-                                         outline='red',
-                                         tag = 'loop-'+str(self.l))
-            self.isLoop = True
 
     def on_button_release(self, event):
-        self.isLoop = False
-        pass    
+        if self.drawLoop:
+            self.drawLoop = False
+            self.l += 1
+        else:
+            pass
     
     def select(self, event):
         """ Selects the module at the mouse location. """
@@ -154,14 +140,37 @@ class aidCanvas(tk.Frame):
             # self.canvas.startxy = (event.x, event.y)
         else:
             self.canvas.selected = None
-        self.m = int(self.canvas.gettags("current")[0][1:])
+            # save mouse drag start position
+            self.start_x = self.canvas.canvasx(event.x)
+            self.start_y = self.canvas.canvasy(event.y)
+    
+            self.selected = self.canvas.find_overlapping(
+                        event.x-5, event.y-5, event.x+5, event.y+5)
+    
+            # create rectangle if not yet exist
+            if not self.selected:
+                self.rect = self.canvas.create_rectangle(event.x, event.y, 
+                                             event.x, event.y, 
+                                             outline = '#4ff07a',
+                                             tag = 'loop-'+str(self.l),
+                                             fill = '#b3ffc7')
+                self.drawLoop = True
+                self.canvas.tag_lower('loop-'+str(self.l))
         
+        if (len(self.canvas.gettags("current")[0].split('-')) > 1) and (
+                self.canvas.gettags("current")[0].split('-')[0] == 'loop'):
+            self.isLoop = True
+            self.m = int(self.canvas.gettags("current")[0].split('-')[1])
+        else:
+            self.isLoop = False
+            self.m = int(self.canvas.gettags("current")[0][1:])
+    
     def on_drag(self, event):
         """ Uses the mouse location to move the module and its text. 
         At the same time, it looks up if there are any connection to this
         module and subsequently moves the connection."""
         
-        if self.isLoop:
+        if self.drawLoop:
             curX = self.canvas.canvasx(event.x)
             curY = self.canvas.canvasy(event.y)
     
@@ -176,13 +185,17 @@ class aidCanvas(tk.Frame):
             #     self.canvas.yview_scroll(-1, 'units')
     
             # expand rectangle as you drag the mouse
-            self.canvas.coords(self.rect, self.start_x, self.start_y, curX, curY)
+            self.canvas.coords('loop-'+str(self.l), self.start_x, 
+                               self.start_y, curX, curY)
         else:
             self.select(event)
             
             self.m = int(self.canvas.gettags("current")[0][1:])
             dx = event.x - self.canvas.startxy[self.m][0]
             dy = event.y - self.canvas.startxy[self.m][1]
+            # if self.isLoop:
+                # self.canvas.move('loop-'+str(self.m), dx, dy) 
+            # else:
             # module
             self.canvas.move('o'+str(self.m), dx, dy) 
             # Connections
@@ -222,8 +235,10 @@ class aidCanvas(tk.Frame):
         :type name: str
         """
         name_list = list(self.out_data.columns)
-        m_num = [n.split('-')[1] for n in name_list if n.split('-')[0]==name]
+        m_num = [n.split('-')[1] for n in name_list if (
+            len(n.split('-')) > 1) and (n.split('-')[0] == name)]
         name_list.append(name + '-' + str(len(m_num)))
+        self.canvas.itemconfig('t'+str(self.modules), text = name_list[-1])
         values = self.out_data.values
         values = np.vstack((
                     np.hstack((values, np.zeros((values.shape[0],1)))),
@@ -238,7 +253,7 @@ class aidCanvas(tk.Frame):
         :param boxName: name of the model
         :type boxName: str
         """
-        text_w = self.controller.pages_font.measure(boxName)+10
+        text_w = self.controller.pages_font.measure(boxName+'-00') + 10
         self.canvas.create_rectangle(
             self.width/2 - text_w/2 , 
             self.height/2 - self.h/2, 
@@ -255,6 +270,8 @@ class aidCanvas(tk.Frame):
             tags = ('o'+str(self.modules), 't'+str(self.modules)), 
             fill = '#d0d4d9', 
             justify = tk.CENTER)
+        self.canvas.tag_bind('t'+str(self.modules), 
+                             "<Double-1>", self.OnDoubleClick)
         self.canvas.create_oval(
             self.width/2 - self.cr, 
             self.height/2 + self.h/2 - self.cr, 
@@ -298,19 +315,66 @@ class aidCanvas(tk.Frame):
         self.canvas.startxy.append((self.width/2, 
                                     self.height/2))
         self.connections[self.modules] = {}
-        self.modules += 1
         self.module_out(boxName)
+        self.modules += 1
         self.saved = False
+    
+    def on_return(self, event):
+        moduleName = self.entry.get()
+        if (moduleName in list(self.out_data.columns)) and not(
+                moduleName == list(self.out_data.columns)[self.m]):
+            messagebox.showwarning("Error", "This module already exists.")
+        else:
+            self.canvas.itemconfig('t'+str(self.m), text = moduleName)
+            self.entry.destroy()
+            self.out_data.rename(columns = {list(self.out_data.columns)[self.m]: moduleName}, 
+                                 index = {list(self.out_data.columns)[self.m]: moduleName}, 
+                                 inplace = True)
+    
+    def OnDoubleClick(self, event):
         
+        """ Executed when text is double clicked.
+        Opens an entry box to edit the module name and updates the display and
+        the stored data. """
+        
+        self.selected = self.canvas.find_overlapping(
+            event.x-5, event.y-5, event.x+5, event.y+5)
+        
+        x0, y0, x1, y1 = self.canvas.coords(self.canvas.gettags("current")[0])
+        
+        if hasattr(self, 'entry'):
+            self.entry.destroy()
+        
+        entryText = self.canvas.itemcget('t'+str(self.m), 'text')
+        
+        self.entry = tk.Entry(self.canvas, justify='center', 
+                              font = self.controller.pages_font)
+
+        self.entry.insert(
+            0, entryText)
+        self.entry['selectbackground'] = '#d0d4d9'
+        self.entry['exportselection'] = False
+
+        self.entry.focus_force()
+        self.entry.bind("<Return>", self.on_return)
+        self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+        
+        self.entry.place(x = x0, 
+                          y = y0 + (y1-y0)/2, 
+                          anchor = tk.W, width = x1 - x0)
+            
     def delete_sel(self):
         """ Deletes last selected module"""
-        if self.canvas.selected and not(self.m == 0):
-            self.canvas.delete('o'+str(self.m))
-            
-            col = self.out_data.columns[self.m]
-            self.out_data[col] = 0
-            self.out_data.loc[col] = 0
-            self.saved = False
+        if self.canvas.selected:
+            if self.isLoop:
+                self.canvas.delete('loop-'+str(self.m))
+            elif not(self.m == 0):
+                self.canvas.delete('o'+str(self.m))
+                
+                col = self.out_data.columns[self.m]
+                self.out_data[col] = 0
+                self.out_data.loc[col] = 0
+                self.saved = False
                 
     def join_modules(self, event):
         """ Draws a connecting line between two connecting circles. """
