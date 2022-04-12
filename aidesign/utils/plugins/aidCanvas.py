@@ -41,18 +41,19 @@ class aidCanvas(tk.Frame):
                          padx = 10, pady = 10)
         
         self.canvas.startxy = []
-        self.out_data = pd.DataFrame(np.zeros((1,1)), 
-                                     columns = ['Initialisation'], 
-                                     index = ['Initialisation'])
+        self.out_data = pd.DataFrame(np.zeros((2,2)), 
+                                     columns = ['Initialisation', 'Output'], 
+                                     index = ['Initialisation', 'Output'])
         self.connections = {}
         self.connections[0] = {}
+        self.connections[1] = {}
         # Create module
         self.w, self.h = 100, 50
         x0 = self.width/2 - (
             self.controller.pages_font.measure('Initialisation')+10)/2
 
         self.cr = 4
-        
+        #Initialisation module
         self.canvas.create_rectangle(x0, self.h, x0 + self.w, 2*self.h, 
                                      tags = 'p0', fill = self.bg, width = 3,
                                      activefill = '#dbaa21')
@@ -65,13 +66,31 @@ class aidCanvas(tk.Frame):
                         x0 + self.w/2+self.cr, 2*self.h+self.cr, 
                         width=2, fill = 'black', tags='d0')
         self.canvas.tag_bind('d0', "<Button-1>", self.join_modules)
-        self.draw = False
         self.canvas.startxy.append((x0 + self.w/2, 
                                     3*self.h/2))
+        # Output module
+        h_out = self.height - 2*self.h
+        self.canvas.create_rectangle(x0, h_out, x0 + self.w, h_out + self.h, 
+                                     tags = ('p1'), 
+                                     fill = self.bg, width = 3,
+                                     activefill = '#dbaa21')
+        self.canvas.create_text(x0 + self.w/2, h_out + self.h/2, 
+                                text = 'Output', tags = ('t1'), 
+                                fill = '#d0d4d9', 
+                                font = self.controller.pages_font)
+        self.canvas.create_oval(
+                        x0 + self.w/2 - self.cr, 
+                        h_out - self.cr, 
+                        x0 + self.w/2 + self.cr, 
+                        h_out  + self.cr,
+                        width=2, fill = 'black', tags = ('u1'))
+        self.canvas.tag_bind('u1', "<Button-1>", self.join_modules)
+        self.canvas.startxy.append((x0 + self.w/2, 
+                                    h_out + self.h/2))
         
+        self.draw = False
         self.canvas.bind("<B1-Motion>", self.on_drag)
         self.canvas.bind('<Button-1>', self.select)
-        
         self.l = 0 #number of loops
         self.drawLoop = False
         self.loops = []
@@ -81,7 +100,7 @@ class aidCanvas(tk.Frame):
         
         # modules = ['Data preprocessing', 'Modelling', 'Decision making', 'User Feedback Adaptation']
         
-        self.modules = 1
+        self.modules = 2
         # for m, module in enumerate(modules):
         tk.Button(
             self, text = 'Data preprocessing', fg = 'white', bg = parent['bg'],
