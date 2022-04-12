@@ -146,7 +146,8 @@ class aidCanvas(tk.Frame):
             if self.loopDisp:
                 condition = self.entry1.get()
                 self.entry1.destroy()
-                self.entry2.focus()
+                if hasattr(self, 'entry2'):
+                    self.entry2.focus()
                 key = 'type'
                 text_w = self.controller.pages_font.measure(condition) + 20
                 x = self.start_x + text_w/2
@@ -239,9 +240,12 @@ class aidCanvas(tk.Frame):
             loopMod = self.canvas.find_enclosed(coord[0], coord[1],
                                                 coord[2], coord[3])
             self.loops[l]['modules'] = []
-            for mod in loopMod[2::6]:
-                self.loops[l]['modules'].append(self.canvas.itemcget(
-                    mod, 'text'))
+            for mod in loopMod:
+                aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
+                if len(aux) == 2 and aux[0] == 't':
+                    self.loops[l]['modules'].append(self.canvas.itemcget(
+                        mod, 'text'))
+        print('Updated loop info:')
         print(self.loops)
         
     def select(self, event):
@@ -442,6 +446,10 @@ class aidCanvas(tk.Frame):
         self.saved = False
     
     def on_return_rename(self, event):
+        """ This function renames a module to the input specified through 
+        an entry widget. It then updates the corresponding rows and columns in
+        the stored data."""
+        
         moduleName = self.entry.get()
         if (moduleName in list(self.out_data.columns)) and not(
                 moduleName == list(self.out_data.columns)[self.m]):
@@ -452,7 +460,18 @@ class aidCanvas(tk.Frame):
             self.out_data.rename(columns = {list(self.out_data.columns)[self.m]: moduleName}, 
                                  index = {list(self.out_data.columns)[self.m]: moduleName}, 
                                  inplace = True)
-    
+            
+    def on_return_editLoop(self, event):
+        """ This function renames loop conditions and updates the loop
+        information."""
+        
+        newText = self.entry.get()
+        conditions = self.canvas.itemcget(
+                        self.selected[0], 'tags').split(' ')[1].split('-')
+        self.canvas.itemconfig(self.selected[0], text = newText)
+        self.entry.destroy()
+        self.loops[int(conditions[1])][conditions[0]] = newText
+        
     def OnDoubleClick(self, event):
         
         """ Executed when text is double clicked.
@@ -462,31 +481,59 @@ class aidCanvas(tk.Frame):
         self.selected = self.canvas.find_overlapping(
             event.x-5, event.y-5, event.x+5, event.y+5)
         
-        x0, y0, x1, y1 = self.canvas.coords(self.canvas.gettags("current")[0])
-        
-        print(self.canvas.itemcget(self.canvas.gettags("current")[0], 'text'))
-        
-        if hasattr(self, 'entry'):
-            self.entry.destroy()
-        
-        entryText = self.canvas.itemcget('t'+str(self.m), 'text')
-        
-        self.entry = tk.Entry(self.canvas, justify='center', 
-                              font = self.controller.pages_font)
-
-        self.entry.insert(
-            0, entryText)
-        self.entry['selectbackground'] = '#d0d4d9'
-        self.entry['exportselection'] = False
-
-        self.entry.focus_force()
-        self.entry.bind("<Return>", self.on_return_rename)
-        self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
-        
-        self.entry.place(x = x0, 
-                          y = y0 + (y1-y0)/2, 
-                          anchor = tk.W, width = x1 - x0)
+        # If not loop text
+        if len(self.canvas.itemcget(
+                self.selected[0], 'tags').split(' ')[-2].split('-')) < 2:
             
+            x0, y0, x1, y1 = self.canvas.coords(self.canvas.gettags("current")[0])
+            if hasattr(self, 'entry'):
+                self.entry.destroy()
+            
+            entryText = self.canvas.itemcget('t'+str(self.m), 'text')
+            
+            self.entry = tk.Entry(self.canvas, justify='center', 
+                                  font = self.controller.pages_font)
+    
+            self.entry.insert(
+                0, entryText)
+            self.entry['selectbackground'] = '#d0d4d9'
+            self.entry['exportselection'] = False
+    
+            self.entry.focus_force()
+            self.entry.bind("<Return>", self.on_return_rename)
+            self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+            
+            self.entry.place(x = x0, 
+                              y = y0 + (y1-y0)/2, 
+                              anchor = tk.W, width = x1 - x0)
+        # If loop text
+        else:
+            x0, y0 = self.canvas.coords(self.selected[0])
+            if hasattr(self, 'entry'):
+                self.entry.destroy()
+
+            # condition = self.canvas.itemcget(
+            #             self.selected[0], 'tags').split(' ')[-2]#.split('-')[0]
+            entryText = self.canvas.itemcget(self.selected[0], 'text')
+            
+            self.entry = tk.Entry(self.canvas, justify='center', 
+                                  font = self.controller.pages_font)
+            self.entry.insert(0, entryText)
+            # self.entry1['selectbackground'] = '#d0d4d9'
+            self.entry['exportselection'] = False
+    
+            self.entry.focus()
+            self.entry.bind("<Return>", self.on_return_editLoop)
+            self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+            text_w = self.controller.pages_font.measure(entryText) + 20
+            self.entry.place(x = x0 - text_w/2, 
+                          y = y0, 
+                          anchor = tk.W, 
+                          width = text_w)
+            
+            # elif condition.split('-')[0] == 'condition':
+
+                
     def delete_sel(self):
         """ Deletes last selected module"""
         if self.canvas.selected:
