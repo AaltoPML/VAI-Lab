@@ -598,6 +598,12 @@ class aidCanvas(tk.Frame):
         if self.save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
             # Transform input for output file    
             data = self.out_data.copy()
+            if np.sum(data.values[0,:]) == 0:
+                messagebox.showwarning(
+                    "Error", "Initialiser is not connected to any module.")
+            elif np.sum(data.values[:,1]) == 0:
+                messagebox.showwarning(
+                    "Error", "Output is not connected to any module.")
             idx = (np.sum(data.values, axis = 0) 
                    + np.sum(data.values, axis = 1)) < 1
             col = data.columns
