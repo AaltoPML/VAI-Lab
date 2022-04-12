@@ -123,9 +123,14 @@ class aidCanvas(tk.Frame):
             command = lambda: self.add_module('User Feedback Adaptation')
             ).grid(column = 5, row = 4)
         tk.Button(
+            self, text = 'Input data', fg = 'white', bg = parent['bg'],
+            height = 3, width = 25, font = self.controller.pages_font,
+            command = lambda: self.add_module('Input data')
+            ).grid(column = 5, row = 5)
+        tk.Button(
             self, text = 'Delete selection', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = self.delete_sel).grid(column = 5, row = 5)
+            command = self.delete_sel).grid(column = 5, row = 6)
         tk.Button(
             self, text = 'Upload', fg = 'white', bg = parent['bg'], 
             height = 3, width = 20, font = self.controller.pages_font, 
