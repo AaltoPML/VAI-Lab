@@ -42,23 +42,23 @@ class aidCanvas(tk.Frame):
         
         self.canvas.startxy = []
         self.out_data = pd.DataFrame(np.zeros((2,2)), 
-                                     columns = ['Initialisation', 'Output'], 
-                                     index = ['Initialisation', 'Output'])
+                                     columns = ['Initialiser', 'Output'], 
+                                     index = ['Initialiser', 'Output'])
         self.connections = {}
         self.connections[0] = {}
         self.connections[1] = {}
         # Create module
         self.w, self.h = 100, 50
         x0 = self.width/2 - (
-            self.controller.pages_font.measure('Initialisation')+10)/2
+            self.controller.pages_font.measure('Initialiser')+10)/2
 
         self.cr = 4
-        #Initialisation module
+        #Initialiser module
         self.canvas.create_rectangle(x0, self.h, x0 + self.w, 2*self.h, 
                                      tags = 'p0', fill = self.bg, width = 3,
                                      activefill = '#dbaa21')
         self.canvas.create_text(x0 + self.w/2, 3*self.h/2, 
-                                text = 'Initialisation', tags = 't0', 
+                                text = 'Initialiser', tags = 't0', 
                                 fill = '#d0d4d9', 
                                 font = self.controller.pages_font)
         self.canvas.create_oval(
@@ -143,18 +143,29 @@ class aidCanvas(tk.Frame):
         self.saved = True
 
     def on_return_display(self, event):
-            condition = self.entry.get()
-            self.entry.destroy()            
-            self.loops[-1]['loop'] = {'type': condition.split('-')[0], 
-                                      'condition': condition.split('-')[1]}
-            text_w = self.controller.pages_font.measure(condition) + 40
+            if self.loopDisp:
+                condition = self.entry1.get()
+                self.entry1.destroy()
+                self.entry2.focus()
+                key = 'type'
+                text_w = self.controller.pages_font.measure(condition) + 20
+                x = self.start_x + text_w/2
+            else:
+                condition = self.entry2.get()
+                self.entry2.destroy()
+                key = 'condition'
+                text_w = self.controller.pages_font.measure(condition) + 20
+                x = self.curX - text_w/2
+            self.loops[-1][key] = condition
             self.canvas.create_text(
-                self.start_x + text_w/2, 
+                x, 
                 self.start_y + 20, 
                 font = self.controller.pages_font, 
                 text = condition, 
-                tags = ('loop-'+str(self.l-1)), 
+                tags = ('loop-'+str(self.l-1), key+'-'+str(self.l-1)), 
                 justify = tk.CENTER)
+            self.canvas.tag_bind(key+'-'+str(self.l-1), 
+                             "<Double-1>", self.OnDoubleClick)
             self.loopDisp = not self.loopDisp
     
     def on_button_release(self, event):
@@ -171,31 +182,48 @@ class aidCanvas(tk.Frame):
                 # Identify modules in area
                 loopMod = self.canvas.find_enclosed(self.start_x, self.start_y, 
                                                     self.curX, self.curY)
-                self.loops.append({'modules': [], 
+                self.loops.append({'type': None,
+                                   'condition': None,
+                                   'modules': [], 
                                    'coord': (self.start_x, self.start_y, 
                                              self.curX, self.curY)})
                 for mod in loopMod[1::6]:
                     self.loops[-1]['modules'].append(self.canvas.itemcget(
                         mod, 'text'))
                 
-                # Ask for loop definition and condition and display
-                entryText = 'For/While - Condition'
-                
-                self.entry = tk.Entry(self.canvas, justify='center', 
+                # Ask for loop definition and condition and display               
+                self.entry1 = tk.Entry(self.canvas, justify='center', 
                                       font = self.controller.pages_font)
+                text = 'For/While'
                 self.loopDisp = True
-                self.entry.insert(
-                    0, entryText)
+                self.entry1.insert(0, text)
                 # self.entry['selectbackground'] = '#d0d4d9'
-                self.entry['exportselection'] = False
+                self.entry1['exportselection'] = False
         
-                self.entry.focus_force()
-                self.entry.bind("<Return>", self.on_return_display)
-                self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+                self.entry1.focus()
+                self.entry1.bind("<Return>", self.on_return_display)
+                self.entry1.bind("<Escape>", lambda *ignore: self.entry1.destroy())
                 
-                self.entry.place(x = self.start_x + 10,
-                                 y = self.start_y + 20, 
-                                 anchor = tk.W)
+                self.entry1.place(
+                    x = self.start_x + 10,
+                    y = self.start_y + 20, 
+                    anchor = tk.W,
+                    width = self.controller.pages_font.measure(text)+10)
+                text = 'Condition'
+                self.entry2 = tk.Entry(self.canvas, justify='center', 
+                                      font = self.controller.pages_font)
+                self.entry2.insert(0, text)
+                self.entry2['exportselection'] = False
+        
+                self.entry2.bind("<Return>", self.on_return_display)
+                self.entry2.bind("<Escape>", lambda *ignore: self.entry.destroy())
+                
+                self.entry2.place(
+                    x = self.curX-self.controller.pages_font.measure(text)-20,
+                    y = self.start_y + 20, 
+                    anchor = tk.W,
+                    width = self.controller.pages_font.measure(text)+10)
+                
                 self.saved = False
             else:
                 self.canvas.delete('loop-'+str(self.l))
@@ -241,10 +269,13 @@ class aidCanvas(tk.Frame):
                 self.rect = self.canvas.create_rectangle(event.x, event.y, 
                                              event.x, event.y, 
                                              outline = '#4ff07a',
-                                             tag = 'loop-'+str(self.l),
-                                             fill = '#b3ffc7')
+                                             tag = 'loop-'+str(self.l))
+                                             # ,fill = '#b3ffc7')
                 self.drawLoop = True
-                self.canvas.tag_lower('loop-'+str(self.l))
+                if self.l == 0:
+                    self.canvas.tag_lower('loop-'+str(self.l))
+                else:
+                    self.canvas.tag_raise('loop-'+str(self.l), 'loop-'+str(self.l-1))
         
         if len(self.canvas.gettags("current")) > 0:
             if(len(self.canvas.gettags("current")[0].split('-')) > 1) and (
@@ -433,6 +464,8 @@ class aidCanvas(tk.Frame):
         
         x0, y0, x1, y1 = self.canvas.coords(self.canvas.gettags("current")[0])
         
+        print(self.canvas.itemcget(self.canvas.gettags("current")[0], 'text'))
+        
         if hasattr(self, 'entry'):
             self.entry.destroy()
         
@@ -577,18 +610,24 @@ class aidCanvas(tk.Frame):
         if msg:
             self.canvas.delete(tk.ALL) # Reset canvas
             
+            if hasattr(self, 'entry'):
+                self.entry.destroy()
+            if hasattr(self, 'entry1'):
+                self.entry1.destroy()
+            if hasattr(self, 'entry2'):
+                self.entry2.destroy()
             
-            self.out_data = pd.DataFrame(np.zeros((1,1)), 
-                                         columns = ['Initialisation'], 
-                                         index = ['Initialisation'])
+            self.out_data = pd.DataFrame(np.zeros((2,2)), 
+                                         columns = ['Initialiser', 'Output'], 
+                                         index = ['Initialiser', 'Output'])
             x0 = self.width/2 - (
-            self.controller.pages_font.measure('Initialisation')+10)/2
+            self.controller.pages_font.measure('Initialiser')+10)/2
             y0 = self.h
             self.canvas.create_rectangle(x0, y0, x0 + self.w, y0 + self.h, 
                                      tags = 'p0', fill = self.bg, width = 3,
                                      activefill = '#dbaa21')
             self.canvas.create_text(x0 + self.w/2, y0 + self.h/2, 
-                                    text = 'Initialisation', tags = 't0', 
+                                    text = 'Initialiser', tags = 't0', 
                                     fill = '#d0d4d9', 
                                     font = self.controller.pages_font)
             self.canvas.create_oval(
