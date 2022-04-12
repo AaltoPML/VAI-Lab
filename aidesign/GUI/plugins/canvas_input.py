@@ -442,7 +442,6 @@ class PageCanvas(tk.Frame):
         self.entry.destroy()        
         self.saved = False
         
-        print(val)
         if self.type[ii] == 'Rotating':
             dx, dy = self.coord_calc(np.deg2rad(360 - val[0]))
             dx_pr, dy_pr = self.coord_calc(np.deg2rad(360 - self.out_data[ii]['State_a'][self.treerow]))            
