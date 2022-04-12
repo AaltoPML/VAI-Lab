@@ -225,17 +225,31 @@ class Settings(object):
                 elem.text = elem.text.replace("\n", ("\n" + (level+1)*sep))
                 elem.text = ("{0}{1}").format(elem.text, i)
 
+    def find_module_path(self, name: str):
+        """Find a module name and return its parent tags"""
+        elems = self.root.findall(".//*[@name='{0}']".format(name))
+        unique_elem = [e for e in elems if e.tag != "parent" and e.tag != "child"]
+        assert len(unique_elem)<2, "Error: More than one tag with same identifier"
+        assert len(unique_elem)>0, "Error: No element exists with name \"{0}\"".format(name)
+        return unique_elem[0]
+            
+        # for child in self.root.findall('name'):
+        #     print(child)
+
+
     def append_pipeline_module_to_file(self,
                                        module_type: str,
                                        module_name: str,
                                        plugin_type: str,
-                                       plugin_options: dict
+                                       plugin_options: dict,
+                                       parent: str = None
                                        ):
         """Append new pipeline module to existing XML file
         :param module_type: string declare type of module (GUI,data_processing etc)
         :param module_name: string give module a user-defined name
         :param plugin_type: string type of plugin to be loaded into module
         :param plugin_options: dict where keys & values are options & values
+        :param parent [optional]: str containing name of parent for new module
         """
         new_mod = ET.Element(module_type)
         new_mod.set('name', module_name)
@@ -253,7 +267,12 @@ class Settings(object):
             elif isinstance(plugin_options[key], str):
                 new_option.set('value', plugin_options[key])
 
-        self.pipeline_tree.append(new_mod)
+
+        # self.pipeline_tree.append(new_mod)
+        parent_element = self.find_module_path(parent)
+        parent_element.append(new_mod)
+        # self.indent(self.root)
+        # ET.dump(self.pipeline_tree)
         self.write_to_XML()
 
     def append_data_structure_field_to_file(self,
@@ -275,14 +294,15 @@ class Settings(object):
 
 
 s = Settings("./resources/example_config.xml")
-s.print_loaded_modules()
+# s.print_loaded_modules()
 
 # Use case examples:
 # s.load_XML("./resources/example_config.xml")
 # s.write_to_XML()
-# s.append_pipeline_module_to_file("GUI",
-#                       "added_mod",
-#                       "startpage",
-#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]})
+s.append_pipeline_module_to_file("GUI",
+                      "added_mod",
+                      "startpage",
+                      {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
+                      "My Second GUI Module")
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()
