@@ -142,6 +142,20 @@ class aidCanvas(tk.Frame):
         self.save_path = ''
         self.saved = True
 
+    def on_return_display(self, event):
+            condition = self.entry.get()
+            self.entry.destroy()            
+            self.loops[-1]['loop'] = {'loop': condition.split('-')[0], 
+                                      'condition': condition.split('-')[1]}
+            text_w = self.controller.pages_font.measure(condition) + 40
+            self.canvas.create_text(
+                self.start_x + text_w/2, 
+                self.start_y + 20, 
+                font = self.controller.pages_font, 
+                text = condition, 
+                tags = ('loop-'+str(self.l-1)), 
+                justify = tk.CENTER)
+    
     def on_button_release(self, event):
         """ Finishes drawing the rectangle for loop definition. 
             Once the rectangle is drawn, it stores the information of the 
@@ -150,6 +164,7 @@ class aidCanvas(tk.Frame):
         if self.drawLoop:
             self.drawLoop = False
             self.l += 1
+            # Identify modules in area
             loopMod = self.canvas.find_enclosed(self.start_x, self.start_y, 
                                                 self.curX, self.curY)
             self.loops.append({'modules': [], 
@@ -158,7 +173,26 @@ class aidCanvas(tk.Frame):
             for mod in loopMod[1::6]:
                 self.loops[-1]['modules'].append(self.canvas.itemcget(
                     mod, 'text'))
-            print(self.loops)
+            
+            # Ask for loop definition and condition and display
+            entryText = 'For/While - Condition'
+        
+            self.entry = tk.Entry(self.canvas, justify='center', 
+                                  font = self.controller.pages_font)
+            
+            self.entry.insert(
+                0, entryText)
+            # self.entry['selectbackground'] = '#d0d4d9'
+            self.entry['exportselection'] = False
+    
+            self.entry.focus_force()
+            self.entry.bind("<Return>", self.on_return_display)
+            self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+            
+            self.entry.place(x = self.start_x + 10,
+                             y = self.start_y + 20, 
+                             anchor = tk.W)
+            self.saved = False
         else:
             pass
     
@@ -369,7 +403,7 @@ class aidCanvas(tk.Frame):
         self.modules += 1
         self.saved = False
     
-    def on_return(self, event):
+    def on_return_rename(self, event):
         moduleName = self.entry.get()
         if (moduleName in list(self.out_data.columns)) and not(
                 moduleName == list(self.out_data.columns)[self.m]):
@@ -406,7 +440,7 @@ class aidCanvas(tk.Frame):
         self.entry['exportselection'] = False
 
         self.entry.focus_force()
-        self.entry.bind("<Return>", self.on_return)
+        self.entry.bind("<Return>", self.on_return_rename)
         self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
         
         self.entry.place(x = x0, 
@@ -555,16 +589,36 @@ class aidCanvas(tk.Frame):
                             x0 + self.w/2+self.cr, y0 + self.h+self.cr, 
                             width=2, fill = 'black', tags='d0')
             self.canvas.tag_bind('d0', "<Button-1>", self.join_modules)
-            self.draw = False
+            # Output module
+            h_out = self.height - 2*self.h
+            self.canvas.create_rectangle(x0, h_out, x0 + self.w, h_out + self.h, 
+                                         tags = ('p1'), 
+                                         fill = self.bg, width = 3,
+                                         activefill = '#dbaa21')
+            self.canvas.create_text(x0 + self.w/2, h_out + self.h/2, 
+                                    text = 'Output', tags = ('t1'), 
+                                    fill = '#d0d4d9', 
+                                    font = self.controller.pages_font)
+            self.canvas.create_oval(
+                            x0 + self.w/2 - self.cr, 
+                            h_out - self.cr, 
+                            x0 + self.w/2 + self.cr, 
+                            h_out  + self.cr,
+                            width=2, fill = 'black', tags = ('u1'))
+            self.canvas.tag_bind('u1', "<Button-1>", self.join_modules)
             
+            self.draw = False
             self.canvas.startxy = []
             self.canvas.startxy.append((x0 + self.w/2, 
                                         y0 + self.h/2))
+            self.canvas.startxy.append((x0 + self.w/2, 
+                                        h_out + self.h/2))
             self.connections = {}
             self.connections[0] = {}
+            self.connections[1] = {}
             self.loops = []
             self.drawLoop = False
-            self.modules = 1
+            self.modules = 2
             self.l = 0
             self.saved = False
     
