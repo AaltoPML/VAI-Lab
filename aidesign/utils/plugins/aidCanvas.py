@@ -145,7 +145,7 @@ class aidCanvas(tk.Frame):
     def on_return_display(self, event):
             condition = self.entry.get()
             self.entry.destroy()            
-            self.loops[-1]['loop'] = {'loop': condition.split('-')[0], 
+            self.loops[-1]['loop'] = {'type': condition.split('-')[0], 
                                       'condition': condition.split('-')[1]}
             text_w = self.controller.pages_font.measure(condition) + 40
             self.canvas.create_text(
@@ -155,6 +155,7 @@ class aidCanvas(tk.Frame):
                 text = condition, 
                 tags = ('loop-'+str(self.l-1)), 
                 justify = tk.CENTER)
+            self.loopDisp = not self.loopDisp
     
     def on_button_release(self, event):
         """ Finishes drawing the rectangle for loop definition. 
@@ -163,52 +164,57 @@ class aidCanvas(tk.Frame):
         """
         if self.drawLoop:
             self.drawLoop = False
-            self.l += 1
-            # Identify modules in area
-            loopMod = self.canvas.find_enclosed(self.start_x, self.start_y, 
-                                                self.curX, self.curY)
-            self.loops.append({'modules': [], 
-                               'coord': (self.start_x, self.start_y, 
-                                         self.curX, self.curY)})
-            for mod in loopMod[1::6]:
-                self.loops[-1]['modules'].append(self.canvas.itemcget(
-                    mod, 'text'))
             
-            # Ask for loop definition and condition and display
-            entryText = 'For/While - Condition'
+            if (abs(self.start_x - self.curX) > 10) and (
+                    abs(self.start_y - self.curY) > 10):
+                self.l += 1
+                # Identify modules in area
+                loopMod = self.canvas.find_enclosed(self.start_x, self.start_y, 
+                                                    self.curX, self.curY)
+                self.loops.append({'modules': [], 
+                                   'coord': (self.start_x, self.start_y, 
+                                             self.curX, self.curY)})
+                for mod in loopMod[1::6]:
+                    self.loops[-1]['modules'].append(self.canvas.itemcget(
+                        mod, 'text'))
+                
+                # Ask for loop definition and condition and display
+                entryText = 'For/While - Condition'
+                
+                self.entry = tk.Entry(self.canvas, justify='center', 
+                                      font = self.controller.pages_font)
+                self.loopDisp = True
+                self.entry.insert(
+                    0, entryText)
+                # self.entry['selectbackground'] = '#d0d4d9'
+                self.entry['exportselection'] = False
         
-            self.entry = tk.Entry(self.canvas, justify='center', 
-                                  font = self.controller.pages_font)
-            
-            self.entry.insert(
-                0, entryText)
-            # self.entry['selectbackground'] = '#d0d4d9'
-            self.entry['exportselection'] = False
-    
-            self.entry.focus_force()
-            self.entry.bind("<Return>", self.on_return_display)
-            self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
-            
-            self.entry.place(x = self.start_x + 10,
-                             y = self.start_y + 20, 
-                             anchor = tk.W)
-            self.saved = False
+                self.entry.focus_force()
+                self.entry.bind("<Return>", self.on_return_display)
+                self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+                
+                self.entry.place(x = self.start_x + 10,
+                                 y = self.start_y + 20, 
+                                 anchor = tk.W)
+                self.saved = False
+            else:
+                self.canvas.delete('loop-'+str(self.l))
         else:
-            pass
+            self.updateLoops()
     
-    # def updateLoops(self, ):
-    #     """ Checks if, after some movement, a module is included in an existing
-    #         loop
-    #     """
-    #     for l, loop in enumerate(self.loops):
-    #         coord = loop['coord']
-    #         loopMod = self.canvas.find_enclosed(coord[0], coord[1],
-    #                                             coord[2], coord[3])
-    #         self.loops[l]['modules'] = []
-    #         for mod in loopMod[1::6]:
-    #             self.loops[l]['modules'].append(self.canvas.itemcget(
-    #                 mod, 'text'))
-    #     print(self.loops)
+    def updateLoops(self):
+        """ Checks if, after some movement, a module is included in an existing
+            loop
+        """
+        for l, loop in enumerate(self.loops):
+            coord = loop['coord']
+            loopMod = self.canvas.find_enclosed(coord[0], coord[1],
+                                                coord[2], coord[3])
+            self.loops[l]['modules'] = []
+            for mod in loopMod[2::6]:
+                self.loops[l]['modules'].append(self.canvas.itemcget(
+                    mod, 'text'))
+        print(self.loops)
         
     def select(self, event):
         """ Selects the module at the mouse location. """
@@ -225,7 +231,8 @@ class aidCanvas(tk.Frame):
             # save mouse drag start position
             self.start_x = self.canvas.canvasx(event.x)
             self.start_y = self.canvas.canvasy(event.y)
-    
+            self.curX = self.start_x
+            self.curY = self.start_y
             self.selected = self.canvas.find_overlapping(
                         event.x-5, event.y-5, event.x+5, event.y+5)
     
