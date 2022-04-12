@@ -23,11 +23,15 @@ test_cases = {
                 }
 }
 
-test_name = "canvas"
+test_name = "aidcanvas"
 
-ui_app = ai.GUI()
+# ui_app = ai.GUI()
+# ui_app.plugin_name(test_name)
+# ui_app.set_class_list(test_cases[test_name]["class_list"])
+
+ui_app = ai.AID()
 ui_app.plugin_name(test_name)
-ui_app.set_class_list(test_cases[test_name]["class_list"])
+# ui_app.set_class_list(test_cases[test_name]["class_list"])
 
 ui_app.launch()
 
