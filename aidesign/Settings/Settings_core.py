@@ -27,7 +27,7 @@ class Settings(object):
         self.valid_tags = {
             "pipeline": "declaration",
             "datastructure": "declaration",
-            "Initialise": "entry_point",
+            "Initialiser": "entry_point",
             "Output": "exit_point",
             "GUI": "module",
             "DataProcessing": "module",
@@ -233,23 +233,24 @@ class Settings(object):
         assert len(unique_elem)>0, "Error: No element exists with name \"{0}\"".format(name)
         return unique_elem[0]
             
-        # for child in self.root.findall('name'):
-        #     print(child)
-
-
     def append_pipeline_module_to_file(self,
                                        module_type: str,
                                        module_name: str,
                                        plugin_type: str,
                                        plugin_options: dict,
-                                       parent: str = None
+                                       parents: list,
+                                       children: list,
+                                       xml_parent_element: str
                                        ):
         """Append new pipeline module to existing XML file
+        
         :param module_type: string declare type of module (GUI,data_processing etc)
         :param module_name: string give module a user-defined name
         :param plugin_type: string type of plugin to be loaded into module
         :param plugin_options: dict where keys & values are options & values
-        :param parent [optional]: str containing name of parent for new module
+        :param parents: list of parent names for this module (can be empty)
+        :param children: list of child names for this module (can be empty)
+        :param xml_parent_element: str containing name of parent Element for new module
         """
         new_mod = ET.Element(module_type)
         new_mod.set('name', module_name)
@@ -267,13 +268,16 @@ class Settings(object):
             elif isinstance(plugin_options[key], str):
                 new_option.set('value', plugin_options[key])
 
+        new_relationships = ET.SubElement(new_mod, "relationships")
+        for p in parents:
+            new_parent = ET.SubElement(new_relationships, "parent")
+            new_parent.set('name', p)
+        for c in children:
+            new_child = ET.SubElement(new_relationships, "child")
+            new_child.set('name', c)
 
-        # self.pipeline_tree.append(new_mod)
-        parent_element = self.find_module_path(parent)
-        parent_element.append(new_mod)
-        # self.indent(self.root)
-        # ET.dump(self.pipeline_tree)
-        self.write_to_XML()
+        xml_parent_element = self.find_module_path(xml_parent_element)
+        xml_parent_element.append(new_mod)
 
     def append_data_structure_field_to_file(self,
                                             field_type: str,
@@ -290,19 +294,21 @@ class Settings(object):
             new_field.set('name', field_name)
         new_field.text = value
         self.data_tree.append(new_field)
-        self.write_to_XML()
 
 
-s = Settings("./resources/example_config.xml")
-# s.print_loaded_modules()
 
 # Use case examples:
+# s = Settings("./resources/example_config.xml")
 # s.load_XML("./resources/example_config.xml")
+# s.print_loaded_modules()
 # s.write_to_XML()
-s.append_pipeline_module_to_file("GUI",
-                      "added_mod",
-                      "startpage",
-                      {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
-                      "My Second GUI Module")
+# s.append_pipeline_module_to_file("GUI",
+#                       "added_mod",
+#                       "startpage",
+#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
+#                       ["For Loop 1"],
+#                       ["Output"],
+#                       "For Loop 1")
+# s.write_to_XML()
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()

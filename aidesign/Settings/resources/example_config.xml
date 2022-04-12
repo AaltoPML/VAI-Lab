@@ -1,13 +1,13 @@
-<?xml version="1.0"?>
+
 <Settings>
     <pipeline>
-        <Initialise name="Init">
+        <Initialiser name="Init">
             <initial_data file="../resources/intial_data_test.csv" />
             <goal file="../resources/design_goals_test.csv" />&gt;
             <relationships>
                 <child name="My First GUI Module" />
             </relationships>
-        </Initialise>
+        </Initialiser>
         <GUI name="My First GUI Module">
             <plugin type="manual">
                 <class_list>
@@ -51,7 +51,7 @@
                     <child name="Output" />
                 </relationships>
             </GUI>
-            <loop type="while 1" condition="a= b" name="While Loop">
+            <loop type="while" condition="a= b" name="While Loop">
                 <DataProcessing name="Data Processing 2">
                     <plugin type="interpolation">
                         <interpolation_resolution value="10" />
