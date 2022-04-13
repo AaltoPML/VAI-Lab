@@ -235,6 +235,14 @@ class Settings(object):
         assert len(unique_elem)>0, "Error: No element exists with name \"{0}\"".format(name)
         return unique_elem[0]
 
+    def get_all_elements_with_tag(self, tag: str):
+        """Return all elements with a given tag
+        
+        :param tag: string with tag name
+        """
+        elems = self.root.findall(".//*{0}".format(tag))
+        return elems
+
     def append_pipeline_module(self,
                                 module_type: str,
                                 module_name: str,
@@ -333,7 +341,8 @@ class Settings(object):
 
 
 # Use case examples:
-# s = Settings("./resources/example_config.xml")
+s = Settings("./resources/example_config.xml")
+s.get_all_elements_with_tag("loop")
 # s.load_XML("./resources/example_config.xml")
 # s.print_loaded_modules()
 # s.write_to_XML()
