@@ -227,22 +227,24 @@ class Settings(object):
 
     def find_module_path(self, name: str):
         """Find a module name and return its parent tags"""
+        if name == None:
+            return self.pipeline_tree
         elems = self.root.findall(".//*[@name='{0}']".format(name))
         unique_elem = [e for e in elems if e.tag != "parent" and e.tag != "child"]
         assert len(unique_elem)<2, "Error: More than one tag with same identifier"
         assert len(unique_elem)>0, "Error: No element exists with name \"{0}\"".format(name)
         return unique_elem[0]
             
-    def append_pipeline_module_to_file(self,
-                                       module_type: str,
-                                       module_name: str,
-                                       plugin_type: str,
-                                       plugin_options: dict,
-                                       parents: list,
-                                       children: list,
-                                       xml_parent_element: str
-                                       ):
-        """Append new pipeline module to existing XML file
+    def append_pipeline_module(self,
+                                module_type: str,
+                                module_name: str,
+                                plugin_type: str,
+                                plugin_options: dict,
+                                parents: list,
+                                children: list,
+                                xml_parent_element: str
+                                ):
+        """Append new pipeline module to existing XML elementTree to be written later
         
         :param module_type: string declare type of module (GUI,data_processing etc)
         :param module_name: string give module a user-defined name
@@ -279,7 +281,40 @@ class Settings(object):
         xml_parent_element = self.find_module_path(xml_parent_element)
         xml_parent_element.append(new_mod)
 
-    def append_data_structure_field_to_file(self,
+    def append_pipeline_loop(self,
+                                loop_type: str,
+                                condition: str,
+                                loop_name: str,
+                                parents: list,
+                                children: list,
+                                xml_parent_element: str = None
+                                ):
+        """Append new pipeline module to existing XML file
+        
+        :param loop_type: string declare type of loop (for/while/manual etc)
+        :param loop_name: string give loop a user-defined name
+        :param plugin_type: string type of plugin to be loaded into module
+        :param parents: list of parent names for this module (can be empty)
+        :param children: list of child names for this module (can be empty)
+        :param xml_parent_element: str containing name of parent Element for new module
+        """
+        new_mod = ET.Element("loop")
+        new_mod.set('type', loop_type)
+        new_mod.set('condition', condition)
+        new_mod.set('name', loop_name)
+
+        new_relationships = ET.SubElement(new_mod, "relationships")
+        for p in parents:
+            new_parent = ET.SubElement(new_relationships, "parent")
+            new_parent.set('name', p)
+        for c in children:
+            new_child = ET.SubElement(new_relationships, "child")
+            new_child.set('name', c)
+        
+        xml_parent_element = self.find_module_path(xml_parent_element)
+        xml_parent_element.append(new_mod)
+
+    def append_data_structure_field(self,
                                             field_type: str,
                                             value: list,
                                             field_name: str = None):
@@ -302,13 +337,11 @@ class Settings(object):
 # s.load_XML("./resources/example_config.xml")
 # s.print_loaded_modules()
 # s.write_to_XML()
-# s.append_pipeline_module_to_file("GUI",
-#                       "added_mod",
-#                       "startpage",
-#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
-#                       ["For Loop 1"],
-#                       ["Output"],
-#                       "For Loop 1")
+# s.append_pipeline_loop("for",
+#                       "10",
+#                       "my_loop_3",
+#                       [],
+#                       [])
 # s.write_to_XML()
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()
