@@ -225,7 +225,7 @@ class Settings(object):
                 elem.text = elem.text.replace("\n", ("\n" + (level+1)*sep))
                 elem.text = ("{0}{1}").format(elem.text, i)
 
-    def find_module_path(self, name: str):
+    def get_element_from_name(self, name: str):
         """Find a module name and return its parent tags"""
         if name == None:
             return self.pipeline_tree
@@ -234,7 +234,7 @@ class Settings(object):
         assert len(unique_elem)<2, "Error: More than one tag with same identifier"
         assert len(unique_elem)>0, "Error: No element exists with name \"{0}\"".format(name)
         return unique_elem[0]
-            
+
     def append_pipeline_module(self,
                                 module_type: str,
                                 module_name: str,
@@ -278,7 +278,7 @@ class Settings(object):
             new_child = ET.SubElement(new_relationships, "child")
             new_child.set('name', c)
 
-        xml_parent_element = self.find_module_path(xml_parent_element)
+        xml_parent_element = self.get_element_from_name(xml_parent_element)
         xml_parent_element.append(new_mod)
 
     def append_pipeline_loop(self,
@@ -311,7 +311,7 @@ class Settings(object):
             new_child = ET.SubElement(new_relationships, "child")
             new_child.set('name', c)
         
-        xml_parent_element = self.find_module_path(xml_parent_element)
+        xml_parent_element = self.get_element_from_name(xml_parent_element)
         xml_parent_element.append(new_mod)
 
     def append_data_structure_field(self,
