@@ -37,13 +37,26 @@ class Settings(object):
         if filename is not None:
             self.load_XML(filename)
 
-    def load_XML(self, filename: str):
-        """Loads XML file into class. Converts relative paths into absolute first.
-        """
+    def set_filename(self, filename: str):
+        """Converts relative paths into before setting."""
         if filename[0] == ".":
             self.filename = path.join(path.dirname(__file__), filename)
         elif filename[0] == "/":
             self.filename = filename
+
+    def new_config_file(self, filename: str = None):
+        if filename is not None: 
+            self.set_filename(filename)
+        self.tree = ET.ElementTree(ET.Element("Settings"))
+        self.root = self.tree.getroot()
+        self.pipeline_tree = ET.SubElement(self.root,"pipeline")
+        self.data_tree = ET.SubElement(self.root,"datastructure")
+
+    def load_XML(self, filename: str):
+        """Loads XML file into class. 
+        """
+        if filename != None:
+            self.set_filename(filename)
         self.tree = ET.parse(self.filename)
         self.parse_XML()
 
@@ -250,11 +263,39 @@ class Settings(object):
         
         :param elem: ET.Element
         """
+        if elem.tag != "loop":
+            return elem
         rels_elem = elem.find("relationships")
         if rels_elem == None:
             rels_elem = ET.SubElement(elem, "relationships")
         new_child = ET.SubElement(rels_elem, "child")
         new_child.set("name",xml_child)
+        return elem
+
+    def add_relationships(self, 
+                            elem:ET.Element, 
+                            parents:list, 
+                            children:list):
+                                    
+        new_relationships = ET.SubElement(elem, "relationships")
+        for p in parents:
+            new_parent = ET.SubElement(new_relationships, "parent")
+            new_parent.set('name', p)
+        for c in children:
+            new_child = ET.SubElement(new_relationships, "child")
+            new_child.set('name', c)
+        return elem
+
+    def add_coords(self, 
+                    elem:ET.Element, 
+                    coords:list=None):
+        if coords == None:
+            return elem
+        coords_elem = elem.find("coordinates")
+        if coords_elem == None:
+            coords_elem = ET.SubElement(elem, "coordinates")
+        coords_elem.text = str("\n{0}".format(coords))
+        return elem
 
     def append_pipeline_module(self,
                                 module_type: str,
@@ -263,7 +304,8 @@ class Settings(object):
                                 plugin_options: dict,
                                 parents: list,
                                 children: list,
-                                xml_parent_element: str
+                                xml_parent_element: str,
+                                coords: list = None
                                 ):
         """Append new pipeline module to existing XML elementTree to be written later
         
@@ -274,7 +316,10 @@ class Settings(object):
         :param parents: list of parent names for this module (can be empty)
         :param children: list of child names for this module (can be empty)
         :param xml_parent_element: str containing name of parent Element for new module
+        :param coords [optional]: list of coordinates for GUI canvas
         """
+        xml_parent_element = self.get_element_from_name(xml_parent_element)
+
         new_mod = ET.Element(module_type)
         new_mod.set('name', module_name)
 
@@ -291,17 +336,12 @@ class Settings(object):
             elif isinstance(plugin_options[key], str):
                 new_option.set('value', plugin_options[key])
 
-        new_relationships = ET.SubElement(new_mod, "relationships")
-        for p in parents:
-            new_parent = ET.SubElement(new_relationships, "parent")
-            new_parent.set('name', p)
-        for c in children:
-            new_child = ET.SubElement(new_relationships, "child")
-            new_child.set('name', c)
+        if xml_parent_element.tag =="loop":
+            parents.append(xml_parent_element.attrib["name"])
+        new_mod = self.add_relationships(new_mod,parents,children)
+        new_mod = self.add_coords(new_mod,coords)
 
-        xml_parent_element = self.get_element_from_name(xml_parent_element)
-        if xml_parent_element.tag == "loop":
-            self.loop_rels_autofill(xml_parent_element, module_name)
+        self.loop_rels_autofill(xml_parent_element, module_name)
         xml_parent_element.append(new_mod)
 
     def append_pipeline_loop(self,
@@ -310,7 +350,8 @@ class Settings(object):
                                 loop_name: str,
                                 parents: list,
                                 children: list,
-                                xml_parent_element: str = None
+                                xml_parent_element: str = None, 
+                                coords: list = None
                                 ):
         """Append new pipeline module to existing XML file
         
@@ -320,24 +361,24 @@ class Settings(object):
         :param parents: list of parent names for this module (can be empty)
         :param children: list of child names for this module (can be empty)
         :param xml_parent_element: str containing name of parent Element for new module
+        :param coords [optional]: list of coordinates for GUI canvas
         """
-        new_mod = ET.Element("loop")
-        new_mod.set('type', loop_type)
-        new_mod.set('condition', condition)
-        new_mod.set('name', loop_name)
-
-        new_relationships = ET.SubElement(new_mod, "relationships")
-        for p in parents:
-            new_parent = ET.SubElement(new_relationships, "parent")
-            new_parent.set('name', p)
-        for c in children:
-            new_child = ET.SubElement(new_relationships, "child")
-            new_child.set('name', c)
-        
         xml_parent_element = self.get_element_from_name(xml_parent_element)
-        if xml_parent_element.tag == "loop":
-            self.loop_rels_autofill(xml_parent_element, loop_name)
-        xml_parent_element.append(new_mod)
+
+        new_loop = ET.Element("loop")
+        new_loop.set('type', loop_type)
+        new_loop.set('condition', condition)
+        new_loop.set('name', loop_name)
+
+        if xml_parent_element.tag =="loop":
+            parents.append(xml_parent_element.attrib["name"])
+        new_loop = self.add_relationships(new_loop,parents,children)
+        new_loop = self.add_coords(new_loop,coords)
+
+        self.loop_rels_autofill(xml_parent_element, loop_name)
+            
+        xml_parent_element.append(new_loop)
+
 
     def append_data_structure_field(self,
                                             field_type: str,
@@ -358,7 +399,9 @@ class Settings(object):
 
 
 # Use case examples:
-s = Settings("./resources/example_config.xml")
+# s = Settings("./resources/example_config.xml")
+# s = Settings()
+# s.new_config_file("./resources/example_config.xml")
 # s.get_all_elements_with_tag("loop")
 # s.load_XML("./resources/example_config.xml")
 # s.print_loaded_modules()
@@ -366,15 +409,16 @@ s = Settings("./resources/example_config.xml")
 # s.append_pipeline_loop("for",
 #                       "10",
 #                       "my_loop_3",
-#                       [],
+#                       ["Init"],
 #                       [])
-s.append_pipeline_module("GUI",
-                      "added_mod",
-                      "startpage",
-                      {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
-                      ["For Loop 1"],
-                      ["Output"],
-                      "For Loop 1")
-s.write_to_XML()
+# s.append_pipeline_module("GUI",
+#                       "added_mod",
+#                       "startpage",
+#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
+#                       ["For Loop 1"],
+#                       ["Output"],
+#                       None,
+#                       [2,3,4,5])
+# s.write_to_XML()
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()
