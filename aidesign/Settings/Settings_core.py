@@ -335,6 +335,8 @@ class Settings(object):
             new_child.set('name', c)
         
         xml_parent_element = self.get_element_from_name(xml_parent_element)
+        if xml_parent_element.tag == "loop":
+            self.loop_rels_autofill(xml_parent_element, loop_name)
         xml_parent_element.append(new_mod)
 
     def append_data_structure_field(self,
