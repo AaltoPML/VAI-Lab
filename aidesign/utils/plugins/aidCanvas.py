@@ -193,9 +193,12 @@ class aidCanvas(tk.Frame):
                                    'modules': [], 
                                    'coord': (self.start_x, self.start_y, 
                                              self.curX, self.curY)})
-                for mod in loopMod[1::6]:
-                    self.loops[-1]['modules'].append(self.canvas.itemcget(
-                        mod, 'text'))
+                for mod in loopMod:
+                    aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
+                    if len(aux) == 2 and aux[0] == 't':
+                # for mod in loopMod[1::6]:
+                        self.loops[-1]['modules'].append(self.canvas.itemcget(
+                            mod, 'text'))
                 
                 # Ask for loop definition and condition and display               
                 self.entry1 = tk.Entry(self.canvas, justify='center', 
