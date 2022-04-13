@@ -243,6 +243,19 @@ class Settings(object):
         elems = self.root.findall(".//*{0}".format(tag))
         return elems
 
+    def loop_rels_autofill(self,
+                            elem:ET.Element,
+                            xml_child:str):
+        """Add the name of a new nested module to the relationships of a loop
+        
+        :param elem: ET.Element
+        """
+        rels_elem = elem.find("relationships")
+        if rels_elem == None:
+            rels_elem = ET.SubElement(elem, "relationships")
+        new_child = ET.SubElement(rels_elem, "child")
+        new_child.set("name",xml_child)
+
     def append_pipeline_module(self,
                                 module_type: str,
                                 module_name: str,
@@ -287,6 +300,8 @@ class Settings(object):
             new_child.set('name', c)
 
         xml_parent_element = self.get_element_from_name(xml_parent_element)
+        if xml_parent_element.tag == "loop":
+            self.loop_rels_autofill(xml_parent_element, module_name)
         xml_parent_element.append(new_mod)
 
     def append_pipeline_loop(self,
@@ -342,7 +357,7 @@ class Settings(object):
 
 # Use case examples:
 s = Settings("./resources/example_config.xml")
-s.get_all_elements_with_tag("loop")
+# s.get_all_elements_with_tag("loop")
 # s.load_XML("./resources/example_config.xml")
 # s.print_loaded_modules()
 # s.write_to_XML()
@@ -351,6 +366,13 @@ s.get_all_elements_with_tag("loop")
 #                       "my_loop_3",
 #                       [],
 #                       [])
-# s.write_to_XML()
+s.append_pipeline_module("GUI",
+                      "added_mod",
+                      "startpage",
+                      {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
+                      ["For Loop 1"],
+                      ["Output"],
+                      "For Loop 1")
+s.write_to_XML()
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()
