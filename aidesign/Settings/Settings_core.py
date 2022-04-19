@@ -403,25 +403,25 @@ class Settings(object):
 
 # Use case examples:
 # s = Settings("./resources/example_config.xml")
-s = Settings()
-s.new_config_file("./resources/example_config.xml")
+# s = Settings()
+# s.new_config_file("./resources/example_config.xml")
 # s.get_all_elements_with_tag("loop")
 # s.load_XML("./resources/example_config.xml")
 # s.print_loaded_modules()
 # s.write_to_XML()
-s.append_pipeline_loop("for",
-                      "10",
-                      "my_loop_3",
-                      ["Init"],
-                      [])
-s.append_pipeline_module("GUI",
-                      "added_mod",
-                      "startpage",
-                      {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
-                      ["my_loop_3"],
-                      ["Output","my_loop_3"],
-                      "my_loop_3",
-                      [2,3,4,5])
-s.write_to_XML()
+# s.append_pipeline_loop("for",
+#                       "10",
+#                       "my_loop_3",
+#                       ["Init"],
+#                       [])
+# s.append_pipeline_module("GUI",
+#                       "added_mod",
+#                       "startpage",
+#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
+#                       ["my_loop_3"],
+#                       ["Output","my_loop_3"],
+#                       "my_loop_3",
+#                       [2,3,4,5])
+# s.write_to_XML()
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()
