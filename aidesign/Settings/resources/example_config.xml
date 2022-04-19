@@ -1,4 +1,3 @@
-
 <Settings>
     <pipeline>
         <Initialiser name="Init">
@@ -11,14 +10,15 @@
         <GUI name="My First GUI Module">
             <plugin type="manual">
                 <class_list>
-                    Atelectasis
-                    Cardiomelagy
-                    Effusion
-                    Infiltration
-                    Mass
-                    Nodule
-                    Pneumonia
-                    Pneumothorax
+                                        Atelectasis
+                                        Cardiomelagy
+                                        Effusion
+                                        Infiltration
+                                        Mass
+                                        Nodule
+                                        Pneumonia
+                                        Pneumothorax
+                                    
                 </class_list>
             </plugin>
             <relationships>
@@ -40,9 +40,10 @@
             <GUI name="My Second GUI Module">
                 <plugin type="canvas">
                     <class_list>
-                        ['State_a','Action_a']
-                        ['State_x','State_y','Action_x','Action_y']
-                        ['State_x','State_y','Action_x','Action_y']
+                                                ['State_a','Action_a']
+                                                ['State_x','State_y','Action_x','Action_y']
+                                                ['State_x','State_y','Action_x','Action_y']
+                                            
                     </class_list>
                 </plugin>
                 <relationships>
@@ -65,9 +66,10 @@
                 <GUI name="My Third GUI Module">
                     <plugin type="canvas">
                         <class_list>
-                            ['State_a','Action_a']
-                            ['State_x','State_y','Action_x','Action_y']
-                            ['State_x','State_y','Action_x','Action_y']
+                                                        ['State_a','Action_a']
+                                                        ['State_x','State_y','Action_x','Action_y']
+                                                        ['State_x','State_y','Action_x','Action_y']
+                                                    
                         </class_list>
                     </plugin>
                     <relationships>
@@ -80,22 +82,76 @@
         </loop>
         <Output>
             <out_data>
-                all
+                                all
+                            
             </out_data>
             <save_to file="../resources/output_test.csv" />
             <relationships>
                 <parent name="My Second GUI Module" />
             </relationships>
         </Output>
+        <loop type="for" condition="10" name="my_loop_3">
+            <relationships>
+                <parent name="Init" />
+            </relationships>
+        </loop>
+        <GUI name="added_mod">
+            <plugin type="startpage">
+                <class_list>
+                                        test_1
+                                        test_2
+                                    
+                </class_list>
+                <class_list_2>
+                                        test_1
+                                        test_2
+                                    
+                </class_list_2>
+            </plugin>
+            <relationships>
+                <parent name="For Loop 1" />
+                <child name="Output" />
+            </relationships>
+            <coordinates>
+                                                [2, 3, 4, 5]
+                                            
+                            
+            </coordinates>
+        </GUI>
+        <loop type="for" condition="10" name="my_loop_3">
+            <relationships>
+                <parent name="Init" />
+            </relationships>
+        </loop>
+        <GUI name="added_mod">
+            <plugin type="startpage">
+                <class_list>
+                    test_1
+                    test_2
+                </class_list>
+                <class_list_2>
+                    test_1
+                    test_2
+                </class_list_2>
+            </plugin>
+            <relationships>
+                <parent name="For Loop 1" />
+                <child name="Output" />
+            </relationships>
+            <coordinates>
+                [2, 3, 4, 5]
+            </coordinates>
+        </GUI>
     </pipeline>
     <datastructure name="datatest">
         <data_fields>
-            State_0
-            State_1
-            Action
-            Reward
-            Termination
-            Goal
+                        State_0
+                        State_1
+                        Action
+                        Reward
+                        Termination
+                        Goal
+                    
         </data_fields>
     </datastructure>
 </Settings>

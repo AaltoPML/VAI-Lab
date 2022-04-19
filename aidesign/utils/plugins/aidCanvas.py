@@ -106,9 +106,9 @@ class aidCanvas(tk.Frame):
         self.modules = 2
         # for m, module in enumerate(modules):
         tk.Button(
-            self, text = 'Data preprocessing', fg = 'white', bg = parent['bg'],
+            self, text = 'Data processing', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('Data preprocessing')
+            command = lambda: self.add_module('Data processing')
             ).grid(column = 5, row = 1)
         tk.Button(
             self, text = 'Modelling', fg = 'white', bg = parent['bg'],
@@ -193,13 +193,13 @@ class aidCanvas(tk.Frame):
                                                     self.curX, self.curY)
                 self.loops.append({'type': None,
                                    'condition': None,
-                                   'modules': [], 
+                                   'mod': [], 
                                    'coord': (self.start_x, self.start_y, 
                                              self.curX, self.curY)})
                 for mod in loopMod:
                     aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
                     if len(aux) == 2 and aux[0] == 't':
-                        self.loops[-1]['modules'].append(self.canvas.itemcget(
+                        self.loops[-1]['mod'].append(self.canvas.itemcget(
                             mod, 'text'))
                 
                 # Ask for loop definition and condition and display               
@@ -249,11 +249,11 @@ class aidCanvas(tk.Frame):
             coord = loop['coord']
             loopMod = self.canvas.find_enclosed(coord[0], coord[1],
                                                 coord[2], coord[3])
-            self.loops[l]['modules'] = []
+            self.loops[l]['mod'] = []
             for mod in loopMod:
                 aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
                 if len(aux) == 2 and aux[0] == 't':
-                    self.loops[l]['modules'].append(self.canvas.itemcget(
+                    self.loops[l]['mod'].append(self.canvas.itemcget(
                         mod, 'text'))
         print('Updated loop info:', self.loops)
         
@@ -611,14 +611,14 @@ class aidCanvas(tk.Frame):
             col = np.array(data.columns)
             for c in np.arange(len(idx))[idx]:
                 data = data.drop(columns=col[c], index=col[c])
-            
+                
+            print(self.loops)
             loop_modules = np.unique([v for a in self.loops for v in a['mod']])
             out_loops = np.zeros_like(self.loops)
             
             values = data.values.astype(bool)
             
             s = Settings()
-            print(self.save_path.name)
             s.new_config_file(self.save_path.name)
             s.parse_XML()
             s.filename = self.save_path.name
@@ -626,38 +626,42 @@ class aidCanvas(tk.Frame):
                                   col[0],
                                   "",
                                   {},
-                                  col[values[:,0]],
-                                  col[values[0,:]],
+                                  list(col[values[:,0]]),
+                                  list(col[values[0,:]]),
                                   None,
                                   self.canvas.startxy[0])
             for i in np.arange(len(col)-2)+2:
-                if col[i] in loop_modules: # Model inside loop
+                xml_parent = None
+                if col[i] in loop_modules: # Model in any loop
                     for x, loop in enumerate(self.loops):
-                        if col[i] in loop['mod'] and not out_loops[x]:
-                            s.append_pipeline_loop(self.loops[x]['type'],
-                                        self.loops[x]['condition'],
-                                        "",
-                                        "",
-                                        loop['mod'],
-                                        ""
-                                        )
-                            out_loops[x] = 1
-                else:
-                    s.append_pipeline_module(self.module_names[i],
-                      col[i],
-                      "",
-                      {},
-                      col[values[:,i]],
-                      col[values[i,:]],
-                      None,
-                      self.canvas.startxy[i])
+                        if col[i] in loop['mod']: # Model in this loop
+                            if not out_loops[x]: # Loop already defined
+                                s.append_pipeline_loop(self.loops[x]['type'],
+                                            self.loops[x]['condition'],
+                                            "loop"+str(x),
+                                            "loop"+str(x),
+                                            list(loop['mod']),
+                                            xml_parent,
+                                            self.loops[x]['coord']
+                                            )
+                                out_loops[x] = 1
+                            xml_parent = "loop"+str(x) # parent is the last loop
+                
+                s.append_pipeline_module(self.module_names[i],
+                  col[i],
+                  "",
+                  {},
+                  list(col[values[:,i]]),
+                  list(col[values[i,:]]),
+                  xml_parent,
+                  self.canvas.startxy[i])
                 
             s.append_pipeline_module(self.module_names[1], # Out
                       col[1],
                       "",
                       {},
-                      col[values[:,1]],
-                      col[values[1,:]],
+                      list(col[values[:,1]]),
+                      list(col[values[1,:]]),
                       None,
                       self.canvas.startxy[1])
             s.write_to_XML()
@@ -665,47 +669,16 @@ class aidCanvas(tk.Frame):
          
     def upload(self):
         
-        ii = self.notebook.index(self.notebook.select())
+        self.reset()
         filename = askopenfilename(initialdir = os.getcwd(), 
                                    title = 'Select a file', 
-                                   defaultextension = '.txt', 
-                                   filetypes = [('Text file', '.txt'), 
-                                                ('CSS file', '.css'), 
+                                   defaultextension = '.xml', 
+                                   filetypes = [('XML file', '.xml'), 
                                                 ('All Files', '*.*')])
         if filename is not None:
             data = open(filename,'r')
-            read = False
-            self.draw[ii].set('drag')
-            for n, point in enumerate(data):
-                if read: # Not elegant at all, just to omit the header.
-                    i, sx, sy, ax, ay = point.split()
-                    # Draw an oval in the given coordinates
-                    self.canvas[ii].create_oval(
-                        float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3, 
-                        fill="black", width=0, 
-                        tags=("state-" + str(len(
-                            self.out_data[ii]['State_x']))))
-                    self.canvas[ii].create_line(
-                        float(sx), float(sy), float(ax), float(ay), 
-                        fill="red", arrow=tk.LAST, 
-                        tags=("action"+str(ii)+"-"+ str(len(
-                            self.out_data[ii]['Action_x']))))
-                    self.out_data[ii]['State_x'].append(sx)
-                    self.out_data[ii]['State_y'].append(sy)
-                    self.out_data[ii]['Action_x'].append(ax)
-                    self.out_data[ii]['Action_y'].append(ay)
-                    self.tree.insert(
-                        parent = '', index = 'end', 
-                        iid = len(self.out_data[ii]['Action_x'])-1, 
-                        text = len(self.out_data[ii]['Action_x']), 
-                        values = tuple(self.dict2mat(
-                            self.out_data[ii])
-                            [len(self.out_data[ii]
-                                 ['Action_x'])-1,:].astype(int)))
-                    self.tree.selection_set(str(len(
-                        self.out_data[ii]['Action_x'])-1))
-                else:
-                    read = True
+
+            # for n, point in enumerate(data):
     
     def reset(self):
         
