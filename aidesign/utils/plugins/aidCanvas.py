@@ -49,6 +49,7 @@ class aidCanvas(tk.Frame):
         self.connections = {}
         self.connections[0] = {}
         self.connections[1] = {}
+        self.module_list = ['Initialiser', 'Output']
         self.module_names = ['Initialiser', 'Output']
         # Create module
         self.w, self.h = 100, 50
@@ -381,7 +382,8 @@ class aidCanvas(tk.Frame):
         self.out_data = pd.DataFrame(values, 
                                      columns = name_list, 
                                      index = name_list)
-    
+        self.module_names.append(name_list[-1])
+
     def add_module(self, boxName):
         """ Creates a rectangular module with the corresponding text inside.
         
@@ -451,7 +453,7 @@ class aidCanvas(tk.Frame):
                                     self.height/2))
         self.connections[self.modules] = {}
         self.module_out(boxName)
-        self.module_names.append(boxName)
+        self.module_list.append(boxName)
         self.modules += 1
         self.saved = False
     
@@ -461,15 +463,33 @@ class aidCanvas(tk.Frame):
         the stored data."""
         
         moduleName = self.entry.get()
-        if (moduleName in list(self.out_data.columns)) and not(
-                moduleName == list(self.out_data.columns)[self.m]):
+        if (moduleName in list(self.module_names)) and not(
+                moduleName == list(self.module_names)[self.m]):
             messagebox.showwarning("Error", "This module already exists.")
         else:
             self.canvas.itemconfig('t'+str(self.m), text = moduleName)
+            x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
+            text_w = self.controller.pages_font.measure(moduleName) + 20
+            shift = (text_w-x1+x0)/2
+            self.canvas.coords('p'+str(self.m), # Resize rectangle
+                               x0 - shift, 
+                               y0, 
+                               x1 + shift, 
+                               y1)
+            x0, y0, x1, y1 = self.canvas.coords('l'+str(self.m))
+            self.canvas.coords('l'+str(self.m), # Move left circle
+                                x0 - shift, 
+                                y0, 
+                                x1 - shift, 
+                                y1)
+            x0, y0, x1, y1 = self.canvas.coords('r'+str(self.m))
+            self.canvas.coords('r'+str(self.m), # Move left circle
+                                x0 + shift, 
+                                y0, 
+                                x1 + shift, 
+                                y1)
             self.entry.destroy()
-            self.out_data.rename(columns = {list(self.out_data.columns)[self.m]: moduleName}, 
-                                 index = {list(self.out_data.columns)[self.m]: moduleName}, 
-                                 inplace = True)
+            self.module_names[self.m] = moduleName
             
     def on_return_editLoop(self, event):
         """ This function renames loop conditions and updates the loop
@@ -612,30 +632,32 @@ class aidCanvas(tk.Frame):
             for c in np.arange(len(idx))[idx]:
                 data = data.drop(columns=col[c], index=col[c])
                 
-            print(self.loops)
+            print(col)
+            print(self.module_names)
             loop_modules = np.unique([v for a in self.loops for v in a['mod']])
             out_loops = np.zeros_like(self.loops)
             
             values = data.values.astype(bool)
+            mn = np.array(self.module_names)
             
             s = Settings()
             s.new_config_file(self.save_path.name)
             s.parse_XML()
             s.filename = self.save_path.name
-            s.append_pipeline_module(self.module_names[0], # Initialiser
-                                  col[0],
+            s.append_pipeline_module(self.module_list[0], # Initialiser
+                                  mn[0],
                                   "",
                                   {},
-                                  list(col[values[:,0]]),
-                                  list(col[values[0,:]]),
+                                  list(mn[values[:,0]]),
+                                  list(mn[values[0,:]]),
                                   None,
                                   self.canvas.startxy[0])
-            for i in np.arange(len(col)-2)+2:
+            for i in np.arange(len(mn)-2)+2:
                 xml_parent = None
                 parent_loops = []
-                if col[i] in loop_modules: # Model in any loop
+                if mn[i] in loop_modules: # Model in any loop
                     for x, loop in enumerate(self.loops):
-                        if col[i] in loop['mod']: # Model in this loop
+                        if mn[i] in loop['mod']: # Model in this loop
                             if not out_loops[x]: # Loop already defined
                                 s.append_pipeline_loop(self.loops[x]['type'],
                                             self.loops[x]['condition'],
@@ -649,21 +671,21 @@ class aidCanvas(tk.Frame):
                             xml_parent = "loop"+str(x) # parent is the last loop
                             parent_loops.append("loop"+str(x))
                 
-                s.append_pipeline_module(self.module_names[i],
-                  col[i],
+                s.append_pipeline_module(self.module_list[i],
+                  mn[i],
                   "",
                   {},
-                  list(col[values[:,i]]),
-                  list(col[values[i,:]]),
+                  list(mn[values[:,i]]),
+                  list(mn[values[i,:]]),
                   xml_parent,
                   self.canvas.startxy[i])
                 
-            s.append_pipeline_module(self.module_names[1], # Out
-                      col[1],
+            s.append_pipeline_module(self.module_list[1], # Out
+                      mn[1],
                       "",
                       {},
-                      list(col[values[:,1]]),
-                      list(col[values[1,:]]),
+                      list(mn[values[:,1]]),
+                      list(mn[values[1,:]]),
                       None,
                       self.canvas.startxy[1])
             s.write_to_XML()
@@ -741,6 +763,7 @@ class aidCanvas(tk.Frame):
             self.connections = {}
             self.connections[0] = {}
             self.connections[1] = {}
+            self.module_list = ['Initialiser', 'Output']
             self.module_names = ['Initialiser', 'Output']
             self.loops = []
             self.drawLoop = False
