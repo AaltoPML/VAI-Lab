@@ -262,28 +262,33 @@ class Settings(object):
         """Add the name of a new nested module to the relationships of a loop
         
         :param elem: ET.Element
+        :param xml_child:str name of child to be nested in XML
         """
         if elem.tag != "loop":
             return elem
-        rels_elem = elem.find("relationships")
-        if rels_elem == None:
-            rels_elem = ET.SubElement(elem, "relationships")
-        new_child = ET.SubElement(rels_elem, "child")
-        new_child.set("name",xml_child)
-        return elem
+        else:
+            return self.add_relationships(elem,[],[xml_child])
 
     def add_relationships(self, 
                             elem:ET.Element, 
                             parents:list, 
                             children:list):
-                                    
-        new_relationships = ET.SubElement(elem, "relationships")
+        """Add parents and/or children as a subelement
+        Checks for duplicates before appending
+        
+        :param elem: ET.Element to which the relationship are appeneded
+        :param parents: list of strings of parents to be appended
+        :param children: list of strings of children to be appended
+        """
+        rels_elem = ET.SubElement(elem, "relationships")
         for p in parents:
-            new_parent = ET.SubElement(new_relationships, "parent")
-            new_parent.set('name', p)
+            if not elem.findall(".//parent/[@name='{0}']".format(p)):
+                new_parent = ET.SubElement(rels_elem, "parent")
+                new_parent.set('name', p)
         for c in children:
-            new_child = ET.SubElement(new_relationships, "child")
-            new_child.set('name', c)
+            if not elem.findall(".//child/[@name='{0}']".format(c)):
+                new_child = ET.SubElement(rels_elem, "child")
+                new_child.set('name', c)
         return elem
 
     def add_coords(self, 
@@ -291,9 +296,7 @@ class Settings(object):
                     coords:list=None):
         if coords == None:
             return elem
-        coords_elem = elem.find("coordinates")
-        if coords_elem == None:
-            coords_elem = ET.SubElement(elem, "coordinates")
+        coords_elem = ET.SubElement(elem, "coordinates")
         coords_elem.text = str("\n{0}".format(coords))
         return elem
 
@@ -400,25 +403,25 @@ class Settings(object):
 
 # Use case examples:
 # s = Settings("./resources/example_config.xml")
-# s = Settings()
-# s.new_config_file("./resources/example_config.xml")
+s = Settings()
+s.new_config_file("./resources/example_config.xml")
 # s.get_all_elements_with_tag("loop")
 # s.load_XML("./resources/example_config.xml")
 # s.print_loaded_modules()
 # s.write_to_XML()
-# s.append_pipeline_loop("for",
-#                       "10",
-#                       "my_loop_3",
-#                       ["Init"],
-#                       [])
-# s.append_pipeline_module("GUI",
-#                       "added_mod",
-#                       "startpage",
-#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
-#                       ["For Loop 1"],
-#                       ["Output"],
-#                       None,
-#                       [2,3,4,5])
-# s.write_to_XML()
+s.append_pipeline_loop("for",
+                      "10",
+                      "my_loop_3",
+                      ["Init"],
+                      [])
+s.append_pipeline_module("GUI",
+                      "added_mod",
+                      "startpage",
+                      {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
+                      ["my_loop_3"],
+                      ["Output","my_loop_3"],
+                      "my_loop_3",
+                      [2,3,4,5])
+s.write_to_XML()
 # s.append_data_structure_field_to_file("replay_buffer", "1")
 # s.print_loaded_data_structure()
