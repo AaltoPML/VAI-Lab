@@ -7,6 +7,8 @@ import pandas as pd
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 from tkinter import messagebox
 
+from aidesign.Settings.Settings_core import Settings
+
 class aidCanvas(tk.Frame):
 
     """ Creates a frame with a canvas and allows to include different modules
@@ -47,6 +49,7 @@ class aidCanvas(tk.Frame):
         self.connections = {}
         self.connections[0] = {}
         self.connections[1] = {}
+        self.module_names = ['Initialiser', 'Output']
         # Create module
         self.w, self.h = 100, 50
         x0 = self.width/2 - (
@@ -193,9 +196,11 @@ class aidCanvas(tk.Frame):
                                    'modules': [], 
                                    'coord': (self.start_x, self.start_y, 
                                              self.curX, self.curY)})
-                for mod in loopMod[1::6]:
-                    self.loops[-1]['modules'].append(self.canvas.itemcget(
-                        mod, 'text'))
+                for mod in loopMod:
+                    aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
+                    if len(aux) == 2 and aux[0] == 't':
+                        self.loops[-1]['modules'].append(self.canvas.itemcget(
+                            mod, 'text'))
                 
                 # Ask for loop definition and condition and display               
                 self.entry1 = tk.Entry(self.canvas, justify='center', 
@@ -250,8 +255,7 @@ class aidCanvas(tk.Frame):
                 if len(aux) == 2 and aux[0] == 't':
                     self.loops[l]['modules'].append(self.canvas.itemcget(
                         mod, 'text'))
-        print('Updated loop info:')
-        print(self.loops)
+        print('Updated loop info:', self.loops)
         
     def select(self, event):
         """ Selects the module at the mouse location. """
@@ -447,6 +451,7 @@ class aidCanvas(tk.Frame):
                                     self.height/2))
         self.connections[self.modules] = {}
         self.module_out(boxName)
+        self.module_names.append(boxName)
         self.modules += 1
         self.saved = False
     
@@ -535,9 +540,6 @@ class aidCanvas(tk.Frame):
                           y = y0, 
                           anchor = tk.W, 
                           width = text_w)
-            
-            # elif condition.split('-')[0] == 'condition':
-
                 
     def delete_sel(self):
         """ Deletes last selected module"""
@@ -596,7 +598,7 @@ class aidCanvas(tk.Frame):
                                       [('XML file', '.xml'), 
                                        ('All Files', '*.*')])
         if self.save_path is not None: # asksaveasfile return `None` if dialog closed with "cancel".
-            # Transform input for output file    
+            # Transform input for output file
             data = self.out_data.copy()
             if np.sum(data.values[0,:]) == 0:
                 messagebox.showwarning(
@@ -606,15 +608,59 @@ class aidCanvas(tk.Frame):
                     "Error", "Output is not connected to any module.")
             idx = (np.sum(data.values, axis = 0) 
                    + np.sum(data.values, axis = 1)) < 1
-            col = data.columns
+            col = np.array(data.columns)
             for c in np.arange(len(idx))[idx]:
-                data = data.drop(columns=col[c], index=col[c])            
-            filedata = pd.DataFrame(data, columns = data.keys()).to_string()
-            self.save_path.seek(0) # Move to the first row to overwrite it
-            self.save_path.write(filedata)
-            self.save_path.flush() # Save without closing
-            # typically the above line would do. however this is used to ensure that the file is written
-            os.fsync(self.save_path.fileno())
+                data = data.drop(columns=col[c], index=col[c])
+            
+            loop_modules = np.unique([v for a in self.loops for v in a['mod']])
+            out_loops = np.zeros_like(self.loops)
+            
+            values = data.values.astype(bool)
+            
+            s = Settings()
+            print(self.save_path.name)
+            s.new_config_file(self.save_path.name)
+            s.parse_XML()
+            s.filename = self.save_path.name
+            s.append_pipeline_module(self.module_names[0], # Initialiser
+                                  col[0],
+                                  "",
+                                  {},
+                                  col[values[:,0]],
+                                  col[values[0,:]],
+                                  None,
+                                  self.canvas.startxy[0])
+            for i in np.arange(len(col)-2)+2:
+                if col[i] in loop_modules: # Model inside loop
+                    for x, loop in enumerate(self.loops):
+                        if col[i] in loop['mod'] and not out_loops[x]:
+                            s.append_pipeline_loop(self.loops[x]['type'],
+                                        self.loops[x]['condition'],
+                                        "",
+                                        "",
+                                        loop['mod'],
+                                        ""
+                                        )
+                            out_loops[x] = 1
+                else:
+                    s.append_pipeline_module(self.module_names[i],
+                      col[i],
+                      "",
+                      {},
+                      col[values[:,i]],
+                      col[values[i,:]],
+                      None,
+                      self.canvas.startxy[i])
+                
+            s.append_pipeline_module(self.module_names[1], # Out
+                      col[1],
+                      "",
+                      {},
+                      col[values[:,1]],
+                      col[values[1,:]],
+                      None,
+                      self.canvas.startxy[1])
+            s.write_to_XML()
             self.saved = True
          
     def upload(self):
@@ -720,6 +766,7 @@ class aidCanvas(tk.Frame):
             self.connections = {}
             self.connections[0] = {}
             self.connections[1] = {}
+            self.module_names = ['Initialiser', 'Output']
             self.loops = []
             self.drawLoop = False
             self.modules = 2

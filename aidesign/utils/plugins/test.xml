@@ -1,0 +1,53 @@
+<Settings>
+    <pipeline>
+        <Initialiser name="Initialiser">
+            <plugin type="" />
+            <relationships>
+                <child name="Data preprocessing-0" />
+            </relationships>
+            <coordinates>
+                (314.5, 75.0)
+            </coordinates>
+        </Initialiser>
+        <Data preprocessing name="Data preprocessing-0">
+            <plugin type="" />
+            <relationships>
+                <parent name="Initialiser" />
+                <child name="Modelling-0" />
+            </relationships>
+            <coordinates>
+                (189, 154)
+            </coordinates>
+        </Data preprocessing>
+        <Modelling name="Modelling-0">
+            <plugin type="" />
+            <relationships>
+                <parent name="Data preprocessing-0" />
+                <child name="Data preprocessing-1" />
+            </relationships>
+            <coordinates>
+                (299, 274)
+            </coordinates>
+        </Modelling>
+        <Data preprocessing name="Data preprocessing-1">
+            <plugin type="" />
+            <relationships>
+                <parent name="Modelling-0" />
+                <child name="Output" />
+            </relationships>
+            <coordinates>
+                (468, 381)
+            </coordinates>
+        </Data preprocessing>
+        <Output name="Output">
+            <plugin type="" />
+            <relationships>
+                <parent name="Data preprocessing-1" />
+            </relationships>
+            <coordinates>
+                (314.5, 525.0)
+            </coordinates>
+        </Output>
+    </pipeline>
+    <datastructure />
+</Settings>
