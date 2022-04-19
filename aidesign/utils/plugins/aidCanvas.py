@@ -632,6 +632,7 @@ class aidCanvas(tk.Frame):
                                   self.canvas.startxy[0])
             for i in np.arange(len(col)-2)+2:
                 xml_parent = None
+                parent_loops = []
                 if col[i] in loop_modules: # Model in any loop
                     for x, loop in enumerate(self.loops):
                         if col[i] in loop['mod']: # Model in this loop
@@ -639,13 +640,14 @@ class aidCanvas(tk.Frame):
                                 s.append_pipeline_loop(self.loops[x]['type'],
                                             self.loops[x]['condition'],
                                             "loop"+str(x),
-                                            "loop"+str(x),
+                                            parent_loops,
                                             list(loop['mod']),
                                             xml_parent,
                                             self.loops[x]['coord']
                                             )
                                 out_loops[x] = 1
                             xml_parent = "loop"+str(x) # parent is the last loop
+                            parent_loops.append("loop"+str(x))
                 
                 s.append_pipeline_module(self.module_names[i],
                   col[i],
