@@ -93,7 +93,7 @@ class Settings(object):
         """
         module_name = element.attrib["name"]
         module_type = element.tag
-        parent[module_name] = {"module_type": module_type}
+        parent[module_name] = {"class":self._valid_tags[module_type],"module_type": module_type}
         self._parse_tags(element,parent[module_name])
 
     def _load_plugin(self, element: ET.Element, parent:dict):
@@ -120,7 +120,7 @@ class Settings(object):
         :param parent: dict or dict fragment parsed tags will be appened to
         """
         initialiser_name = element.attrib["name"]
-        parent[initialiser_name] = {}
+        parent[initialiser_name] = {"class":self._valid_tags[element.tag]}
         self._parse_tags(element,parent[initialiser_name])
 
     def _load_exit_point(self, element: ET.Element, parent:dict):
@@ -129,7 +129,7 @@ class Settings(object):
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
-        parent["output"] = {}
+        parent["output"] = {"class":self._valid_tags[element.tag]}
         self._parse_tags(element,parent["output"])
 
     def _load_loop(self, element: ET.Element, parent:dict):
@@ -140,8 +140,9 @@ class Settings(object):
         """
         loop_name = element.attrib["name"]
         parent[loop_name] = {
+            "class":self._valid_tags[element.tag],
             "type": element.attrib["type"],
-            "condition": element.attrib["condition"]
+            "condition": element.attrib["condition"],
         }
         self._parse_tags(element, parent[loop_name])
 
@@ -411,7 +412,7 @@ if __name__ == "__main__":
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
-    s.print_loaded_modules()
+    # s.print_loaded_modules()
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
     #                       "10",
