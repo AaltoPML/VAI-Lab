@@ -27,10 +27,17 @@ class Settings(object):
         self.valid_tags = {
             "pipeline": "declaration",
             "datastructure": "declaration",
+            "relationships": "relationships",
+            "plugin": "plugin",
+            "coordinates": "list",
             "Initialiser": "entry_point",
             "Output": "exit_point",
             "GUI": "module",
             "DataProcessing": "module",
+            "Modelling": "module",
+            "InputData": "module",
+            "UserFeedbackAdaptation": "module",
+            "DecisionMaking": "module",
             "loop": "loop"
         }
 
@@ -38,13 +45,14 @@ class Settings(object):
             self.load_XML(filename)
 
     def set_filename(self, filename: str):
-        """Converts relative paths into before setting."""
+        """Converts relative paths into absolute before setting."""
         if filename[0] == ".":
             self.filename = path.join(path.dirname(__file__), filename)
         elif filename[0] == "/":
             self.filename = filename
 
     def new_config_file(self, filename: str = None):
+        """Constructs new XML file with minimal format"""
         if filename is not None: 
             self.set_filename(filename)
         self.tree = ET.ElementTree(ET.Element("Settings"))
@@ -68,7 +76,7 @@ class Settings(object):
 
         self.parse_data_structure()
 
-    def parse_tags(self, element, parent):
+    def parse_tags(self, element: ET.Element, parent:dict):
         """Detect tags and send them to correct method for parsing
         Uses getattr to call the correct method
 
@@ -81,12 +89,10 @@ class Settings(object):
                 getattr(self, "load_{}".format(tag_type))(child, parent)
             except KeyError:
                 print("\nError: Invalid XML Tag.")
-                print("XML tag \"{0}\" not found".format(child.tag))
-                print("Valid tags are: ")
-                print("\t- {}".format(",\n\t- ".join([*self.valid_tags])))
-                print("\n")
+                print("XML tag \"{0}\" in \"{1}\" not found".format(child.tag,element.tag))
+                print("Valid tags are: \n\t- {}".format(",\n\t- ".join([*self.valid_tags])))
 
-    def load_module(self, element, parent):
+    def load_module(self, element: ET.Element, parent:dict):
         """Parses tags associated with modules and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -94,30 +100,27 @@ class Settings(object):
         """
         module_name = element.attrib["name"]
         module_type = element.tag
-        plugin = element.find("plugin")
-        plugin_name = plugin.attrib["type"]
-        parent[module_name] = {
-            "module_type": module_type,
-            "plugin_name": plugin_name,
-            "options": {}
-        }
-        self.load_plugin_options(plugin, parent[module_name]["options"])
-        self.load_relationships(element, parent[module_name])
+        parent[module_name] = {"module_type": module_type}
+        self.parse_tags(element,parent[module_name])
 
-    def load_plugin_options(self, element, parent):
+    def load_plugin(self, element: ET.Element, parent:dict):
         """Parses tags associated with plugins and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
+        parent["plugin"] = {}
+        parent["plugin"]["plugin_name"] = element.attrib["type"]
+        parent["plugin"]["options"] = {}
         for child in element:
             if child.text != None:
                 val = self.parse_text_to_list(child)
-            elif child.attrib["value"] != None:
-                val = child.attrib["value"]
-            parent[child.tag] = val
+                parent["plugin"]["options"][child.tag] = val
+            for key in child.attrib:
+                parent["plugin"]["options"][child.tag] = {key:child.attrib[key]}
+            
 
-    def load_entry_point(self, element, parent):
+    def load_entry_point(self, element: ET.Element, parent:dict):
         """Parses tags associated with initialiser and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -125,25 +128,18 @@ class Settings(object):
         """
         initialiser_name = element.attrib["name"]
         parent[initialiser_name] = {}
-        init_data_file = element.find("initial_data").attrib["file"]
-        goal_data_file = element.find("goal").attrib["file"]
-        parent[initialiser_name]["init_data_file"] = init_data_file
-        parent[initialiser_name]["goal_data_file"] = goal_data_file
-        self.load_relationships(element, parent[initialiser_name])
+        self.parse_tags(element,parent[initialiser_name])
 
-    def load_exit_point(self, element, parent):
+    def load_exit_point(self, element: ET.Element, parent:dict):
         """Parses tags associated with output and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
         parent["output"] = {}
-        parent["output"]["save_fields"] = self.parse_text_to_list(
-            element.find("out_data"))
-        parent["output"]["save_dir"] = element.find("save_to").attrib["file"]
-        self.load_relationships(element, parent["output"])
+        self.parse_tags(element,parent["output"])
 
-    def load_loop(self, element, parent):
+    def load_loop(self, element: ET.Element, parent:dict):
         """Parses tags associated with loops and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -156,7 +152,7 @@ class Settings(object):
         }
         self.parse_tags(element, parent[loop_name])
 
-    def load_relationships(self, element, parent):
+    def load_relationships(self, element: ET.Element, parent:dict):
         """Parses tags associated with relationships and adds to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -164,11 +160,22 @@ class Settings(object):
         """
         parent["parents"] = []
         parent["children"] = []
-        for rel in element.find("relationships"):
+        for rel in element:
             if rel.tag == "parent":
                 parent["parents"].append(rel.attrib["name"])
             elif rel.tag == "child":
                 parent["children"].append(rel.attrib["name"])
+
+    def load_list(self, element: ET.Element, parent:dict):
+        """Parses elements consisting of lists, e.g. coordinates
+
+        :param elem: xml.etree.ElementTree.Element to be parsed
+        :param parent: dict or dict fragment parsed tags will be appened to
+        """
+        if element.text != None:
+            parent[element.tag] = self.parse_text_to_list(element)
+            if len(parent[element.tag]) == 1:
+                parent[element.tag] = parent[element.tag][0]
 
     def parse_data_structure(self):
         """Parses tags associated with data structure"""
@@ -190,6 +197,8 @@ class Settings(object):
             raw_elem_text = (raw_elem_text+"\n{}").format(out[idx])
             if "[" in out[idx] and "]" in out[idx]:
                 out[idx] = literal_eval(out[idx])
+            if "(" in out[idx] and ")" in out[idx]:
+                out[idx] = list(literal_eval(out[idx]))
         element.text = raw_elem_text
         return out
 
@@ -323,7 +332,7 @@ class Settings(object):
         """
         xml_parent_element = self.get_element_from_name(xml_parent_element)
 
-        new_mod = ET.Element(module_type)
+        new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
 
         new_plugin = ET.SubElement(new_mod, "plugin")
@@ -403,6 +412,7 @@ class Settings(object):
 
 # Use case examples:
 # if __name__ == "__main__":
+    # s = Settings("./resources/Hospital.xml")
     # s = Settings("./resources/example_config.xml")
     # s = Settings()
     # s.new_config_file("./resources/example_config.xml")
@@ -415,13 +425,13 @@ class Settings(object):
     #                       "my_loop_3",
     #                       ["Init"],
     #                       [])
-    # s.append_pipeline_module("GUI",
+    # s.append_pipeline_module("GUI thing",
     #                       "added_mod",
     #                       "startpage",
     #                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
-    #                       ["my_loop_3"],
-    #                       ["Output","my_loop_3"],
-    #                       "my_loop_3",
+    #                       ["loop0"],
+    #                       ["Output","loop0"],
+    #                       "loop0",
     #                       [2,3,4,5])
     # s.write_to_XML()
     # s.append_data_structure_field_to_file("replay_buffer", "1")
