@@ -17,7 +17,7 @@ class Settings(object):
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
         """
-        self.valid_tags = {
+        self._valid_tags = {
             "pipeline": "declaration",
             "datastructure": "declaration",
             "relationships": "relationships",
@@ -59,17 +59,17 @@ class Settings(object):
         if filename != None:
             self.set_filename(filename)
         self.tree = ET.parse(self.filename)
-        self.parse_XML()
+        self._parse_XML()
 
-    def parse_XML(self):
+    def _parse_XML(self):
         self.root = self.tree.getroot()
 
         self.pipeline_tree = self.root.find("pipeline")
-        self.parse_tags(self.pipeline_tree, self.loaded_modules)
+        self._parse_tags(self.pipeline_tree, self.loaded_modules)
 
-        self.parse_data_structure()
+        self._parse_data_structure()
 
-    def parse_tags(self, element: ET.Element, parent:dict):
+    def _parse_tags(self, element: ET.Element, parent:dict):
         """Detect tags and send them to correct method for parsing
         Uses getattr to call the correct method
 
@@ -78,14 +78,14 @@ class Settings(object):
         """
         for child in element:
             try:
-                tag_type = self.valid_tags[child.tag]
-                getattr(self, "load_{}".format(tag_type))(child, parent)
+                tag_type = self._valid_tags[child.tag]
+                getattr(self, "_load_{}".format(tag_type))(child, parent)
             except KeyError:
                 print("\nError: Invalid XML Tag.")
                 print("XML tag \"{0}\" in \"{1}\" not found".format(child.tag,element.tag))
-                print("Valid tags are: \n\t- {}".format(",\n\t- ".join([*self.valid_tags])))
+                print("Valid tags are: \n\t- {}".format(",\n\t- ".join([*self._valid_tags])))
 
-    def load_module(self, element: ET.Element, parent:dict):
+    def _load_module(self, element: ET.Element, parent:dict):
         """Parses tags associated with modules and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -94,9 +94,9 @@ class Settings(object):
         module_name = element.attrib["name"]
         module_type = element.tag
         parent[module_name] = {"module_type": module_type}
-        self.parse_tags(element,parent[module_name])
+        self._parse_tags(element,parent[module_name])
 
-    def load_plugin(self, element: ET.Element, parent:dict):
+    def _load_plugin(self, element: ET.Element, parent:dict):
         """Parses tags associated with plugins and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -107,13 +107,13 @@ class Settings(object):
         parent["plugin"]["options"] = {}
         for child in element:
             if child.text != None:
-                val = self.parse_text_to_list(child)
+                val = self._parse_text_to_list(child)
                 parent["plugin"]["options"][child.tag] = val
             for key in child.attrib:
                 parent["plugin"]["options"][child.tag] = {key:child.attrib[key]}
             
 
-    def load_entry_point(self, element: ET.Element, parent:dict):
+    def _load_entry_point(self, element: ET.Element, parent:dict):
         """Parses tags associated with initialiser and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -121,18 +121,18 @@ class Settings(object):
         """
         initialiser_name = element.attrib["name"]
         parent[initialiser_name] = {}
-        self.parse_tags(element,parent[initialiser_name])
+        self._parse_tags(element,parent[initialiser_name])
 
-    def load_exit_point(self, element: ET.Element, parent:dict):
+    def _load_exit_point(self, element: ET.Element, parent:dict):
         """Parses tags associated with output and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
         parent["output"] = {}
-        self.parse_tags(element,parent["output"])
+        self._parse_tags(element,parent["output"])
 
-    def load_loop(self, element: ET.Element, parent:dict):
+    def _load_loop(self, element: ET.Element, parent:dict):
         """Parses tags associated with loops and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -143,9 +143,9 @@ class Settings(object):
             "type": element.attrib["type"],
             "condition": element.attrib["condition"]
         }
-        self.parse_tags(element, parent[loop_name])
+        self._parse_tags(element, parent[loop_name])
 
-    def load_relationships(self, element: ET.Element, parent:dict):
+    def _load_relationships(self, element: ET.Element, parent:dict):
         """Parses tags associated with relationships and adds to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -159,25 +159,25 @@ class Settings(object):
             elif rel.tag == "child":
                 parent["children"].append(rel.attrib["name"])
 
-    def load_list(self, element: ET.Element, parent:dict):
+    def _load_list(self, element: ET.Element, parent:dict):
         """Parses elements consisting of lists, e.g. coordinates
 
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
         if element.text != None:
-            parent[element.tag] = self.parse_text_to_list(element)
+            parent[element.tag] = self._parse_text_to_list(element)
             if len(parent[element.tag]) == 1:
                 parent[element.tag] = parent[element.tag][0]
 
-    def parse_data_structure(self):
+    def _parse_data_structure(self):
         """Parses tags associated with data structure"""
         self.data_tree = self.root.find("datastructure")
         for child in self.data_tree:
             self.loaded_data_options[child.tag]\
-                = self.parse_text_to_list(child)
+                = self._parse_text_to_list(child)
 
-    def parse_text_to_list(self, element: ET.Element) -> list:
+    def _parse_text_to_list(self, element: ET.Element) -> list:
         """Formats raw text data
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -195,7 +195,7 @@ class Settings(object):
         element.text = raw_elem_text
         return out
 
-    def print_pretty(self, element: ET.Element):
+    def _print_pretty(self, element: ET.Element):
         """Print indented dictionary to screen"""
         from pprint import PrettyPrinter
         pp = PrettyPrinter(sort_dicts=False, width=100)
@@ -203,20 +203,20 @@ class Settings(object):
 
     def print_loaded_modules(self):
         """Print indented pipeline specifications to screen"""
-        self.print_pretty(self.loaded_modules)
+        self._print_pretty(self.loaded_modules)
 
     def print_loaded_data_structure(self):
         """Print indented data structure specifications to screen"""
-        self.print_pretty(self.loaded_data_options)
+        self._print_pretty(self.loaded_data_options)
 
     def write_to_XML(self):
         """Formats XML Tree correctly, then writes to filename
         TODO: add overwrite check and alternate filename option
         """
-        self.indent(self.root)
+        self._indent(self.root)
         self.tree.write(self.filename)
 
-    def indent(self, elem: ET.Element, level: int = 0):
+    def _indent(self, elem: ET.Element, level: int = 0):
         """Formats XML tree to be human-readable before writing to file
 
         :param elem: xml.etree.ElementTree.Element to be indented
@@ -230,7 +230,7 @@ class Settings(object):
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for elem in elem:
-                self.indent(elem, level+1)
+                self._indent(elem, level+1)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         else:
@@ -240,7 +240,7 @@ class Settings(object):
                 elem.text = elem.text.replace("\n", ("\n" + (level+1)*sep))
                 elem.text = ("{0}{1}").format(elem.text, i)
 
-    def get_element_from_name(self, name: str):
+    def _get_element_from_name(self, name: str):
         """Find a module name and return its parent tags"""
         if name == None:
             return self.pipeline_tree
@@ -250,7 +250,7 @@ class Settings(object):
         assert len(unique_elem)>0, "Error: No element exists with name \"{0}\"".format(name)
         return unique_elem[0]
 
-    def get_all_elements_with_tag(self, tag: str):
+    def _get_all_elements_with_tag(self, tag: str):
         """Return all elements with a given tag
         
         :param tag: string with tag name
@@ -258,7 +258,7 @@ class Settings(object):
         elems = self.root.findall(".//*{0}".format(tag))
         return elems
 
-    def loop_rels_autofill(self,
+    def _loop_rels_autofill(self,
                             elem:ET.Element,
                             xml_child:str):
         """Add the name of a new nested module to the relationships of a loop
@@ -269,9 +269,9 @@ class Settings(object):
         if elem.tag != "loop":
             return elem
         else:
-            return self.add_relationships(elem,[],[xml_child])
+            return self._add_relationships(elem,[],[xml_child])
 
-    def add_relationships(self, 
+    def _add_relationships(self, 
                             elem:ET.Element, 
                             parents:list, 
                             children:list):
@@ -293,7 +293,7 @@ class Settings(object):
                 new_child.set('name', c)
         return elem
 
-    def add_coords(self, 
+    def _add_coords(self, 
                     elem:ET.Element, 
                     coords:list=None):
         if coords == None:
@@ -323,7 +323,7 @@ class Settings(object):
         :param xml_parent_element: str containing name of parent Element for new module
         :param coords [optional]: list of coordinates for GUI canvas
         """
-        xml_parent_element = self.get_element_from_name(xml_parent_element)
+        xml_parent_element = self._get_element_from_name(xml_parent_element)
 
         new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
@@ -343,10 +343,10 @@ class Settings(object):
 
         if xml_parent_element.tag =="loop":
             parents.append(xml_parent_element.attrib["name"])
-        new_mod = self.add_relationships(new_mod,parents,children)
-        new_mod = self.add_coords(new_mod,coords)
+        new_mod = self._add_relationships(new_mod,parents,children)
+        new_mod = self._add_coords(new_mod,coords)
 
-        self.loop_rels_autofill(xml_parent_element, module_name)
+        self._loop_rels_autofill(xml_parent_element, module_name)
         xml_parent_element.append(new_mod)
 
     def append_pipeline_loop(self,
@@ -368,7 +368,7 @@ class Settings(object):
         :param xml_parent_element: str containing name of parent Element for new module
         :param coords [optional]: list of coordinates for GUI canvas
         """
-        xml_parent_element = self.get_element_from_name(xml_parent_element)
+        xml_parent_element = self._get_element_from_name(xml_parent_element)
 
         new_loop = ET.Element("loop")
         new_loop.set('type', loop_type)
@@ -377,10 +377,10 @@ class Settings(object):
 
         if xml_parent_element.tag =="loop":
             parents.append(xml_parent_element.attrib["name"])
-        new_loop = self.add_relationships(new_loop,parents,children)
-        new_loop = self.add_coords(new_loop,coords)
+        new_loop = self._add_relationships(new_loop,parents,children)
+        new_loop = self._add_coords(new_loop,coords)
 
-        self.loop_rels_autofill(xml_parent_element, loop_name)
+        self._loop_rels_autofill(xml_parent_element, loop_name)
             
         xml_parent_element.append(new_loop)
 
@@ -404,14 +404,14 @@ class Settings(object):
 
 
 # Use case examples:
-# if __name__ == "__main__":
-    # s = Settings("./resources/Hospital.xml")
+if __name__ == "__main__":
+    s = Settings("./resources/Hospital.xml")
     # s = Settings("./resources/example_config.xml")
     # s = Settings()
     # s.new_config_file("./resources/example_config.xml")
-    # s.get_all_elements_with_tag("loop")
+    # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
-    # s.print_loaded_modules()
+    s.print_loaded_modules()
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
     #                       "10",
