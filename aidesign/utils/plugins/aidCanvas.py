@@ -109,7 +109,7 @@ class aidCanvas(tk.Frame):
         tk.Button(
             self, text = 'Data processing', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('Data processing')
+            command = lambda: self.add_module('DataProcessing')
             ).grid(column = 5, row = 1)
         tk.Button(
             self, text = 'Modelling', fg = 'white', bg = parent['bg'],
@@ -119,17 +119,17 @@ class aidCanvas(tk.Frame):
         tk.Button(
             self, text = 'Decision making', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('Decision making')
+            command = lambda: self.add_module('DecisionMaking')
             ).grid(column = 5, row = 3)
         tk.Button(
             self, text = 'User Feedback Adaptation', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('User Feedback Adaptation')
+            command = lambda: self.add_module('UserFeedbackAdaptation')
             ).grid(column = 5, row = 4)
         tk.Button(
             self, text = 'Input data', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('Input data')
+            command = lambda: self.add_module('InputData')
             ).grid(column = 5, row = 5)
         tk.Button(
             self, text = 'Delete selection', fg = 'white', bg = parent['bg'],
