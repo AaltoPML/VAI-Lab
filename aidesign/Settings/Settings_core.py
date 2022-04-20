@@ -11,15 +11,8 @@ class Settings(object):
 
         :param filename [optional]: filename from which to load XML
         """
-        self.tree = None
-        self.pipeline_tree = None
         self.loaded_modules = {}
-
-        self.data_tree = None
         self.loaded_data_options = {}
-
-        self.initialisation_options = {}
-        self.output_options = {}
 
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
