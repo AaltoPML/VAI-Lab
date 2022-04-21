@@ -93,7 +93,9 @@ class Settings(object):
         """
         module_name = element.attrib["name"]
         module_type = element.tag
-        parent[module_name] = {"class":self._valid_tags[module_type],"module_type": module_type}
+        parent[module_name] = {"name":module_name,
+                                "class":self._valid_tags[module_type],
+                                "module_type": module_type}
         self._parse_tags(element,parent[module_name])
 
     def _load_plugin(self, element: ET.Element, parent:dict):
@@ -120,7 +122,8 @@ class Settings(object):
         :param parent: dict or dict fragment parsed tags will be appened to
         """
         initialiser_name = element.attrib["name"]
-        parent[initialiser_name] = {"class":self._valid_tags[element.tag]}
+        parent[initialiser_name] = {"name":initialiser_name,
+                                    "class":self._valid_tags[element.tag]}
         self._parse_tags(element,parent[initialiser_name])
 
     def _load_exit_point(self, element: ET.Element, parent:dict):
@@ -129,7 +132,7 @@ class Settings(object):
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
-        parent["output"] = {"class":self._valid_tags[element.tag]}
+        parent["output"] = {"name":"output","class":self._valid_tags[element.tag]}
         self._parse_tags(element,parent["output"])
 
     def _load_loop(self, element: ET.Element, parent:dict):
@@ -140,6 +143,7 @@ class Settings(object):
         """
         loop_name = element.attrib["name"]
         parent[loop_name] = {
+            "name":loop_name,
             "class":self._valid_tags[element.tag],
             "type": element.attrib["type"],
             "condition": element.attrib["condition"],

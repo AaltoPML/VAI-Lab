@@ -112,6 +112,10 @@ class GUI(tk.Tk):
                     "   - {}".format(",\n   - ".join([i["name"] for i in self.available_ui_types.values()])))
                 exit(1)
 
+    def set_options(self, specs):
+        self.plugin_name(specs["plugin"]["plugin_name"])
+        self.set_class_list(specs["plugin"]["options"]["class_list"])
+
     def set_class_list(self, class_list):
         self._class_list = class_list
 

@@ -1,0 +1,73 @@
+<Settings>
+    <pipeline>
+        <Initialiser name="Init">
+            <plugin type="">
+                <initial_data file="../resources/intial_data_test.csv" />
+                <goal file="../resources/design_goals_test.csv" />
+            </plugin>
+            <relationships>
+                <child name="My First GUI Module" />
+            </relationships>
+        </Initialiser>
+        <loop type="for" condition="2" name="For Loop 1">
+            <GUI name="My First GUI Module">
+                <plugin type="manual">
+                    <class_list>
+                                            Atelectasis
+                                            Cardiomelagy
+                                            Effusion
+                                            Infiltration
+                                            Mass
+                                            Nodule
+                                            Pneumonia
+                                            Pneumothorax
+                                        
+                    </class_list>
+                </plugin>
+                <relationships>
+                    <parent name="Init" />
+                    <child name="Data Processing 1" />
+                </relationships>
+        </GUI>
+            <loop type="for" condition="1" name="For Loop 2">
+                <GUI name="My Second GUI Module">
+                    <plugin type="canvas">
+                        <class_list>
+                                                    ['State_a','Action_a']
+                                                    ['State_x','State_y','Action_x','Action_y']
+                                                    ['State_x','State_y','Action_x','Action_y']
+                                                
+                        </class_list>
+                    </plugin>
+                    <relationships>
+                        <parent name="Data Processing 1" />
+                        <child name="Data Processing 1" />
+                        <child name="Output" />
+                    </relationships>
+                </GUI>
+            </loop>
+        </loop>
+        <Output>
+            <plugin type="">
+                <out_data>
+                    all
+                </out_data>
+                <save_to file="../resources/output_test.csv" />
+            </plugin>
+            <relationships>
+                <parent name="My Second GUI Module" />
+            </relationships>
+        </Output>
+    </pipeline>
+    <datastructure name="datatest">
+        <data_fields>
+                        State_0
+                        State_1
+                        Action
+                        Reward
+                        Termination
+                        Goal
+                    
+        </data_fields>
+    </datastructure>
+</Settings>
