@@ -405,8 +405,8 @@ class Settings(object):
 
 
 # Use case examples:
-if __name__ == "__main__":
-    s = Settings("./resources/Hospital.xml")
+# if __name__ == "__main__":
+    # s = Settings("./resources/Hospital.xml")
     # s = Settings("./resources/example_config.xml")
     # s = Settings()
     # s.new_config_file("./resources/example_config.xml")
