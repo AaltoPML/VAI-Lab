@@ -15,6 +15,8 @@ class Core(Settings):
         self.canvas = AID()
         self.canvas.plugin_name("aidcanvas")
         self.canvas.launch()
+        if hasattr(self.canvas.frames["aidCanvas"].save_path, 'name'):
+            self.load_config_file(self.canvas.frames["aidCanvas"].save_path.name)
 
     def _execute_module(self, specs):
         """Executes named module with given options

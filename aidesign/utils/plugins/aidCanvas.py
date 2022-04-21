@@ -632,8 +632,6 @@ class aidCanvas(tk.Frame):
             for c in np.arange(len(idx))[idx]:
                 data = data.drop(columns=col[c], index=col[c])
                 
-            print(col)
-            print(self.module_names)
             loop_modules = np.unique([v for a in self.loops for v in a['mod']])
             out_loops = np.zeros_like(self.loops)
             
