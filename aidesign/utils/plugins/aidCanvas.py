@@ -642,7 +642,6 @@ class aidCanvas(tk.Frame):
             
             s = Settings()
             s.new_config_file(self.save_path.name)
-            s.parse_XML()
             s.filename = self.save_path.name
             s.append_pipeline_module(self.module_list[0], # Initialiser
                                   mn[0],
