@@ -1,0 +1,33 @@
+<Settings>
+    <pipeline>
+        <Initialiser name="Initialiser">
+            <plugin type="" />
+            <relationships>
+                <child name="Data proc" />
+            </relationships>
+            <coordinates>
+                (314.5, 75.0)
+            </coordinates>
+        </Initialiser>
+        <Data processing name="Data proc">
+            <plugin type="" />
+            <relationships>
+                <parent name="Initialiser" />
+                <child name="Output" />
+            </relationships>
+            <coordinates>
+                (300.0, 300.0)
+            </coordinates>
+        </Data processing>
+        <Output name="Output">
+            <plugin type="" />
+            <relationships>
+                <parent name="Data proc" />
+            </relationships>
+            <coordinates>
+                (314.5, 525.0)
+            </coordinates>
+        </Output>
+    </pipeline>
+    <datastructure />
+</Settings>

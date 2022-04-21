@@ -11,15 +11,8 @@ class Settings(object):
 
         :param filename [optional]: filename from which to load XML
         """
-        self.tree = None
-        self.pipeline_tree = None
         self.loaded_modules = {}
-
-        self.data_tree = None
         self.loaded_data_options = {}
-
-        self.initialisation_options = {}
-        self.output_options = {}
 
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
@@ -27,23 +20,44 @@ class Settings(object):
         self.valid_tags = {
             "pipeline": "declaration",
             "datastructure": "declaration",
+            "relationships": "relationships",
+            "plugin": "plugin",
+            "coordinates": "list",
             "Initialiser": "entry_point",
             "Output": "exit_point",
             "GUI": "module",
             "DataProcessing": "module",
+            "Modelling": "module",
+            "InputData": "module",
+            "UserFeedbackAdaptation": "module",
+            "DecisionMaking": "module",
             "loop": "loop"
         }
 
         if filename is not None:
             self.load_XML(filename)
 
-    def load_XML(self, filename: str):
-        """Loads XML file into class. Converts relative paths into absolute first.
-        """
+    def set_filename(self, filename: str):
+        """Converts relative paths into absolute before setting."""
         if filename[0] == ".":
             self.filename = path.join(path.dirname(__file__), filename)
         elif filename[0] == "/":
             self.filename = filename
+
+    def new_config_file(self, filename: str = None):
+        """Constructs new XML file with minimal format"""
+        if filename is not None: 
+            self.set_filename(filename)
+        self.tree = ET.ElementTree(ET.Element("Settings"))
+        self.root = self.tree.getroot()
+        self.pipeline_tree = ET.SubElement(self.root,"pipeline")
+        self.data_tree = ET.SubElement(self.root,"datastructure")
+
+    def load_XML(self, filename: str):
+        """Loads XML file into class. 
+        """
+        if filename != None:
+            self.set_filename(filename)
         self.tree = ET.parse(self.filename)
         self.parse_XML()
 
@@ -55,7 +69,7 @@ class Settings(object):
 
         self.parse_data_structure()
 
-    def parse_tags(self, element, parent):
+    def parse_tags(self, element: ET.Element, parent:dict):
         """Detect tags and send them to correct method for parsing
         Uses getattr to call the correct method
 
@@ -68,12 +82,10 @@ class Settings(object):
                 getattr(self, "load_{}".format(tag_type))(child, parent)
             except KeyError:
                 print("\nError: Invalid XML Tag.")
-                print("XML tag \"{0}\" not found".format(child.tag))
-                print("Valid tags are: ")
-                print("\t- {}".format(",\n\t- ".join([*self.valid_tags])))
-                print("\n")
+                print("XML tag \"{0}\" in \"{1}\" not found".format(child.tag,element.tag))
+                print("Valid tags are: \n\t- {}".format(",\n\t- ".join([*self.valid_tags])))
 
-    def load_module(self, element, parent):
+    def load_module(self, element: ET.Element, parent:dict):
         """Parses tags associated with modules and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -81,30 +93,27 @@ class Settings(object):
         """
         module_name = element.attrib["name"]
         module_type = element.tag
-        plugin = element.find("plugin")
-        plugin_name = plugin.attrib["type"]
-        parent[module_name] = {
-            "module_type": module_type,
-            "plugin_name": plugin_name,
-            "options": {}
-        }
-        self.load_plugin_options(plugin, parent[module_name]["options"])
-        self.load_relationships(element, parent[module_name])
+        parent[module_name] = {"module_type": module_type}
+        self.parse_tags(element,parent[module_name])
 
-    def load_plugin_options(self, element, parent):
+    def load_plugin(self, element: ET.Element, parent:dict):
         """Parses tags associated with plugins and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
+        parent["plugin"] = {}
+        parent["plugin"]["plugin_name"] = element.attrib["type"]
+        parent["plugin"]["options"] = {}
         for child in element:
             if child.text != None:
                 val = self.parse_text_to_list(child)
-            elif child.attrib["value"] != None:
-                val = child.attrib["value"]
-            parent[child.tag] = val
+                parent["plugin"]["options"][child.tag] = val
+            for key in child.attrib:
+                parent["plugin"]["options"][child.tag] = {key:child.attrib[key]}
+            
 
-    def load_entry_point(self, element, parent):
+    def load_entry_point(self, element: ET.Element, parent:dict):
         """Parses tags associated with initialiser and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -112,25 +121,18 @@ class Settings(object):
         """
         initialiser_name = element.attrib["name"]
         parent[initialiser_name] = {}
-        init_data_file = element.find("initial_data").attrib["file"]
-        goal_data_file = element.find("goal").attrib["file"]
-        parent[initialiser_name]["init_data_file"] = init_data_file
-        parent[initialiser_name]["goal_data_file"] = goal_data_file
-        self.load_relationships(element, parent[initialiser_name])
+        self.parse_tags(element,parent[initialiser_name])
 
-    def load_exit_point(self, element, parent):
+    def load_exit_point(self, element: ET.Element, parent:dict):
         """Parses tags associated with output and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
         parent["output"] = {}
-        parent["output"]["save_fields"] = self.parse_text_to_list(
-            element.find("out_data"))
-        parent["output"]["save_dir"] = element.find("save_to").attrib["file"]
-        self.load_relationships(element, parent["output"])
+        self.parse_tags(element,parent["output"])
 
-    def load_loop(self, element, parent):
+    def load_loop(self, element: ET.Element, parent:dict):
         """Parses tags associated with loops and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -143,7 +145,7 @@ class Settings(object):
         }
         self.parse_tags(element, parent[loop_name])
 
-    def load_relationships(self, element, parent):
+    def load_relationships(self, element: ET.Element, parent:dict):
         """Parses tags associated with relationships and adds to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -151,11 +153,22 @@ class Settings(object):
         """
         parent["parents"] = []
         parent["children"] = []
-        for rel in element.find("relationships"):
+        for rel in element:
             if rel.tag == "parent":
                 parent["parents"].append(rel.attrib["name"])
             elif rel.tag == "child":
                 parent["children"].append(rel.attrib["name"])
+
+    def load_list(self, element: ET.Element, parent:dict):
+        """Parses elements consisting of lists, e.g. coordinates
+
+        :param elem: xml.etree.ElementTree.Element to be parsed
+        :param parent: dict or dict fragment parsed tags will be appened to
+        """
+        if element.text != None:
+            parent[element.tag] = self.parse_text_to_list(element)
+            if len(parent[element.tag]) == 1:
+                parent[element.tag] = parent[element.tag][0]
 
     def parse_data_structure(self):
         """Parses tags associated with data structure"""
@@ -177,6 +190,8 @@ class Settings(object):
             raw_elem_text = (raw_elem_text+"\n{}").format(out[idx])
             if "[" in out[idx] and "]" in out[idx]:
                 out[idx] = literal_eval(out[idx])
+            if "(" in out[idx] and ")" in out[idx]:
+                out[idx] = list(literal_eval(out[idx]))
         element.text = raw_elem_text
         return out
 
@@ -225,24 +240,79 @@ class Settings(object):
                 elem.text = elem.text.replace("\n", ("\n" + (level+1)*sep))
                 elem.text = ("{0}{1}").format(elem.text, i)
 
-    def find_module_path(self, name: str):
+    def get_element_from_name(self, name: str):
         """Find a module name and return its parent tags"""
+        if name == None:
+            return self.pipeline_tree
         elems = self.root.findall(".//*[@name='{0}']".format(name))
         unique_elem = [e for e in elems if e.tag != "parent" and e.tag != "child"]
         assert len(unique_elem)<2, "Error: More than one tag with same identifier"
         assert len(unique_elem)>0, "Error: No element exists with name \"{0}\"".format(name)
         return unique_elem[0]
-            
-    def append_pipeline_module_to_file(self,
-                                       module_type: str,
-                                       module_name: str,
-                                       plugin_type: str,
-                                       plugin_options: dict,
-                                       parents: list,
-                                       children: list,
-                                       xml_parent_element: str
-                                       ):
-        """Append new pipeline module to existing XML file
+
+    def get_all_elements_with_tag(self, tag: str):
+        """Return all elements with a given tag
+        
+        :param tag: string with tag name
+        """
+        elems = self.root.findall(".//*{0}".format(tag))
+        return elems
+
+    def loop_rels_autofill(self,
+                            elem:ET.Element,
+                            xml_child:str):
+        """Add the name of a new nested module to the relationships of a loop
+        
+        :param elem: ET.Element
+        :param xml_child:str name of child to be nested in XML
+        """
+        if elem.tag != "loop":
+            return elem
+        else:
+            return self.add_relationships(elem,[],[xml_child])
+
+    def add_relationships(self, 
+                            elem:ET.Element, 
+                            parents:list, 
+                            children:list):
+        """Add parents and/or children as a subelement
+        Checks for duplicates before appending
+        
+        :param elem: ET.Element to which the relationship are appeneded
+        :param parents: list of strings of parents to be appended
+        :param children: list of strings of children to be appended
+        """
+        rels_elem = ET.SubElement(elem, "relationships")
+        for p in parents:
+            if not elem.findall(".//parent/[@name='{0}']".format(p)):
+                new_parent = ET.SubElement(rels_elem, "parent")
+                new_parent.set('name', p)
+        for c in children:
+            if not elem.findall(".//child/[@name='{0}']".format(c)):
+                new_child = ET.SubElement(rels_elem, "child")
+                new_child.set('name', c)
+        return elem
+
+    def add_coords(self, 
+                    elem:ET.Element, 
+                    coords:list=None):
+        if coords == None:
+            return elem
+        coords_elem = ET.SubElement(elem, "coordinates")
+        coords_elem.text = str("\n{0}".format(coords))
+        return elem
+
+    def append_pipeline_module(self,
+                                module_type: str,
+                                module_name: str,
+                                plugin_type: str,
+                                plugin_options: dict,
+                                parents: list,
+                                children: list,
+                                xml_parent_element: str,
+                                coords: list = None
+                                ):
+        """Append new pipeline module to existing XML elementTree to be written later
         
         :param module_type: string declare type of module (GUI,data_processing etc)
         :param module_name: string give module a user-defined name
@@ -251,8 +321,11 @@ class Settings(object):
         :param parents: list of parent names for this module (can be empty)
         :param children: list of child names for this module (can be empty)
         :param xml_parent_element: str containing name of parent Element for new module
+        :param coords [optional]: list of coordinates for GUI canvas
         """
-        new_mod = ET.Element(module_type)
+        xml_parent_element = self.get_element_from_name(xml_parent_element)
+
+        new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
 
         new_plugin = ET.SubElement(new_mod, "plugin")
@@ -268,18 +341,51 @@ class Settings(object):
             elif isinstance(plugin_options[key], str):
                 new_option.set('value', plugin_options[key])
 
-        new_relationships = ET.SubElement(new_mod, "relationships")
-        for p in parents:
-            new_parent = ET.SubElement(new_relationships, "parent")
-            new_parent.set('name', p)
-        for c in children:
-            new_child = ET.SubElement(new_relationships, "child")
-            new_child.set('name', c)
+        if xml_parent_element.tag =="loop":
+            parents.append(xml_parent_element.attrib["name"])
+        new_mod = self.add_relationships(new_mod,parents,children)
+        new_mod = self.add_coords(new_mod,coords)
 
-        xml_parent_element = self.find_module_path(xml_parent_element)
+        self.loop_rels_autofill(xml_parent_element, module_name)
         xml_parent_element.append(new_mod)
 
-    def append_data_structure_field_to_file(self,
+    def append_pipeline_loop(self,
+                                loop_type: str,
+                                condition: str,
+                                loop_name: str,
+                                parents: list,
+                                children: list,
+                                xml_parent_element: str = None, 
+                                coords: list = None
+                                ):
+        """Append new pipeline module to existing XML file
+        
+        :param loop_type: string declare type of loop (for/while/manual etc)
+        :param loop_name: string give loop a user-defined name
+        :param plugin_type: string type of plugin to be loaded into module
+        :param parents: list of parent names for this module (can be empty)
+        :param children: list of child names for this module (can be empty)
+        :param xml_parent_element: str containing name of parent Element for new module
+        :param coords [optional]: list of coordinates for GUI canvas
+        """
+        xml_parent_element = self.get_element_from_name(xml_parent_element)
+
+        new_loop = ET.Element("loop")
+        new_loop.set('type', loop_type)
+        new_loop.set('condition', condition)
+        new_loop.set('name', loop_name)
+
+        if xml_parent_element.tag =="loop":
+            parents.append(xml_parent_element.attrib["name"])
+        new_loop = self.add_relationships(new_loop,parents,children)
+        new_loop = self.add_coords(new_loop,coords)
+
+        self.loop_rels_autofill(xml_parent_element, loop_name)
+            
+        xml_parent_element.append(new_loop)
+
+
+    def append_data_structure_field(self,
                                             field_type: str,
                                             value: list,
                                             field_name: str = None):
@@ -298,17 +404,28 @@ class Settings(object):
 
 
 # Use case examples:
-# s = Settings("./resources/example_config.xml")
-# s.load_XML("./resources/example_config.xml")
-# s.print_loaded_modules()
-# s.write_to_XML()
-# s.append_pipeline_module_to_file("GUI",
-#                       "added_mod",
-#                       "startpage",
-#                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
-#                       ["For Loop 1"],
-#                       ["Output"],
-#                       "For Loop 1")
-# s.write_to_XML()
-# s.append_data_structure_field_to_file("replay_buffer", "1")
-# s.print_loaded_data_structure()
+# if __name__ == "__main__":
+    # s = Settings("./resources/Hospital.xml")
+    # s = Settings("./resources/example_config.xml")
+    # s = Settings()
+    # s.new_config_file("./resources/example_config.xml")
+    # s.get_all_elements_with_tag("loop")
+    # s.load_XML("./resources/example_config.xml")
+    # s.print_loaded_modules()
+    # s.write_to_XML()
+    # s.append_pipeline_loop("for",
+    #                       "10",
+    #                       "my_loop_3",
+    #                       ["Init"],
+    #                       [])
+    # s.append_pipeline_module("GUI thing",
+    #                       "added_mod",
+    #                       "startpage",
+    #                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
+    #                       ["loop0"],
+    #                       ["Output","loop0"],
+    #                       "loop0",
+    #                       [2,3,4,5])
+    # s.write_to_XML()
+    # s.append_data_structure_field_to_file("replay_buffer", "1")
+    # s.print_loaded_data_structure()
