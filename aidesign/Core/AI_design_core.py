@@ -15,8 +15,10 @@ class Core(Settings):
         self.canvas = AID()
         self.canvas.plugin_name("aidcanvas")
         self.canvas.launch()
-        if hasattr(self.canvas.frames["aidCanvas"].save_path, 'name'):
-            self.load_config_file(self.canvas.frames["aidCanvas"].save_path.name)
+        try:
+            self.load_config_file(getattr(self.canvas.frames["aidCanvas"].save_path, 'name'))
+        except:
+            print("No config file saved in canvas. Quitting.")
 
     def _execute_module(self, specs):
         """Executes named module with given options
@@ -36,7 +38,7 @@ class Core(Settings):
     def _execute_loop(self, specs):
         try:
             print("{0}{1} loop: \"{2}\" starting...".format(
-            "\t"*self.loop_level, specs["type"], specs["name"]))
+                "\t"*self.loop_level, specs["type"], specs["name"]))
             self.loop_level += 1
             getattr(self, "_execute_{}_loop".format(specs["type"]))(specs)
             self.loop_level -= 1
