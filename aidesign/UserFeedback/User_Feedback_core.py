@@ -4,7 +4,6 @@ from tkinter import font as tkfont
 from sys import modules as get_module_name
 from .plugins import PageCanvas
 from .plugins import PageManual
-from .plugins import StartPage
 
 
 class UserFeedback(tk.Tk):
@@ -27,35 +26,15 @@ class UserFeedback(tk.Tk):
         self.top_ui_layer = None
         self.startpage_exist = False
         self.available_ui_types = {
-            "StartPage": {
-                "name": "startpage",
-                "layer_priority": 1,
-                "required_children": ["PageManual", "PageCanvas"]
-            },
             "PageManual": {
                 "name": "manual",
                 "layer_priority": 2,
                 "required_children": None,
-                # temporary fix so startpage still works:
-                "default_class_list": ['Atelectasis',
-                                       'Cardiomelagy',
-                                       'Effusion',
-                                       'Infiltration',
-                                       'Mass',
-                                       'Nodule',
-                                       'Pneumonia',
-                                       'Pneumothorax'
-                                       ]
             },
             "PageCanvas": {
                 "name": "canvas",
                 "layer_priority": 2,
                 "required_children": None,
-                # temporary fix so startpage still works:
-                "default_class_list": [['State_a', 'Action_a'],
-                                       ['State_x', 'State_y',
-                                        'Action_x', 'Action_y'],
-                                       ['State_x', 'State_y', 'Action_x', 'Action_y']]
             }
         }
 
@@ -87,7 +66,7 @@ class UserFeedback(tk.Tk):
             for children in self.available_ui_types[ui_name]["required_children"]:
                 self.add_UI_type_to_frames(children)
 
-    def plugin_name(self, ui_type):
+    def _set_plugin_name(self, ui_type: list):
         """"Given user input, create a list of classes of the corresponding User Interface Type 
 
         :param ui_name: name of the desired User Interface Method
@@ -95,29 +74,30 @@ class UserFeedback(tk.Tk):
         """
         ui_type = ui_type\
             if isinstance(ui_type, list)\
-            else [ui_type]  # put ui_type in list if not already
+            else [ui_type]
 
         for ui in ui_type:
             ui_name = ''.join(kn for kn in self.available_ui_types.keys()
                               if ui.lower() == self.available_ui_types[kn]["name"])
             try:
                 self.add_UI_type_to_frames(ui_name)
-                self.startpage_exist = 1 if ui_name == "StartPage" else self.startpage_exist
             except:
                 from sys import exit
                 print(
                     "Error: User Interface \"{0}\" not recognised.".format(ui))
                 print("Available methods are:")
-                print(
-                    "   - {}".format(",\n   - ".join([i["name"] for i in self.available_ui_types.values()])))
+                print("   - {}".
+                      format(",\n   - ".
+                             join([i["name"] for i in self.available_ui_types.values()])))
                 exit(1)
 
-    def set_options(self, specs):
-        self.plugin_name(specs["plugin"]["plugin_name"])
-        self.set_class_list(specs["plugin"]["options"]["class_list"])
+    def set_options(self, module_config: dict):
+        """Send configuration arguments to GUI
 
-    def set_class_list(self, class_list):
-        self._class_list = class_list
+        :param module_config: dict of settings to congfigure the plugin
+        """
+        self.module_config = module_config
+        self._set_plugin_name(self.module_config["plugin"]["plugin_name"])
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -125,9 +105,9 @@ class UserFeedback(tk.Tk):
         frame.tkraise()
 
     def launch(self):
-        # the container is where we'll stack a bunch of frames
-        # on top of each other, then the one we want visible
-        # will be raised above the others
+        """Runs UserInterface Plugin. 
+        If multiple frames exist, they are stacked
+        """
         container = tk.Frame(self, bg='#19232d')
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -136,17 +116,10 @@ class UserFeedback(tk.Tk):
         self.frames = {}
         for F in self.desired_ui_types:
             page_name = F.__name__
-            frame = F(parent=container, controller=self)
-            if not self.startpage_exist:
-                frame.class_list(self._class_list)
-            elif self.startpage_exist and page_name != "StartPage":
-                default_class_list = self.available_ui_types[page_name]["default_class_list"]
-                frame.class_list(default_class_list)
+            frame = F(parent=container, controller=self,
+                      config=self.module_config)
             self.frames[page_name] = frame
 
-            # put all of the pages in the same location;
-            # the one on the top of the stacking order
-            # will be the one that is visible.
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame(self.top_ui_layer)
