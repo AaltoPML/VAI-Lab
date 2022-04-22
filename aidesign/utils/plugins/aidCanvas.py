@@ -314,10 +314,10 @@ class aidCanvas(tk.Frame):
                     self.out_data.values[self.m, :]==1]
                 for o in out:
                     xycoord_i = self.canvas.coords(
-                        self.connections[self.m][o].split('-')[0])
+                        self.connections[o][self.m].split('-')[0])
                     xycoord_o = self.canvas.coords(
-                        self.connections[self.m][o].split('-')[1])
-                    self.canvas.coords(self.connections[self.m][o], 
+                        self.connections[o][self.m].split('-')[1])
+                    self.canvas.coords(self.connections[o][self.m], 
                             (xycoord_i[0] + self.cr, 
                              xycoord_i[1] + self.cr, 
                              xycoord_o[0] + self.cr, 
@@ -326,10 +326,10 @@ class aidCanvas(tk.Frame):
                     self.out_data.values[:, self.m]==1]
                 for i in inp:
                     xycoord_i = self.canvas.coords(
-                        self.connections[i][self.m].split('-')[0])
+                        self.connections[self.m][i].split('-')[0])
                     xycoord_o = self.canvas.coords(
-                        self.connections[i][self.m].split('-')[1])
-                    self.canvas.coords(self.connections[i][self.m], 
+                        self.connections[self.m][i].split('-')[1])
+                    self.canvas.coords(self.connections[self.m][i], 
                             (xycoord_i[0] + self.cr, 
                              xycoord_i[1] + self.cr, 
                              xycoord_o[0] + self.cr, 
@@ -561,6 +561,7 @@ class aidCanvas(tk.Frame):
                 self.out_data[col] = 0
                 self.out_data.loc[col] = 0
                 self.saved = False
+                self.module_names[self.m] = None
                 
     def join_modules(self, event):
         """ Draws a connecting line between two connecting circles. """
@@ -581,8 +582,8 @@ class aidCanvas(tk.Frame):
                             tags = ('o'+str(int(self.tag[1:])), 
                                   'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
                 self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
-                self.connections[
-                    int(self.tag[1:])][int(tag2[1:])] = self.tag + '-' + tag2
+                self.connections[int(tag2[1:])][
+                    int(self.tag[1:])] = self.tag + '-' + tag2
             self.draw = False
             self.saved = False
         else:
@@ -624,7 +625,10 @@ class aidCanvas(tk.Frame):
             
             values = data.values.astype(bool)
             mn = np.array(self.module_names)
-            
+            mn_id = [m is not None for m in mn]
+            mn = mn[mn_id]
+            print(mn)
+            print(mn_id)
             s = Settings()
             s.new_config_file(self.save_path.name)
             s.filename = self.save_path.name
@@ -635,34 +639,35 @@ class aidCanvas(tk.Frame):
                                   list(mn[values[:,0]]),
                                   list(mn[values[0,:]]),
                                   None,
-                                  self.canvas.startxy[0])
-            for i in np.arange(len(mn)-2)+2:
-                xml_parent = None
-                parent_loops = []
-                if mn[i] in loop_modules: # Model in any loop
-                    for x, loop in enumerate(self.loops):
-                        if mn[i] in loop['mod']: # Model in this loop
-                            if not out_loops[x]: # Loop already defined
-                                s.append_pipeline_loop(self.loops[x]['type'],
-                                            self.loops[x]['condition'],
-                                            "loop"+str(x),
-                                            parent_loops,
-                                            list(loop['mod']),
-                                            xml_parent,
-                                            self.loops[x]['coord']
-                                            )
-                                out_loops[x] = 1
-                            xml_parent = "loop"+str(x) # parent is the last loop
-                            parent_loops.append("loop"+str(x))
-                
-                s.append_pipeline_module(self.module_list[i],
-                  mn[i],
-                  "",
-                  {},
-                  list(mn[values[:,i]]),
-                  list(mn[values[i,:]]),
-                  xml_parent,
-                  self.canvas.startxy[i])
+                                  [self.canvas.startxy[0], 0, self.connections[0]])
+            for i, mnn in enumerate(mn_id):
+                if (i > 1) and mnn:
+                    xml_parent = None
+                    parent_loops = []
+                    if mn[i] in loop_modules: # Model in any loop
+                        for x, loop in enumerate(self.loops):
+                            if mn[i] in loop['mod']: # Model in this loop
+                                if not out_loops[x]: # Loop already defined
+                                    s.append_pipeline_loop(self.loops[x]['type'],
+                                                self.loops[x]['condition'],
+                                                "loop"+str(x),
+                                                parent_loops,
+                                                list(loop['mod']),
+                                                xml_parent,
+                                                self.loops[x]['coord']
+                                                )
+                                    out_loops[x] = 1
+                                xml_parent = "loop"+str(x) # parent is the last loop
+                                parent_loops.append("loop"+str(x))
+
+                    s.append_pipeline_module(self.module_list[i],
+                      mn[i],
+                      "",
+                      {},
+                      list(mn[values[:,i]]),
+                      list(mn[values[i,:]]),
+                      xml_parent,
+                      [self.canvas.startxy[i], i, self.connections[i]])
                 
             s.append_pipeline_module(self.module_list[1], # Out
                       mn[1],
@@ -671,7 +676,7 @@ class aidCanvas(tk.Frame):
                       list(mn[values[:,1]]),
                       list(mn[values[1,:]]),
                       None,
-                      self.canvas.startxy[1])
+                      [self.canvas.startxy[1], 1, self.connections[1]])
             s.write_to_XML()
             self.saved = True
          
@@ -690,6 +695,8 @@ class aidCanvas(tk.Frame):
             s._print_pretty(s.loaded_modules)
             modules = s.loaded_modules
             del modules['Initialiser'], modules['output'] # They are generated when resetting
+            disp_mod = ['Initialiser', 'output']
+            id_mod = [0, 1]
             # mod = ['Initialiser', 'output']
             # for m in mod:
             #     self.add_module(m, 
@@ -699,10 +706,33 @@ class aidCanvas(tk.Frame):
             
             # Place the modules
             for key in [key for key, val in modules.items() if type(val) == dict]:
-                self.add_module(key, 
-                                modules[key]['coordinates'][0],
-                                modules[key]['coordinates'][1])
+                self.add_module(key,
+                                modules[key]['coordinates'][0][0],
+                                modules[key]['coordinates'][0][1])
+                id_mod.append(modules[key]['coordinates'][1])
+                connect = list(modules[key]['coordinates'][2].keys())
+                for p, parent in enumerate(modules[key]['parents']):
+                    parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
+                    print(parent_id)
+                    out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
+                    print(out, ins)
+                    # xout, yout = self.canvas.coords(out[0]+str(np.where(np.array(disp_mod) == parent)[0][0]))
+                    # xins, yins =
+                    print(np.where(np.array(disp_mod) == parent)[0][0])
+                    print(self.canvas.coords('d'+str(np.where(np.array(disp_mod) == parent)[0][0])))
+                # self.canvas.create_line(
+                #             self.canvas.linestartxy[0] + self.cr, 
+                #             self.canvas.linestartxy[1] + self.cr, 
+                #             self.canvas.coords(tag2)[0] + self.cr, 
+                #             self.canvas.coords(tag2)[1] + self.cr,
+                #             fill = "red", 
+                #             arrow = tk.LAST, 
+                #             tags = ('o'+str(int(self.tag[1:])), 
+                #                   'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
+                disp_mod.append(key)
     
+            # Falta dibujar las conexiones para out
+            
     def reset(self):
         
         if not self.saved:
