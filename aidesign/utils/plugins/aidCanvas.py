@@ -229,7 +229,7 @@ class aidCanvas(tk.Frame):
                 if len(aux) == 2 and aux[0] == 't':
                     self.loops[l]['mod'].append(self.canvas.itemcget(
                         mod, 'text'))
-        print('Updated loop info:', self.loops)
+        # print('Updated loop info:', self.loops)
         
     def select(self, event):
         """ Selects the module at the mouse location. """
@@ -620,10 +620,13 @@ class aidCanvas(tk.Frame):
                 data = data.drop(columns=col[c], index=col[c])
                 
             loop_modules = np.unique([v for a in self.loops for v in a['mod']])
+
             out_loops = np.zeros_like(self.loops)
             
             values = data.values.astype(bool)
             mn = np.array(self.module_names)
+            # to avoid numpy bug during elementwise comparison of lists 
+            loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
             
             s = Settings()
             s.new_config_file(self.save_path.name)
