@@ -93,7 +93,9 @@ class aidCanvas(tk.Frame):
         tk.Button(
             self, text = 'User Feedback Adaptation', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('UserFeedback')
+            command = lambda: self.add_module('UserFeedbackAdaptation', 
+                                              self.width/2, 
+                                              self.height/2)
             ).grid(column = 5, row = 4)
         tk.Button(
             self, text = 'Input data', fg = 'white', bg = parent['bg'],
@@ -692,6 +694,7 @@ class aidCanvas(tk.Frame):
             s.load_XML(filename)
             s._print_pretty(s.loaded_modules)
             modules = s.loaded_modules
+            modout = modules['output']
             del modules['Initialiser'], modules['output'] # They are generated when resetting
             disp_mod = ['Initialiser', 'output']
             id_mod = [0, 1]
@@ -711,25 +714,35 @@ class aidCanvas(tk.Frame):
                 connect = list(modules[key]['coordinates'][2].keys())
                 for p, parent in enumerate(modules[key]['parents']):
                     parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
-                    print(parent_id)
                     out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
-                    print(out, ins)
-                    # xout, yout = self.canvas.coords(out[0]+str(np.where(np.array(disp_mod) == parent)[0][0]))
-                    # xins, yins =
-                    print(np.where(np.array(disp_mod) == parent)[0][0])
-                    print(self.canvas.coords('d'+str(np.where(np.array(disp_mod) == parent)[0][0])))
-                # self.canvas.create_line(
-                #             self.canvas.linestartxy[0] + self.cr, 
-                #             self.canvas.linestartxy[1] + self.cr, 
-                #             self.canvas.coords(tag2)[0] + self.cr, 
-                #             self.canvas.coords(tag2)[1] + self.cr,
-                #             fill = "red", 
-                #             arrow = tk.LAST, 
-                #             tags = ('o'+str(int(self.tag[1:])), 
-                #                   'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
+                    xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
+                    xins, yins, _, _ =self.canvas.coords(ins[0]+str(id_mod[-1]))
+                    self.canvas.create_line(
+                                xout + self.cr, 
+                                yout + self.cr, 
+                                xins + self.cr, 
+                                yins + self.cr,
+                                fill = "red", 
+                                arrow = tk.LAST, 
+                                tags = ('o'+str(parent_id), 
+                                      'o'+str(id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
                 disp_mod.append(key)
     
-            # Falta dibujar las conexiones para out
+            connect = list(modout['coordinates'][2].keys())
+            for p, parent in enumerate(modout['parents']):
+                    parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
+                    out, ins = modout['coordinates'][2][connect[p]].split('-')
+                    xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
+                    xins, yins, _, _ =self.canvas.coords(ins[0]+str(1))
+                    self.canvas.create_line(
+                                xout + self.cr, 
+                                yout + self.cr, 
+                                xins + self.cr, 
+                                yins + self.cr,
+                                fill = "red", 
+                                arrow = tk.LAST, 
+                                tags = ('o'+str(parent_id), 
+                                      'o'+str(1), modout['coordinates'][2][connect[p]]))
             
     def reset(self):
         
