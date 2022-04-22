@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 
-class PageManual(tk.Frame,UI):
+class ManualInput(tk.Frame,UI):
     def __init__(self, parent, controller, config:dict):
         self.parent = parent    
         super().__init__(parent, bg = self.parent['bg'])

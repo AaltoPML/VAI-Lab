@@ -4,5 +4,6 @@
 
 Let's look for a more automatic way of doing this when we have more modules
 """
+from .. import utils
 from .User_Feedback_core import UserFeedback
 from .User_Feedback_template import UI

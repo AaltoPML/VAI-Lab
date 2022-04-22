@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import math
 
-class PageCanvas(tk.Frame,UI):
+class CanvasInput(tk.Frame,UI):
     def __init__(self, parent, controller, config:dict):
         self.parent = parent
         super().__init__(self.parent, bg = self.parent['bg'])

@@ -1,4 +1,3 @@
-# Import the required libraries
 import tkinter as tk
 from PIL import Image, ImageTk
 import os
@@ -660,7 +659,7 @@ class aidCanvas(tk.Frame):
                 
                 s.append_pipeline_module(self.module_list[i],
                   mn[i].replace(" ",""),
-                  "manual",
+                  "manuald",
                   {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},
                   list(mn[values[:,i]]),
                   list(mn[values[i,:]]),
