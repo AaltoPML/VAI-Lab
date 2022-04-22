@@ -6,11 +6,11 @@
                 <goal file="../resources/design_goals_test.csv" />
             </plugin>
             <relationships>
-                <child name="My First GUI Module" />
+                <child name="My First UserFeedback Module" />
             </relationships>
         </Initialiser>
         <loop type="for" condition="2" name="For Loop 1">
-            <GUI name="My First GUI Module">
+            <UserFeedback name="My First UserFeedback Module">
                 <plugin type="manual">
                     <class_list>
                                             Atelectasis
@@ -28,9 +28,9 @@
                     <parent name="Init" />
                     <child name="Data Processing 1" />
                 </relationships>
-        </GUI>
+        </UserFeedback>
             <loop type="for" condition="1" name="For Loop 2">
-                <GUI name="My Second GUI Module">
+                <UserFeedback name="My Second UserFeedback Module">
                     <plugin type="canvas">
                         <class_list>
                                                     ['State_a','Action_a']
@@ -44,7 +44,7 @@
                         <child name="Data Processing 1" />
                         <child name="Output" />
                     </relationships>
-                </GUI>
+                </UserFeedback>
             </loop>
         </loop>
         <Output>
@@ -55,7 +55,7 @@
                 <save_to file="../resources/output_test.csv" />
             </plugin>
             <relationships>
-                <parent name="My Second GUI Module" />
+                <parent name="My Second UserFeedback Module" />
             </relationships>
         </Output>
     </pipeline>

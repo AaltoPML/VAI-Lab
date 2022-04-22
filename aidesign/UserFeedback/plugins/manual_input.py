@@ -6,7 +6,6 @@ from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
-import math
 
 
 class PageManual(tk.Frame):
@@ -17,16 +16,11 @@ class PageManual(tk.Frame):
         self.controller.title('Manual Input')
         
         self.dirpath = os.getcwd()
-        self.assets_path = os.path.join(self.dirpath,'aidesign','GUI','plugins','resources','Assets')
-
-        # self._class_list = ['Atelectasis', 'Cardiomelagy', 'Effusion', 
-        #                    'Infiltration', 'Mass', 'Nodule', 'Pneumonia', 
-        #                    'Pneumothorax'
-        #                    ]
+        self.assets_path = os.path.join(self.dirpath,'aidesign','UserFeedback','plugins','resources','Assets')
 
         self._class_list = None        
         pixels = 500
-        path = os.path.join(self.dirpath,'aidesign','GUI','plugins','resources','example_radiography_images')
+        path = os.path.join(self.dirpath,'aidesign','UserFeedback','plugins','resources','example_radiography_images')
         self.N = len(os.listdir(path))
         
         # Create a list with all the available (I have tried reading the file when placing it but wasn't able to)
