@@ -13,16 +13,26 @@
             <plugin type="" />
             <relationships>
                 <parent name="Initialiser" />
-                <child name="Output" />
+                <child name="Modelling" />
             </relationships>
             <coordinates>
-                (300.0, 300.0)
+                (155, 176)
             </coordinates>
         </DataProcessing>
-        <Output name="Output">
+        <Modelling name="Modelling">
             <plugin type="" />
             <relationships>
                 <parent name="DataProcessing" />
+                <child name="Output" />
+            </relationships>
+            <coordinates>
+                (252, 300)
+            </coordinates>
+        </Modelling>
+        <Output name="Output">
+            <plugin type="" />
+            <relationships>
+                <parent name="Modelling" />
             </relationships>
             <coordinates>
                 (300.0, 550)

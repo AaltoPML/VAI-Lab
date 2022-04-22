@@ -43,54 +43,19 @@ class aidCanvas(tk.Frame):
                          padx = 10, pady = 10)
         
         self.canvas.startxy = []
-        self.out_data = pd.DataFrame(np.zeros((2,2)), 
-                                     columns = ['Initialiser', 'Output'], 
-                                     index = ['Initialiser', 'Output'])
+        self.out_data = pd.DataFrame()
         self.connections = {}
-        self.connections[0] = {}
-        self.connections[1] = {}
-        self.module_list = ['Initialiser', 'Output']
-        self.module_names = ['Initialiser', 'Output']
+        self.modules = 0
+        self.module_list = []
+        self.module_names = []
+        
         # Create module
         self.w, self.h = 100, 50
-        x0 = self.width/2 - (
-            self.controller.pages_font.measure('Initialiser')+10)/2
-
         self.cr = 4
+        
         #Initialiser module
-        self.canvas.create_rectangle(x0, self.h, x0 + self.w, 2*self.h, 
-                                     tags = 'p0', fill = self.bg, width = 3,
-                                     activefill = '#dbaa21')
-        self.canvas.create_text(x0 + self.w/2, 3*self.h/2, 
-                                text = 'Initialiser', tags = 't0', 
-                                fill = '#d0d4d9', 
-                                font = self.controller.pages_font)
-        self.canvas.create_oval(
-                        x0 + self.w/2-self.cr, 2*self.h-self.cr, 
-                        x0 + self.w/2+self.cr, 2*self.h+self.cr, 
-                        width=2, fill = 'black', tags='d0')
-        self.canvas.tag_bind('d0', "<Button-1>", self.join_modules)
-        self.canvas.startxy.append((x0 + self.w/2, 
-                                    3*self.h/2))
-        # Output module
-        h_out = self.height - 2*self.h
-        self.canvas.create_rectangle(x0, h_out, x0 + self.w, h_out + self.h, 
-                                     tags = ('p1'), 
-                                     fill = self.bg, width = 3,
-                                     activefill = '#dbaa21')
-        self.canvas.create_text(x0 + self.w/2, h_out + self.h/2, 
-                                text = 'Output', tags = ('t1'), 
-                                fill = '#d0d4d9', 
-                                font = self.controller.pages_font)
-        self.canvas.create_oval(
-                        x0 + self.w/2 - self.cr, 
-                        h_out - self.cr, 
-                        x0 + self.w/2 + self.cr, 
-                        h_out  + self.cr,
-                        width=2, fill = 'black', tags = ('u1'))
-        self.canvas.tag_bind('u1', "<Button-1>", self.join_modules)
-        self.canvas.startxy.append((x0 + self.w/2, 
-                                    h_out + self.h/2))
+        self.add_module('Initialiser', self.width/2, self.h, ini = True)
+        self.add_module('Output', self.width/2, self.height - self.h, out = True)
         
         self.draw = False
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -102,24 +67,28 @@ class aidCanvas(tk.Frame):
         # self.canvas.bind("<ButtonPress-1>", self.on_button_press)
         self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
         
-        # modules = ['Data preprocessing', 'Modelling', 'Decision making', 'User Feedback Adaptation']
         
-        self.modules = 2
         # for m, module in enumerate(modules):
         tk.Button(
             self, text = 'Data processing', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('DataProcessing')
+            command = lambda: self.add_module('DataProcessing', 
+                                              self.width/2, 
+                                              self.height/2)
             ).grid(column = 5, row = 1)
         tk.Button(
             self, text = 'Modelling', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('Modelling')
+            command = lambda: self.add_module('Modelling', 
+                                              self.width/2, 
+                                              self.height/2)
             ).grid(column = 5, row = 2)
         tk.Button(
             self, text = 'Decision making', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('DecisionMaking')
+            command = lambda: self.add_module('DecisionMaking', 
+                                              self.width/2, 
+                                              self.height/2)
             ).grid(column = 5, row = 3)
         tk.Button(
             self, text = 'User Feedback Adaptation', fg = 'white', bg = parent['bg'],
@@ -129,7 +98,9 @@ class aidCanvas(tk.Frame):
         tk.Button(
             self, text = 'Input data', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('InputData')
+            command = lambda: self.add_module('InputData', 
+                                              self.width/2, 
+                                              self.height/2)
             ).grid(column = 5, row = 5)
         tk.Button(
             self, text = 'Delete selection', fg = 'white', bg = parent['bg'],
@@ -371,9 +342,11 @@ class aidCanvas(tk.Frame):
         :type name: str
         """
         name_list = list(self.out_data.columns)
-        m_num = [n.split('-')[1] for n in name_list if (
-            len(n.split('-')) > 1) and (n.split('-')[0] == name)]
-        name_list.append(name + '-' + str(len(m_num)))
+        m_num = [n for n in name_list if (n.split('-')[0] == name)]
+        if len(m_num) > 0:
+            name_list.append(name + '-' + str(len(m_num)))
+        else:
+            name_list.append(name)
         self.canvas.itemconfig('t'+str(self.modules), text = name_list[-1])
         values = self.out_data.values
         values = np.vstack((
@@ -384,73 +357,83 @@ class aidCanvas(tk.Frame):
                                      index = name_list)
         self.module_names.append(name_list[-1])
 
-    def add_module(self, boxName):
+    def add_module(self, boxName, x, y, ini = False, out = False):
         """ Creates a rectangular module with the corresponding text inside.
         
         :param boxName: name of the model
         :type boxName: str
         """
+        if not ini and not out:
+            tag = ('o'+str(self.modules),)
+        else: #Make initialisation and output unmoveable
+            tag = ('n0',)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
         self.canvas.create_rectangle(
-            self.width/2 - text_w/2 , 
-            self.height/2 - self.h/2, 
-            self.width/2 + text_w/2, 
-            self.height/2 + self.h/2, 
-            tags = ('o'+str(self.modules), 'p'+str(self.modules)), 
+            x - text_w/2 , 
+            y - self.h/2, 
+            x + text_w/2, 
+            y + self.h/2, 
+            tags = tag + ('p'+str(self.modules),), 
             fill = self.bg, width = 3,
             activefill = '#dbaa21')
         self.canvas.create_text(
-            self.width/2, 
-            self.height/2, 
+            x, 
+            y, 
             font = self.controller.pages_font, 
             text = boxName, 
-            tags = ('o'+str(self.modules), 't'+str(self.modules)), 
+            tags = tag + ('t'+str(self.modules),), 
             fill = '#d0d4d9', 
             justify = tk.CENTER)
         self.canvas.tag_bind('t'+str(self.modules), 
                              "<Double-1>", self.OnDoubleClick)
-        self.canvas.create_oval(
-            self.width/2 - self.cr, 
-            self.height/2 + self.h/2 - self.cr, 
-            self.width/2 + self.cr, 
-            self.height/2 + self.h/2 + self.cr, 
-            width = 2, 
-            fill = 'black', 
-            tags = ('o'+str(self.modules), 'd'+str(self.modules)))
-        self.canvas.tag_bind('d'+str(self.modules), 
-                             "<Button-1>", self.join_modules)
-        self.canvas.create_oval(
-            self.width/2 - text_w/2 - self.cr, 
-            self.height/2 - self.cr, 
-            self.width/2 - text_w/2 + self.cr, 
-            self.height/2 + self.cr, 
-            width = 2, 
-            fill = 'black', 
-            tags = ('o'+str(self.modules), 'l'+str(self.modules)))
-        self.canvas.tag_bind('l'+str(self.modules), 
-                             "<Button-1>", self.join_modules)
-        self.canvas.create_oval(
-            self.width/2 - self.cr, 
-            self.height/2 - self.h/2 - self.cr, 
-            self.width/2 + self.cr, 
-            self.height/2 - self.h/2 + self.cr, 
-            width = 2, 
-            fill = 'black', 
-            tags = ('o'+str(self.modules), 'u'+str(self.modules)))
-        self.canvas.tag_bind('u'+str(self.modules), 
-                             "<Button-1>", self.join_modules)
-        self.canvas.create_oval(
-            self.width/2 + text_w/2 - self.cr, 
-            self.height/2 - self.cr, 
-            self.width/2 + text_w/2 + self.cr, 
-            self.height/2 + self.cr, 
-            width = 2, 
-            fill = 'black', 
-            tags = ('o'+str(self.modules), 'r'+str(self.modules)))
-        self.canvas.tag_bind('r'+str(self.modules), 
-                             "<Button-1>", self.join_modules)
-        self.canvas.startxy.append((self.width/2, 
-                                    self.height/2))
+        if not out:
+            self.canvas.create_oval(
+                x - self.cr, 
+                y + self.h/2 - self.cr, 
+                x + self.cr, 
+                y + self.h/2 + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('d'+str(self.modules),))
+            self.canvas.tag_bind('d'+str(self.modules), 
+                                 "<Button-1>", self.join_modules)
+            
+        if not ini:
+            self.canvas.create_oval(
+                x - self.cr, 
+                y - self.h/2 - self.cr, 
+                x + self.cr, 
+                y - self.h/2 + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('u'+str(self.modules),))
+            self.canvas.tag_bind('u'+str(self.modules), 
+                                 "<Button-1>", self.join_modules)
+        
+        if not out and not ini:
+            self.canvas.create_oval(
+                x - text_w/2 - self.cr, 
+                y - self.cr, 
+                x - text_w/2 + self.cr, 
+                y + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('l'+str(self.modules),))
+            self.canvas.tag_bind('l'+str(self.modules), 
+                                 "<Button-1>", self.join_modules)
+        
+            self.canvas.create_oval(
+                x + text_w/2 - self.cr, 
+                y - self.cr, 
+                x + text_w/2 + self.cr, 
+                y + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('r'+str(self.modules),))
+            self.canvas.tag_bind('r'+str(self.modules), 
+                                 "<Button-1>", self.join_modules)
+        self.canvas.startxy.append((x, 
+                                    y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
         self.module_list.append(boxName)
@@ -490,6 +473,7 @@ class aidCanvas(tk.Frame):
                                 y1)
             self.entry.destroy()
             self.module_names[self.m] = moduleName
+            self.saved = False
             
     def on_return_editLoop(self, event):
         """ This function renames loop conditions and updates the loop
@@ -501,6 +485,7 @@ class aidCanvas(tk.Frame):
         self.canvas.itemconfig(self.selected[0], text = newText)
         self.entry.destroy()
         self.loops[int(conditions[1])][conditions[0]] = newText
+        self.saved = False
         
     def OnDoubleClick(self, event):
         
@@ -690,21 +675,39 @@ class aidCanvas(tk.Frame):
          
     def upload(self):
         
-        self.reset()
         filename = askopenfilename(initialdir = os.getcwd(), 
                                    title = 'Select a file', 
                                    defaultextension = '.xml', 
                                    filetypes = [('XML file', '.xml'), 
                                                 ('All Files', '*.*')])
         if filename is not None:
-            data = open(filename,'r')
+            self.reset()
 
-            # for n, point in enumerate(data):
+            s = Settings()
+            s.load_XML(filename)
+            s._print_pretty(s.loaded_modules)
+            modules = s.loaded_modules
+            del modules['Initialiser'], modules['output'] # They are generated when resetting
+            # mod = ['Initialiser', 'output']
+            # for m in mod:
+            #     self.add_module(m, 
+            #                     modules[m]['coordinates'][0],
+            #                     modules[m]['coordinates'][1])
+            #     del modules[m]
+            
+            # Place the modules
+            for key in [key for key, val in modules.items() if type(val) == dict]:
+                self.add_module(key, 
+                                modules[key]['coordinates'][0],
+                                modules[key]['coordinates'][1])
     
     def reset(self):
         
-        msg = messagebox.askyesnocancel(
-            'Info', 'Are you sure you want to reset the canvas?')
+        if not self.saved:
+            msg = messagebox.askyesnocancel(
+                'Info', 'Are you sure you want to reset the canvas?')
+        else:
+            msg = True
         if msg:
             self.canvas.delete(tk.ALL) # Reset canvas
             
@@ -714,59 +717,21 @@ class aidCanvas(tk.Frame):
                 self.entry1.destroy()
             if hasattr(self, 'entry2'):
                 self.entry2.destroy()
-            
-            self.out_data = pd.DataFrame(np.zeros((2,2)), 
-                                         columns = ['Initialiser', 'Output'], 
-                                         index = ['Initialiser', 'Output'])
-            x0 = self.width/2 - (
-            self.controller.pages_font.measure('Initialiser')+10)/2
-            y0 = self.h
-            self.canvas.create_rectangle(x0, y0, x0 + self.w, y0 + self.h, 
-                                     tags = 'p0', fill = self.bg, width = 3,
-                                     activefill = '#dbaa21')
-            self.canvas.create_text(x0 + self.w/2, y0 + self.h/2, 
-                                    text = 'Initialiser', tags = 't0', 
-                                    fill = '#d0d4d9', 
-                                    font = self.controller.pages_font)
-            self.canvas.create_oval(
-                            x0 + self.w/2-self.cr, y0 + self.h-self.cr, 
-                            x0 + self.w/2+self.cr, y0 + self.h+self.cr, 
-                            width=2, fill = 'black', tags='d0')
-            self.canvas.tag_bind('d0', "<Button-1>", self.join_modules)
-            # Output module
-            h_out = self.height - 2*self.h
-            self.canvas.create_rectangle(x0, h_out, x0 + self.w, h_out + self.h, 
-                                         tags = ('p1'), 
-                                         fill = self.bg, width = 3,
-                                         activefill = '#dbaa21')
-            self.canvas.create_text(x0 + self.w/2, h_out + self.h/2, 
-                                    text = 'Output', tags = ('t1'), 
-                                    fill = '#d0d4d9', 
-                                    font = self.controller.pages_font)
-            self.canvas.create_oval(
-                            x0 + self.w/2 - self.cr, 
-                            h_out - self.cr, 
-                            x0 + self.w/2 + self.cr, 
-                            h_out  + self.cr,
-                            width=2, fill = 'black', tags = ('u1'))
-            self.canvas.tag_bind('u1', "<Button-1>", self.join_modules)
-            
-            self.draw = False
+                
             self.canvas.startxy = []
-            self.canvas.startxy.append((x0 + self.w/2, 
-                                        y0 + self.h/2))
-            self.canvas.startxy.append((x0 + self.w/2, 
-                                        h_out + self.h/2))
+            self.out_data = pd.DataFrame()
             self.connections = {}
-            self.connections[0] = {}
-            self.connections[1] = {}
-            self.module_list = ['Initialiser', 'Output']
-            self.module_names = ['Initialiser', 'Output']
+            self.modules = 0
+            self.module_list = []
+            self.module_names = []
+            
+            self.add_module('Initialiser', self.width/2, self.h, ini = True)
+            self.add_module('Output', self.width/2, self.height - self.h, out = True)
+        
+            self.draw = False
             self.loops = []
             self.drawLoop = False
-            self.modules = 2
             self.l = 0
-            self.saved = False
     
 if __name__ == "__main__":
     app = aidCanvas()

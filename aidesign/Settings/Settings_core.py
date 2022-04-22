@@ -38,7 +38,6 @@ class Settings(object):
 
     def set_filename(self, filename: str):
         """Converts relative paths into absolute before setting."""
-        print(filename[0])
         if filename[0] == ".":
             self.filename = path.join(path.dirname(__file__), filename)
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
