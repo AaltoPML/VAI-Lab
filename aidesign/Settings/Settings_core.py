@@ -25,11 +25,10 @@ class Settings(object):
             "coordinates": "list",
             "Initialiser": "entry_point",
             "Output": "exit_point",
-            "GUI": "module",
+            "UserFeedback": "module",
             "DataProcessing": "module",
             "Modelling": "module",
             "InputData": "module",
-            "UserFeedbackAdaptation": "module",
             "DecisionMaking": "module",
             "loop": "loop"
         }
@@ -145,7 +144,7 @@ class Settings(object):
         parent[loop_name] = {
             "name":loop_name,
             "class":self._valid_tags[element.tag],
-            "type": element.attrib["type"],
+            "type": element.attrib["type"].lower(),
             "condition": element.attrib["condition"],
         }
         self._parse_tags(element, parent[loop_name])
@@ -319,14 +318,14 @@ class Settings(object):
                                 ):
         """Append new pipeline module to existing XML elementTree to be written later
         
-        :param module_type: string declare type of module (GUI,data_processing etc)
+        :param module_type: string declare type of module (UserFeedback,data_processing etc)
         :param module_name: string give module a user-defined name
         :param plugin_type: string type of plugin to be loaded into module
         :param plugin_options: dict where keys & values are options & values
         :param parents: list of parent names for this module (can be empty)
         :param children: list of child names for this module (can be empty)
         :param xml_parent_element: str containing name of parent Element for new module
-        :param coords [optional]: list of coordinates for GUI canvas
+        :param coords [optional]: list of coordinates for UserFeedback canvas
         """
         xml_parent_element = self._get_element_from_name(xml_parent_element)
 
@@ -371,7 +370,7 @@ class Settings(object):
         :param parents: list of parent names for this module (can be empty)
         :param children: list of child names for this module (can be empty)
         :param xml_parent_element: str containing name of parent Element for new module
-        :param coords [optional]: list of coordinates for GUI canvas
+        :param coords [optional]: list of coordinates for UserFeedback canvas
         """
         xml_parent_element = self._get_element_from_name(xml_parent_element)
 
@@ -423,7 +422,7 @@ class Settings(object):
     #                       "my_loop_3",
     #                       ["Init"],
     #                       [])
-    # s.append_pipeline_module("GUI thing",
+    # s.append_pipeline_module("UserFeedback thing",
     #                       "added_mod",
     #                       "startpage",
     #                       {"class_list":["test_1","test_2"],"class_list_2":["test_1","test_2"]},

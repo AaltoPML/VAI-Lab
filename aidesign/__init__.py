@@ -1,5 +1,5 @@
 from .Settings import Settings
 from .utils import AID
-from .GUI import GUI
+from .UserFeedback import UserFeedback
 from .Modelling import Modelling
 from .Core import Core

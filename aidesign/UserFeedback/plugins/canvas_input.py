@@ -1,5 +1,5 @@
 from . import UI
-import tkinter as tk                # python 3
+import tkinter as tk
 import os
 from PIL import Image, ImageTk
 

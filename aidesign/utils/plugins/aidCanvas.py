@@ -93,9 +93,7 @@ class aidCanvas(tk.Frame):
         tk.Button(
             self, text = 'User Feedback Adaptation', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('UserFeedbackAdaptation', 
-                                              self.width/2, 
-                                              self.height/2)
+            command = lambda: self.add_module('UserFeedback')
             ).grid(column = 5, row = 4)
         tk.Button(
             self, text = 'Input data', fg = 'white', bg = parent['bg'],

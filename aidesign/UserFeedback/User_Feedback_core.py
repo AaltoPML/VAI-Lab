@@ -7,7 +7,7 @@ from .plugins import PageManual
 from .plugins import StartPage
 
 
-class GUI(tk.Tk):
+class UserFeedback(tk.Tk):
     """
     TODO: This structure still needs serious overhaul. 
 
