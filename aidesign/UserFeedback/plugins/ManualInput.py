@@ -16,12 +16,12 @@ class ManualInput(tk.Frame,UI):
         self.controller.title('Manual Input')
         
         
-        self.dirpath = os.getcwd()
-        self.assets_path = os.path.join(self.dirpath,'aidesign','UserFeedback','plugins','resources','Assets')
+        self.dirpath = os.path.dirname(os.path.realpath(__file__))
+        self.assets_path = os.path.join(self.dirpath,'resources','Assets')
 
         self._class_list = None        
         pixels = 500
-        path = os.path.join(self.dirpath,'aidesign','UserFeedback','plugins','resources','example_radiography_images')
+        path = os.path.join(self.dirpath,'resources','example_radiography_images')
         self.N = len(os.listdir(path))
         
         self.image_list = []
