@@ -717,7 +717,10 @@ class aidCanvas(tk.Frame):
                                 arrow = tk.LAST, 
                                 tags = ('o'+str(parent_id), 
                                       'o'+str(1), modout['coordinates'][2][connect[p]]))
-            
+                    self.out_data.iloc[int(parent_id)][1] = 1
+                    self.connections[1][
+                        int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
+                    
     def place_modules(self, modules, id_mod, disp_mod):
         # Place the modules
         for key in [key for key, val in modules.items() if type(val) == dict]:
@@ -777,7 +780,8 @@ class aidCanvas(tk.Frame):
                                           'o'+str(id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
                         self.out_data.iloc[int(parent_id)][int(id_mod[-1])] = 1
                         self.connections[int(id_mod[-1])][
-                            int(parent_id)] = str(parent_id) + '-' + str(id_mod[-1])
+                            int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(id_mod[-1])
+                        print(self.connections)
                     else:
                         self.loops[-1]['mod'].append(key)
                 disp_mod.append(key)
