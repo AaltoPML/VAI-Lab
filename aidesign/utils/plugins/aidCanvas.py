@@ -125,31 +125,33 @@ class aidCanvas(tk.Frame):
         self.saved = True
 
     def on_return_display(self, event):
-            if self.loopDisp:
-                condition = self.entry1.get()
-                self.entry1.destroy()
-                if hasattr(self, 'entry2'):
-                    self.entry2.focus()
-                key = 'type'
-                text_w = self.controller.pages_font.measure(condition) + 20
-                x = self.start_x + text_w/2
-            else:
-                condition = self.entry2.get()
-                self.entry2.destroy()
-                key = 'condition'
-                text_w = self.controller.pages_font.measure(condition) + 20
-                x = self.curX - text_w/2
-            self.loops[-1][key] = condition
-            self.canvas.create_text(
-                x, 
-                self.start_y + 20, 
-                font = self.controller.pages_font, 
-                text = condition, 
-                tags = ('loop-'+str(self.l-1), key+'-'+str(self.l-1)), 
-                justify = tk.CENTER)
-            self.canvas.tag_bind(key+'-'+str(self.l-1), 
-                             "<Double-1>", self.OnDoubleClick)
-            self.loopDisp = not self.loopDisp
+        """ Defines the type of loop and condition for the indicated loop
+        """
+        if self.loopDisp:
+            condition = self.entry1.get()
+            self.entry1.destroy()
+            if hasattr(self, 'entry2'):
+                self.entry2.focus()
+            key = 'type'
+            text_w = self.controller.pages_font.measure(condition) + 20
+            x = self.start_x + text_w/2
+        else:
+            condition = self.entry2.get()
+            self.entry2.destroy()
+            key = 'condition'
+            text_w = self.controller.pages_font.measure(condition) + 20
+            x = self.curX - text_w/2
+        self.loops[-1][key] = condition
+        self.canvas.create_text(
+            x, 
+            self.start_y + 20, 
+            font = self.controller.pages_font, 
+            text = condition, 
+            tags = ('loop-'+str(self.l-1), key+'-'+str(self.l-1)), 
+            justify = tk.CENTER)
+        self.canvas.tag_bind(key+'-'+str(self.l-1), 
+                         "<Double-1>", self.OnDoubleClick)
+        self.loopDisp = not self.loopDisp
     
     def on_button_release(self, event):
         """ Finishes drawing the rectangle for loop definition. 
@@ -627,8 +629,6 @@ class aidCanvas(tk.Frame):
             mn = np.array(self.module_names)
             mn_id = [m is not None for m in mn]
             mn = mn[mn_id]
-            print(mn)
-            print(mn_id)
             s = Settings()
             s.new_config_file(self.save_path.name)
             s.filename = self.save_path.name
@@ -698,35 +698,9 @@ class aidCanvas(tk.Frame):
             del modules['Initialiser'], modules['output'] # They are generated when resetting
             disp_mod = ['Initialiser', 'output']
             id_mod = [0, 1]
-            # mod = ['Initialiser', 'output']
-            # for m in mod:
-            #     self.add_module(m, 
-            #                     modules[m]['coordinates'][0],
-            #                     modules[m]['coordinates'][1])
-            #     del modules[m]
             
             # Place the modules
-            for key in [key for key, val in modules.items() if type(val) == dict]:
-                self.add_module(key,
-                                modules[key]['coordinates'][0][0],
-                                modules[key]['coordinates'][0][1])
-                id_mod.append(modules[key]['coordinates'][1])
-                connect = list(modules[key]['coordinates'][2].keys())
-                for p, parent in enumerate(modules[key]['parents']):
-                    parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
-                    out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
-                    xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
-                    xins, yins, _, _ =self.canvas.coords(ins[0]+str(id_mod[-1]))
-                    self.canvas.create_line(
-                                xout + self.cr, 
-                                yout + self.cr, 
-                                xins + self.cr, 
-                                yins + self.cr,
-                                fill = "red", 
-                                arrow = tk.LAST, 
-                                tags = ('o'+str(parent_id), 
-                                      'o'+str(id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
-                disp_mod.append(key)
+            disp_mod, id_mod = self.place_modules(modules, id_mod, disp_mod)
     
             connect = list(modout['coordinates'][2].keys())
             for p, parent in enumerate(modout['parents']):
@@ -744,6 +718,71 @@ class aidCanvas(tk.Frame):
                                 tags = ('o'+str(parent_id), 
                                       'o'+str(1), modout['coordinates'][2][connect[p]]))
             
+    def place_modules(self, modules, id_mod, disp_mod):
+        # Place the modules
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            if modules[key]['class'] == 'loop':
+                # Extracts numbers from string
+                l = int(''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
+                x0, y0, x1, y1 = modules[key]['coordinates']
+                self.canvas.create_rectangle(x0, y0, 
+                                             x1, y1, 
+                                             outline = '#4ff07a',
+                                             tag = 'loop-'+str(l))
+                text_w = self.controller.pages_font.measure(modules[key]['type']) + 20
+                self.canvas.create_text(
+                    x0 + text_w/2, 
+                    y0 + 20, 
+                    font = self.controller.pages_font, 
+                    text = modules[key]['type'], 
+                    tags = ('loop-'+str(l), 'type'+'-'+str(l)), 
+                    justify = tk.CENTER)
+                text_w = self.controller.pages_font.measure(modules[key]['condition']) + 20
+                self.canvas.create_text(
+                    x1 - text_w/2, 
+                    y0 + 20, 
+                    font = self.controller.pages_font, 
+                    text = modules[key]['condition'], 
+                    tags = ('loop-'+str(l), 'condition'+'-'+str(l)), 
+                    justify = tk.CENTER)
+                self.loops.append({'type': modules[key]['type'],
+                                   'condition': modules[key]['condition'],
+                                   'mod': [], 
+                                   'coord': (x0, y0, 
+                                             x1, y1)})
+                disp_mod, id_mod = self.place_modules(modules[key], id_mod, disp_mod)
+            else:
+                # Display module
+                self.add_module(key,
+                                modules[key]['coordinates'][0][0],
+                                modules[key]['coordinates'][0][1])
+                id_mod.append(modules[key]['coordinates'][1])
+                connect = list(modules[key]['coordinates'][2].keys())
+                
+                # Connect modules
+                for p, parent in enumerate(modules[key]['parents']):
+                    if not (parent[:4] == 'loop'):
+                        parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
+                        out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
+                        xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
+                        xins, yins, _, _ =self.canvas.coords(ins[0]+str(id_mod[-1]))
+                        self.canvas.create_line(
+                                    xout + self.cr, 
+                                    yout + self.cr, 
+                                    xins + self.cr, 
+                                    yins + self.cr,
+                                    fill = "red", 
+                                    arrow = tk.LAST, 
+                                    tags = ('o'+str(parent_id), 
+                                          'o'+str(id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
+                        self.out_data.iloc[int(parent_id)][int(id_mod[-1])] = 1
+                        self.connections[int(id_mod[-1])][
+                            int(parent_id)] = str(parent_id) + '-' + str(id_mod[-1])
+                    else:
+                        self.loops[-1]['mod'].append(key)
+                disp_mod.append(key)
+        return disp_mod, id_mod
+    
     def reset(self):
         
         if not self.saved:
