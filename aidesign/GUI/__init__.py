@@ -4,6 +4,5 @@
 
 Let's look for a more automatic way of doing this when we have more modules
 """
-from ..User_Feedback_template import UI
-from .canvas_input import PageCanvas
-from .manual_input import PageManual
+from .GUI_core import GUI
+from .. import *

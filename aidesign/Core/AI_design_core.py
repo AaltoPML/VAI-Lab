@@ -1,11 +1,19 @@
 from importlib import import_module
-from .. import Settings
+from .. import Settings, GUI
+from tkinter import font as tkfont
+import tkinter as tk
 
 
 class Core(Settings):
     def __init__(self) -> None:
         super().__init__()
         self.loop_level = 0
+
+    def launch(self):
+        gui_app = GUI.GUI()
+        gui_app.plugin_name('main')
+        gui_app.core_module(self)
+        self = gui_app.launch()
 
     def load_config_file(self, filename: str):
         self.load_XML(filename)

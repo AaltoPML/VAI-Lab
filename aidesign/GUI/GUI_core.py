@@ -4,9 +4,12 @@ from tkinter import font as tkfont
 from sys import modules as get_module_name
 from .plugins import PageCanvas
 from .plugins import PageManual
+from .plugins import StartPage
+from .plugins import MainPage
+from .plugins import aidCanvas
 
 
-class UserFeedback(tk.Tk):
+class GUI(tk.Tk):
     """
     TODO: This structure still needs serious overhaul. 
 
@@ -16,16 +19,28 @@ class UserFeedback(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.title_font = tkfont.Font(family='Helvetica',
-                                      size=14,
-                                      weight="bold")
-        self.pages_font = tkfont.nametofont("TkDefaultFont")
+        self.title_font = tkfont.Font(family='Helvetica', 
+                                        size=14, 
+                                        weight="bold")
+        self.pages_font = tkfont.Font(family='Helvetica', 
+                                      size=12)
         self.current_module_name = get_module_name[__name__]
 
         self.desired_ui_types = []
         self.top_ui_layer = None
-        # self.startpage_exist = False
+        self.core = None
+        self.startpage_exist = False
         self.available_ui_types = {
+            "MainPage": {
+                "name": "main",
+                "layer_priority": 1,
+                "required_children": ['aidCanvas']
+            },
+            "StartPage": {
+                "name": "startpage",
+                "layer_priority": 1,
+                "required_children": ["PageManual", "PageCanvas"]
+            },
             "PageManual": {
                 "name": "manual",
                 "layer_priority": 2,
@@ -50,7 +65,13 @@ class UserFeedback(tk.Tk):
                                        ['State_x', 'State_y',
                                         'Action_x', 'Action_y'],
                                        ['State_x', 'State_y', 'Action_x', 'Action_y']]
-            }
+            },
+            "aidCanvas": {
+                "name": "addcanvas",
+                "layer_priority": 2,
+                "required_children": None,
+                "default_class_list": ['']
+            },
         }
 
     def compare_layer_priority(self, ui_name):
@@ -96,7 +117,7 @@ class UserFeedback(tk.Tk):
                               if ui.lower() == self.available_ui_types[kn]["name"])
             try:
                 self.add_UI_type_to_frames(ui_name)
-                # self.startpage_exist = 1 if ui_name == "StartPage" else self.startpage_exist
+                self.startpage_exist = 1 if ui_name in ["MainPage", "StartPage"] else self.startpage_exist
             except:
                 from sys import exit
                 print(
@@ -105,6 +126,10 @@ class UserFeedback(tk.Tk):
                 print(
                     "   - {}".format(",\n   - ".join([i["name"] for i in self.available_ui_types.values()])))
                 exit(1)
+
+    def core_module(self, core):
+        """ Pass core module (Temporary solution)"""
+        self.core = core
 
     def set_options(self, specs):
         self.plugin_name(specs["plugin"]["plugin_name"])
@@ -122,22 +147,23 @@ class UserFeedback(tk.Tk):
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
-        container = tk.Frame(self, bg='#19232d')
+        container = tk.Frame(self, bg='#064663')
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-
+        
         self.frames = {}
         for F in self.desired_ui_types:
             page_name = F.__name__
-            frame = F(parent=container, controller=self)
-            # if not self.startpage_exist:
-            frame.class_list(self._class_list)
-            # elif self.startpage_exist and page_name != "StartPage":
-            #     default_class_list = self.available_ui_types[page_name]["default_class_list"]
-            #     frame.class_list(default_class_list)
+            frame = F(parent=container, controller=self, core = self.core)
+            
+            if not self.startpage_exist:
+                frame.class_list(self._class_list)
+            elif self.startpage_exist and page_name not in ["MainPage", "StartPage"]:
+                default_class_list = self.available_ui_types[page_name]["default_class_list"]
+                frame.class_list(default_class_list)
             self.frames[page_name] = frame
-
+            
             # put all of the pages in the same location;
             # the one on the top of the stacking order
             # will be the one that is visible.
@@ -145,3 +171,4 @@ class UserFeedback(tk.Tk):
 
         self.show_frame(self.top_ui_layer)
         self.mainloop()
+        return self.core

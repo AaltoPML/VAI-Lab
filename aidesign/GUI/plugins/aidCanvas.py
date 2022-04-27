@@ -23,13 +23,9 @@ class aidCanvas(tk.Frame):
         self.bg = parent['bg']
         self.controller = controller
         self.controller.title('Assisted Design Display')
+        self.core = core
         
         script_dir = os.path.dirname(__file__)
-        print(os.path.join(
-                script_dir, 
-                'resources',
-                'Assets',
-                'AIDIcon.ico'))
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
             file = os.path.join(
                 script_dir, 
@@ -40,7 +36,7 @@ class aidCanvas(tk.Frame):
                 script_dir, 
                 'resources',
                 'Assets',
-                'AIDIcon_name.ico')).resize((250, 200)))
+                'AIDIcon_name.png')).resize((250, 200)))
         
         self.my_label = tk.Label(self, image = self.my_img1, bg = parent['bg'])
         self.my_label.grid(column = 5, row = 0)
@@ -133,6 +129,10 @@ class aidCanvas(tk.Frame):
         
         self.save_path = ''
         self.saved = True
+
+    def class_list(self,value):
+        """ Temporary fix """
+        return value
 
     def on_return_display(self, event):
         """ Defines the type of loop and condition for the indicated loop
@@ -689,7 +689,8 @@ class aidCanvas(tk.Frame):
                       [self.canvas.startxy[1], 1, self.connections[1]])
             s.write_to_XML()
             self.saved = True
-         
+            self.core.load_config_file(self.save_path.name)
+            
     def upload(self):
         
         filename = askopenfilename(initialdir = os.getcwd(), 
@@ -731,6 +732,7 @@ class aidCanvas(tk.Frame):
                     self.connections[1][
                         int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
                     
+
     def place_modules(self, modules, id_mod, disp_mod):
         # Place the modules
         for key in [key for key, val in modules.items() if type(val) == dict]:
