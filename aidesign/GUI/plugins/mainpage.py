@@ -21,7 +21,7 @@ class MainPage(tk.Frame):
                                     'resources',
                                     'Assets',
                                     'AIFRED.png')
-                                    ).resize((600, 400))
+                                    ).resize((600, 300))
                                 )
         self.my_label = tk.Label(self, 
                                     image = self.my_img1,
@@ -51,7 +51,7 @@ class MainPage(tk.Frame):
                     height = 3,
                     width = 20, 
                     command = self.upload_data,
-                    ).grid(column = 0, row = 12, padx= 10)
+                    ).grid(column = 0, row = 12)
         self.controller.Datalabel = tk.Label(self, 
                                 text = 'Incomplete',
                                 pady= 10,
@@ -70,7 +70,7 @@ class MainPage(tk.Frame):
                     height = 3,
                     width = 20, 
                     command = self.canvas
-                    ).grid(column = 0, row = 13, padx= 10)
+                    ).grid(column = 0, row = 13)
 
         tk.Button(self,
                     text = 'Upoad XML file',
