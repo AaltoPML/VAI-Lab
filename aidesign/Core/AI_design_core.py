@@ -1,7 +1,5 @@
 from importlib import import_module
 from .. import Settings, GUI
-from tkinter import font as tkfont
-import tkinter as tk
 
 
 class Core(Settings):
@@ -12,19 +10,15 @@ class Core(Settings):
     def launch(self):
         gui_app = GUI.GUI()
         gui_app.plugin_name('main')
-        gui_app.core_module(self)
-        self = gui_app.launch()
+        gui_output = gui_app.launch()
+        try:
+            self.load_config_file(gui_output["xml_filename"])
+        except:
+            raise Exception("No XML File Selected. Cannot Run Pipeline")
+        self.run()
 
     def load_config_file(self, filename: str):
         self.load_XML(filename)
-
-    def launch_canvas(self):
-        from .. import AID
-        self.canvas = AID()
-        self.canvas.plugin_name("aidcanvas")
-        self.canvas.launch()
-        if hasattr(self.canvas.frames["aidCanvas"].save_path, 'name'):
-            self.load_config_file(self.canvas.frames["aidCanvas"].save_path.name)
 
     def _execute_module(self, specs):
         """Executes named module with given options

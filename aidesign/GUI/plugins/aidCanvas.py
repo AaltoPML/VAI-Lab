@@ -691,7 +691,7 @@ class aidCanvas(tk.Frame):
                       [self.canvas.startxy[1], 1, self.connections[1]])
             s.write_to_XML()
             self.saved = True
-            self.controller.core.load_config_file(self.save_path.name)
+            self.controller.append_to_output("xml_filename",self.save_path.name)
 
     def upload(self):
         

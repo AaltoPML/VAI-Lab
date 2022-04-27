@@ -28,7 +28,7 @@ class GUI(tk.Tk):
 
         self.desired_ui_types = []
         self.top_ui_layer = None
-        self.core = None
+        self.output = {}
         self.startpage_exist = False
         self.available_ui_types = {
             "MainPage": {
@@ -127,9 +127,8 @@ class GUI(tk.Tk):
                     "   - {}".format(",\n   - ".join([i["name"] for i in self.available_ui_types.values()])))
                 exit(1)
 
-    def core_module(self, core):
-        """ Pass core module (Temporary solution)"""
-        self.core = core
+    def append_to_output(self, key:str, value:any):
+        self.output[key] = value
 
     def set_options(self, specs):
         self.plugin_name(specs["plugin"]["plugin_name"])
@@ -171,4 +170,4 @@ class GUI(tk.Tk):
 
         self.show_frame(self.top_ui_layer)
         self.mainloop()
-        return self.core
+        return self.output
