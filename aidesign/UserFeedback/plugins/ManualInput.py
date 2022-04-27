@@ -181,7 +181,7 @@ class ManualInput(tk.Frame,UI):
         else:
             response = messagebox.askokcancel(
                 "Exit?",
-                "Are you sure you are finished")
+                "Are you sure you are finished?")
             self.controller.destroy()
     
     def open_file(self):

@@ -399,7 +399,7 @@ class CanvasInput(tk.Frame,UI):
         else:
             response = messagebox.askokcancel(
                 "Exit?",
-                "Are you sure you are finished")
+                "Are you sure you are finished?")
             self.controller.destroy()
             
     def save_file_as(self):
