@@ -3,48 +3,38 @@
         <Initialiser name="Initialiser">
             <plugin type="" />
             <relationships>
-                <child name="UserFeedback-0" />
+                <child name="User Feedback" />
             </relationships>
             <coordinates>
-                (313.0, 75.0)
+                (300.0, 50)
             </coordinates>
         </Initialiser>
-        <loop type="for" condition="3" name="loop0">
+        <UserFeedback name="UserFeedback">
+            <plugin type="manuald">
+                <class_list>
+                    test_1
+                    test_2
+                </class_list>
+                <class_list_2>
+                    test_1
+                    test_2
+                </class_list_2>
+            </plugin>
             <relationships>
-                <child name="UserFeedback-0" />
+                <parent name="Initialiser" />
+                <child name="Output" />
             </relationships>
             <coordinates>
-                (146.0, 213.0, 463.0, 407.0)
+                (300.0, 300.0)
             </coordinates>
-            <relationships />
-            <UserFeedback name="UserFeedback-0">
-                <plugin type="manual">
-                    <class_list>
-                        test_1
-                        test_2
-                    </class_list>
-                    <class_list_2>
-                        test_1
-                        test_2
-                    </class_list_2>
-                </plugin>
-                <relationships>
-                    <parent name="Initialiser" />
-                    <parent name="loop0" />
-                    <child name="Output" />
-                </relationships>
-                <coordinates>
-                    (300.0, 300.0)
-                </coordinates>
-            </UserFeedback>
-        </loop>
+        </UserFeedback>
         <Output name="Output">
             <plugin type="" />
             <relationships>
-                <parent name="UserFeedback-0" />
+                <parent name="User Feedback" />
             </relationships>
             <coordinates>
-                (313.0, 525.0)
+                (300.0, 550)
             </coordinates>
         </Output>
     </pipeline>

@@ -5,3 +5,4 @@
 Let's look for a more automatic way of doing this when we have more modules
 """
 from .Settings_core import Settings
+from .. import utils
