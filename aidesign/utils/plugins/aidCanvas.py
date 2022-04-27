@@ -1,4 +1,3 @@
-# Import the required libraries
 import tkinter as tk
 from PIL import Image, ImageTk
 import os
@@ -82,7 +81,7 @@ class aidCanvas(tk.Frame):
         tk.Button(
             self, text = 'Data processing', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('DataProcessing', 
+            command = lambda: self.add_module('Data Processing', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 1)
@@ -96,21 +95,21 @@ class aidCanvas(tk.Frame):
         tk.Button(
             self, text = 'Decision making', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('DecisionMaking', 
+            command = lambda: self.add_module('Decision Making', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 3)
         tk.Button(
-            self, text = 'User Feedback Adaptation', fg = 'white', bg = parent['bg'],
+            self, text = 'User Feedback', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('UserFeedbackAdaptation', 
+            command = lambda: self.add_module('User Feedback', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 4)
         tk.Button(
             self, text = 'Input data', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('InputData', 
+            command = lambda: self.add_module('Input Data', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 5)
@@ -241,7 +240,7 @@ class aidCanvas(tk.Frame):
                 if len(aux) == 2 and aux[0] == 't':
                     self.loops[l]['mod'].append(self.canvas.itemcget(
                         mod, 'text'))
-        print('Updated loop info:', self.loops)
+        # print('Updated loop info:', self.loops)
         
     def select(self, event):
         """ Selects the module at the mouse location. """
@@ -633,12 +632,17 @@ class aidCanvas(tk.Frame):
                 data = data.drop(columns=col[c], index=col[c])
                 
             loop_modules = np.unique([v for a in self.loops for v in a['mod']])
+
             out_loops = np.zeros_like(self.loops)
             
             values = data.values.astype(bool)
             mn = np.array(self.module_names)
             mn_id = [m is not None for m in mn]
             mn = mn[mn_id]
+
+            # to avoid numpy bug during elementwise comparison of lists 
+            loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
+
             s = Settings()
             s.new_config_file(self.save_path.name)
             s.filename = self.save_path.name
@@ -649,7 +653,8 @@ class aidCanvas(tk.Frame):
                                   list(mn[values[:,0]]),
                                   list(mn[values[0,:]]),
                                   None,
-                                  [self.canvas.startxy[0], 0, self.connections[0]])
+                                  [self.canvas.startxy[0], 0, self.connections[0]])      
+            
             for i, mnn in enumerate(mn_id):
                 if (i > 1) and mnn:
                     xml_parent = None
@@ -669,16 +674,7 @@ class aidCanvas(tk.Frame):
                                     out_loops[x] = 1
                                 xml_parent = "loop"+str(x) # parent is the last loop
                                 parent_loops.append("loop"+str(x))
-
-                    s.append_pipeline_module(self.module_list[i],
-                      mn[i],
-                      "",
-                      {},
-                      list(mn[values[:,i]]),
-                      list(mn[values[i,:]]),
-                      xml_parent,
-                      [self.canvas.startxy[i], i, self.connections[i]])
-                
+                                
             s.append_pipeline_module(self.module_list[1], # Out
                       mn[1],
                       "",

@@ -1,5 +1,7 @@
-from importlib import import_module
-from .. import Settings, GUI
+# from importlib import import_module
+from aidesign.utils.import_helper import import_module
+from .. import Settings
+from .. import GUI
 
 
 class Core(Settings):
@@ -26,19 +28,22 @@ class Core(Settings):
 
         :param specs: dict of module to be executed
         """
-        mod_class = specs["module_type"]
-        imp = import_module("..{}".format(mod_class),
-                            "aidesign.{0}".format(mod_class))
-        mod = getattr(imp, mod_class)()
+        mod = import_module(globals(), specs["module_type"])()
         mod.set_options(specs)
-        print("{0}{1} module: \"{2}\" processing...".format(
-            "\t"*self.loop_level, mod_class, specs["name"]))
+        print("\t"*self.loop_level
+                + specs["module_type"]
+                + " module: \"{}\"".format(specs["name"])
+                + "processing..."
+              )
         mod.launch()
 
     def _execute_loop(self, specs):
         try:
-            print("{0}{1} loop: \"{2}\" starting...".format(
-            "\t"*self.loop_level, specs["type"], specs["name"]))
+            print("\t"*self.loop_level
+                  + specs["type"]
+                  + " loop: "
+                    + "\"{}\"".format(specs["name"])
+                    + " starting...")
             self.loop_level += 1
             getattr(self, "_execute_{}_loop".format(specs["type"]))(specs)
             self.loop_level -= 1
