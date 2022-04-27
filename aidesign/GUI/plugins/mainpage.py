@@ -11,7 +11,7 @@ class MainPage(tk.Frame):
         " This leads to the different methods to provide feedback."
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
-        self.controller.title('User feedback adaptation')
+        self.controller.title('AI Assisted Framework Design')
         
         script_dir = os.path.dirname(__file__)
         self.my_img1 = ImageTk.PhotoImage(
@@ -20,7 +20,7 @@ class MainPage(tk.Frame):
                                     script_dir,
                                     'resources',
                                     'Assets',
-                                    'UFAIcon_name.png')
+                                    'AIFRED.png')
                                     ).resize((600, 400))
                                 )
         self.my_label = tk.Label(self, 
@@ -92,6 +92,26 @@ class MainPage(tk.Frame):
         self.controller.XMLlabel.grid(column = 2,
                             row = 13)
         
+        self.RunButton = tk.Button(self,
+                    text = 'Run Pipeline',
+                    fg = 'white',
+                    font = controller.title_font, 
+                    bg = parent['bg'],
+                    height = 3,
+                    width = 20, 
+                    state = tk.DISABLED,
+                    command = self.controller.destroy,
+                    )
+        self.RunButton.grid(column = 0, row = 14)
+        
+        self.controller.XML = tk.IntVar()
+        self.controller.Data = tk.IntVar()
+        self.controller.XML.set(False)
+        self.controller.Data.set(False)
+        
+        self.controller.XML.trace('w', self.trace_XML)
+        self.controller.Data.trace('w', self.trace_Data)
+
     # def light_theme(self):
     #     listbox_tasks.config(bg="white", fg="black")
     #     button_add_task.config(highlightbackground='white')
@@ -100,6 +120,20 @@ class MainPage(tk.Frame):
     #     button_save_tasks.config(highlightbackground='white')
     #     entry_task.config(bg='white', fg='black')       
     
+    def trace_XML(self,*args):
+        print('XML', self.controller.XML.get(), self.controller.Data.get())
+        if self.controller.XML.get():
+            self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+            if self.controller.Data.get():
+                self.RunButton.config(state = 'normal')
+
+    def trace_Data(self,*args):
+        print('Data', self.controller.XML.get(), self.controller.Data.get())
+        if self.controller.Data.get():
+            self.controller.Datalabel.config(text = 'Done!', fg = 'green')
+            if self.controller.XML.get():
+                self.RunButton.config(state = 'normal')
+
     def canvas(self):
         self.controller.show_frame("aidCanvas")
     
@@ -110,11 +144,13 @@ class MainPage(tk.Frame):
                                    filetypes = [('XML file', '.xml'), 
                                                 ('All Files', '*.*')])
         self.controller.core.load_config_file(filename)
-        self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+        self.controller.XML.set(True)
+        # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
 
     def upload_data(self):
         filename = askdirectory(initialdir = os.getcwd(),
                                     title = 'Select a folder',
                                     mustexist = True)
         if filename is not None:
-            self.controller.Datalabel.config(text = 'Done!', fg = 'green')
+            self.controller.Data.set(True)
+            # self.controller.Datalabel.config(text = 'Done!', fg = 'green')

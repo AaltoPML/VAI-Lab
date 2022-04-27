@@ -22,7 +22,6 @@ class aidCanvas(tk.Frame):
         super().__init__(parent, bg = parent['bg'])
         self.bg = parent['bg']
         self.controller = controller
-        self.controller.title('Assisted Design Display')
         
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
@@ -734,7 +733,8 @@ class aidCanvas(tk.Frame):
                     self.out_data.iloc[int(parent_id)][1] = 1
                     self.connections[1][
                         int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
-                    
+            self.controller.core.load_config_file(filename)
+
     def place_modules(self, modules, id_mod, disp_mod):
         # Place the modules
         for key in [key for key, val in modules.items() if type(val) == dict]:
@@ -840,10 +840,14 @@ class aidCanvas(tk.Frame):
                 "Are you sure you want to leave?", 
                 "Do you want to leave the program without saving?")
             if response:
-                self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+                if self.save_path not in [None, '']:
+                    self.controller.XML.set(True)
+                    # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
                 self.controller.show_frame("MainPage")
         else:
-            self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+            if self.save_path not in [None, '']:
+                    self.controller.XML.set(True)
+                    # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
             self.controller.show_frame("MainPage")
 
 if __name__ == "__main__":

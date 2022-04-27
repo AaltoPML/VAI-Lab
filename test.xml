@@ -9,7 +9,7 @@
                 [(300.0, 50), 0, {}]
             </coordinates>
         </Initialiser>
-        <loop type="For" condition="100" name="loop0">
+        <loop type="for" condition="100" name="loop0">
             <relationships>
                 <child name="UserFeedback" />
             </relationships>
