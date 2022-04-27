@@ -11,7 +11,7 @@ class Core(Settings):
 
     def launch(self):
         gui_app = GUI.GUI()
-        gui_app.plugin_name('main')
+        gui_app.set_plugin_name('main')
         gui_output = gui_app.launch()
         try:
             self.load_config_file(gui_output["xml_filename"])

@@ -1,4 +1,5 @@
-import tkinter as tk                # python 3
+from . import UI
+import tkinter as tk
 import os
 from PIL import Image, ImageTk
 from tkinter import messagebox, ttk
@@ -7,22 +8,22 @@ import numpy as np
 import pandas as pd
 
 
-class PageManual(tk.Frame):
-    def __init__(self, parent, controller):
+class ManualInput(tk.Frame,UI):
+    def __init__(self, parent, controller, config:dict):
         self.parent = parent    
         super().__init__(parent, bg = self.parent['bg'])
         self.controller = controller
         self.controller.title('Manual Input')
         
-        self.dirpath = os.getcwd()
-        self.assets_path = os.path.join(self.dirpath,'aidesign','UserFeedback','plugins','resources','Assets')
+        
+        self.dirpath = os.path.dirname(os.path.realpath(__file__))
+        self.assets_path = os.path.join(self.dirpath,'resources','Assets')
 
         self._class_list = None        
         pixels = 500
-        path = os.path.join(self.dirpath,'aidesign','UserFeedback','plugins','resources','example_radiography_images')
+        path = os.path.join(self.dirpath,'resources','example_radiography_images')
         self.N = len(os.listdir(path))
         
-        # Create a list with all the available (I have tried reading the file when placing it but wasn't able to)
         self.image_list = []
         for f in os.listdir(path):
             self.image_list.append(
@@ -58,12 +59,17 @@ class PageManual(tk.Frame):
             command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
         
         button_main = tk.Button(
-            self, text="Go to the main page", 
+            self, text="Done", 
             fg = 'white', bg = self.parent['bg'], height = 3, width = 20, 
             command = self.check_quit).grid(column = 4,row = 19)
+        self._parse_config(config)
         self.save_path = ''
         self.saved = True
         
+    def _parse_config(self, config):
+        self.config = config
+        self.class_list(self.config["plugin"]["options"]["class_list"])
+
     def class_list(self):
         """Getter for required _class_list variable
         
@@ -168,12 +174,15 @@ class PageManual(tk.Frame):
         
         if not self.saved:
             response = messagebox.askokcancel(
-                "Are you sure you want to leave?", 
+                "Exit?", 
                 "Do you want to leave the program without saving?")
             if response:
-                self.controller.show_frame("StartPage")
+                self.controller.destroy()
         else:
-            self.controller.show_frame("StartPage")
+            response = messagebox.askokcancel(
+                "Exit?",
+                "Are you sure you are finished?")
+            self.controller.destroy()
     
     def open_file(self):
         

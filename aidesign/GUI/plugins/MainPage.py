@@ -6,7 +6,7 @@ from tkinter.filedialog import askopenfilename, askdirectory
 
 class MainPage(tk.Frame):
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, config:dict):
         " Here we define the main frame displayed upon opening the program."
         " This leads to the different methods to provide feedback."
         super().__init__(parent, bg = parent['bg'])
@@ -143,7 +143,7 @@ class MainPage(tk.Frame):
                                    defaultextension = '.xml', 
                                    filetypes = [('XML file', '.xml'), 
                                                 ('All Files', '*.*')])
-        self.controller.append_to_output("xml_filename",filename)
+        self.controller._append_to_output("xml_filename",filename)
         self.controller.XML.set(True)
         # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
 
@@ -151,7 +151,7 @@ class MainPage(tk.Frame):
         filename = askdirectory(initialdir = os.getcwd(),
                                     title = 'Select a folder',
                                     mustexist = True)
-        self.controller.append_to_output("data_filename",filename)
+        self.controller._append_to_output("data_filename",filename)
         if filename is not None:
             self.controller.Data.set(True)
             # self.controller.Datalabel.config(text = 'Done!', fg = 'green')

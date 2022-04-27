@@ -4,8 +4,4 @@
 
 Let's look for a more automatic way of doing this when we have more modules
 """
-from .canvas_input import PageCanvas
-from .manual_input import PageManual
-from .startpage import StartPage
-from .mainpage import MainPage
-from .aidCanvas import aidCanvas
+from ..User_Feedback_template import UI

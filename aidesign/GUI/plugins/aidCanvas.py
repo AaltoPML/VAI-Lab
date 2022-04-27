@@ -14,7 +14,7 @@ class aidCanvas(tk.Frame):
     """ Creates a frame with a canvas and allows to include different modules
     for display which translate into new modules defined for the framework."""
     
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, config:dict):
         
         " Here we define the main frame displayed upon opening the program."
         " This leads to the different methods to provide feedback."

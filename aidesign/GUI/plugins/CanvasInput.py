@@ -1,6 +1,6 @@
+from . import UI
 import tkinter as tk
 import os
-from PIL import Image, ImageTk
 
 from tkinter import messagebox, ttk
 
@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 import math
 
-class PageCanvas(tk.Frame):
-    def __init__(self, parent, controller):
+class CanvasInput(tk.Frame,UI):
+    def __init__(self, parent, controller, config:dict):
         self.parent = parent
         super().__init__(self.parent, bg = self.parent['bg'])
         self.controller = controller
@@ -26,10 +26,14 @@ class PageCanvas(tk.Frame):
         self.state = []
         self.type = []
         self.clock = []
-
+        self._parse_config(config)
         self.save_path = ''
         self.saved = True
     
+    def _parse_config(self, config):
+        self.config = config
+        self.class_list(self.config["plugin"]["options"]["class_list"])
+
     def class_list(self):
         """Getter for required _class_list variable
         
@@ -38,16 +42,13 @@ class PageCanvas(tk.Frame):
         """
         return self._class_list
 
-    def class_list(self,value):
+    def class_list(self, value):
         """Setter for required _class_list variable
         
         :param value: labels for state-action pair headers
         :type value: list of strings
         """
         self._class_list = value
-        # self.out_data = {'State_x': [], 'State_y': [], 'Action_x': [], 'Action_y': []} #coordinates
-        # self.out_data = {out: [] for out in self._class_list} #coordinates
-        #Tree defintion. Output display
         self.out_data = {}
         for ii in np.arange(len(self._class_list)):
             self.out_data[ii] = {}
@@ -118,7 +119,7 @@ class PageCanvas(tk.Frame):
                 bg = self.parent['bg'], height = 3, width = 20, 
                 command = self.reset).grid(column = 2, row = 3)
             button_main = tk.Button(
-                self.frame[-1], text="Go to the main page", fg = 'white', 
+                self.frame[-1], text="Done", fg = 'white', 
                 bg = self.parent['bg'], height = 3, width = 20,
                 command = self.check_quit).grid(column = 3, row = 3)
             style = ttk.Style()
@@ -389,18 +390,19 @@ class PageCanvas(tk.Frame):
             self.canvas[ii].create_line(0, y, self.width, y, fill="#476042")   
             
     def check_quit(self):
-        
-        # Should it also reset the canvas?
-        
-        if self.saved:
-            self.controller.show_frame("StartPage")
-        else:
-            response = messagebox.askokcancel("Are you sure you want to leave?", "Do you want to leave the program without saving?")
+        if not self.saved:
+            response = messagebox.askokcancel(
+                "Exit?", 
+                "Do you want to leave the program without saving?")
             if response:
-                self.controller.show_frame("StartPage")
+                self.controller.destroy()
+        else:
+            response = messagebox.askokcancel(
+                "Exit?",
+                "Are you sure you are finished?")
+            self.controller.destroy()
             
     def save_file_as(self):
-        
         self.save_path = asksaveasfile(mode='w')
         self.save_file()
         
