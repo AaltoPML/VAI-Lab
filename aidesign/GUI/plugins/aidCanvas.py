@@ -14,7 +14,7 @@ class aidCanvas(tk.Frame):
     """ Creates a frame with a canvas and allows to include different modules
     for display which translate into new modules defined for the framework."""
     
-    def __init__(self, parent, controller, core = None):
+    def __init__(self, parent, controller):
         
         " Here we define the main frame displayed upon opening the program."
         " This leads to the different methods to provide feedback."
@@ -23,19 +23,18 @@ class aidCanvas(tk.Frame):
         self.bg = parent['bg']
         self.controller = controller
         self.controller.title('Assisted Design Display')
-        self.core = core
         
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
-            file = os.path.join(
+            file = os.path.join(os.path.join(
                 script_dir, 
-                'resources',
-                'Assets',
-                'AIDIcon.ico')))
+                'resources', 
+                'Assets', 
+                'AIDIcon.ico'))))
         self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(
                 script_dir, 
-                'resources',
-                'Assets',
+                'resources', 
+                'Assets', 
                 'AIDIcon_name.png')).resize((250, 200)))
         
         self.my_label = tk.Label(self, image = self.my_img1, bg = parent['bg'])
@@ -97,9 +96,9 @@ class aidCanvas(tk.Frame):
                                               self.height/2)
             ).grid(column = 5, row = 3)
         tk.Button(
-            self, text = 'User Feedback Adaptation', fg = 'white', bg = parent['bg'],
+            self, text = 'User Feedback', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('UserFeedbackAdaptation', 
+            command = lambda: self.add_module('UserFeedback', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 4)
@@ -126,6 +125,10 @@ class aidCanvas(tk.Frame):
             self, text = 'Reset', fg = 'white', bg = parent['bg'], 
             height = 3, width = 20, font = self.controller.pages_font, 
             command = self.reset).grid(column = 2, row = 10)
+        tk.Button(
+            self, text = 'Done', fg = 'white', bg = parent['bg'], 
+            height = 3, width = 20, font = self.controller.pages_font, 
+            command = self.check_quit).grid(column = 3, row = 10)
         
         self.save_path = ''
         self.saved = True
@@ -689,8 +692,8 @@ class aidCanvas(tk.Frame):
                       [self.canvas.startxy[1], 1, self.connections[1]])
             s.write_to_XML()
             self.saved = True
-            self.core.load_config_file(self.save_path.name)
-            
+            self.controller.core.load_config_file(self.save_path.name)
+
     def upload(self):
         
         filename = askopenfilename(initialdir = os.getcwd(), 
@@ -712,8 +715,8 @@ class aidCanvas(tk.Frame):
             
             # Place the modules
             disp_mod, id_mod = self.place_modules(modules, id_mod, disp_mod)
-    
             connect = list(modout['coordinates'][2].keys())
+            print(disp_mod, id_mod)
             for p, parent in enumerate(modout['parents']):
                     parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
                     out, ins = modout['coordinates'][2][connect[p]].split('-')
@@ -732,7 +735,6 @@ class aidCanvas(tk.Frame):
                     self.connections[1][
                         int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
                     
-
     def place_modules(self, modules, id_mod, disp_mod):
         # Place the modules
         for key in [key for key, val in modules.items() if type(val) == dict]:
@@ -830,7 +832,20 @@ class aidCanvas(tk.Frame):
             self.loops = []
             self.drawLoop = False
             self.l = 0
-    
+
+    def check_quit(self):
+        
+        if not self.saved:
+            response = messagebox.askokcancel(
+                "Are you sure you want to leave?", 
+                "Do you want to leave the program without saving?")
+            if response:
+                self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+                self.controller.show_frame("MainPage")
+        else:
+            self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+            self.controller.show_frame("MainPage")
+
 if __name__ == "__main__":
     app = aidCanvas()
     app.mainloop()

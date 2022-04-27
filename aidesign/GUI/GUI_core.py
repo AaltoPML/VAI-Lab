@@ -155,7 +155,7 @@ class GUI(tk.Tk):
         self.frames = {}
         for F in self.desired_ui_types:
             page_name = F.__name__
-            frame = F(parent=container, controller=self, core = self.core)
+            frame = F(parent=container, controller=self)
             
             if not self.startpage_exist:
                 frame.class_list(self._class_list)
