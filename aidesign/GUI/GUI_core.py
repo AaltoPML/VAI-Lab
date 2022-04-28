@@ -15,8 +15,8 @@ class GUI(tk.Tk):
         self.title_font = tk.font.Font(family='Helvetica',
                                       size=14,
                                       weight="bold")
-        self.pages_font = tk.font.nametofont("TkDefaultFont")
-
+        self.pages_font = tk.font.Font(family='Helvetica',
+                                      size=12)
 
         self._desired_ui_types = []
         self._top_ui_layer = None

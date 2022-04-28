@@ -114,20 +114,20 @@ class aidCanvas(tk.Frame):
             command = self.delete_sel).grid(column = 5, row = 6)
         tk.Button(
             self, text = 'Upload', fg = 'white', bg = parent['bg'], 
-            height = 3, width = 20, font = self.controller.pages_font, 
-            command = self.upload).grid(column = 0, row = 10, padx = 10)
+            height = 3, width = 15, font = self.controller.pages_font, 
+            command = self.upload).grid(column = 0, row = 10, sticky = tk.SE)
         tk.Button(
             self, text = 'Save', fg = 'white', bg = parent['bg'],
-            height = 3, width = 20, font = self.controller.pages_font, 
-            command = self.save_file).grid(column = 1, row = 10)
+            height = 3, width = 15, font = self.controller.pages_font, 
+            command = self.save_file).grid(column = 1, row = 10, sticky = tk.SW)
         tk.Button(
             self, text = 'Reset', fg = 'white', bg = parent['bg'], 
-            height = 3, width = 20, font = self.controller.pages_font, 
-            command = self.reset).grid(column = 2, row = 10)
+            height = 3, width = 15, font = self.controller.pages_font, 
+            command = self.reset).grid(column = 2, row = 10, sticky = tk.SE)
         tk.Button(
             self, text = 'Done', fg = 'white', bg = parent['bg'], 
-            height = 3, width = 20, font = self.controller.pages_font, 
-            command = self.check_quit).grid(column = 3, row = 10)
+            height = 3, width = 15, font = self.controller.pages_font, 
+            command = self.check_quit).grid(column = 3, row = 10, sticky = tk.SW)
         
         self.save_path = ''
         self.saved = True
