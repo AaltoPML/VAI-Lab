@@ -30,7 +30,9 @@ class MainPage(tk.Frame):
         self.my_label.grid(column = 0,
                             row = 0,
                             rowspan = 10,
-                            columnspan = 4)
+                            columnspan = 4,
+                            pady = 10,
+                            sticky = tk.NE)
         
         my_label = tk.Label(self, 
                                 text = 
@@ -112,14 +114,6 @@ class MainPage(tk.Frame):
         self.controller.XML.trace('w', self.trace_XML)
         self.controller.Data.trace('w', self.trace_Data)
 
-    # def light_theme(self):
-    #     listbox_tasks.config(bg="white", fg="black")
-    #     button_add_task.config(highlightbackground='white')
-    #     button_delete_task.config(highlightbackground='white')
-    #     button_load_tasks.config(highlightbackground='white')
-    #     button_save_tasks.config(highlightbackground='white')
-    #     entry_task.config(bg='white', fg='black')       
-    
     def trace_XML(self,*args):
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')

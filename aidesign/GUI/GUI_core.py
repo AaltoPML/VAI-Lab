@@ -21,6 +21,7 @@ class GUI(tk.Tk):
         self._desired_ui_types = []
         self._top_ui_layer = None
         self._module_config = None
+        self.closed = False
         self.output = {}
 
         self._available_ui_types = {
@@ -115,6 +116,10 @@ class GUI(tk.Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
+    def _on_closing(self):
+        self.closed = True
+        self.destroy()
+        
     def launch(self):
         """Runs UserInterface Plugin. 
         If multiple frames exist, they are stacked
@@ -134,5 +139,6 @@ class GUI(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         self._show_frame(self._top_ui_layer)
+        self.protocol("WM_DELETE_WINDOW", self._on_closing)
         self.mainloop()
         return self.output
