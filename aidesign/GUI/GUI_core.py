@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
-
 from aidesign.utils.import_helper import import_plugin
 
-class UserFeedback(tk.Tk):
+class GUI(tk.Tk):
     """
     TODO: This structure still needs serious overhaul. 
 
@@ -18,10 +17,23 @@ class UserFeedback(tk.Tk):
                                       weight="bold")
         self.pages_font = tk.font.nametofont("TkDefaultFont")
 
-        self.desired_ui_types = []
-        self.top_ui_layer = None
-        # self.startpage_exist = False
-        self.available_ui_types = {
+
+        self._desired_ui_types = []
+        self._top_ui_layer = None
+        self._module_config = None
+        self.output = {}
+
+        self._available_ui_types = {
+            "MainPage": {
+                "name": "main",
+                "layer_priority": 1,
+                "required_children": ['aidCanvas']
+            },
+            "aidCanvas": {
+                "name": "aidCanvas",
+                "layer_priority": 1,
+                "required_children": []
+            },
             "ManualInput": {
                 "name": "manual",
                 "layer_priority": 2,
@@ -40,14 +52,14 @@ class UserFeedback(tk.Tk):
         :param ui_name: name of the UI method being compared
         :type ui_name: str
         """
-        if self.top_ui_layer == None:
-            self.top_ui_layer = ui_name
+        if self._top_ui_layer == None:
+            self._top_ui_layer = ui_name
         else:
-            current_top_layer = self.available_ui_types[self.top_ui_layer]["layer_priority"]
-            candidate_layer = self.available_ui_types[ui_name]["layer_priority"]
-            self.top_ui_layer = candidate_layer \
+            current_top_layer = self._available_ui_types[self._top_ui_layer]["layer_priority"]
+            candidate_layer = self._available_ui_types[ui_name]["layer_priority"]
+            self._top_ui_layer = candidate_layer \
                 if candidate_layer < current_top_layer \
-                else self.top_ui_layer
+                else self._top_ui_layer
 
     def _add_UI_type_to_frames(self, ui_name):
         """Add user defined UI method to list of frames to be loaded
@@ -64,15 +76,15 @@ class UserFeedback(tk.Tk):
                 \nAvailable methods are: \
                 \n  - {1}"\
                 .format(ui_name, ",\n  - ".join(
-                    [i["name"]for i in self.available_ui_types.values()])))
+                    [i["name"]for i in self._available_ui_types.values()])))
             exit(1)
-        self.desired_ui_types.append(plugin)
+        self._desired_ui_types.append(plugin)
         self._compare_layer_priority(ui_name)
-        if self.available_ui_types[ui_name]["required_children"] != None:
-            for children in self.available_ui_types[ui_name]["required_children"]:
+        if self._available_ui_types[ui_name]["required_children"] != None:
+            for children in self._available_ui_types[ui_name]["required_children"]:
                 self._add_UI_type_to_frames(children)
 
-    def _set_plugin_name(self, ui_type: list):
+    def set_plugin_name(self, ui_type: list):
         """"Given user input, create a list of classes of the corresponding User Interface Type 
 
         :param ui_name: name of the desired User Interface Method
@@ -83,24 +95,25 @@ class UserFeedback(tk.Tk):
             else [ui_type]
 
         for ui in ui_type:
-            ui_name = ''.join(kn for kn in self.available_ui_types.keys()
-                              if ui.lower() == self.available_ui_types[kn]["name"])
+            ui_name = ''.join(kn for kn in self._available_ui_types.keys()
+                              if ui.lower() == self._available_ui_types[kn]["name"])
             self._add_UI_type_to_frames(ui_name)
 
+    def _append_to_output(self, key:str, value:any):
+        self.output[key] = value
 
-    def _show_frame(self, page_name):
-        '''Show a frame for the given page name'''
-        frame = self.frames[page_name]
-        frame.tkraise()
-        
     def set_options(self, module_config: dict):
         """Send configuration arguments to GUI
 
         :param module_config: dict of settings to congfigure the plugin
         """
-        self.module_config = module_config
-        self._set_plugin_name(self.module_config["plugin"]["plugin_name"])
+        self._module_config = module_config
+        self.set_plugin_name(self._module_config["plugin"]["plugin_name"])
 
+    def _show_frame(self, page_name):
+        '''Show a frame for the given page name'''
+        frame = self.frames[page_name]
+        frame.tkraise()
 
     def launch(self):
         """Runs UserInterface Plugin. 
@@ -112,13 +125,14 @@ class UserFeedback(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in self.desired_ui_types:
+        for F in self._desired_ui_types:
             page_name = F.__name__
             frame = F(parent=container, controller=self,
-                      config=self.module_config)
+                      config=self._module_config)
             self.frames[page_name] = frame
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self._show_frame(self.top_ui_layer)
+        self._show_frame(self._top_ui_layer)
         self.mainloop()
+        return self.output

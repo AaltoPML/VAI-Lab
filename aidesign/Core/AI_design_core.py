@@ -1,6 +1,7 @@
 # from importlib import import_module
 from aidesign.utils.import_helper import import_module
 from .. import Settings
+from .. import GUI
 
 
 class Core(Settings):
@@ -8,19 +9,18 @@ class Core(Settings):
         super().__init__()
         self.loop_level = 0
 
+    def launch(self):
+        gui_app = GUI.GUI()
+        gui_app.set_plugin_name('main')
+        gui_output = gui_app.launch()
+        try:
+            self.load_config_file(gui_output["xml_filename"])
+        except:
+            raise Exception("No XML File Selected. Cannot Run Pipeline")
+        self.run()
+
     def load_config_file(self, filename: str):
         self.load_XML(filename)
-
-    def launch_canvas(self):
-        from .. import AID
-        self.canvas = AID()
-        self.canvas.plugin_name("aidcanvas")
-        self.canvas.launch()
-        try:
-            self.load_config_file(
-                getattr(self.canvas.frames["aidCanvas"].save_path, 'name'))
-        except:
-            print("No config file saved in canvas. Quitting.")
 
     def _execute_module(self, specs):
         """Executes named module with given options
