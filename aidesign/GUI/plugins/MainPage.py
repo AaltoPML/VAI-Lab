@@ -135,7 +135,7 @@ class MainPage(tk.Frame):
                 self.RunButton.config(state = 'normal')
 
     def canvas(self):
-        self.controller.show_frame("aidCanvas")
+        self.controller._show_frame("aidCanvas")
     
     def upload_xml(self):
         filename = askopenfilename(initialdir = os.getcwd(), 

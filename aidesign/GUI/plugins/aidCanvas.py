@@ -843,12 +843,12 @@ class aidCanvas(tk.Frame):
                 if self.save_path not in [None, '']:
                     self.controller.XML.set(True)
                     # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
-                self.controller.show_frame("MainPage")
+                self.controller._show_frame("MainPage")
         else:
             if self.save_path not in [None, '']:
                     self.controller.XML.set(True)
                     # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
-            self.controller.show_frame("MainPage")
+            self.controller._show_frame("MainPage")
 
 if __name__ == "__main__":
     app = aidCanvas()
