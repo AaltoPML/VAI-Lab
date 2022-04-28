@@ -28,10 +28,15 @@ class GUI(tk.Tk):
             "MainPage": {
                 "name": "main",
                 "layer_priority": 1,
-                "required_children": ['aidCanvas']
+                "required_children": ['aidCanvas', 'pluginCanvas']
             },
             "aidCanvas": {
                 "name": "aidCanvas",
+                "layer_priority": 1,
+                "required_children": []
+            },
+            "pluginCanvas": {
+                "name": "pluginCanvas",
                 "layer_priority": 1,
                 "required_children": []
             },

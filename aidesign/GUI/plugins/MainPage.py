@@ -71,7 +71,7 @@ class MainPage(tk.Frame):
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
-                    command = self.canvas
+                    command = lambda: self.canvas("aidCanvas")
                     ).grid(column = 0, row = 13)
 
         tk.Button(self,
@@ -93,7 +93,18 @@ class MainPage(tk.Frame):
                                 fg = 'white')
         self.controller.XMLlabel.grid(column = 2,
                             row = 13)
-        
+        self.PluginButton = tk.Button(self,
+                    text = 'Modules plugins',
+                    fg = 'white',
+                    font = controller.title_font, 
+                    bg = parent['bg'],
+                    height = 3,
+                    width = 20, 
+                    # state = tk.DISABLED,
+                    state = tk.NORMAL,
+                    command = lambda: self.canvas("pluginCanvas"),
+                    )
+        self.PluginButton.grid(column = 0, row = 14)
         self.RunButton = tk.Button(self,
                     text = 'Run Pipeline',
                     fg = 'white',
@@ -104,30 +115,37 @@ class MainPage(tk.Frame):
                     state = tk.DISABLED,
                     command = self.controller.destroy,
                     )
-        self.RunButton.grid(column = 0, row = 14)
+        self.RunButton.grid(column = 1, row = 14)
         
         self.controller.XML = tk.IntVar()
         self.controller.Data = tk.IntVar()
+        self.controller.Plugin = tk.IntVar()
         self.controller.XML.set(False)
         self.controller.Data.set(False)
+        self.controller.Plugin.set(False)
         
         self.controller.XML.trace('w', self.trace_XML)
         self.controller.Data.trace('w', self.trace_Data)
+        self.controller.Plugin.trace('w', self.trace_Plugin)
 
     def trace_XML(self,*args):
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
             if self.controller.Data.get():
-                self.RunButton.config(state = 'normal')
+                self.PluginButton.config(state = 'normal')
 
     def trace_Data(self,*args):
         if self.controller.Data.get():
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
             if self.controller.XML.get():
-                self.RunButton.config(state = 'normal')
+                self.PluginButton.config(state = 'normal')
+                
+    def trace_Plugin(self,*args):
+        if self.controller.Plugin.get():
+            self.RunButton.config(state = 'normal')
 
-    def canvas(self):
-        self.controller._show_frame("aidCanvas")
+    def canvas(self,name):
+        self.controller._show_frame(name)
     
     def upload_xml(self):
         filename = askopenfilename(initialdir = os.getcwd(), 

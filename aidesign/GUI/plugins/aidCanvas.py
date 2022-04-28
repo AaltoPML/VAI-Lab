@@ -772,6 +772,7 @@ class aidCanvas(tk.Frame):
                 self.add_module(key,
                                 modules[key]['coordinates'][0][0],
                                 modules[key]['coordinates'][0][1])
+                self.module_list[-1] = modules[key]['module_type']
                 id_mod.append(modules[key]['coordinates'][1])
                 connect = list(modules[key]['coordinates'][2].keys())
                 
