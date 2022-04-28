@@ -691,7 +691,7 @@ class aidCanvas(tk.Frame):
                       [self.canvas.startxy[1], 1, self.connections[1]])
             s.write_to_XML()
             self.saved = True
-            self.controller.append_to_output("xml_filename",self.save_path.name)
+            self.controller._append_to_output("xml_filename",self.save_path.name)
 
     def upload(self):
         
@@ -715,7 +715,6 @@ class aidCanvas(tk.Frame):
             # Place the modules
             disp_mod, id_mod = self.place_modules(modules, id_mod, disp_mod)
             connect = list(modout['coordinates'][2].keys())
-            print(disp_mod, id_mod)
             for p, parent in enumerate(modout['parents']):
                     parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
                     out, ins = modout['coordinates'][2][connect[p]].split('-')
@@ -733,7 +732,7 @@ class aidCanvas(tk.Frame):
                     self.out_data.iloc[int(parent_id)][1] = 1
                     self.connections[1][
                         int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
-            self.controller.core.load_config_file(filename)
+            self.controller._append_to_output("xml_filename",filename)
 
     def place_modules(self, modules, id_mod, disp_mod):
         # Place the modules
@@ -795,7 +794,6 @@ class aidCanvas(tk.Frame):
                         self.out_data.iloc[int(parent_id)][int(id_mod[-1])] = 1
                         self.connections[int(id_mod[-1])][
                             int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(id_mod[-1])
-                        print(self.connections)
                     else:
                         self.loops[-1]['mod'].append(key)
                 disp_mod.append(key)
@@ -842,12 +840,10 @@ class aidCanvas(tk.Frame):
             if response:
                 if self.save_path not in [None, '']:
                     self.controller.XML.set(True)
-                    # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
                 self.controller._show_frame("MainPage")
         else:
             if self.save_path not in [None, '']:
                     self.controller.XML.set(True)
-                    # self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
             self.controller._show_frame("MainPage")
 
 if __name__ == "__main__":

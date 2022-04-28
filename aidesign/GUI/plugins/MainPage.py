@@ -121,14 +121,12 @@ class MainPage(tk.Frame):
     #     entry_task.config(bg='white', fg='black')       
     
     def trace_XML(self,*args):
-        print('XML', self.controller.XML.get(), self.controller.Data.get())
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
             if self.controller.Data.get():
                 self.RunButton.config(state = 'normal')
 
     def trace_Data(self,*args):
-        print('Data', self.controller.XML.get(), self.controller.Data.get())
         if self.controller.Data.get():
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
             if self.controller.XML.get():
