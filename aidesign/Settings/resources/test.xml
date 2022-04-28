@@ -3,14 +3,23 @@
         <Initialiser name="Initialiser">
             <plugin type="" />
             <relationships>
-                <child name="DataProcessing" />
+                <child name="User Feedback" />
             </relationships>
             <coordinates>
                 (300.0, 50)
             </coordinates>
         </Initialiser>
-        <DataProcessing name="DataProcessing">
-            <plugin type="" />
+        <UserFeedback name="UserFeedback">
+            <plugin type="manuald">
+                <class_list>
+                    test_1
+                    test_2
+                </class_list>
+                <class_list_2>
+                    test_1
+                    test_2
+                </class_list_2>
+            </plugin>
             <relationships>
                 <parent name="Initialiser" />
                 <child name="Output" />
@@ -18,11 +27,11 @@
             <coordinates>
                 (300.0, 300.0)
             </coordinates>
-        </DataProcessing>
+        </UserFeedback>
         <Output name="Output">
             <plugin type="" />
             <relationships>
-                <parent name="DataProcessing" />
+                <parent name="User Feedback" />
             </relationships>
             <coordinates>
                 (300.0, 550)

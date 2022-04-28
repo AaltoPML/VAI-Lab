@@ -1,8 +1,10 @@
 <Settings>
     <pipeline>
         <Initialiser name="Init">
-            <initial_data file="../resources/intial_data_test.csv" />
-            <goal file="../resources/design_goals_test.csv" />&gt;
+            <plugin type="">
+                <initial_data file="../resources/intial_data_test.csv" />
+                <goal file="../resources/design_goals_test.csv" />
+            </plugin>
             <relationships>
                 <child name="My First GUI Module" />
             </relationships>
@@ -78,70 +80,23 @@
                         <child name="Output" />
                     </relationships>
                 </GUI>
+                <relationships>
+                        <child name="Data Processing 1" />
+                        <child name="Output" />
+                </relationships>
             </loop>
         </loop>
         <Output>
-            <out_data>
-                                all
-                            
-            </out_data>
-            <save_to file="../resources/output_test.csv" />
+            <plugin type="">
+                <out_data>
+                    all
+                </out_data>
+                <save_to file="../resources/output_test.csv" />
+            </plugin>
             <relationships>
                 <parent name="My Second GUI Module" />
             </relationships>
         </Output>
-        <loop type="for" condition="10" name="my_loop_3">
-            <relationships>
-                <parent name="Init" />
-            </relationships>
-        </loop>
-        <GUI name="added_mod">
-            <plugin type="startpage">
-                <class_list>
-                                        test_1
-                                        test_2
-                                    
-                </class_list>
-                <class_list_2>
-                                        test_1
-                                        test_2
-                                    
-                </class_list_2>
-            </plugin>
-            <relationships>
-                <parent name="For Loop 1" />
-                <child name="Output" />
-            </relationships>
-            <coordinates>
-                                                [2, 3, 4, 5]
-                                            
-                            
-            </coordinates>
-        </GUI>
-        <loop type="for" condition="10" name="my_loop_3">
-            <relationships>
-                <parent name="Init" />
-            </relationships>
-        </loop>
-        <GUI name="added_mod">
-            <plugin type="startpage">
-                <class_list>
-                    test_1
-                    test_2
-                </class_list>
-                <class_list_2>
-                    test_1
-                    test_2
-                </class_list_2>
-            </plugin>
-            <relationships>
-                <parent name="For Loop 1" />
-                <child name="Output" />
-            </relationships>
-            <coordinates>
-                [2, 3, 4, 5]
-            </coordinates>
-        </GUI>
     </pipeline>
     <datastructure name="datatest">
         <data_fields>

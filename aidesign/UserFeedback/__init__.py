@@ -4,6 +4,6 @@
 
 Let's look for a more automatic way of doing this when we have more modules
 """
-from .AID_core import AID
-from .UserInterfaceClass import UI
-from . import import_helper
+from .. import utils
+from .User_Feedback_core import UserFeedback
+from .User_Feedback_template import UI

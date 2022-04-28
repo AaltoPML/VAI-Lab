@@ -3,13 +3,13 @@
         <Initialiser name="Initialiser">
             <plugin type="" />
             <relationships>
-                <child name="DataProcessing" />
+                <child name="UserFeedbackAdaptation-0" />
             </relationships>
             <coordinates>
-                (300.0, 50)
+                (314.5, 75.0)
             </coordinates>
         </Initialiser>
-        <DataProcessing name="DataProcessing">
+        <UserFeedbackAdaptation name="UserFeedbackAdaptation-0">
             <plugin type="" />
             <relationships>
                 <parent name="Initialiser" />
@@ -18,14 +18,14 @@
             <coordinates>
                 (300.0, 300.0)
             </coordinates>
-        </DataProcessing>
+        </UserFeedbackAdaptation>
         <Output name="Output">
             <plugin type="" />
             <relationships>
-                <parent name="DataProcessing" />
+                <parent name="UserFeedbackAdaptation-0" />
             </relationships>
             <coordinates>
-                (300.0, 550)
+                (314.5, 525.0)
             </coordinates>
         </Output>
     </pipeline>

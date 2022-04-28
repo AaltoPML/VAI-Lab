@@ -9,16 +9,26 @@
                 (300.0, 50)
             </coordinates>
         </Initialiser>
-        <DataProcessing name="DataProcessing">
-            <plugin type="" />
+        <loop type="For/While" condition="Condition" name="loop0">
             <relationships>
-                <parent name="Initialiser" />
-                <child name="Output" />
+                <child name="DataProcessing" />
             </relationships>
             <coordinates>
-                (300.0, 300.0)
+                (150.0, 197.0, 469.0, 418.0)
             </coordinates>
-        </DataProcessing>
+            <relationships />
+            <DataProcessing name="DataProcessing">
+                <plugin type="" />
+                <relationships>
+                    <parent name="Initialiser" />
+                    <parent name="loop0" />
+                    <child name="Output" />
+                </relationships>
+                <coordinates>
+                    (300.0, 300.0)
+                </coordinates>
+            </DataProcessing>
+        </loop>
         <Output name="Output">
             <plugin type="" />
             <relationships>
