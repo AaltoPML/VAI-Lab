@@ -13,11 +13,12 @@ class Core(Settings):
         gui_app = GUI.GUI()
         gui_app.set_plugin_name('main')
         gui_output = gui_app.launch()
-        try:
-            self.load_config_file(gui_output["xml_filename"])
-        except:
-            raise Exception("No XML File Selected. Cannot Run Pipeline")
-        self.run()
+        if not gui_app.closed:
+            try:
+                self.load_config_file(gui_output["xml_filename"])
+            except:
+                raise Exception("No XML File Selected. Cannot Run Pipeline")
+            self.run()
 
     def load_config_file(self, filename: str):
         self.load_XML(filename)
