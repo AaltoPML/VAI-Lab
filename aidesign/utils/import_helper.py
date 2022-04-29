@@ -17,7 +17,3 @@ def import_module(script_config, module_name):
     module_class = getattr(module_list, module_name)
     return module_class
 
-def get_plugin_names():
-    #get current list of sys.modules
-    # cycle list of plugins
-    # remove all new plugins from sys.modules
