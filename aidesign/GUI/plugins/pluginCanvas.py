@@ -113,7 +113,11 @@ class pluginCanvas(tk.Frame):
                 self.canvas.selected = self.selected[-2]
             else:
                 self.canvas.selected = self.selected[-1]
-        print(self.m, self.id_done)
+        
+        if (self.m in self.plugin.keys()) and\
+                (self.plugin[self.m].get() != 'None') and \
+                (self.m not in self.id_done):
+                self.id_done.append(self.m)
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill = '#46da63')
         else:
@@ -133,8 +137,6 @@ class pluginCanvas(tk.Frame):
             
             self.display_buttons()
             module_number = self.id_mod.index(self.m)
-            print(module_number)
-            
             if module_number == len(self.id_mod)-1:
                 self.button_forw.grid_forget()
                 self.button_forw = tk.Button(
@@ -159,12 +161,6 @@ class pluginCanvas(tk.Frame):
                     self, image = self.back_img, bg = self.bg, 
                     command = lambda: self.select(
                         mCoord[0], mCoord[1])).grid(column = 5,row = 26)
-        
-        if (self.plugin[self.m].get() != 'None') and \
-            (self.m not in self.id_done):
-            print('Someone joined us!')
-            self.id_done.append(self.m)
-        self.saved = False
 
     def display_buttons(self):
         module = self.module_list[self.m == self.id_mod]
@@ -184,7 +180,6 @@ class pluginCanvas(tk.Frame):
             rb.grid(column = 5+ (p%2 != 0), row = int(p/2)+1)
             self.allWeHearIs.append(rb)
 
-    
     def module_out(self, name):
         """ Updates the output DataFrame.
         
