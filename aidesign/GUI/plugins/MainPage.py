@@ -100,8 +100,7 @@ class MainPage(tk.Frame):
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
-                    # state = tk.DISABLED,
-                    state = tk.NORMAL,
+                    state = tk.DISABLED,
                     command = lambda: self.canvas("pluginCanvas"),
                     )
         self.PluginButton.grid(column = 0, row = 14)

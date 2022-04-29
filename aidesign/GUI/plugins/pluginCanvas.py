@@ -533,6 +533,7 @@ class pluginCanvas(tk.Frame):
                 self.reset()
                 self.canvas.delete(tk.ALL)
                 self.saved = True
+                self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         else:
             if hasattr(self, 'button_forw'):
@@ -540,7 +541,7 @@ class pluginCanvas(tk.Frame):
                 self.button_back.grid_forget()
             self.reset()
             self.canvas.delete(tk.ALL)
-            self.saved = True
+            self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")
 
 if __name__ == "__main__":
