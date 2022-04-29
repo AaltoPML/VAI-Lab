@@ -51,6 +51,7 @@ class pluginCanvas(tk.Frame):
         self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
         self.id_done = [0,1]
+        self.id_mod = [0,1]
         self.plugin = {}
         self.allWeHearIs = []
         # self.l = 0 #number of loops
@@ -105,7 +106,13 @@ class pluginCanvas(tk.Frame):
         self.select(event.x, event.y)
         
     def select(self, x, y):
-        """ Selects the module at the mouse location. """
+        """ 
+        Selects the module at the mouse location and updates the associated 
+        plugins as well as the colours. 
+        Blue means no plugin has been specified,
+        Orange means the module is selected.
+        Green means the plugin for this module is already set. """
+        
         self.selected = self.canvas.find_overlapping(
             x-5, y-5, x+5, y+5)
         if self.selected:
@@ -116,7 +123,7 @@ class pluginCanvas(tk.Frame):
         
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None') and \
-                (self.m not in self.id_done):
+                (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill = '#46da63')
@@ -129,39 +136,66 @@ class pluginCanvas(tk.Frame):
                 self.m = int(self.canvas.gettags(self.canvas.selected)[0].split('-')[1])
             else:
                 self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
-            
-            if self.m not in self.id_done and self.m > 1:
-                self.canvas.itemconfig('p'+str(self.m), fill = '#dbaa21')
-            for widget in self.allWeHearIs:
-                widget.grid_forget()
-            
-            self.display_buttons()
-            module_number = self.id_mod.index(self.m)
-            if module_number == len(self.id_mod)-1:
-                self.button_forw.grid_forget()
-                self.button_forw = tk.Button(
-                    self, text = 'Finnish', bg = self.bg, 
-                    font = self.controller.pages_font,
-                    fg = 'white', height = 3, width = 15,
-                    command = self.check_quit).grid(column = 6,row = 26)
+            if self.m > 1:
+                if self.m not in self.id_done and self.m > 1:
+                    self.canvas.itemconfig('p'+str(self.m), fill = '#dbaa21')
+                for widget in self.allWeHearIs:
+                    widget.grid_forget()
+                
+                self.display_buttons()
+                module_number = self.id_mod.index(self.m)
+                if hasattr(self, 'button_forw'):
+                    self.button_forw.grid_forget()
+                    self.button_back.grid_forget()
+                if module_number == len(self.id_mod)-1:
+                    self.button_forw = tk.Button(
+                        self, text = 'Finnish', bg = self.bg, 
+                        font = self.controller.pages_font,
+                        fg = 'white', height = 3, width = 15,
+                        command = self.finnish)
+                else:
+                    pCoord = self.canvas.coords('p'+str(self.id_mod[module_number+1]))
+                    self.button_forw = tk.Button(
+                        self, image = self.forw_img, bg = self.bg, 
+                        command = lambda: self.select(
+                            pCoord[0], pCoord[1]))
+                self.button_forw.grid(column = 6,row = 26)
+                if module_number < 3:
+                    self.button_back = tk.Button(
+                        self, image = self.back_img, bg = self.bg, 
+                        state = tk.DISABLED)
+                else:
+                    mCoord = self.canvas.coords('p'+str(self.id_mod[module_number-1]))
+                    self.button_back = tk.Button(
+                        self, image = self.back_img, bg = self.bg, 
+                        command = lambda: self.select(
+                            mCoord[0], mCoord[1]))
+                self.button_back.grid(column = 5,row = 26)
             else:
-                pCoord = self.canvas.coords('p'+str(self.id_mod[module_number+1]))
+                self.my_label.config(text = '')
+                for widget in self.allWeHearIs:
+                    widget.grid_forget()
+                if hasattr(self, 'button_forw'):
+                    self.button_forw.grid_forget()
+                    self.button_back.grid_forget()
+                self.button_back = tk.Button(
+                        self, image = self.back_img, bg = self.bg, 
+                        state = tk.DISABLED)
+                self.button_back.grid(column = 5,row = 26)
+                pCoord = self.canvas.coords('p'+str(self.id_mod[2]))
                 self.button_forw = tk.Button(
                 self, image = self.forw_img, bg = self.bg, 
                 command = lambda: self.select(
                     pCoord[0], pCoord[1]))
                 self.button_forw.grid(column = 6,row = 26)
-            if module_number < 3:
-                self.button_back = tk.Button(
-                    self, image = self.back_img, bg = self.bg, 
-                    state = tk.DISABLED).grid(column = 5,row = 26)
-            else:
-                mCoord = self.canvas.coords('p'+str(self.id_mod[module_number-1]))
-                self.button_back = tk.Button(
-                    self, image = self.back_img, bg = self.bg, 
-                    command = lambda: self.select(
-                        mCoord[0], mCoord[1])).grid(column = 5,row = 26)
 
+    def finnish(self):
+        if (self.m in self.plugin.keys()) and\
+                (self.plugin[self.m].get() != 'None') and \
+                (self.m not in self.id_done): # add
+                self.id_done.append(self.m)
+        self.check_quit()
+        
     def display_buttons(self):
         module = self.module_list[self.m == self.id_mod]
         name = self.canvas.itemcget('t'+str(self.m), 'text')
@@ -286,6 +320,63 @@ class pluginCanvas(tk.Frame):
         self.module_list.append(boxName)
         self.modules += 1
 
+    # def save_plugin(self):
+        
+    #     filename = self.controller.output["xml_filename"]
+        
+    #     s = Settings()
+    #     s.load_XML(filename)
+    #     s._print_pretty(s.loaded_modules)
+    #     modules = s.loaded_modules
+    #     s.append_pipeline_module(self.module_list[0], # Initialiser
+    #                           mn[0],
+    #                           "",
+    #                           {},
+    #                           list(mn[values[:,0]]),
+    #                           list(mn[values[0,:]]),
+    #                           None,
+    #                           [self.canvas.startxy[0], 0, self.connections[0]])
+    #     for i, mnn in enumerate(mn_id):
+    #         if (i > 1) and mnn:
+    #             xml_parent = None
+    #             parent_loops = []
+    #             if mn[i] in loop_modules: # Model in any loop
+    #                 for x, loop in enumerate(self.loops):
+    #                     if mn[i] in loop['mod']: # Model in this loop
+    #                         if not out_loops[x]: # Loop already defined
+    #                             s.append_pipeline_loop(self.loops[x]['type'],
+    #                                         self.loops[x]['condition'],
+    #                                         "loop"+str(x),
+    #                                         parent_loops,
+    #                                         list(loop['mod']),
+    #                                         xml_parent,
+    #                                         self.loops[x]['coord']
+    #                                         )
+    #                             out_loops[x] = 1
+    #                         xml_parent = "loop"+str(x) # parent is the last loop
+    #                         parent_loops.append("loop"+str(x))
+
+    #             s.append_pipeline_module(self.module_list[i],
+    #               mn[i],
+    #               "",
+    #               {},
+    #               list(mn[values[:,i]]),
+    #               list(mn[values[i,:]]),
+    #               xml_parent,
+    #               [self.canvas.startxy[i], i, self.connections[i]])
+            
+    #     s.append_pipeline_module(self.module_list[1], # Out
+    #               mn[1],
+    #               "",
+    #               {},
+    #               list(mn[values[:,1]]),
+    #               list(mn[values[1,:]]),
+    #               None,
+    #               [self.canvas.startxy[1], 1, self.connections[1]])
+    #     s.write_to_XML()
+    #     self.saved = True
+    #     self.controller._append_to_output("xml_filename",self.save_path.name)
+            
     def upload(self):
         
         filename = self.controller.output["xml_filename"]
@@ -423,7 +514,11 @@ class pluginCanvas(tk.Frame):
         self.l = 0
         self.id_done = [0,1]
         self.plugin = {}
+        for widget in self.allWeHearIs:
+                widget.grid_forget()
         self.allWeHearIs = []
+        self.my_label.config(text = '')
+
             
     def check_quit(self):
         
@@ -432,14 +527,21 @@ class pluginCanvas(tk.Frame):
                 "Exit", 
                 "There are some unspecified plugins. Are you sure you want to leave?")
             if response:
+                if hasattr(self, 'button_forw'):
+                    self.button_forw.grid_forget()
+                    self.button_back.grid_forget()
                 self.reset()
                 self.canvas.delete(tk.ALL)
                 self.saved = True
+                self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         else:
+            if hasattr(self, 'button_forw'):
+                self.button_forw.grid_forget()
+                self.button_back.grid_forget()
             self.reset()
             self.canvas.delete(tk.ALL)
-            self.saved = True
+            self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")
 
 if __name__ == "__main__":
