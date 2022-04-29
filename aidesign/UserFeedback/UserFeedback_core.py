@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
-
+from tkinter import font  as tkfont
 from aidesign.utils.import_helper import import_plugin
 
 class UserFeedback(tk.Tk):
@@ -13,10 +13,10 @@ class UserFeedback(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.title_font = tk.font.Font(family='Helvetica',
+        self.title_font = tkfont.Font(family='Helvetica',
                                       size=14,
                                       weight="bold")
-        self.pages_font = tk.font.nametofont("TkDefaultFont")
+        self.pages_font = tkfont.nametofont("TkDefaultFont")
 
         self.desired_ui_types = []
         self.top_ui_layer = None
