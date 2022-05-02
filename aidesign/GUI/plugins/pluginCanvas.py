@@ -105,14 +105,16 @@ class pluginCanvas(tk.Frame):
     def on_click(self, event):
         self.select(event.x, event.y)
         
-    def select(self, x, y):
+    def select(self, x: float, y:float):
         """ 
         Selects the module at the mouse location and updates the associated 
         plugins as well as the colours. 
         Blue means no plugin has been specified,
         Orange means the module is selected.
-        Green means the plugin for this module is already set. """
-        
+        Green means the plugin for this module is already set. 
+        :param x: float type of module x coordinate
+        :param y: float type of module y coordinate
+        """
         self.selected = self.canvas.find_overlapping(
             x-5, y-5, x+5, y+5)
         if self.selected:
@@ -125,6 +127,11 @@ class pluginCanvas(tk.Frame):
                 (self.plugin[self.m].get() != 'None') and \
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
+                self.s.append_plugin_to_module(self.plugin[self.m].get(),
+                                                 {},
+                                                 np.array(self.module_list)[self.m == np.array(self.id_mod)][0],
+                                                 True)
+                self.s._print_pretty(np.array(self.module_list)[self.m == np.array(self.id_mod)][0])
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill = '#46da63')
         else:
@@ -194,10 +201,14 @@ class pluginCanvas(tk.Frame):
                 (self.plugin[self.m].get() != 'None') and \
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
+                self.s.append_plugin_to_module(self.plugin[self.m].get(),
+                                                 {},
+                                                 np.array(self.module_list)[self.m == np.array(self.id_mod)][0],
+                                                 True)
         self.check_quit()
         
     def display_buttons(self):
-        module = self.module_list[self.m == self.id_mod]
+        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         name = self.canvas.itemcget('t'+str(self.m), 'text')
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
         
@@ -383,10 +394,10 @@ class pluginCanvas(tk.Frame):
         
         self.reset()
 
-        s = Settings()
-        s.load_XML(filename)
-        s._print_pretty(s.loaded_modules)
-        modules = s.loaded_modules
+        self.s = Settings()
+        self.s.load_XML(filename)
+        self.s._print_pretty(self.s.loaded_modules)
+        modules = self.s.loaded_modules
         modout = modules['output']
         del modules['Initialiser'], modules['output'] # They are generated when resetting
         self.disp_mod = ['Initialiser', 'output']
@@ -533,6 +544,7 @@ class pluginCanvas(tk.Frame):
                 self.reset()
                 self.canvas.delete(tk.ALL)
                 self.saved = True
+                self.s.write_to_XML()
                 self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         else:
@@ -541,6 +553,7 @@ class pluginCanvas(tk.Frame):
                 self.button_back.grid_forget()
             self.reset()
             self.canvas.delete(tk.ALL)
+            self.s.write_to_XML()
             self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")
 
