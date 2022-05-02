@@ -127,11 +127,11 @@ class pluginCanvas(tk.Frame):
                 (self.plugin[self.m].get() != 'None') and \
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
+                print(np.array(self.module_names)[self.m == np.array(self.id_mod)][0])
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
                                                  {},
-                                                 np.array(self.module_list)[self.m == np.array(self.id_mod)][0],
+                                                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
-                self.s._print_pretty(np.array(self.module_list)[self.m == np.array(self.id_mod)][0])
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill = '#46da63')
         else:

@@ -17,10 +17,9 @@
             <coordinates>
                 [(184,155),2,{0:'d0-u2'}]
             </coordinates>
-            <plugin type="RF" />
+            <plugin type="Lasso" />
         </Modelling>
         <UserFeedback name="User Feetback">
-            <plugin type="" />
             <relationships>
                 <parent name="Modelling" />
                 <child name="InputData" />
@@ -28,6 +27,7 @@
             <coordinates>
                 [(397,244),3,{2:'r2-l3'}]
             </coordinates>
+            <plugin type="CCA" />
         </UserFeedback>
         <InputData name="InputData">
             <relationships>
@@ -37,7 +37,7 @@
             <coordinates>
                 [(231,370),4,{3:'d3-u4'}]
             </coordinates>
-            <plugin type="RF" />
+            <plugin type="MLP" />
         </InputData>
         <Output name="Output">
             <plugin type="" />
