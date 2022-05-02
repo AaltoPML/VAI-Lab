@@ -4,6 +4,12 @@ from PIL import Image, ImageTk
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename, askdirectory
 
+_PLUGIN_CLASS_NAME = "MainPage"
+_PLUGIN_CLASS_DESCRIPTION = "Splash and Menu page used as GUI entry-point"
+_PLUGIN_READABLE_NAMES = {"default":"main","aliases":["main page","launch page"]}
+_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_REQUIRED_SETTINGS = {}
+_PLUGIN_OPTIONAL_SETTINGS = {}
 class MainPage(tk.Frame):
 
     def __init__(self, parent, controller, config:dict):
