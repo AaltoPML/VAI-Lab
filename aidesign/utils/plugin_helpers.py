@@ -85,6 +85,6 @@ class PluginSpecs(ast.NodeVisitor):
         pp.pprint(value)
 
 
-if __name__ == "__main__":
-    ps = PluginSpecs()
-    ps.print(ps.class_names())
+# if __name__ == "__main__":
+#     ps = PluginSpecs()
+#     ps.print(ps.class_names())
