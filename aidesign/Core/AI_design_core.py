@@ -1,5 +1,6 @@
 from aidesign.utils.import_helper import import_module
 from aidesign.Settings.Settings_core import Settings
+from aidesign.GUI.GUI_core import GUI
 
 
 class Core(Settings):
@@ -8,8 +9,8 @@ class Core(Settings):
         self.loop_level = 0
 
     def launch(self):
-        from .. import GUI
-        gui_app = GUI.GUI()
+        # from .. import GUI
+        gui_app = GUI()
         gui_app.set_plugin_name('main')
         gui_output = gui_app.launch()
         if not gui_app.closed:
