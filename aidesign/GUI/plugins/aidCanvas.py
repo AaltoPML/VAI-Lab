@@ -10,7 +10,7 @@ from tkinter import messagebox
 from aidesign.Settings.Settings_core import Settings
 
 _PLUGIN_CLASS_NAME = "aidCanvas"
-_PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules and plugins"
+_PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules"
 _PLUGIN_READABLE_NAMES = {"default":"aid_canvas","aliases":["aid","AID"]}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {}

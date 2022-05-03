@@ -75,7 +75,10 @@ class PluginSpecs(ast.NodeVisitor):
 
     def class_names(self):
         return self.get_option_specs("_PLUGIN_CLASS_NAME")
-
+    
+    def class_descriptions(self):
+        return self.get_option_specs("_PLUGIN_CLASS_DESCRIPTION")
+    
     def required_settings(self):
         return self.get_option_specs("_PLUGIN_REQUIRED_SETTINGS")
 
@@ -88,3 +91,5 @@ class PluginSpecs(ast.NodeVisitor):
 # if __name__ == "__main__":
 #     ps = PluginSpecs()
 #     ps.print(ps.class_names())
+#     ps.print(ps.class_descriptions())
+#     print(list(ps.class_descriptions()['GUI'].values()))
