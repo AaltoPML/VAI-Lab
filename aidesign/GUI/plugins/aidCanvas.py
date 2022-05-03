@@ -846,7 +846,7 @@ class aidCanvas(tk.Frame):
             if self.save_path not in [None, '']:
                     self.controller.XML.set(True)
             self.controller._show_frame("MainPage")
-
+            
 if __name__ == "__main__":
     app = aidCanvas()
     app.mainloop()

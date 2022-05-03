@@ -11,8 +11,8 @@ from aidesign.Settings.Settings_core import Settings
 
 class pluginCanvas(tk.Frame):
 
-    """ Creates a frame with a canvas and allows to include different modules
-    for display which translate into new modules defined for the framework."""
+    """ Creates a frame with a canvas and allows to upload a pipeline and 
+    specify the plugins used in each module."""
     
     def __init__(self, parent, controller, config:dict):
         
@@ -202,6 +202,7 @@ class pluginCanvas(tk.Frame):
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
         
         plugins = ['GP', 'SVM', 'MLP', 'Ridge', 'Lasso', 'CCA', 'RF']
+        plugins.append('Custom')
         if self.m not in self.plugin:
             self.plugin[self.m] = tk.StringVar()
             self.plugin[self.m].set(None)
@@ -543,6 +544,37 @@ class pluginCanvas(tk.Frame):
             self.canvas.delete(tk.ALL)
             self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")
+
+class ToolTip(object):
+    """ Creates a text window associated to a widget with a description. """
+    
+    def __init__(self, widget):
+        self.widget = widget
+        self.tipwindow = None
+        self.id = None
+        self.x = self.y = 0
+
+    def showtip(self, text):
+        "Display text in tooltip window"
+        self.text = text
+        if self.tipwindow or not self.text:
+            return
+        x, y, cx, cy = self.widget.bbox("insert")
+        x = x + self.widget.winfo_rootx() + 57
+        y = y + cy + self.widget.winfo_rooty() +27
+        self.tipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(1)
+        tw.wm_geometry("+%d+%d" % (x, y))
+        label = tk.Label(tw, text=self.text, justify=tk.LEFT,
+                      background="#ffffe0", relief=tk.SOLID, borderwidth=1,
+                      font=("Helvetica", "8", "normal"))
+        label.pack(ipadx=1)
+
+    def hidetip(self):
+        tw = self.tipwindow
+        self.tipwindow = None
+        if tw:
+            tw.destroy()
 
 if __name__ == "__main__":
     app = pluginCanvas()
