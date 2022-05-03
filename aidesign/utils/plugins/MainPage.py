@@ -6,8 +6,8 @@ from tkinter.filedialog import askopenfilename, askdirectory
 
 _PLUGIN_CLASS_NAME = "MainPage"
 _PLUGIN_CLASS_DESCRIPTION = "Splash and Menu page used as GUI entry-point"
-_PLUGIN_READABLE_NAMES = {"default":"main","aliases":["main page","launch page"]}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_READABLE_NAMES = {"main","main page","launch page"}
+_PLUGIN_MODULE_OPTIONS = {"layer_priority": 1,"required_children": ['aidCanvas', 'pluginCanvas']}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 class MainPage(tk.Frame):

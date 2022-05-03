@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter.font import Font
-from aidesign.utils.import_helper import import_plugin
+from aidesign.utils.import_helper import import_plugin_absolute
+from aidesign.utils.plugin_helpers import PluginSpecs
 
 class GUI(tk.Tk):
     """
@@ -24,72 +25,38 @@ class GUI(tk.Tk):
         self._module_config = None
         self.closed = False
         self.output = {}
+        self._plugin_specs = PluginSpecs()
 
-        self._available_ui_types = {
-            "MainPage": {
-                "name": "main",
-                "layer_priority": 1,
-                "required_children": ['aidCanvas', 'pluginCanvas']
-            },
-            "aidCanvas": {
-                "name": "aidCanvas",
-                "layer_priority": 1,
-                "required_children": []
-            },
-            "pluginCanvas": {
-                "name": "pluginCanvas",
-                "layer_priority": 1,
-                "required_children": []
-            },
-            "ManualInput": {
-                "name": "manual",
-                "layer_priority": 2,
-                "required_children": None,
-            },
-            "CanvasInput": {
-                "name": "canvas",
-                "layer_priority": 2,
-                "required_children": None,
-            }
-        }
-
-    def _compare_layer_priority(self, ui_name):
+    def _compare_layer_priority(self, ui_specs):
         """Check if a new module should have higher layer priority than the existing one
 
         :param ui_name: name of the UI method being compared
         :type ui_name: str
         """
         if self._top_ui_layer == None:
-            self._top_ui_layer = ui_name
+            self._top_ui_layer = ui_specs
         else:
-            current_top_layer = self._available_ui_types[self._top_ui_layer]["layer_priority"]
-            candidate_layer = self._available_ui_types[ui_name]["layer_priority"]
+            current_top_layer = self._top_ui_layer["_PLUGIN_MODULE_OPTIONS"]["layer_priority"]
+            candidate_layer = ui_specs["_PLUGIN_MODULE_OPTIONS"]["layer_priority"]
             self._top_ui_layer = candidate_layer \
                 if candidate_layer < current_top_layer \
                 else self._top_ui_layer
 
-    def _add_UI_type_to_frames(self, ui_name):
+    def _add_UI_type_to_frames(self, ui_specs):
         """Add user defined UI method to list of frames to be loaded
 
         :param ui_name: name of the UI method being loaded
         :type ui_name: str 
         """
-        try:
-            plugin = import_plugin(globals(),ui_name)
-        except:
-            from sys import exit
-            print(
-                "Error: User Interface \"{0}\" not recognised. \
-                \nAvailable methods are: \
-                \n  - {1}"\
-                .format(ui_name, ",\n  - ".join(
-                    [i["name"]for i in self._available_ui_types.values()])))
-            exit(1)
+        plugin = import_plugin_absolute(globals(),
+                                        ui_specs["_PLUGIN_PACKAGE"],
+                                        ui_specs["_PLUGIN_CLASS_NAME"])
+
         self._desired_ui_types.append(plugin)
-        self._compare_layer_priority(ui_name)
-        if self._available_ui_types[ui_name]["required_children"] != None:
-            for children in self._available_ui_types[ui_name]["required_children"]:
-                self._add_UI_type_to_frames(children)
+        self._compare_layer_priority(ui_specs)
+        if ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"] != None:
+            for children in ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"]:
+                self.set_plugin_name(children)
 
     def set_plugin_name(self, ui_type: list):
         """"Given user input, create a list of classes of the corresponding User Interface Type 
@@ -102,9 +69,18 @@ class GUI(tk.Tk):
             else [ui_type]
 
         for ui in ui_type:
-            ui_name = ''.join(kn for kn in self._available_ui_types.keys()
-                              if ui.lower() == self._available_ui_types[kn]["name"])
-            self._add_UI_type_to_frames(ui_name)
+            ui_specs = self._plugin_specs.find_from_readable_name(ui)
+            try:
+                self._add_UI_type_to_frames(ui_specs)
+            except:
+                from sys import exit
+                print(
+                    "Error: User Interface \"{0}\" not recognised. \
+                    \nAvailable methods are: \
+                    \n  - {1}"\
+                    .format(ui, ",\n  - ".join(
+                        [i for i in self._plugin_specs.get_all_available_plugin_names()])))
+                exit(1)
 
     def _append_to_output(self, key:str, value:any):
         self.output[key] = value
@@ -119,6 +95,8 @@ class GUI(tk.Tk):
 
     def _show_frame(self, page_name):
         '''Show a frame for the given page name'''
+        if isinstance(page_name,dict):
+            page_name = page_name["_PLUGIN_CLASS_NAME"]
         frame = self.frames[page_name]
         frame.tkraise()
 

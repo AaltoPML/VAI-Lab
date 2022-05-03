@@ -3,36 +3,26 @@
         <Initialiser name="Initialiser">
             <plugin type="" />
             <relationships>
-                <child name="UserFeedback" />
+                <child name="Decision Making" />
             </relationships>
             <coordinates>
                 [(300.0, 50), 0, {}]
             </coordinates>
         </Initialiser>
-        <loop type="for" condition="100" name="loop0">
+        <DecisionMaking name="Decision Making">
+            <plugin type="" />
             <relationships>
-                <child name="UserFeedback" />
+                <parent name="Initialiser" />
+                <child name="Output" />
             </relationships>
             <coordinates>
-                (158.0, 143.0, 443.0, 303.0)
+                [(300.0, 300.0), 2, {0: 'd0-u2'}]
             </coordinates>
-            <relationships />
-            <UserFeedback name="UserFeedback">
-                <plugin type="" />
-                <relationships>
-                    <parent name="Initialiser" />
-                    <parent name="loop0" />
-                    <child name="Output" />
-                </relationships>
-                <coordinates>
-                    [(274, 218), 2, {0: 'd0-u2'}]
-                </coordinates>
-            </UserFeedback>
-        </loop>
+        </DecisionMaking>
         <Output name="Output">
             <plugin type="" />
             <relationships>
-                <parent name="UserFeedback" />
+                <parent name="Decision Making" />
             </relationships>
             <coordinates>
                 [(300.0, 550), 1, {2: 'd2-u1'}]
