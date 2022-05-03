@@ -256,11 +256,15 @@ class pluginCanvas(tk.Frame):
                                      index = name_list)
         self.module_names.append(name_list[-1])
 
-    def add_module(self, boxName, x, y, ini = False, out = False):
+    def add_module(self,boxName: str,x: float,y:float,ini = False,out = False):
         """ Creates a rectangular module with the corresponding text inside.
         
         :param boxName: name of the model
         :type boxName: str
+        :param x: float type of module x coordinate
+        :param y: float type of module y coordinate
+        :param ini: bool type of whether the module corresponds to initialiser.
+        :param out: bool type of whether the module corresponds to output.
         """
         if not ini and not out:
             tag = ('o'+str(self.modules),)
@@ -332,6 +336,8 @@ class pluginCanvas(tk.Frame):
         self.modules += 1
 
     def upload(self):
+        """ Opens the XML file that was previously uploaded and places the 
+        modules, loops and connections in the canvas."""
         
         filename = self.controller.output["xml_filename"]
         
@@ -370,8 +376,11 @@ class pluginCanvas(tk.Frame):
         x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
         self.select(x0, y0)
 
-    def place_modules(self, modules):
-        # Place the modules
+    def place_modules(self,modules: dict):
+        """Places the modules in the dictionary in the canvas.
+        :param modules: dict type of modules in the pipeline.
+        """
+        
         for key in [key for key, val in modules.items() if type(val) == dict]:
             if modules[key]['class'] == 'loop':
                 # Extracts numbers from string
@@ -436,7 +445,7 @@ class pluginCanvas(tk.Frame):
                 self.disp_mod.append(key)
 
     def reset(self):
-
+        """ Resets the canvas and the stored information."""
         self.canvas.delete(tk.ALL) # Reset canvas
         
         if hasattr(self, 'entry'):
@@ -469,7 +478,7 @@ class pluginCanvas(tk.Frame):
 
             
     def check_quit(self):
-        
+        """Checks if all plugins are specified to reset and go back to the startpage"""
         if not len(self.id_done) == len(self.id_mod):
             response = messagebox.askokcancel(
                 "Exit", 
