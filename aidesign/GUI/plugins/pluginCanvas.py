@@ -177,9 +177,9 @@ class pluginCanvas(tk.Frame):
                 self.button_back.grid(column = 5,row = 26)
                 pCoord = self.canvas.coords('p'+str(self.id_mod[2]))
                 self.button_forw = tk.Button(
-                self, image = self.forw_img, bg = self.bg, 
-                command = lambda: self.select(
-                    pCoord[0], pCoord[1]))
+                        self, image = self.forw_img, bg = self.bg, 
+                        command = lambda: self.select(
+                            pCoord[0], pCoord[1]))
                 self.button_forw.grid(column = 6,row = 26)
 
     def finnish(self):
@@ -219,11 +219,52 @@ class pluginCanvas(tk.Frame):
             rb = tk.Radiobutton(self, text = plug, fg = 'white', bg = self.bg,
                 height = 3, width = 20, var = self.plugin[self.m], 
                 selectcolor = 'black', value = plug,
-                    font = self.controller.pages_font)
+                font = self.controller.pages_font, command = self.optionsWindow)
             rb.grid(column = 5+ (p%2 != 0), row = int(p/2)+1)
             self.CreateToolTip(rb, text = descriptions[p])
             self.allWeHearIs.append(rb)
-            
+    
+    def optionsWindow(self):
+        """ Function to create a new window displaying the available options 
+        of the selected plugin."""
+        
+        print(self.plugin[self.m].get())
+        self.newWindow = tk.Toplevel(self.controller)
+        # Window options
+        self.newWindow.title(self.plugin[self.m].get()+' plugin options')
+        script_dir = os.path.dirname(__file__)
+        self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
+            file = os.path.join(os.path.join(
+                script_dir, 
+                'resources', 
+                'Assets', 
+                'AIDIcon.ico'))))
+        self.newWindow.geometry("350x400")
+        
+        # Print options
+        tk.Label(self.newWindow,
+              text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.\n\
+                  Close the window when you are done.", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
+        options = {'arg1': 'int', 'arg2': ['C', 'F']}
+        
+        r = 1
+        self.entry = []
+        for arg, val in options.items():
+            tk.Label(self.newWindow,
+              text = arg).grid(row=r,column=0)
+            self.entry.append(tk.Entry(self.newWindow))
+            self.entry[-1].grid(row=r, column=1)
+            self.entry[-1].bind("<Return>", lambda event, a = r-1: self.on_return_entry(a))
+            r += 1
+        self.entry[0].focus()
+
+    def on_return_entry(self, r):
+        print(self.entry[r].get())
+        if r < len(self.entry)-1:
+            self.entry[r+1].focus()
+        else:
+            self.newWindow.focus()
+
     def CreateToolTip(self, widget, text):
         """ Calls ToolTip to create a window with a widget description. """
         toolTip = ToolTip(widget)
