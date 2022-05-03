@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import font  as tkfont
-from sys import modules as get_module_name
-from .plugins import aidCanvas
+from aidesign.utils.import_helper import import_plugin
 
 class AID(tk.Tk):
     """
@@ -18,8 +17,6 @@ class AID(tk.Tk):
                                         weight="bold")
         self.pages_font = tkfont.Font(family='Helvetica', 
                                       size=12)
-        self.current_module_name = get_module_name[__name__]
-
         self.desired_ui_types = []
         self.top_ui_layer = None
         self.startpage_exist = False
@@ -53,11 +50,22 @@ class AID(tk.Tk):
         :param ui_name: name of the UI method being loaded
         :type ui_name: str 
         """
-        self.desired_ui_types.append(getattr(self.current_module_name,ui_name))
-        self.compare_layer_priority(ui_name)
-        if self.available_ui_types[ui_name]["required_children"] != None:
-            for children in self.available_ui_types[ui_name]["required_children"]:
-                self.add_UI_type_to_frames(children)
+        try:
+            plugin = import_plugin(globals(),ui_name)
+        except:
+            from sys import exit
+            print(
+                "Error: User Interface \"{0}\" not recognised. \
+                \nAvailable methods are: \
+                \n  - {1}"\
+                .format(ui_name, ",\n  - ".join(
+                    [i["name"]for i in self._available_ui_types.values()])))
+            exit(1)
+        self._desired_ui_types.append(plugin)
+        self._compare_layer_priority(ui_name)
+        if self._available_ui_types[ui_name]["required_children"] != None:
+            for children in self._available_ui_types[ui_name]["required_children"]:
+                self._add_UI_type_to_frames(children)
         
 
     def plugin_name(self,ui_type):

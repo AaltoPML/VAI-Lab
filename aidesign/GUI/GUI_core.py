@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
+from tkinter.font import Font
 from aidesign.utils.import_helper import import_plugin
 
 class GUI(tk.Tk):
@@ -12,10 +13,10 @@ class GUI(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.title_font = tk.font.Font(family='Helvetica',
+        self.title_font = Font(family='Helvetica',
                                       size=14,
                                       weight="bold")
-        self.pages_font = tk.font.Font(family='Helvetica',
+        self.pages_font = Font(family='Helvetica',
                                       size=12)
 
         self._desired_ui_types = []

@@ -1,3 +1,5 @@
+import sys
+
 def import_plugin(script_config, plugin_name):
     plugin_list = __import__(script_config["__package__"]+'.plugins.' + plugin_name,
                              script_config,
@@ -8,9 +10,10 @@ def import_plugin(script_config, plugin_name):
 
 
 def import_module(script_config, module_name):
-    module_list = __import__('aidesign.' + module_name,
+    module_list = __import__('aidesign.' + module_name + "." + module_name + "_core",
                              script_config,
                              {},
                              [module_name])
     module_class = getattr(module_list, module_name)
     return module_class
+

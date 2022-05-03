@@ -3,6 +3,13 @@ from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 from matplotlib import pyplot as plt
 
+_PLUGIN_CLASS_NAME = "Regression"
+_PLUGIN_CLASS_DESCRIPTION = "Regression ML model placeholder"
+_PLUGIN_READABLE_NAMES = {"default":"regression","aliases":["reg"]}
+_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_REQUIRED_SETTINGS = {}
+_PLUGIN_OPTIONAL_SETTINGS = {}
+
 class Regression(object):
     def __init__(self):
         self.input_data = None
@@ -37,24 +44,24 @@ class Regression(object):
         return self.regression_function.predict(data)
         
 
-reg = Regression()
+# reg = Regression()
 
-X_train = np.array([1,2,3,4,5,6,7,8,9])
-y = X_train ** 5
-print(X_train)
-print(y)
+# X_train = np.array([1,2,3,4,5,6,7,8,9])
+# y = X_train ** 5
+# print(X_train)
+# print(y)
 
-reg.set_input_data(X_train)
-reg.fit_degree = 1
-reg.set_target_data(y)
-reg.solve()
+# reg.set_input_data(X_train)
+# reg.fit_degree = 1
+# reg.set_target_data(y)
+# reg.solve()
 
-X_test = X_train
-pred = reg.predict(X_test)
-print(pred)
+# X_test = X_train
+# pred = reg.predict(X_test)
+# print(pred)
 
-plt.figure()
-plt.plot(X_test,pred,c='r',label="Test Data. Degree: {0}".format(reg.fit_degree))
-plt.scatter(X_train,y,label="Training Data")
-plt.legend()
-plt.show()
+# plt.figure()
+# plt.plot(X_test,pred,c='r',label="Test Data. Degree: {0}".format(reg.fit_degree))
+# plt.scatter(X_train,y,label="Training Data")
+# plt.legend()
+# plt.show()

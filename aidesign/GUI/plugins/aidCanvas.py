@@ -9,6 +9,12 @@ from tkinter import messagebox
 
 from aidesign.Settings.Settings_core import Settings
 
+_PLUGIN_CLASS_NAME = "aidCanvas"
+_PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules"
+_PLUGIN_READABLE_NAMES = {"default":"aid_canvas","aliases":["aid","AID"]}
+_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_REQUIRED_SETTINGS = {}
+_PLUGIN_OPTIONAL_SETTINGS = {}
 class aidCanvas(tk.Frame):
 
     """ Creates a frame with a canvas and allows to include different modules

@@ -9,6 +9,12 @@ import numpy as np
 import pandas as pd
 import math
 
+_PLUGIN_CLASS_NAME = "CanvasInput"
+_PLUGIN_CLASS_DESCRIPTION = "Method of user feedback for state-action pairs"
+_PLUGIN_READABLE_NAMES = {"default":"canvas","aliases":["state-action","robot"]}
+_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_REQUIRED_SETTINGS = {"class_list":"list"}
+_PLUGIN_OPTIONAL_SETTINGS = {}
 class CanvasInput(tk.Frame,UI):
     def __init__(self, parent, controller, config:dict):
         self.parent = parent
