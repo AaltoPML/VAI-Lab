@@ -326,7 +326,7 @@ class Settings(object):
     def append_plugin_to_module(self,
                                 plugin_type: str,
                                 plugin_options: dict,
-                                xml_parent: dict or str,
+                                xml_parent: ET.Element or str,
                                 overwrite_existing: bool = False
                                 ):
         """Appened plugin as subelement to existing module element
@@ -339,7 +339,7 @@ class Settings(object):
         """
         if isinstance(xml_parent,str):
             xml_parent = self._get_element_from_name(xml_parent)
-
+            
         plugin_elem = xml_parent.find("./plugin")
 
         if plugin_elem is not None and overwrite_existing:
@@ -378,10 +378,10 @@ class Settings(object):
         new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
 
-        self.append_plugin_to_module(module_name,
-                                        plugin_type,
+        self.append_plugin_to_module(plugin_type,
                                         plugin_options,
-                                        new_mod
+                                        new_mod,
+                                        0
                                         )
 
         if xml_parent_element.tag =="loop":
@@ -454,8 +454,8 @@ if __name__ == "__main__":
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
-    # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
-    # s.print_loaded_modules()
+    s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
+    s.print_loaded_modules()
     
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
