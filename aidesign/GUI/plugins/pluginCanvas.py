@@ -574,13 +574,13 @@ class ToolTip(object):
         if self.tipwindow or not self.text:
             return
         x, y, cx, cy = self.widget.bbox("insert")
-        x = x + self.widget.winfo_rootx() + 40
-        y = y + cy + self.widget.winfo_rooty() #+ 17
+        x = x + self.widget.winfo_rootx() + 60
+        y = y + cy + self.widget.winfo_rooty() + 50
         self.tipwindow = tw = tk.Toplevel(self.widget)
         tw.wm_overrideredirect(1)
         tw.wm_geometry("+%d+%d" % (x, y))
         label = tk.Label(tw, text=self.text, justify=tk.LEFT,
-                      background="#ffffe0", relief=tk.SOLID, borderwidth=1,
+                      background="#d0d4d9", relief=tk.SOLID, borderwidth=1,
                       font=("Helvetica", "8", "normal"))
         label.pack(ipadx=1)
 
