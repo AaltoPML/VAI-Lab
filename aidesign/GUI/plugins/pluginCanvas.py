@@ -24,8 +24,7 @@ class pluginCanvas(tk.Frame):
     
     def __init__(self, parent, controller, config:dict):
         
-        " Here we define the main frame displayed upon opening the program."
-        " This leads to the different methods to provide feedback."
+        """ Here we define the frame displayed for the plugin specification."""
         
         super().__init__(parent, bg = parent['bg'])
         self.bg = parent['bg']
@@ -38,14 +37,6 @@ class pluginCanvas(tk.Frame):
                 'resources', 
                 'Assets', 
                 'AIDIcon.ico'))))
-        # self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(
-        #         script_dir, 
-        #         'resources', 
-        #         'Assets', 
-        #         'AIDIcon_name.png')).resize((250, 200)))
-        
-        # self.my_label = tk.Label(self, image = self.my_img1, bg = parent['bg'])
-        # self.my_label.grid(column = 5, row = 0)
         
         # Create canvas
         self.width, self.height = 600, 600
@@ -54,7 +45,6 @@ class pluginCanvas(tk.Frame):
         self.canvas.grid(row=0, column=0, columnspan=4, rowspan = 25, 
                          padx = 10, pady = 10)
         
-        # Create module
         self.w, self.h = 100, 50
         self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
@@ -62,9 +52,7 @@ class pluginCanvas(tk.Frame):
         self.id_mod = [0,1]
         self.plugin = {}
         self.allWeHearIs = []
-        # self.l = 0 #number of loops
-        # self.drawLoop = False
-        # self.loops = []
+        
         self.my_label = tk.Label(self, 
                     text = 
                     '',
@@ -90,14 +78,6 @@ class pluginCanvas(tk.Frame):
             self, text = 'Load Pipeline', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
             command = self.upload).grid(column = 0, row = 26, sticky = tk.SE)
-        # tk.Button(
-        #     self, text = 'Save', fg = 'white', bg = parent['bg'],
-        #     height = 3, width = 15, font = self.controller.pages_font, 
-        #     command = self.save_file).grid(column = 1, row = 10, sticky = tk.SW)
-        # tk.Button(
-        #     self, text = 'Reset', fg = 'white', bg = parent['bg'], 
-        #     height = 3, width = 15, font = self.controller.pages_font, 
-        #     command = self.reset).grid(column = 2, row = 10, sticky = tk.SE)
         tk.Button(
             self, text = 'Back to main', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
@@ -111,6 +91,7 @@ class pluginCanvas(tk.Frame):
         return value
 
     def on_click(self, event):
+        """ Passes the mouse click coordinates to the select function."""
         self.select(event.x, event.y)
         
     def select(self, x: float, y:float):
@@ -146,10 +127,8 @@ class pluginCanvas(tk.Frame):
             self.canvas.itemconfig('p'+str(self.m), fill = self.bg)
         
         if len(self.canvas.gettags(self.canvas.selected)) > 0:
-            if(len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and (
-                self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
-                self.m = int(self.canvas.gettags(self.canvas.selected)[0].split('-')[1])
-            else:
+            if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
+                not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
                 self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
             if self.m > 1:
                 if self.m not in self.id_done and self.m > 1:
@@ -186,7 +165,7 @@ class pluginCanvas(tk.Frame):
                         command = lambda: self.select(
                             mCoord[0], mCoord[1]))
                 self.button_back.grid(column = 5,row = 26)
-            else:
+            else: # If user clicks on Initialiser or Output
                 self.my_label.config(text = '')
                 for widget in self.allWeHearIs:
                     widget.grid_forget()
@@ -205,6 +184,10 @@ class pluginCanvas(tk.Frame):
                 self.button_forw.grid(column = 6,row = 26)
 
     def finnish(self):
+        """ Calls function check_quit.
+        Before that, it checks if the current module plugins have been changed 
+        and, if so, updates their information in the Settings class.
+        """
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None') and \
                 (self.m not in self.id_done): # add
@@ -216,6 +199,10 @@ class pluginCanvas(tk.Frame):
         self.check_quit()
         
     def display_buttons(self):
+        """ Updates the displayed radiobuttons and the description windows.
+        It loads the information corresponding to the selected module (self.m)
+        and shows the available plugins and their corresponding descriptions.
+        """
         module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         name = self.canvas.itemcget('t'+str(self.m), 'text')
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
@@ -234,9 +221,19 @@ class pluginCanvas(tk.Frame):
                 selectcolor = 'black', value = plug,
                     font = self.controller.pages_font)
             rb.grid(column = 5+ (p%2 != 0), row = int(p/2)+1)
-            CreateToolTip(rb, text = descriptions[p])
+            self.CreateToolTip(rb, text = descriptions[p])
             self.allWeHearIs.append(rb)
-
+            
+    def CreateToolTip(self, widget, text):
+        """ Calls ToolTip to create a window with a widget description. """
+        toolTip = ToolTip(widget)
+        def enter(event):
+            toolTip.showtip(text)
+        def leave(event):
+            toolTip.hidetip()
+        widget.bind('<Enter>', enter)
+        widget.bind('<Leave>', leave)
+        
     def module_out(self, name):
         """ Updates the output DataFrame.
         
@@ -288,8 +285,7 @@ class pluginCanvas(tk.Frame):
             tags = tag + ('t'+str(self.modules),), 
             fill = '#d0d4d9', 
             justify = tk.CENTER)
-        # self.canvas.tag_bind('t'+str(self.modules), 
-        #                      "<Double-1>", self.OnDoubleClick)
+        
         if not out:
             self.canvas.create_oval(
                 x - self.cr, 
@@ -299,8 +295,6 @@ class pluginCanvas(tk.Frame):
                 width = 2, 
                 fill = 'black', 
                 tags = tag + ('d'+str(self.modules),))
-            # self.canvas.tag_bind('d'+str(self.modules), 
-            #                      "<Button-1>", self.join_modules)
             
         if not ini:
             self.canvas.create_oval(
@@ -311,8 +305,6 @@ class pluginCanvas(tk.Frame):
                 width = 2, 
                 fill = 'black', 
                 tags = tag + ('u'+str(self.modules),))
-            # self.canvas.tag_bind('u'+str(self.modules), 
-            #                      "<Button-1>", self.join_modules)
         
         if not out and not ini:
             self.canvas.create_oval(
@@ -323,8 +315,6 @@ class pluginCanvas(tk.Frame):
                 width = 2, 
                 fill = 'black', 
                 tags = tag + ('l'+str(self.modules),))
-            # self.canvas.tag_bind('l'+str(self.modules), 
-            #                      "<Button-1>", self.join_modules)
         
             self.canvas.create_oval(
                 x + text_w/2 - self.cr, 
@@ -334,72 +324,13 @@ class pluginCanvas(tk.Frame):
                 width = 2, 
                 fill = 'black', 
                 tags = tag + ('r'+str(self.modules),))
-            # self.canvas.tag_bind('r'+str(self.modules), 
-            #                      "<Button-1>", self.join_modules)
-        self.canvas.startxy.append((x, 
-                                    y))
+            
+        self.canvas.startxy.append((x, y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
         self.module_list.append(boxName)
         self.modules += 1
 
-    # def save_plugin(self):
-        
-    #     filename = self.controller.output["xml_filename"]
-        
-    #     s = Settings()
-    #     s.load_XML(filename)
-    #     s._print_pretty(s.loaded_modules)
-    #     modules = s.loaded_modules
-    #     s.append_pipeline_module(self.module_list[0], # Initialiser
-    #                           mn[0],
-    #                           "",
-    #                           {},
-    #                           list(mn[values[:,0]]),
-    #                           list(mn[values[0,:]]),
-    #                           None,
-    #                           [self.canvas.startxy[0], 0, self.connections[0]])
-    #     for i, mnn in enumerate(mn_id):
-    #         if (i > 1) and mnn:
-    #             xml_parent = None
-    #             parent_loops = []
-    #             if mn[i] in loop_modules: # Model in any loop
-    #                 for x, loop in enumerate(self.loops):
-    #                     if mn[i] in loop['mod']: # Model in this loop
-    #                         if not out_loops[x]: # Loop already defined
-    #                             s.append_pipeline_loop(self.loops[x]['type'],
-    #                                         self.loops[x]['condition'],
-    #                                         "loop"+str(x),
-    #                                         parent_loops,
-    #                                         list(loop['mod']),
-    #                                         xml_parent,
-    #                                         self.loops[x]['coord']
-    #                                         )
-    #                             out_loops[x] = 1
-    #                         xml_parent = "loop"+str(x) # parent is the last loop
-    #                         parent_loops.append("loop"+str(x))
-
-    #             s.append_pipeline_module(self.module_list[i],
-    #               mn[i],
-    #               "",
-    #               {},
-    #               list(mn[values[:,i]]),
-    #               list(mn[values[i,:]]),
-    #               xml_parent,
-    #               [self.canvas.startxy[i], i, self.connections[i]])
-            
-    #     s.append_pipeline_module(self.module_list[1], # Out
-    #               mn[1],
-    #               "",
-    #               {},
-    #               list(mn[values[:,1]]),
-    #               list(mn[values[1,:]]),
-    #               None,
-    #               [self.canvas.startxy[1], 1, self.connections[1]])
-    #     s.write_to_XML()
-    #     self.saved = True
-    #     self.controller._append_to_output("xml_filename",self.save_path.name)
-            
     def upload(self):
         
         filename = self.controller.output["xml_filename"]
@@ -505,13 +436,7 @@ class pluginCanvas(tk.Frame):
                 self.disp_mod.append(key)
 
     def reset(self):
-        
-        # if not self.saved:
-        #     msg = messagebox.askyesnocancel(
-        #         'Info', 'Are you sure you want to reset the canvas?')
-        # else:
-        #     msg = True
-        # if msg:
+
         self.canvas.delete(tk.ALL) # Reset canvas
         
         if hasattr(self, 'entry'):
@@ -599,16 +524,6 @@ class ToolTip(object):
         self.tipwindow = None
         if tw:
             tw.destroy()
-
-def CreateToolTip(widget, text):
-    """ Calls ToolTip to create a window with a widget description. """
-    toolTip = ToolTip(widget)
-    def enter(event):
-        toolTip.showtip(text)
-    def leave(event):
-        toolTip.hidetip()
-    widget.bind('<Enter>', enter)
-    widget.bind('<Leave>', leave)
     
 if __name__ == "__main__":
     app = pluginCanvas()
