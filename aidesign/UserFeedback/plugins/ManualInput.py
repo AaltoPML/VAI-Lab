@@ -7,7 +7,13 @@ from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
 
-
+_PLUGIN_CLASS_NAME = "ManualInput"
+_PLUGIN_CLASS_DESCRIPTION = "Method of user feedback for binary or classification data"
+_PLUGIN_READABLE_NAMES = {"manual","binary,classification"}
+_PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
+                            "required_children": None,}
+_PLUGIN_REQUIRED_SETTINGS = {"class_list":"list","image_dir":"str"}
+_PLUGIN_OPTIONAL_SETTINGS = {}
 class ManualInput(tk.Frame,UI):
     def __init__(self, parent, controller, config:dict):
         self.parent = parent    

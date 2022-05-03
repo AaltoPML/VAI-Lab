@@ -6,7 +6,7 @@ from tkinter.filedialog import askopenfilename
 
 _PLUGIN_CLASS_NAME = "StartPage"
 _PLUGIN_CLASS_DESCRIPTION = "Main Page for launching GUI methods"
-_PLUGIN_READABLE_NAMES = {"default":"start","aliases":["start page"]}
+_PLUGIN_READABLE_NAMES = {"start","start page"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}

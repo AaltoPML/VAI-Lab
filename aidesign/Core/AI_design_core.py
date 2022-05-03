@@ -9,7 +9,6 @@ class Core(Settings):
         self.loop_level = 0
 
     def launch(self):
-        # from .. import GUI
         gui_app = GUI()
         gui_app.set_plugin_name('main')
         gui_output = gui_app.launch()

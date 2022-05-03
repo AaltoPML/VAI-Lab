@@ -12,8 +12,9 @@ from aidesign.utils.plugin_helpers import PluginSpecs
 
 _PLUGIN_CLASS_NAME = "pluginCanvas"
 _PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of plugins"
-_PLUGIN_READABLE_NAMES = {"default":"aid_canvas","aliases":["aid","AID"]}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_READABLE_NAMES = {"plugin_canvas","pluginCanvas","plugin canvas"}
+_PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
+                            "required_children": None}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 

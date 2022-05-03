@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 _PLUGIN_CLASS_NAME = "Regression"
 _PLUGIN_CLASS_DESCRIPTION = "Regression ML model placeholder"
-_PLUGIN_READABLE_NAMES = {"default":"regression","aliases":["reg"]}
+_PLUGIN_READABLE_NAMES = {"regression","reg"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}

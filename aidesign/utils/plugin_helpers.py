@@ -43,10 +43,22 @@ class PluginSpecs(ast.NodeVisitor):
             for plugin_dir in plugins:
                 yield plugin_dir
 
+    def get_module_package(self):
+        if __package__:
+            parent_package = __package__.split(".")[0]
+        else:
+            parent_package = "aidesign"
+        scipt_filename = self.curr_plugin.replace(".py","")
+        return "{0}.{1}.plugins.{2}".format(parent_package,self.curr_module,scipt_filename)
+
     def get_plugin_specs(self):
         self.modules = self.modules_generator()
         for plugin_dir in self.modules:
-            self.available_plugins[self.curr_module][self.curr_plugin] = {"_PLUGIN_DIR":plugin_dir}
+            self.available_plugins[self.curr_module]\
+                                    [self.curr_plugin] \
+                                    = {"_PLUGIN_DIR":plugin_dir,
+                                       "_PLUGIN_PACKAGE":self.get_module_package()
+                                    }
             with open(plugin_dir, "r") as source:
                 tree = ast.parse(source.read())
             self.visit(tree)
@@ -70,8 +82,32 @@ class PluginSpecs(ast.NodeVisitor):
                                                         [option]
         return output
 
+    def find_plugin_by_tag_and_value(self, tag:str, name:str) -> dict:
+        for module in self.available_plugins.keys():
+            for plugin in self.available_plugins[module].keys():
+                if tag in self.available_plugins[module][plugin]:
+                    if name in self.available_plugins[module][plugin][tag]:
+                        return self.available_plugins\
+                                                [module]\
+                                                [plugin]
+        return None
+
     def names(self):
         return self.get_option_specs("_PLUGIN_READABLE_NAMES")
+
+    def get_all_available_plugin_names(self):
+        names = self.names()
+        output = []
+        for n in names.keys():
+            for plugin in names[n]:
+                output.append(plugin)
+        return output
+
+    def find_from_class_name(self, value):
+        return self.find_plugin_by_tag_and_value("_PLUGIN_CLASS_NAME",value)
+
+    def find_from_readable_name(self, value):
+        return self.find_plugin_by_tag_and_value("_PLUGIN_READABLE_NAMES",value)
 
     def class_names(self):
         return self.get_option_specs("_PLUGIN_CLASS_NAME")
@@ -90,6 +126,7 @@ class PluginSpecs(ast.NodeVisitor):
 
 # if __name__ == "__main__":
 #     ps = PluginSpecs()
-#     ps.print(ps.class_names())
+#     ps.print(ps.get_all_available_plugin_names())
+        # ps.print(ps.names())
 #     ps.print(ps.class_descriptions())
-#     print(list(ps.class_descriptions()['GUI'].values()))
+    # print(list(ps.class_descriptions()['GUI'].values()))
