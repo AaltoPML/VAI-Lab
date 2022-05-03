@@ -447,15 +447,15 @@ class Settings(object):
 
 
 # Use case examples:
-if __name__ == "__main__":
-    s = Settings("./resources/Hospital.xml")
+# if __name__ == "__main__":
+    # s = Settings("./resources/Hospital.xml")
     # s = Settings("./resources/example_config.xml")
     # s = Settings()
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
-    s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
-    s.print_loaded_modules()
+    # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
+    # s.print_loaded_modules()
     
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
