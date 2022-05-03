@@ -8,6 +8,14 @@ from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 from tkinter import messagebox
 
 from aidesign.Settings.Settings_core import Settings
+from aidesign.utils.plugin_helpers import PluginSpecs
+
+_PLUGIN_CLASS_NAME = "pluginCanvas"
+_PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of plugins"
+_PLUGIN_READABLE_NAMES = {"default":"aid_canvas","aliases":["aid","AID"]}
+_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_REQUIRED_SETTINGS = {}
+_PLUGIN_OPTIONAL_SETTINGS = {}
 
 class pluginCanvas(tk.Frame):
 
@@ -211,20 +219,22 @@ class pluginCanvas(tk.Frame):
         module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         name = self.canvas.itemcget('t'+str(self.m), 'text')
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
-        
-        plugins = ['GP', 'SVM', 'MLP', 'Ridge', 'Lasso', 'CCA', 'RF']
-        plugins.append('Custom')
+        ps = PluginSpecs()
+        plugin_list = list(ps.class_names()[module].values())
+        plugin_list.append('Custom')
+        descriptions = list(ps.class_descriptions()[module].values())
+        descriptions.append('User specified plugin')
         if self.m not in self.plugin:
             self.plugin[self.m] = tk.StringVar()
             self.plugin[self.m].set(None)
         self.allWeHearIs = []
-        for p, plug in enumerate(plugins):
+        for p, plug in enumerate(plugin_list):
             rb = tk.Radiobutton(self, text = plug, fg = 'white', bg = self.bg,
                 height = 3, width = 20, var = self.plugin[self.m], 
                 selectcolor = 'black', value = plug,
                     font = self.controller.pages_font)
             rb.grid(column = 5+ (p%2 != 0), row = int(p/2)+1)
-            CreateToolTip(rb, text = 'Hello there '+name+' '+plug)
+            CreateToolTip(rb, text = descriptions[p])
             self.allWeHearIs.append(rb)
 
     def module_out(self, name):
