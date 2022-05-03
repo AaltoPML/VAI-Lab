@@ -18,7 +18,6 @@ _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 
 class pluginCanvas(tk.Frame):
-
     """ Creates a frame with a canvas and allows to upload a pipeline and 
     specify the plugins used in each module."""
     
@@ -207,6 +206,7 @@ class pluginCanvas(tk.Frame):
         name = self.canvas.itemcget('t'+str(self.m), 'text')
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
         ps = PluginSpecs()
+        ps.print(ps.class_names())
         plugin_list = list(ps.class_names()[module].values())
         plugin_list.append('Custom')
         descriptions = list(ps.class_descriptions()[module].values())

@@ -17,7 +17,7 @@
             <coordinates>
                 [(184,155),2,{0:'d0-u2'}]
             </coordinates>
-            <plugin type="Lasso" />
+            <plugin type="Regression" />
         </Modelling>
         <UserFeedback name="User Feetback">
             <relationships>

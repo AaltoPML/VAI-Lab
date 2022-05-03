@@ -620,8 +620,8 @@ class aidCanvas(tk.Frame):
         self.save_file()
         
     def save_file(self):
-        
-        if self.save_path == '':
+        print(self.save_path)
+        if self.save_path == '' or self.save_path is None:
             self.save_path = asksaveasfile(defaultextension = '.xml', filetypes = 
                                       [('XML file', '.xml'), 
                                        ('All Files', '*.*')])
@@ -706,7 +706,7 @@ class aidCanvas(tk.Frame):
                                    defaultextension = '.xml', 
                                    filetypes = [('XML file', '.xml'), 
                                                 ('All Files', '*.*')])
-        if filename is not None:
+        if filename is not None and len(filename) > 0:
             self.reset()
 
             s = Settings()
