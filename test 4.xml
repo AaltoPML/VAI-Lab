@@ -6,38 +6,38 @@
                 <child name="Modelling" />
             </relationships>
             <coordinates>
-                [(300.0, 50), 0, {}]
+                [(300.0,50),0,{}]
             </coordinates>
         </Initialiser>
         <Modelling name="Modelling">
-            <plugin type="" />
             <relationships>
                 <parent name="Initialiser" />
                 <child name="User Feetback" />
             </relationships>
             <coordinates>
-                [(184, 155), 2, {0: 'd0-u2'}]
+                [(184,155),2,{0:'d0-u2'}]
             </coordinates>
+            <plugin type="Lasso" />
         </Modelling>
         <UserFeedback name="User Feetback">
-            <plugin type="" />
             <relationships>
                 <parent name="Modelling" />
                 <child name="InputData" />
             </relationships>
             <coordinates>
-                [(397, 244), 3, {2: 'r2-l3'}]
+                [(397,244),3,{2:'r2-l3'}]
             </coordinates>
+            <plugin type="CCA" />
         </UserFeedback>
         <InputData name="InputData">
-            <plugin type="" />
             <relationships>
                 <parent name="User Feetback" />
                 <child name="Output" />
             </relationships>
             <coordinates>
-                [(231, 370), 4, {3: 'd3-u4'}]
+                [(231,370),4,{3:'d3-u4'}]
             </coordinates>
+            <plugin type="MLP" />
         </InputData>
         <Output name="Output">
             <plugin type="" />
@@ -45,7 +45,7 @@
                 <parent name="InputData" />
             </relationships>
             <coordinates>
-                [(300.0, 550), 1, {4: 'd4-u1'}]
+                [(300.0,550),1,{4:'d4-u1'}]
             </coordinates>
         </Output>
     </pipeline>
