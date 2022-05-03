@@ -111,12 +111,15 @@ class PluginSpecs(ast.NodeVisitor):
 
     def class_names(self):
         return self.get_option_specs("_PLUGIN_CLASS_NAME")
-    
+
     def class_descriptions(self):
         return self.get_option_specs("_PLUGIN_CLASS_DESCRIPTION")
-    
+
     def required_settings(self):
         return self.get_option_specs("_PLUGIN_REQUIRED_SETTINGS")
+
+    def optional_settings(self):
+        return self.get_option_specs("_PLUGIN_OPTIONAL_SETTINGS")
 
     def print(self, value):
         from pprint import PrettyPrinter
