@@ -37,7 +37,7 @@
             <coordinates>
                 [(231,370),4,{3:'d3-u4'}]
             </coordinates>
-            <plugin type="MLP" />
+            <plugin type="RF" />
         </InputData>
         <Output name="Output">
             <plugin type="" />
