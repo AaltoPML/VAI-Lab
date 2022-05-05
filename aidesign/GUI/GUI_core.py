@@ -79,7 +79,7 @@ class GUI(tk.Tk):
                     \nAvailable methods are: \
                     \n  - {1}"\
                     .format(ui, ",\n  - ".join(
-                        [i for i in self._plugin_specs.get_all_available_plugin_names()])))
+                        [i for i in self._plugin_specs.available_plugin_names])))
                 exit(1)
 
     def _append_to_output(self, key:str, value:any):
