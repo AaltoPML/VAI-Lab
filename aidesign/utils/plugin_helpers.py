@@ -109,6 +109,10 @@ class PluginSpecs(ast.NodeVisitor):
         return self.get_option_specs("_PLUGIN_CLASS_DESCRIPTION")
 
     @property
+    def optional_settings(self):
+        return self.get_option_specs("_PLUGIN_OPTIONAL_SETTINGS")
+
+    @property
     def available_plugin_names(self):
         names = self.names
         output = []
