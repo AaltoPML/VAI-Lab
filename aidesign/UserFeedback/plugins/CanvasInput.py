@@ -11,7 +11,7 @@ import math
 
 _PLUGIN_CLASS_NAME = "CanvasInput"
 _PLUGIN_CLASS_DESCRIPTION = "Method of user feedback for state-action pairs"
-_PLUGIN_READABLE_NAMES = {"canvas","state-action","robot"}
+_PLUGIN_READABLE_NAMES = {"canvas":"default","state-action":"alias","robot":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"class_list":"list"}
 _PLUGIN_OPTIONAL_SETTINGS = {}

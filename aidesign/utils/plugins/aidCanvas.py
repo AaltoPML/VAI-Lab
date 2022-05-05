@@ -11,7 +11,7 @@ from aidesign.Settings.Settings_core import Settings
 
 _PLUGIN_CLASS_NAME = "aidCanvas"
 _PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules"
-_PLUGIN_READABLE_NAMES = {"aid_canvas","aidCanvas","aid","AID"}
+_PLUGIN_READABLE_NAMES = {"aid_canvas":"default","aidCanvas":"alias","aid":"alias","AID":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None,}
 _PLUGIN_REQUIRED_SETTINGS = {}

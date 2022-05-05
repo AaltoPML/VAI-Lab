@@ -12,7 +12,7 @@ from aidesign.utils.plugin_helpers import PluginSpecs
 
 _PLUGIN_CLASS_NAME = "pluginCanvas"
 _PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of plugins"
-_PLUGIN_READABLE_NAMES = {"plugin_canvas","pluginCanvas","plugin canvas"}
+_PLUGIN_READABLE_NAMES = {"plugin_canvas":"default","pluginCanvas":"alias","plugin canvas":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None}
 _PLUGIN_REQUIRED_SETTINGS = {}
@@ -29,6 +29,7 @@ class pluginCanvas(tk.Frame):
         super().__init__(parent, bg = parent['bg'])
         self.bg = parent['bg']
         self.controller = controller
+        self.s = Settings()
         
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
@@ -207,10 +208,10 @@ class pluginCanvas(tk.Frame):
         name = self.canvas.itemcget('t'+str(self.m), 'text')
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
         ps = PluginSpecs()
-        ps.print(ps.class_names())
-        plugin_list = list(ps.class_names()[module].values())
+        ps.print(ps.class_names)
+        plugin_list = list(ps.class_names[module].values())
         plugin_list.append('Custom')
-        descriptions = list(ps.class_descriptions()[module].values())
+        descriptions = list(ps.class_descriptions[module].values())
         descriptions.append('User specified plugin')
         if self.m not in self.plugin:
             self.plugin[self.m] = tk.StringVar()
@@ -385,7 +386,6 @@ class pluginCanvas(tk.Frame):
         
         self.reset()
 
-        self.s = Settings()
         self.s.load_XML(filename)
         self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
