@@ -326,12 +326,12 @@ class MainPage(tk.Frame):
                 # refill second treeview
                 self.tree[1]['columns'] = list(np.arange(data.shape[1]))
                 # Format columns
-                self.tree[1].column("#0", width = 50)
+                self.tree[1].column("#0", width = self.controller.pages_font.measure('0'*3)+20, 
+                        minwidth = 0, stretch=tk.NO)
                 for n, cl in enumerate(self.tree[1]['columns']):
                     self.tree[1].column(
                         cl, width = int(
-                            self.controller.pages_font.measure(str(cl)))+20, 
-                        minwidth = 50, anchor = tk.CENTER)
+                            self.controller.pages_font.measure(str(cl)*5))+20, anchor = tk.CENTER, stretch=tk.NO)
                         
                 # Headings
                 self.tree[1].heading("#0", text = '', anchor = tk.CENTER)
@@ -341,10 +341,10 @@ class MainPage(tk.Frame):
                 for n,row in enumerate(data):
                     if n%2 == 0:
                         self.tree[1].insert(parent = '', index = 'end', iid = n, text = n, 
-                                         values = tuple(row), tags = ('even',))
+                                         values = tuple(np.around(row, 3)), tags = ('even',))
                     else:
                         self.tree[1].insert(parent = '', index = 'end', iid = n, text = n, 
-                                         values = tuple(row), tags = ('odd',))
+                                         values = tuple(np.around(row, 3)), tags = ('odd',))
             else:
                 self.resetTree(self.tree[1])
                 self.tree[1].heading("#0", text = 'No variable selected for preview.', anchor = tk.CENTER)
