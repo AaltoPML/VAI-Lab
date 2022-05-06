@@ -2,6 +2,7 @@ import tkinter as tk
 import os
 from PIL import Image, ImageTk
 from tkinter import messagebox, ttk
+import numpy as np
 
 from tkinter.filedialog import askopenfilename, askdirectory
 from scipy.io import loadmat
@@ -320,8 +321,37 @@ class MainPage(tk.Frame):
             if len(self.tree[0].item(treerow,"values")) > 1:
                 data = d[self.tree[0].item(treerow,"values")[0]]
                 print(self.tree[0].item(treerow,"values")[0])
-                # for row in data:
-                #     print(row)
+                
+                self.resetTree(self.tree[1])
+                # refill second treeview
+                self.tree[1]['columns'] = list(np.arange(data.shape[1]))
+                # Format columns
+                self.tree[1].column("#0", width = 50)
+                for n, cl in enumerate(self.tree[1]['columns']):
+                    self.tree[1].column(
+                        cl, width = int(
+                            self.controller.pages_font.measure(str(cl)))+20, 
+                        minwidth = 50, anchor = tk.CENTER)
+                        
+                # Headings
+                self.tree[1].heading("#0", text = '', anchor = tk.CENTER)
+                for cl in self.tree[1]['columns']:
+                    self.tree[1].heading(cl, text = cl, anchor = tk.CENTER)
+                
+                for n,row in enumerate(data):
+                    if n%2 == 0:
+                        self.tree[1].insert(parent = '', index = 'end', iid = n, text = n, 
+                                         values = tuple(row), tags = ('even',))
+                    else:
+                        self.tree[1].insert(parent = '', index = 'end', iid = n, text = n, 
+                                         values = tuple(row), tags = ('odd',))
+            else:
+                self.resetTree(self.tree[1])
+                self.tree[1].heading("#0", text = 'No variable selected for preview.', anchor = tk.CENTER)
+
+    def resetTree(self,tree):
+        tree.delete(*tree.get_children())
+        tree["columns"] = ()
 
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
