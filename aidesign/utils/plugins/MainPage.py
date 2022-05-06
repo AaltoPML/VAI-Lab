@@ -240,9 +240,11 @@ class MainPage(tk.Frame):
         style.configure(
             "Treeview", background = 'white', foreground = 'white', 
             rowheight = 25, fieldbackground = 'white', 
-            font = self.controller.pages_font)
+            # font = self.controller.pages_font)
+            )
         style.configure("Treeview.Heading", 
-                        font = self.controller.pages_font)
+                        # font = self.controller.pages_font)
+                        )
         style.map('Treeview', background = [('selected', 'grey')])
         
         self.tree = []
@@ -256,7 +258,7 @@ class MainPage(tk.Frame):
         # self.tree2.pack(expand = True, side = tk.LEFT, fill = tk.BOTH)
         tk.Button(
             frame2, text = 'Finish', fg = 'black', 
-            height = 2, width = 10, font = self.controller.pages_font, 
+            height = 2, width = 10, #font = self.controller.pages_font, 
             command = self.check_quit).pack(side = tk.RIGHT, anchor = tk.W)
 
         tree_frame1.grid(column=0, row=1, sticky="nsew")
@@ -284,12 +286,12 @@ class MainPage(tk.Frame):
             tree['columns'] = columns[1:]
                 
             # Format columns
-            tree.column("#0", width = 50)
-            for n, cl in enumerate(tree['columns']):
+            tree.column("#0", width = 50, stretch=tk.NO)
+            for cl in tree['columns']:
                 tree.column(
                     cl, width = int(
-                        self.controller.pages_font.measure(str(cl)))+20, 
-                    minwidth = 50, anchor = tk.CENTER)
+                        self.controller.pages_font.measure(str(cl)))+30, 
+                    minwidth = 50, anchor = tk.CENTER, stretch=tk.NO)
                     
             # Headings
             tree.heading("#0", text = columns[0], anchor = tk.CENTER)
@@ -331,7 +333,9 @@ class MainPage(tk.Frame):
                 for n, cl in enumerate(self.tree[1]['columns']):
                     self.tree[1].column(
                         cl, width = int(
-                            self.controller.pages_font.measure(str(cl)*5))+20, anchor = tk.CENTER, stretch=tk.NO)
+                            self.controller.pages_font.measure(str(cl)*5))+20, 
+                            anchor = tk.CENTER, 
+                            stretch=tk.NO)
                         
                 # Headings
                 self.tree[1].heading("#0", text = '', anchor = tk.CENTER)
