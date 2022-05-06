@@ -267,7 +267,7 @@ class MainPage(tk.Frame):
 
     def add_treeview(self,frame,data,columns):
         """ Add a treeview"""
-        
+
         tree_scrollx = tk.Scrollbar(frame, orient = 'horizontal')
         tree_scrollx.pack(side = tk.BOTTOM, fill = tk.BOTH)
         tree_scrolly = tk.Scrollbar(frame)
@@ -320,6 +320,7 @@ class MainPage(tk.Frame):
         self.newWindow.destroy()
 
     def OnClick(self,event,d):
+        """ On data variable click, updates variable display. """
         if self.tree[0].identify_column(event.x) == '#1':
             treerow = self.tree[0].identify_row(event.y)
             if len(self.tree[0].item(treerow,"values")) > 1:
@@ -349,8 +350,11 @@ class MainPage(tk.Frame):
                     else:
                         self.tree[1].insert(parent = '', index = 'end', iid = n, text = n, 
                                          values = tuple(np.around(row, 3)), tags = ('odd',))
+                self.tree[1].event_generate("<<ThemeChanged>>")
             else:
                 self.resetTree(self.tree[1])
+                self.tree[1].column("#0", width = self.controller.pages_font.measure('No variable selected for preview.')+20, 
+                        minwidth = 0, stretch=tk.NO)
                 self.tree[1].heading("#0", text = 'No variable selected for preview.', anchor = tk.CENTER)
 
     def resetTree(self,tree):
