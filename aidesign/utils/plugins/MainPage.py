@@ -216,12 +216,23 @@ class MainPage(tk.Frame):
         self.newWindow.grid_rowconfigure(0, weight=1)
         self.newWindow.grid_columnconfigure(0, weight=1)
         
-        tk.Label(self.newWindow,
-              text ="Select variables to import", anchor = tk.N, 
-              justify=tk.LEFT).grid(row=0,column=0, columnspan=16)
-        tk.Label(self.newWindow,
-              text ="Variables in "+filename, anchor = tk.N, 
-              justify=tk.LEFT).grid(row=1,column=0, columnspan=16)
+        frame1 = tk.Frame(self.newWindow)
+        tree_frame1 = tk.Frame(self.newWindow, height=300,width=300)
+        # tree_frame1.grid(row = 2, column = 0, columnspan = 8, rowspan = 25)
+        tree_frame2 = tk.Frame(self.newWindow, height=300,width=300)
+        # tree_frame2.grid(row = 2, column = 3, columnspan = 8, rowspan = 25)
+        frame2 = tk.Frame(self.newWindow)
+        frame3 = tk.Frame(self.newWindow)
+        
+        sizegrip=ttk.Sizegrip(frame3)     # put a sizegrip widget on the southeast corner of the window
+        sizegrip.pack(side = tk.RIGHT, anchor = tk.SE)
+
+        tk.Label(frame1,
+              text ="Select variables to import", 
+              justify=tk.LEFT).pack()
+        tk.Label(frame1,
+              text ="Variables in "+filename, 
+              justify=tk.LEFT).pack()
         
         #Treeview 1
         style = ttk.Style()
@@ -232,26 +243,28 @@ class MainPage(tk.Frame):
         style.configure("Treeview.Heading", 
                         font = self.controller.pages_font)
         style.map('Treeview', background = [('selected', 'grey')])
-
-        tree_frame1 = tk.Frame(self.newWindow)
-        tree_frame1.grid(row = 2, column = 0, columnspan = 8, rowspan = 25)
-        tree_frame2 = tk.Frame(self.newWindow)
-        tree_frame2.grid(row = 2, column = 3, columnspan = 8, rowspan = 25)
         
         self.tree = []
-        self.add_treeview(tree_frame1, data)
-        self.add_treeview(tree_frame2, None)
+        columns = ['Import', 'Name', 'Size', 'Class']
+        self.add_treeview(tree_frame1, data, columns)
+        self.add_treeview(tree_frame2, None, [])
         # self.tree2 = ttk.Treeview(
         #     tree_frame1, 
         #     yscrollcommand = tree_scrolly.set, 
         #     xscrollcommand = tree_scrollx.set)
         # self.tree2.pack(expand = True, side = tk.LEFT, fill = tk.BOTH)
         tk.Button(
-            self.newWindow, text = 'Finish', fg = 'black', 
+            frame2, text = 'Finish', fg = 'black', 
             height = 2, width = 10, font = self.controller.pages_font, 
-            command = self.check_quit).grid(column = 3, row = 27, sticky = tk.SW)
+            command = self.check_quit).pack(side = tk.RIGHT, anchor = tk.W)
 
-    def add_treeview(self, frame, data):
+        tree_frame1.grid(column=0, row=1, sticky="nsew")
+        tree_frame2.grid(column=1, row=1, sticky="nsew")
+        frame1.grid(column=0, row=0, columnspan=2, sticky="nw")
+        frame2.grid(column=0, row=2, columnspan=2, sticky="n")
+        frame3.grid(column=0, row=3, columnspan=2, sticky="se")
+
+    def add_treeview(self,frame,data,columns):
         """ Add a treeview"""
         
         tree_scrollx = tk.Scrollbar(frame, orient = 'horizontal')
@@ -263,51 +276,52 @@ class MainPage(tk.Frame):
             yscrollcommand = tree_scrolly.set, 
             xscrollcommand = tree_scrollx.set))
         self.tree[-1].pack(expand = True, side = tk.LEFT, fill = tk.BOTH)
-        
+        self.fill_treeview(self.tree[-1], data, columns)
+
+    def fill_treeview(self,tree,data,columns):
         if data is not None:
-            columns = ['Import', 'Name', 'Size', 'Class']
-            self.tree[-1]['columns'] = columns[1:]
+            tree['columns'] = columns[1:]
                 
             # Format columns
-            self.tree[-1].column("#0", width = 50)
-            for n, cl in enumerate(self.tree[-1]['columns']):
-                self.tree[-1].column(
+            tree.column("#0", width = 50)
+            for n, cl in enumerate(tree['columns']):
+                tree.column(
                     cl, width = int(
                         self.controller.pages_font.measure(str(cl)))+20, 
                     minwidth = 50, anchor = tk.CENTER)
                     
             # Headings
-            self.tree[-1].heading("#0", text = columns[0], anchor = tk.CENTER)
-            for cl in self.tree[-1]['columns']:
-                self.tree[-1].heading(cl, text = cl, anchor = tk.CENTER)
+            tree.heading("#0", text = columns[0], anchor = tk.CENTER)
+            for cl in tree['columns']:
+                tree.heading(cl, text = cl, anchor = tk.CENTER)
             
             variables = [key for key in data.keys() if (key[:1] != '__') and (key[-2:] != '__')]
             for n, var in enumerate(variables):
                 if n%2 == 0:
-                    self.tree[-1].insert(parent = '', index = 'end', iid = n, text = n, 
-                                     values = (var, data[var].shape, type(data[var])), tags = ('even',))
+                    tree.insert(parent = '', index = 'end', iid = n, text = n, 
+                                     values = (var, data[var].shape, data[var].dtype), tags = ('even',))
                 else:
-                    self.tree[-1].insert(parent = '', index = 'end', iid = n, text = n, 
-                                     values = (var, data[var].shape, type(data[var])), tags = ('odd',))
-            
-            # self.tree[-1].tag_configure('odd', foreground = 'black', 
-            #                             background='#E8E8E8')
-            # self.tree[-1].tag_configure('even', foreground = 'black', 
-            #                             background='#DFDFDF')
+                    tree.insert(parent = '', index = 'end', iid = n, text = n, 
+                                     values = (var, data[var].shape, data[var].dtype), tags = ('odd',))
         
             # Define double-click on row action
             if len(self.tree) == 1:
-                self.tree[-1].bind("<Button-1>", self.OnClick)
+                tree.bind("<Button-1>", lambda event, d = data: self.OnClick(event, d))
         else:
-            self.tree[-1].heading("#0", text = 'No variable selected for preview.', anchor = tk.CENTER)
+            tree.heading("#0", text = 'No variable selected for preview.', anchor = tk.CENTER)
 
     def check_quit(self):
         """ Saves the information and closes the window """
         self.newWindow.destroy()
 
-    def OnClick(self,event):
+    def OnClick(self,event,d):
         if self.tree[0].identify_column(event.x) == '#1':
-            print(self.tree[0].identify_row(event.y))
+            treerow = self.tree[0].identify_row(event.y)
+            if len(self.tree[0].item(treerow,"values")) > 1:
+                data = d[self.tree[0].item(treerow,"values")[0]]
+                print(self.tree[0].item(treerow,"values")[0])
+                # for row in data:
+                #     print(row)
 
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
