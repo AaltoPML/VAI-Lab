@@ -234,7 +234,7 @@ class pluginCanvas(tk.Frame):
         # Window options
         self.newWindow.title(self.plugin[self.m].get()+' plugin options')
         script_dir = os.path.dirname(__file__)
-        self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
+        self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
             file = os.path.join(os.path.join(
                 script_dir, 
                 'resources', 
@@ -260,7 +260,9 @@ class pluginCanvas(tk.Frame):
         self.entry[0].focus()
 
     def on_return_entry(self, r):
-        print(self.entry[r].get())
+        """ Changes focus to the next available entry 
+        : param r: int type of entry id.
+        """
         if r < len(self.entry)-1:
             self.entry[r+1].focus()
         else:

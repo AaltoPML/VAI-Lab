@@ -1,8 +1,10 @@
 import tkinter as tk
 import os
 from PIL import Image, ImageTk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
+
 from tkinter.filedialog import askopenfilename, askdirectory
+from scipy.io import loadmat
 
 _PLUGIN_CLASS_NAME = "MainPage"
 _PLUGIN_CLASS_DESCRIPTION = "Splash and Menu page used as GUI entry-point"
@@ -52,14 +54,23 @@ class MainPage(tk.Frame):
                             columnspan = 4)
         
         tk.Button(self,
+                    text = 'Data file',
+                    fg = 'white',
+                    font = controller.title_font, 
+                    bg = parent['bg'],
+                    height = 3,
+                    width = 20, 
+                    command = self.upload_data_file,
+                    ).grid(column = 0, row = 12)
+        tk.Button(self,
                     text = 'Data folder',
                     fg = 'white',
                     font = controller.title_font, 
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
-                    command = self.upload_data,
-                    ).grid(column = 0, row = 12)
+                    command = self.upload_data_folder,
+                    ).grid(column = 1, row = 12)
         self.controller.Datalabel = tk.Label(self, 
                                 text = 'Incomplete',
                                 pady= 10,
@@ -134,25 +145,35 @@ class MainPage(tk.Frame):
         self.controller.Plugin.trace('w', self.trace_Plugin)
 
     def trace_XML(self,*args):
+        """ Checks if XML variable has been updated
+        """
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
             if self.controller.Data.get():
                 self.PluginButton.config(state = 'normal')
 
     def trace_Data(self,*args):
+        """ Checks if Data variable has been updated
+        """
         if self.controller.Data.get():
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
             if self.controller.XML.get():
                 self.PluginButton.config(state = 'normal')
-                
+
     def trace_Plugin(self,*args):
+        """ Checks if Plugin variable has been updated
+        """
         if self.controller.Plugin.get():
             self.RunButton.config(state = 'normal')
 
-    def canvas(self,name):
+    def canvas(self,name: str):
+        """ Shows the canvas frame.
+        :param name: string type of name of desired canvas.
+        """
         self.controller._show_frame(name)
-    
+
     def upload_xml(self):
+        """ Indicates the XML file containng the desired pipeline """
         filename = askopenfilename(initialdir = os.getcwd(), 
                                    title = 'Select a file', 
                                    defaultextension = '.xml', 
@@ -162,7 +183,110 @@ class MainPage(tk.Frame):
             self.controller._append_to_output("xml_filename",filename)
             self.controller.XML.set(True)
 
-    def upload_data(self):
+    def upload_data_file(self):
+        """ Loads a data file containing the data required for the pipeline """
+        filename = askopenfilename(initialdir = os.getcwd(), 
+                                   title = 'Select a file', 
+                                   defaultextension = '.mat', 
+                                   filetypes = [('mat file', '.mat'), 
+                                                ('All Files', '*.*')])
+        
+        if filename is not None and len(filename) > 0:
+            self.controller.Data.set(True)
+            if filename.lower().endswith(('.mat')):
+                data = loadmat(filename)
+                self.data_loading_window(data)
+
+    def data_loading_window(self,data):
+        
+        self.newWindow = tk.Toplevel(self.controller)
+        # Window options
+        self.newWindow.title('Data importing helper')
+        script_dir = os.path.dirname(__file__)
+        self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
+            file = os.path.join(os.path.join(
+                script_dir, 
+                'resources', 
+                'Assets', 
+                'AIDIcon.ico'))))
+        self.newWindow.geometry("700x400")
+        
+        tk.Label(self.newWindow,
+              text ="Select variables to import", anchor = tk.W, 
+              justify=tk.LEFT).grid(row=0,column=0, columnspan=16)
+        
+        #Treeview 1
+        style = ttk.Style()
+        style.configure(
+            "Treeview", background = 'white', foreground = 'white', 
+            rowheight = 25, fieldbackground = 'white', 
+            font = self.controller.pages_font)
+        style.configure("Treeview.Heading", 
+                        font = self.controller.pages_font)
+        style.map('Treeview', background = [('selected', 'grey')])
+
+        tree_frame1 = tk.Frame(self.newWindow)
+        tree_frame1.grid(row = 1, column = 0, columnspan = 16, rowspan = 10)
+        
+        tree_scrollx = tk.Scrollbar(tree_frame1, orient = 'horizontal')
+        tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
+        tree_scrolly = tk.Scrollbar(tree_frame1)
+        tree_scrolly.pack(side = tk.RIGHT, fill = tk.Y)
+        
+        self.tree1 = ttk.Treeview(
+            tree_frame1, 
+            yscrollcommand = tree_scrolly.set, 
+            xscrollcommand = tree_scrollx.set)
+        self.tree1.pack()
+        
+        tree_scrollx.config(command = self.tree1.xview)
+        tree_scrolly.config(command = self.tree1.yview)
+        
+        self.tree1['columns'] = ['Name', 'Size', 'Class']
+            
+        # Format columns
+        self.tree1.column("#0", width = 50)
+        for n, cl in enumerate(self.tree1['columns']):
+            self.tree1.column(
+                cl, width = int(
+                    self.controller.pages_font.measure(str(cl)))+20, 
+                minwidth = 50, anchor = tk.CENTER)
+                
+        # Headings
+        self.tree1.heading("#0", text = "Import", anchor = tk.CENTER)
+        for cl in self.tree1['columns']:
+            self.tree1.heading(cl, text = cl, anchor = tk.CENTER)
+        
+        variables = [key for key in data.keys() if (key[:1] != '__') and (key[-2:] != '__')]
+        for n, var in enumerate(variables):
+            if n%2 == 0:
+                self.tree1.insert(parent = '', index = 'end', iid = n, text = n, 
+                                 values = (var, data[var].shape, type(data[var])), tags = ('even',))
+            else:
+                self.tree1.insert(parent = '', index = 'end', iid = n, text = n, 
+                                 values = (var, data[var].shape, type(data[var])), tags = ('odd',))
+        
+        self.tree1.tag_configure('odd', foreground = 'black', 
+                                    background='#E8E8E8')
+        self.tree1.tag_configure('even', foreground = 'black', 
+                                    background='#DFDFDF')
+    
+        # Define double-click on row action
+        self.tree1.bind("<Button-1>", self.OnClick)
+    
+        self.tree2 = ttk.Treeview(
+            tree_frame1, 
+            yscrollcommand = tree_scrolly.set, 
+            xscrollcommand = tree_scrollx.set)
+        self.tree2.pack()
+        
+    def OnClick(self,event):
+        if self.tree1.identify_column(event.x) == '#1':
+            print(self.tree1.identify_row(event.y))
+
+    def upload_data_folder(self):
+        """ Stores the directory containing the data that will be later loaded 
+        """
         filename = askdirectory(initialdir = os.getcwd(),
                                     title = 'Select a folder',
                                     mustexist = True)
