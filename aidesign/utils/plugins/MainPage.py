@@ -214,24 +214,26 @@ class MainPage(tk.Frame):
                 'Assets', 
                 'AIDIcon.ico'))))
         self.newWindow.geometry("700x400")
-        self.newWindow.grid_rowconfigure(0, weight=1)
+        self.newWindow.grid_rowconfigure(2, weight=1)
         self.newWindow.grid_columnconfigure(0, weight=1)
+        self.newWindow.grid_columnconfigure(1, weight=1)
         
         frame1 = tk.Frame(self.newWindow)
+        frame2 = tk.Frame(self.newWindow)
         tree_frame1 = tk.Frame(self.newWindow, height=300,width=300)
         # tree_frame1.grid(row = 2, column = 0, columnspan = 8, rowspan = 25)
         tree_frame2 = tk.Frame(self.newWindow, height=300,width=300)
         # tree_frame2.grid(row = 2, column = 3, columnspan = 8, rowspan = 25)
-        frame2 = tk.Frame(self.newWindow)
         frame3 = tk.Frame(self.newWindow)
+        frame4 = tk.Frame(self.newWindow)
         
-        sizegrip=ttk.Sizegrip(frame3)     # put a sizegrip widget on the southeast corner of the window
+        sizegrip=ttk.Sizegrip(frame4)     # put a sizegrip widget on the southeast corner of the window
         sizegrip.pack(side = tk.RIGHT, anchor = tk.SE)
 
         tk.Label(frame1,
               text ="Select variables to import", 
               justify=tk.LEFT).pack()
-        tk.Label(frame1,
+        tk.Label(frame2,
               text ="Variables in "+filename, 
               justify=tk.LEFT).pack()
         
@@ -251,40 +253,40 @@ class MainPage(tk.Frame):
         columns = ['Import', 'Name', 'Size', 'Class']
         self.add_treeview(tree_frame1, data, columns)
         self.add_treeview(tree_frame2, None, [])
-        # self.tree2 = ttk.Treeview(
-        #     tree_frame1, 
-        #     yscrollcommand = tree_scrolly.set, 
-        #     xscrollcommand = tree_scrollx.set)
-        # self.tree2.pack(expand = True, side = tk.LEFT, fill = tk.BOTH)
         tk.Button(
-            frame2, text = 'Finish', fg = 'black', 
+            frame3, text = 'Finish', fg = 'black', 
             height = 2, width = 10, #font = self.controller.pages_font, 
             command = self.check_quit).pack(side = tk.RIGHT, anchor = tk.W)
 
-        tree_frame1.grid(column=0, row=1, sticky="nsew")
-        tree_frame2.grid(column=1, row=1, sticky="nsew")
+        tree_frame1.grid(column=0, row=2, sticky="nsew")
+        tree_frame2.grid(column=1, row=2, sticky="nsew")
         frame1.grid(column=0, row=0, columnspan=2, sticky="nw")
-        frame2.grid(column=0, row=2, columnspan=2, sticky="n")
-        frame3.grid(column=0, row=3, columnspan=2, sticky="se")
+        frame2.grid(column=0, row=1, columnspan=2, sticky="nw")
+        frame3.grid(column=0, row=3, columnspan=2, sticky="n")
+        frame4.grid(column=0, row=4, columnspan=2, sticky="se")
 
     def add_treeview(self,frame,data,columns):
         """ Add a treeview"""
         
         tree_scrollx = tk.Scrollbar(frame, orient = 'horizontal')
-        tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
+        tree_scrollx.pack(side = tk.BOTTOM, fill = tk.BOTH)
         tree_scrolly = tk.Scrollbar(frame)
-        tree_scrolly.pack(side = tk.RIGHT, fill = tk.Y)
+        tree_scrolly.pack(side = tk.RIGHT, fill = tk.BOTH)
         self.tree.append(ttk.Treeview(
             frame, 
             yscrollcommand = tree_scrolly.set, 
             xscrollcommand = tree_scrollx.set))
+        tree_scrollx.config(command = self.tree[-1].xview)
+        tree_scrolly.config(command = self.tree[-1].yview)
+        self.tree[-1].pack_propagate(0)
+        
         self.tree[-1].pack(expand = True, side = tk.LEFT, fill = tk.BOTH)
         self.fill_treeview(self.tree[-1], data, columns)
 
     def fill_treeview(self,tree,data,columns):
         if data is not None:
             tree['columns'] = columns[1:]
-                
+
             # Format columns
             tree.column("#0", width = 50, stretch=tk.NO)
             for cl in tree['columns']:
@@ -292,7 +294,7 @@ class MainPage(tk.Frame):
                     cl, width = int(
                         self.controller.pages_font.measure(str(cl)))+30, 
                     minwidth = 50, anchor = tk.CENTER, stretch=tk.NO)
-                    
+
             # Headings
             tree.heading("#0", text = columns[0], anchor = tk.CENTER)
             for cl in tree['columns']:
@@ -306,7 +308,7 @@ class MainPage(tk.Frame):
                 else:
                     tree.insert(parent = '', index = 'end', iid = n, text = n, 
                                      values = (var, data[var].shape, data[var].dtype), tags = ('odd',))
-        
+
             # Define double-click on row action
             if len(self.tree) == 1:
                 tree.bind("<Button-1>", lambda event, d = data: self.OnClick(event, d))
@@ -322,8 +324,7 @@ class MainPage(tk.Frame):
             treerow = self.tree[0].identify_row(event.y)
             if len(self.tree[0].item(treerow,"values")) > 1:
                 data = d[self.tree[0].item(treerow,"values")[0]]
-                print(self.tree[0].item(treerow,"values")[0])
-                
+                # Reset treeview
                 self.resetTree(self.tree[1])
                 # refill second treeview
                 self.tree[1]['columns'] = list(np.arange(data.shape[1]))
@@ -336,12 +337,11 @@ class MainPage(tk.Frame):
                             self.controller.pages_font.measure(str(cl)*5))+20, 
                             anchor = tk.CENTER, 
                             stretch=tk.NO)
-                        
                 # Headings
                 self.tree[1].heading("#0", text = '', anchor = tk.CENTER)
                 for cl in self.tree[1]['columns']:
                     self.tree[1].heading(cl, text = cl, anchor = tk.CENTER)
-                
+                # Data filling
                 for n,row in enumerate(data):
                     if n%2 == 0:
                         self.tree[1].insert(parent = '', index = 'end', iid = n, text = n, 
