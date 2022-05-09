@@ -34,7 +34,15 @@ class MainPage(tk.Frame):
                                     'AIFRED.png')
                                     ).resize((600, 300))
                                 )
-        self.my_label = tk.Label(self, 
+        
+        self.grid_rowconfigure(tuple(range(3)), weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        
+        frame1 = tk.Frame(self, bg = self.bg)
+        frame2 = tk.Frame(self, bg = self.bg)
+        frame3 = tk.Frame(self, bg = self.bg)
+        
+        self.my_label = tk.Label(frame1, 
                                     image = self.my_img1,
                                     bg = parent['bg'])
 
@@ -45,7 +53,7 @@ class MainPage(tk.Frame):
                             pady = 10,
                             sticky = tk.NE)
         
-        my_label = tk.Label(self, 
+        my_label = tk.Label(frame2, 
                                 text = 
                                 'Indicate the data folder and define the pipeline.',
                                 pady= 10,
@@ -56,7 +64,7 @@ class MainPage(tk.Frame):
                             row = 11,
                             columnspan = 4)
         
-        tk.Button(self,
+        tk.Button(frame3,
                     text = 'Data file',
                     fg = 'white',
                     font = controller.title_font, 
@@ -65,7 +73,7 @@ class MainPage(tk.Frame):
                     width = 20, 
                     command = self.upload_data_file,
                     ).grid(column = 0, row = 12)
-        tk.Button(self,
+        tk.Button(frame3,
                     text = 'Data folder',
                     fg = 'white',
                     font = controller.title_font, 
@@ -74,7 +82,7 @@ class MainPage(tk.Frame):
                     width = 20, 
                     command = self.upload_data_folder,
                     ).grid(column = 1, row = 12)
-        self.controller.Datalabel = tk.Label(self, 
+        self.controller.Datalabel = tk.Label(frame3, 
                                 text = 'Incomplete',
                                 pady= 10,
                                 padx= 10,
@@ -84,7 +92,7 @@ class MainPage(tk.Frame):
         self.controller.Datalabel.grid(column = 2,
                             row = 12)
         
-        tk.Button(self,
+        tk.Button(frame3,
                     text = 'Interact with canvas',
                     fg = 'white',
                     font = controller.title_font,
@@ -94,7 +102,7 @@ class MainPage(tk.Frame):
                     command = lambda: self.canvas("aidCanvas")
                     ).grid(column = 0, row = 13)
 
-        tk.Button(self,
+        tk.Button(frame3,
                     text = 'Upoad XML file',
                     fg = 'white',
                     font = controller.title_font, 
@@ -104,7 +112,7 @@ class MainPage(tk.Frame):
                     command = self.upload_xml,
                     ).grid(column = 1, row = 13)
         
-        self.controller.XMLlabel = tk.Label(self, 
+        self.controller.XMLlabel = tk.Label(frame3, 
                                 text = 'Incomplete',
                                 pady= 10,
                                 padx= 10,
@@ -113,7 +121,7 @@ class MainPage(tk.Frame):
                                 fg = 'white')
         self.controller.XMLlabel.grid(column = 2,
                             row = 13)
-        self.PluginButton = tk.Button(self,
+        self.PluginButton = tk.Button(frame3,
                     text = 'Modules plugins',
                     fg = 'white',
                     font = controller.title_font, 
@@ -124,7 +132,7 @@ class MainPage(tk.Frame):
                     command = lambda: self.canvas("pluginCanvas"),
                     )
         self.PluginButton.grid(column = 0, row = 14)
-        self.RunButton = tk.Button(self,
+        self.RunButton = tk.Button(frame3,
                     text = 'Run Pipeline',
                     fg = 'white',
                     font = controller.title_font, 
@@ -146,7 +154,11 @@ class MainPage(tk.Frame):
         self.controller.XML.trace('w', self.trace_XML)
         self.controller.Data.trace('w', self.trace_Data)
         self.controller.Plugin.trace('w', self.trace_Plugin)
-
+        
+        frame1.grid(column=0, row=0, sticky="n")
+        frame2.grid(column=0, row=1, sticky="n")
+        frame3.grid(column=0, row=2, sticky="n")
+        
     def trace_XML(self,*args):
         """ Checks if XML variable has been updated
         """
@@ -195,7 +207,6 @@ class MainPage(tk.Frame):
                                                 ('All Files', '*.*')])
         
         if filename is not None and len(filename) > 0:
-            self.controller.Data.set(True)
             if filename.lower().endswith(('.mat')):
                 data = loadmat(filename)
                 self.data_loading_window(data, filename)
@@ -215,8 +226,7 @@ class MainPage(tk.Frame):
                 'AIDIcon.ico'))))
         self.newWindow.geometry("700x400")
         self.newWindow.grid_rowconfigure(2, weight=1)
-        self.newWindow.grid_columnconfigure(0, weight=1)
-        self.newWindow.grid_columnconfigure(1, weight=1)
+        self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
         
         frame1 = tk.Frame(self.newWindow)
         frame2 = tk.Frame(self.newWindow)
@@ -317,6 +327,7 @@ class MainPage(tk.Frame):
 
     def check_quit(self):
         """ Saves the information and closes the window """
+        self.controller.Data.set(True)
         self.newWindow.destroy()
 
     def OnClick(self,event,d):
