@@ -40,10 +40,10 @@ class Core(Settings):
     def _execute_loop(self, specs):
         try:
             print("\t"*self.loop_level
-                  + specs["type"]
-                  + " loop: "
-                    + "\"{}\"".format(specs["name"])
-                    + " starting...")
+                        + specs["type"]
+                        + " loop: "
+                        + "\"{}\"".format(specs["name"])
+                        + " starting...")
             self.loop_level += 1
             getattr(self, "_execute_{}_loop".format(specs["type"]))(specs)
             self.loop_level -= 1
