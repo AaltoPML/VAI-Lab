@@ -250,7 +250,7 @@ class MainPage(tk.Frame):
         #Treeview 1
         style = ttk.Style()
         style.configure(
-            "Treeview", background = 'white', foreground = 'white', 
+            "Treeview", background = 'white', foreground = 'black', 
             rowheight = 25, fieldbackground = 'white', 
             # font = self.controller.pages_font)
             )
