@@ -58,8 +58,6 @@ class aidCanvas(tk.Frame):
         self.width, self.height = 600, 600
         self.canvas = tk.Canvas(frame1, width=self.width, 
             height=self.height, background="white")
-        # self.canvas.grid(row=0, column=0, columnspan=4, rowspan = 10, 
-        #                  padx = 10, pady = 10, sticky="nsew")
         self.canvas.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=10)
         
         self.canvas.startxy = []
