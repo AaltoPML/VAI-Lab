@@ -103,7 +103,7 @@ class MainPage(tk.Frame):
                     ).grid(column = 0, row = 13)
 
         tk.Button(frame3,
-                    text = 'Upoad XML file',
+                    text = 'Upload XML file',
                     fg = 'white',
                     font = controller.title_font, 
                     bg = parent['bg'],
