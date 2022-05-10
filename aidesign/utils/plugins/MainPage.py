@@ -250,14 +250,18 @@ class MainPage(tk.Frame):
         #Treeview 1
         style = ttk.Style()
         style.configure(
-            "Treeview", background = 'white', foreground = 'black', 
-            rowheight = 25, fieldbackground = 'white', 
+            "Treeview",
+            background = 'white', 
+            foreground = 'black', 
+            rowheight = 25, 
+            fieldbackground = 'white', 
             # font = self.controller.pages_font)
             )
-        style.configure("Treeview.Heading", 
-                        # font = self.controller.pages_font)
-                        )
-        style.map('Treeview', background = [('selected', 'grey')])
+        # style.configure("Treeview.Heading", 
+        #                 # font = self.controller.pages_font)
+        #                 )
+        style.map('Treeview', 
+                  background = [('selected', 'grey')])
         
         self.tree = []
         columns = ['Import', 'Name', 'Size', 'Class']
@@ -288,7 +292,7 @@ class MainPage(tk.Frame):
             xscrollcommand = tree_scrollx.set))
         tree_scrollx.config(command = self.tree[-1].xview)
         tree_scrolly.config(command = self.tree[-1].yview)
-        self.tree[-1].pack_propagate(0)
+        # self.tree[-1].pack_propagate(0)
         
         self.tree[-1].pack(expand = True, side = tk.LEFT, fill = tk.BOTH)
         self.fill_treeview(self.tree[-1], data, columns)
