@@ -207,7 +207,7 @@ class pluginCanvas(tk.Frame):
                 self.id_done.append(self.m)
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
                                                  {},
-                                                 np.array(self.module_list)[self.m == np.array(self.id_mod)][0],
+                                                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
         self.check_quit()
         
@@ -506,7 +506,11 @@ class pluginCanvas(tk.Frame):
         self.canvas.delete(tk.ALL) # Reset canvas
         
         if hasattr(self, 'entry'):
-            self.entry.destroy()
+            if isinstance(self.entry,list):
+                for entry in self.entry:
+                    entry.destroy()
+            else:
+                    self.entry.destroy()
         if hasattr(self, 'entry1'):
             self.entry1.destroy()
         if hasattr(self, 'entry2'):
