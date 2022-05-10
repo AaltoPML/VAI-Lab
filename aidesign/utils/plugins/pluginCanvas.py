@@ -7,7 +7,7 @@ import pandas as pd
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 from tkinter import messagebox
 
-from aidesign.Settings.Settings_core import Settings
+from aidesign.Data.xml_handler import XML_handler
 from aidesign.utils.plugin_helpers import PluginSpecs
 
 _PLUGIN_CLASS_NAME = "pluginCanvas"
@@ -199,7 +199,7 @@ class pluginCanvas(tk.Frame):
     def finnish(self):
         """ Calls function check_quit.
         Before that, it checks if the current module plugins have been changed 
-        and, if so, updates their information in the Settings class.
+        and, if so, updates their information in the XML_handler class.
         """
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None') and \
@@ -400,7 +400,7 @@ class pluginCanvas(tk.Frame):
         
         self.reset()
 
-        self.s = Settings()
+        self.s = XML_handler()
         self.s.load_XML(filename)
         self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules

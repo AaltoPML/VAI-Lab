@@ -3,7 +3,7 @@ from os import path
 from ast import literal_eval
 
 
-class Settings(object):
+class XML_handler(object):
     def __init__(self, filename: str = None):
         """Loads XML file and parses into nested dictionaries
         This module is used as the backbone for all future modules.
@@ -448,9 +448,9 @@ class Settings(object):
 
 # Use case examples:
 # if __name__ == "__main__":
-    # s = Settings("./resources/Hospital.xml")
-    # s = Settings("./resources/example_config.xml")
-    # s = Settings()
+    # s = XML_handler("./resources/Hospital.xml")
+    # s = XML_handler("./resources/example_config.xml")
+    # s = XML_handler()
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")

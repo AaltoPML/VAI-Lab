@@ -7,7 +7,7 @@ import pandas as pd
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 from tkinter import messagebox
 
-from aidesign.Settings.Settings_core import Settings
+from aidesign.Data.xml_handler import XML_handler
 
 _PLUGIN_CLASS_NAME = "aidCanvas"
 _PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules"
@@ -670,7 +670,7 @@ class aidCanvas(tk.Frame):
             # to avoid numpy bug during elementwise comparison of lists 
             loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
 
-            s = Settings()
+            s = XML_handler()
             s.new_config_file(self.save_path.name)
             s.filename = self.save_path.name
             s.append_pipeline_module(self.module_list[0], # Initialiser
@@ -732,7 +732,7 @@ class aidCanvas(tk.Frame):
         if filename is not None:
             self.reset()
 
-            s = Settings()
+            s = XML_handler()
             s.load_XML(filename)
             s._print_pretty(s.loaded_modules)
             modules = s.loaded_modules

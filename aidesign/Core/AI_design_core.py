@@ -1,9 +1,9 @@
 from aidesign.utils.import_helper import import_module
-from aidesign.Settings.Settings_core import Settings
+from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
 
 
-class Core(Settings):
+class Core(XML_handler):
     def __init__(self) -> None:
         super().__init__()
         self.loop_level = 0
