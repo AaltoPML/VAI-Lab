@@ -1,11 +1,13 @@
 from aidesign.utils.import_helper import import_module
 from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
+from aidesign.Data.Data_core import Data
 
 
 class Core(object):
     def __init__(self) -> None:
         self.xml_handler = XML_handler()
+        self.data = Data()
         self.loop_level = 0
 
     def launch(self):
