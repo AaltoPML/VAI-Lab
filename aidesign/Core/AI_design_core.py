@@ -3,9 +3,9 @@ from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
 
 
-class Core(XML_handler):
+class Core(object):
     def __init__(self) -> None:
-        super().__init__()
+        self.xml_handler = XML_handler()
         self.loop_level = 0
 
     def launch(self):
@@ -20,7 +20,7 @@ class Core(XML_handler):
             self.run()
 
     def load_config_file(self, filename: str):
-        self.load_XML(filename)
+        self.xml_handler.load_XML(filename)
 
     def _execute_module(self, specs):
         """Executes named module with given options
@@ -89,5 +89,5 @@ class Core(XML_handler):
 
     def run(self):
         print("Running pipeline...")
-        self._execute(self.loaded_modules)
+        self._execute(self.xml_handler.loaded_modules)
         print("Pipeline Complete")
