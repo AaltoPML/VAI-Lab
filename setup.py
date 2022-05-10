@@ -9,7 +9,8 @@ class SetupPrequisties(object):
             'tk', #package name of tkinter
             'pillow', #package name of PIL
             'pandas', 
-            'sklearn'
+            'sklearn',
+            'ttkwidgets',
             }
         self.python_version = sys.executable
 

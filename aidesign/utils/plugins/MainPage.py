@@ -1,8 +1,9 @@
 import tkinter as tk
 import os
 from PIL import Image, ImageTk
-from tkinter import messagebox, ttk
+from tkinter import ttk
 import numpy as np
+from ttkwidgets import CheckboxTreeview
 
 from tkinter.filedialog import askopenfilename, askdirectory
 from scipy.io import loadmat
@@ -231,9 +232,7 @@ class MainPage(tk.Frame):
         frame1 = tk.Frame(self.newWindow)
         frame2 = tk.Frame(self.newWindow)
         tree_frame1 = tk.Frame(self.newWindow, height=300,width=300)
-        # tree_frame1.grid(row = 2, column = 0, columnspan = 8, rowspan = 25)
         tree_frame2 = tk.Frame(self.newWindow, height=300,width=300)
-        # tree_frame2.grid(row = 2, column = 3, columnspan = 8, rowspan = 25)
         frame3 = tk.Frame(self.newWindow)
         frame4 = tk.Frame(self.newWindow)
         
@@ -262,6 +261,9 @@ class MainPage(tk.Frame):
         #                 )
         style.map('Treeview', 
                   background = [('selected', 'grey')])
+        style.layout('cb.Treeview.Row',
+                     [('Treeitem.row', {'sticky': 'nswe'}),
+                      ('Treeitem.image', {'side': 'right', 'sticky': 'e'})])
         
         self.tree = []
         columns = ['Import', 'Name', 'Size', 'Class']
@@ -286,10 +288,18 @@ class MainPage(tk.Frame):
         tree_scrollx.pack(side = tk.BOTTOM, fill = tk.BOTH)
         tree_scrolly = tk.Scrollbar(frame)
         tree_scrolly.pack(side = tk.RIGHT, fill = tk.BOTH)
-        self.tree.append(ttk.Treeview(
-            frame, 
-            yscrollcommand = tree_scrolly.set, 
-            xscrollcommand = tree_scrollx.set))
+        if data is not None:
+            self.tree.append(CheckboxTreeview(
+                frame, 
+                yscrollcommand = tree_scrolly.set, 
+                xscrollcommand = tree_scrollx.set,
+                show=("headings", "tree")))
+        else:
+            self.tree.append(ttk.Treeview(
+                frame, 
+                yscrollcommand = tree_scrolly.set, 
+                xscrollcommand = tree_scrollx.set))
+
         tree_scrollx.config(command = self.tree[-1].xview)
         tree_scrolly.config(command = self.tree[-1].yview)
         # self.tree[-1].pack_propagate(0)
@@ -317,10 +327,10 @@ class MainPage(tk.Frame):
             variables = [key for key in data.keys() if (key[:1] != '__') and (key[-2:] != '__')]
             for n, var in enumerate(variables):
                 if n%2 == 0:
-                    tree.insert(parent = '', index = 'end', iid = n, text = n, 
+                    tree.insert(parent = '', index = 'end', iid = n, text = '', 
                                      values = (var, data[var].shape, data[var].dtype), tags = ('even',))
                 else:
-                    tree.insert(parent = '', index = 'end', iid = n, text = n, 
+                    tree.insert(parent = '', index = 'end', iid = n, text = '', 
                                      values = (var, data[var].shape, data[var].dtype), tags = ('odd',))
 
             # Define double-click on row action
