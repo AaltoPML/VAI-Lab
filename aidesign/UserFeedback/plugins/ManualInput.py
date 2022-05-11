@@ -63,7 +63,7 @@ class ManualInput(tk.Frame,UI):
         self.button_forw = tk.Button(
             self, image = self.forw_img, bg = self.parent['bg'], 
             command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
-        
+
         button_main = tk.Button(
             self, text="Done", 
             fg = 'white', bg = self.parent['bg'], height = 3, width = 20, 
@@ -71,7 +71,7 @@ class ManualInput(tk.Frame,UI):
         self._parse_config(config)
         self.save_path = ''
         self.saved = True
-        
+
     def _parse_config(self, config):
         self.config = config
         self.class_list(self.config["plugin"]["options"]["class_list"])
