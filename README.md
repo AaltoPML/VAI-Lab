@@ -268,7 +268,6 @@ _PLUGIN_REQUIRED_SETTINGS = {"class_list":"list","image_dir":"str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 ```
 
-### Functionality 
 `PluginSpecs` defines some convenience methods for quickly grabbing all module options, including:
 
 ```python
