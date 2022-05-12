@@ -91,31 +91,48 @@ Each module has:
     - A folder containing all plugins relevant to that module
 
 ```bash
-├── aidesign/
-│   ├── GUI/
-│   │   ├── plugins/
-│   │   │   ├── resources/
-│   │   │   │   ├── Assets/
-│   │   │   │   │   ├── back_arrow.png
-│   │   │   │   │   ├── forw_arrow.png
-│   │   │   │   │   ├── UFAIcon.ico
-│   │   │   │   │   └── UFAIcon_name.png
-│   │   │   │   └── example_radiography_images/
-│   │   │   │       ├── 00028173_005.png
-│   │   │   │       ├── 00028179_000.png
-│   │   │   │       ├── 00028198_002.png
-│   │   │   │       ├── 00028208_035.png
-│   │   │   │       ├── 00028211_021.png
-│   │   │   │       ├── 00028253_000.png
-│   │   │   │       └── 00028279_000.png
-│   │   │   ├── canvas_input.py
+.
+├── aidesign
+│   ├── Core
+│   │   ├── AI_design_core.py
+│   │   └── __init__.py
+│   ├── GUI
+│   │   ├── plugins
 │   │   │   ├── __init__.py
-│   │   │   ├── manual_input.py
-│   │   │   └── startpage.py
-│   │   ├── GUI_core.py
+│   │   │   ├── resources
 │   │   ├── __init__.py
+│   │   ├── GUI_core.py
+│   ├── Modelling
+│   │   ├── plugins
+│   │   │   └── regression.py
+│   │   ├── __init__.py
+│   │   └── Modelling_core.py
+│   ├── Settings
+│   │   ├── resources
+│   │   │   ├── example_config.xml
+│   │   │   └── Hospital.xml
+│   │   ├── __init__.py
+│   │   └── Settings_core.py
+│   ├── UserFeedback
+│   │   ├── plugins
+│   │   │   ├── resources
+│   │   │   │   └── example_radiography_images
+│   │   │   ├── __init__.py
+│   │   │   ├── CanvasInput.py
+│   │   │   └── ManualInput.py
+│   │   ├── __init__.py
+│   │   ├── User_Feedback_core.py
+│   │   └── User_Feedback_template.py
+│   ├── utils
+│   │   ├── plugins
+│   │   │   ├── resources
+│   │   │   │   └── Hospital.xml
+│   │   │   ├── __init__.py
+│   │   │   └── aidCanvas.py
+│   │   ├── __init__.py
+│   │   ├── AID_core.py
+│   │   ├── import_helper.py
 │   │   └── UserInterfaceClass.py
-│   ├── utils/
 │   └── __init__.py
 ├── README.md
 ├── run_UI.py
@@ -126,7 +143,7 @@ Each module has:
 
 As mentioned above, the assets required by individual modules are now fully contained within the modules themselves, to both keeps things clean and to avoid messy paths and confusion in future. Assets for the UI package are now in the directory: 
 ```bash
-./ai-assisted-design-framework/modules/UI/resources/
+./aidesign/modules/UserFeedback/resources/
 ```
 
 ## XML tags
