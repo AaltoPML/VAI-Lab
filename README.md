@@ -138,14 +138,6 @@ Each module has:
 ├── run_UI.py
 └── setup.py
 ```
-
-## Self-Contained Assets
-
-As mentioned above, the assets required by individual modules are now fully contained within the modules themselves, to both keeps things clean and to avoid messy paths and confusion in future. Assets for the UI package are now in the directory: 
-```bash
-./aidesign/modules/UserFeedback/resources/
-```
-
 ## XML tags
 
 All tags must currently be nested inside the `Settings` tag (This may be removed later):
