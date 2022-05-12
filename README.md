@@ -4,11 +4,11 @@ This framework aims to provide the means to easily build a fully operational Mac
 This allows to adapt the machine learning algorithms to the task requirements and provide the output that best adapts to the problem needs.
 Furthermore, its modular nature provides a way to intuitively combine modules for specific problems.
 
-The `Core` class in script `AI_design_core.py` inherits from the `Settings`class, loading the modules declared in the XML file, dynamically importing, instantiating and exectuing them. 
+The `Core` class in script `AI_design_core.py` inherits from the `Settings`class, loading the modules declared in the XML file, dynamically importing, instantiating and executing them. 
 
-## Lauching Core
+## Launching Core
 
-Simple launchers were added to `Core` for easy execution. To load and execute core using the Initialistaion GUI, run the following:
+Simple launchers were added to `Core` for easy execution. To load and execute core using the Initialisation GUI, run the following:
 
 ```python
 import aidesign as ai
@@ -48,26 +48,26 @@ If you click on a module and drag it you can modify its position on the canvas.
 Finally, they can be deleted by clicking on the desired module and then clicking on the `Delete selection` button.
 
 ### Module joining
-Each module object has a number of circles that can be used to join two modules. The initially clicked circle will be identified as the parent and the second one as the child (the output of the father is fed to the input of the child). There can be only one connection from each circle. As of this version, if you need to edit a existing connection you need to delete one of the connected modules.
+Each module object has a number of circles that can be used to join two modules. The initially clicked circle will be identified as the parent and the second one as the child (the output of the father is fed to the input of the child). There can be only one connection from each circle. As of this version, if you need to edit an existing connection you need to delete one of the connected modules.
 
 ### Loops
-If you click on the canvas and drag, you can draw a rectangle that defines which modules are inside the loop. Upon releasing the button you are requested to input what type of loop you want and what condition should be fullfilled to end the loop.
+If you click on the canvas and drag, you can draw a rectangle that defines which modules are inside the loop. Upon releasing the button you are requested to input what type of loop you want and what condition should be fulfilled to end the loop.
 
 ### Editing
-You can edit the module's displayed name and the loop's conditions by double clicking on them and making any desired changes.
+You can edit the module's displayed name and the loop's conditions by double-clicking on them and making any desired changes.
 
 ### Reset
-Upon clicking the reset button, all objects in the canvas are deleted with the exception of the default modules (`initialiser` and `output`).
+Upon clicking the reset button, all objects in the canvas are deleted except for the default modules (`initialiser` and `output`).
 
 
 ## Pipeline uploading via XML file
 
-The pipeline can also be defined uploading a preexisting XML file. The structure of the XML file is described in the Back-end section.
+The pipeline can also be defined uploading an existing XML file. The structure of the XML file is described in the Back-end section.
 
 ## UFA
 
 The User Feedback Adaptation module provides the means to easily interact with the machine learning model to give feedback.
-It allows to provide feedback for different domains, adapting the user's input to the corresponding input required by the model. 
+It allows the user to provide feedback for different domains, adapting the user's input to the corresponding input required by the model. 
 At this stage there are 2 main feedback options.
 
 ### `Manual input`
@@ -78,12 +78,12 @@ The user needs to indicate which classes correspond to the image and save the re
 ### `Interact with canvas`
 Requires the user to give feedback to state-action pairs.
 It opens a tab for each interactable object in the model and either requires adding new state-action samples or to modify the existing ones. 
-In the current example, the model has two interactable objects that require feedback in two forms: (1) an _angle_ for the state and for the action or (2) a tuple of _cartesian coordinates_ for the state and for the action. It has been adapted to be able to give feedback to any number of objects. These, at the same time, can be either `sliding` or `rotating` objects. Specifically, `sliding` refers to objects that need cartesian feedback in a two dimensional space, while `rotating` refers to objects that require an angle. In order to give feedback, you can choose to either move the corresponding state-action pairs on the canvas or directly edit the treeview display. This last option results in an automatic update on the canvas of the state-action location.
+In the current example, the model has two interactable objects that require feedback in two forms: (1) an _angle_ for the state and for the action or (2) a tuple of _Cartesian coordinates_ for the state and for the action. It has been adapted to be able to give feedback to any number of objects. These, at the same time, can be either `sliding` or `rotating` objects. Specifically, `sliding` refers to objects that need Cartesian feedback in a two-dimensional space, while `rotating` refers to objects that require an angle. In order to give feedback, you can choose to either move the corresponding state-action pairs on the canvas or directly edit the tree view display. This last option results in an automatic update on the canvas of the state-action location.
 
 # Back-end
 
 ## Filetree structure and modularisation
-To support modularisation and maintaining the modules as plugins, they need to be independent from the rest of the file structure. 
+To support modularisation and maintaining the modules as plugins, they need to be independent of the rest of the file structure. 
 Each module has:
     - A root folder carrying its name (e.g. `GUI`)
     - A core script which calls the plugins (e.g. `GUI_core.py`)
@@ -221,7 +221,7 @@ Dedicated exit point for the pipeline, where the save file is declared along wit
 ```
 
 ## Data Definition
-The structure of the data which will be passed through the pipeline. Currently limited placeholder tags are declared until we have a better idea of what we want here. The structure of the data must be declared between the `datastructure` tags: 
+The structure of the data which will be passed through the pipeline. Currently, limited placeholder tags are declared until we have a better idea of what we want here. The structure of the data must be declared between the `datastructure` tags: 
 
 ```XML
 <datastructure name="user_defined_name">
@@ -247,7 +247,7 @@ Two methods are given to add data to the XML file. One for modules (`append_pipe
 
 ## Plugin Option Loader
 
-In script `utils/plugin_helpers.py`, class `PluginSpecs` scrapes options inside plugin scripts to populate a dict of plugins for each  module. Additionally, other plugin options are defined in-script with the form: `_PLUGIN_<name of option>`, for example:
+In script `utils/plugin_helpers.py`, class `PluginSpecs` scrapes options inside plugin scripts to populate a dict of plugins for each module. Additionally, other plugin options are defined in-script with the form: `_PLUGIN_<name of option>`, for example:
 
 ```python
 _PLUGIN_CLASS_NAME = "ManualInput"
