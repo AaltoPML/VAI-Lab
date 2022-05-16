@@ -4,6 +4,7 @@ from PIL import ImageTk
 from tkinter import ttk
 import numpy as np
 from ttkwidgets import CheckboxTreeview
+from sys import platform
 
 
 class dataLoader():
@@ -17,13 +18,16 @@ class dataLoader():
         self.newWindow = tk.Toplevel(self.controller)
         
         # Window options
-        self.newWindow.title('Data importing helper')
+        self.newWindow.title('Data Importer')
         script_dir = os.path.dirname(__file__)
-        self.newWindow.iconbitmap(os.path.join(
-                script_dir, 
-                'resources', 
-                'Assets', 
-                'AIDIcon.ico'))
+
+        #temp fix - this call does not work on linux
+        if platform != "linux":
+            self.newWindow.iconbitmap(os.path.join(
+                    script_dir, 
+                    'resources', 
+                    'Assets', 
+                    'AIDIcon.ico'))
         # tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
         #     file = os.path.join(os.path.join(
         #         script_dir, 

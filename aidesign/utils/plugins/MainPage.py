@@ -204,6 +204,7 @@ class MainPage(tk.Frame):
                                    title = 'Select a file', 
                                    defaultextension = '.mat', 
                                    filetypes = [('mat file', '.mat'), 
+                                                ('CSV', '.csv'), 
                                                 ('All Files', '*.*')])
         
         if filename is not None and len(filename) > 0:
