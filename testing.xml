@@ -3,29 +3,29 @@
         <Initialiser name="Initialiser">
             <plugin type="" />
             <relationships>
-                <child name="DataProcessing" />
+                <child name="User Feedback" />
             </relationships>
             <coordinates>
-                [(300.0, 50), 0, {}]
+                [(300.0,50),0,{}]
             </coordinates>
         </Initialiser>
-        <DataProcessing name="DataProcessing">
+        <UserFeedback name="User Feedback">
             <plugin type="" />
             <relationships>
                 <parent name="Initialiser" />
                 <child name="Output" />
             </relationships>
             <coordinates>
-                [(296, 203), 2, {0: 'd0-u2'}]
+                [(300.0,300.0),2,{0:'d0-u2'}]
             </coordinates>
-        </DataProcessing>
+        </UserFeedback>
         <Output name="Output">
             <plugin type="" />
             <relationships>
-                <parent name="DataProcessing" />
+                <parent name="User Feedback" />
             </relationships>
             <coordinates>
-                [(300.0, 550), 1, {2: 'd2-u1'}]
+                [(300.0,550),1,{2:'d2-u1'}]
             </coordinates>
         </Output>
     </pipeline>

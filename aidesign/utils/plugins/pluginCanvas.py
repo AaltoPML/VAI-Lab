@@ -131,7 +131,6 @@ class pluginCanvas(tk.Frame):
                 (self.plugin[self.m].get() != 'None') and \
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
-                print(np.array(self.module_names)[self.m == np.array(self.id_mod)][0])
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
                                                  {},
                                                  np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
@@ -255,35 +254,64 @@ class pluginCanvas(tk.Frame):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
         
-        print(self.plugin[self.m].get())
-        self.newWindow = tk.Toplevel(self.controller)
-        # Window options
-        self.newWindow.title(self.plugin[self.m].get()+' plugin options')
-        script_dir = os.path.dirname(__file__)
-        self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
-            file = os.path.join(os.path.join(
-                script_dir, 
-                'resources', 
-                'Assets', 
-                'AIDIcon.ico'))))
-        self.newWindow.geometry("350x400")
+        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
+        ps = PluginSpecs()
+        ps.print(ps.optional_settings)
+        opt_settings = ps.optional_settings[module][self.plugin[self.m].get()+'.py']
+        req_settings = ps.required_settings[module][self.plugin[self.m].get()+'.py']
+        # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
+        # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
         
-        # Print options
-        tk.Label(self.newWindow,
-              text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.\n\
-                  Close the window when you are done.", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
-        options = {'arg1': 'int', 'arg2': ['C', 'F']}
-        
-        r = 1
-        self.entry = []
-        for arg, val in options.items():
+        if (len(opt_settings) != 0) and (len(req_settings) != 0):
+            self.newWindow = tk.Toplevel(self.controller)
+            # Window options
+            self.newWindow.title(self.plugin[self.m].get()+' plugin options')
+            script_dir = os.path.dirname(__file__)
+            self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
+                file = os.path.join(os.path.join(
+                    script_dir, 
+                    'resources', 
+                    'Assets', 
+                    'AIDIcon.ico'))))
+            self.newWindow.geometry("350x400")
+            
+            # Print options
             tk.Label(self.newWindow,
-              text = arg).grid(row=r,column=0)
-            self.entry.append(tk.Entry(self.newWindow))
-            self.entry[-1].grid(row=r, column=1)
-            self.entry[-1].bind("<Return>", lambda event, a = r-1: self.on_return_entry(a))
-            r += 1
-        self.entry[0].focus()
+                  text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.\n\
+                      Close the window when you are done.", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
+            
+            r = 1
+            self.entry = []
+            if len(req_settings) > 0:
+                tk.Label(self.newWindow,
+                      text ="Required settings:", anchor = tk.W, justify=tk.LEFT).grid(row=r,column=0 , columnspan=2)
+                r = self.displaySeetings(req_settings, r+1)
+            
+            if len(opt_settings) > 0:
+                tk.Label(self.newWindow,
+                      text ="Optional settings:", anchor = tk.W, justify=tk.LEFT).grid(row=r,column=0, columnspan=2)
+                r = self.displaySeetings(opt_settings, r+1)
+                
+            self.entry[0].focus()
+            self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
+        
+    def displaySeetings(self, settings, r):
+        """ Adds an entry for each input setting. Displays it in the specified row.
+        :param settings: dict type of plugin setting options
+        :param r: int type of displayed row
+        """
+        for arg, val in settings.items():
+                tk.Label(self.newWindow,
+                  text = arg).grid(row=r,column=0)
+                self.entry.append(tk.Entry(self.newWindow))
+                self.entry[-1].grid(row=r, column=1)
+                self.entry[-1].bind("<Return>", lambda event, a = r-1: self.on_return_entry(a))
+                r += 1
+        return r
+
+    def removewindow(self):
+        self.newWindow.destroy()
+        self.newWindow = None
 
     def on_return_entry(self, r):
         """ Changes focus to the next available entry 
@@ -517,13 +545,9 @@ class pluginCanvas(tk.Frame):
         """ Resets the canvas and the stored information."""
         self.canvas.delete(tk.ALL) # Reset canvas
         
-        if hasattr(self, 'entry'):
-            self.entry.destroy()
-        if hasattr(self, 'entry1'):
-            self.entry1.destroy()
-        if hasattr(self, 'entry2'):
-            self.entry2.destroy()
-            
+        if hasattr(self, 'newWindow') and (self.newWindow!= None):
+            self.newWindow.destroy()
+        
         self.canvas.startxy = []
         self.out_data = pd.DataFrame()
         self.connections = {}
