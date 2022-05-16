@@ -260,8 +260,8 @@ class pluginCanvas(tk.Frame):
         req_settings = ps.required_settings[module][self.plugin[self.m].get()+'.py']
         # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
         # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
-        
-        if (len(opt_settings) != 0) and (len(req_settings) != 0):
+        print(req_settings)
+        if (len(opt_settings) != 0) or (len(req_settings) != 0):
             self.newWindow = tk.Toplevel(self.controller)
             # Window options
             self.newWindow.title(self.plugin[self.m].get()+' plugin options')
@@ -274,52 +274,73 @@ class pluginCanvas(tk.Frame):
                     'AIDIcon.ico'))))
             self.newWindow.geometry("350x400")
             
-            # Print options
-            tk.Label(self.newWindow,
+            frame1 = tk.Frame(self.newWindow)
+            frame4 = tk.Frame(self.newWindow)
+        
+            # Print settings
+            tk.Label(frame1,
                   text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.\n\
-                      Close the window when you are done.", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
-            
-            r = 1
+                      Close the window when you are done.", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0)
             self.entry = []
+            # Required
+            r = 1
             if len(req_settings) > 0:
-                tk.Label(self.newWindow,
-                      text ="Required settings:", anchor = tk.W, justify=tk.LEFT).grid(row=r,column=0 , columnspan=2)
-                r = self.displaySeetings(req_settings, r+1)
-            
+                frame2 = tk.Frame(self.newWindow)
+                tk.Label(frame2,
+                      text ="Required settings:", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0 , columnspan=2)
+                self.displaySettings(frame2, req_settings)
+                frame2.grid(column=0, row=r, sticky="nswe")
+                r += 1
+            # Optional
             if len(opt_settings) > 0:
-                tk.Label(self.newWindow,
-                      text ="Optional settings:", anchor = tk.W, justify=tk.LEFT).grid(row=r,column=0, columnspan=2)
-                r = self.displaySeetings(opt_settings, r+1)
+                frame3 = tk.Frame(self.newWindow)
+                tk.Label(frame3,
+                      text ="Optional settings:", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
+                self.displaySeetings(frame3, opt_settings)
+                frame3.grid(column=0, row=r, sticky="nswe")
+                r += 1
                 
             self.entry[0].focus()
+            self.finishButton = tk.Button(
+                frame4, text = 'Finish', command = self.removewindow)
+            self.finishButton.grid(column = 1, row = r+1, sticky="es", pady=(0,10), padx=(0,10))
+            self.finishButton.bind("<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
-        
-    def displaySeetings(self, settings, r):
+            
+            frame1.grid(column=0, row=0, sticky="nsew")
+            frame4.grid(column=0, row=r, sticky="se")
+            self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=1)
+            self.newWindow.grid_columnconfigure(0, weight=1)
+
+    def displaySettings(self, frame, settings):
         """ Adds an entry for each input setting. Displays it in the specified row.
+        :param frame: tkinter frame type of frame
         :param settings: dict type of plugin setting options
-        :param r: int type of displayed row
         """
+        r = 1
         for arg, val in settings.items():
-                tk.Label(self.newWindow,
+                tk.Label(frame,
                   text = arg).grid(row=r,column=0)
-                self.entry.append(tk.Entry(self.newWindow))
+                self.entry.append(EntryWithPlaceholder(frame, val))
                 self.entry[-1].grid(row=r, column=1)
-                self.entry[-1].bind("<Return>", lambda event, a = r-1: self.on_return_entry(a))
+                self.entry[-1].bind("<Return>", lambda event, a = len(self.entry): self.on_return_entry(a))
                 r += 1
-        return r
+        frame.grid_rowconfigure(tuple(range(r)), weight=1)
+        frame.grid_columnconfigure(tuple(range(2)), weight=1)
 
     def removewindow(self):
         self.newWindow.destroy()
         self.newWindow = None
 
     def on_return_entry(self, r):
-        """ Changes focus to the next available entry 
+        """ Changes focus to the next available entry. When no more, focuses 
+        on the finish button.
         : param r: int type of entry id.
         """
-        if r < len(self.entry)-1:
-            self.entry[r+1].focus()
+        if r < len(self.entry):
+            self.entry[r].focus()
         else:
-            self.newWindow.focus()
+            self.finishButton.focus()
 
     def CreateToolTip(self, widget, text):
         """ Calls ToolTip to create a window with a widget description. """
@@ -619,7 +640,34 @@ class ToolTip(object):
         self.tipwindow = None
         if tw:
             tw.destroy()
-    
+
+class EntryWithPlaceholder(tk.Entry):
+    """ Defines an entry with a placeholder text displayed if not focused on."""
+    def __init__(self, master=None, placeholder="PLACEHOLDER", color='grey'):
+        super().__init__(master)
+
+        self.placeholder = placeholder
+        self.placeholder_color = color
+        self.default_fg_color = self['fg']
+
+        self.bind("<FocusIn>", self.foc_in)
+        self.bind("<FocusOut>", self.foc_out)
+
+        self.put_placeholder()
+
+    def put_placeholder(self):
+        self.insert(0, self.placeholder)
+        self['fg'] = self.placeholder_color
+
+    def foc_in(self, *args):
+        if self['fg'] == self.placeholder_color:
+            self.delete('0', 'end')
+            self['fg'] = self.default_fg_color
+
+    def foc_out(self, *args):
+        if not self.get():
+            self.put_placeholder()
+            
 if __name__ == "__main__":
     app = pluginCanvas()
     app.mainloop()
