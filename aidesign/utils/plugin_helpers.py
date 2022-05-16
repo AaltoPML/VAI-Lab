@@ -92,15 +92,35 @@ class PluginSpecs(ast.NodeVisitor):
                                                 [plugin]
         return None
 
+    @property
     def names(self):
         return self.get_option_specs("_PLUGIN_READABLE_NAMES")
 
-    def get_all_available_plugin_names(self):
-        names = self.names()
+    @property
+    def class_names(self):
+        return self.get_option_specs("_PLUGIN_CLASS_NAME")
+
+    @property
+    def required_settings(self):
+        return self.get_option_specs("_PLUGIN_REQUIRED_SETTINGS")
+
+    @property
+    def class_descriptions(self):
+        return self.get_option_specs("_PLUGIN_CLASS_DESCRIPTION")
+
+    @property
+    def optional_settings(self):
+        return self.get_option_specs("_PLUGIN_OPTIONAL_SETTINGS")
+
+    @property
+    def available_plugin_names(self):
+        names = self.names
         output = []
         for n in names.keys():
             for plugin in names[n]:
-                output.append(plugin)
+                for variant in names[n][plugin].keys():
+                    if names[n][plugin][variant] == "default":
+                        output.append(variant)
         return output
 
     def find_from_class_name(self, value):
@@ -108,18 +128,6 @@ class PluginSpecs(ast.NodeVisitor):
 
     def find_from_readable_name(self, value):
         return self.find_plugin_by_tag_and_value("_PLUGIN_READABLE_NAMES",value)
-
-    def class_names(self):
-        return self.get_option_specs("_PLUGIN_CLASS_NAME")
-
-    def class_descriptions(self):
-        return self.get_option_specs("_PLUGIN_CLASS_DESCRIPTION")
-
-    def required_settings(self):
-        return self.get_option_specs("_PLUGIN_REQUIRED_SETTINGS")
-
-    def optional_settings(self):
-        return self.get_option_specs("_PLUGIN_OPTIONAL_SETTINGS")
 
     def print(self, value):
         from pprint import PrettyPrinter
@@ -130,6 +138,6 @@ class PluginSpecs(ast.NodeVisitor):
 # if __name__ == "__main__":
 #     ps = PluginSpecs()
 #     ps.print(ps.get_all_available_plugin_names())
-        # ps.print(ps.names())
-#     ps.print(ps.class_descriptions())
+    # ps.print(ps.names)
+    # ps.print(ps.class_descriptions)
     # print(list(ps.class_descriptions()['GUI'].values()))

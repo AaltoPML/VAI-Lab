@@ -16,6 +16,7 @@ class XML_handler(object):
 
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
+        TODO: Can extend the plugin_helpers.py script to automatically populate these things
         """
         self._valid_tags = {
             "pipeline": "declaration",

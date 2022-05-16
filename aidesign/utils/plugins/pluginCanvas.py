@@ -12,7 +12,7 @@ from aidesign.utils.plugin_helpers import PluginSpecs
 
 _PLUGIN_CLASS_NAME = "pluginCanvas"
 _PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of plugins"
-_PLUGIN_READABLE_NAMES = {"plugin_canvas","pluginCanvas","plugin canvas"}
+_PLUGIN_READABLE_NAMES = {"plugin_canvas":"default","pluginCanvas":"alias","plugin canvas":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None}
 _PLUGIN_REQUIRED_SETTINGS = {}
@@ -29,6 +29,7 @@ class pluginCanvas(tk.Frame):
         super().__init__(parent, bg = parent['bg'])
         self.bg = parent['bg']
         self.controller = controller
+        self.s = XML_handler()
         
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
@@ -83,18 +84,19 @@ class pluginCanvas(tk.Frame):
         tk.Button(
             frame3, text = 'Load Pipeline', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
-            command = self.upload).grid(column = 0, row = 26, sticky = tk.SE)
+            command = self.upload).grid(column = 0, row = 26, sticky="news", 
+                                        padx=(10,0), pady=(0,10))
         tk.Button(
             frame3, text = 'Back to main', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
-            command = self.check_quit).grid(column = 3, row = 26, sticky = tk.SW)
+            command = self.check_quit).grid(column = 1, row = 26, sticky="news", pady=(0,10))
         
         self.save_path = ''
         self.saved = True
         frame1.grid(column=0, row=0, sticky="nsew")
         self.frame2.grid(column=1, row=0, sticky="ne")
         frame3.grid(column=0, row=1, sticky="swe")
-        self.frame4.grid(column=1, row=1, sticky="nse")
+        self.frame4.grid(column=1, row=1, sticky="sew")
         
         frame3.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
@@ -147,54 +149,65 @@ class pluginCanvas(tk.Frame):
                 if self.m not in self.id_done and self.m > 1:
                     self.canvas.itemconfig('p'+str(self.m), fill = '#dbaa21')
                 for widget in self.allWeHearIs:
-                    widget.grid_forget()
+                    widget.grid_remove()
                 
                 self.display_buttons()
                 module_number = self.id_mod.index(self.m)
                 if hasattr(self, 'button_forw'):
-                    self.button_forw.grid_forget()
-                    self.button_back.grid_forget()
-                if module_number == len(self.id_mod)-1:
-                    self.button_forw = tk.Button(
-                        self.frame4, text = 'Finnish', bg = self.bg, 
-                        font = self.controller.pages_font,
-                        fg = 'white', height = 3, width = 15,
-                        command = self.finnish)
+                    if module_number == len(self.id_mod)-1:
+                        self.button_forw.config(text = 'Finish', bg = self.bg, 
+                            font = self.controller.pages_font,
+                            fg = 'white', height = 3, width = 15,
+                            command = self.finnish, state = tk.NORMAL, image = '')
+                    else:
+                        pCoord = self.canvas.coords('p'+str(self.id_mod[module_number+1]))
+                        self.button_forw.config(image = self.forw_img, bg = self.bg, 
+                            command = lambda: self.select(
+                                pCoord[0], pCoord[1]), text = '', state = tk.NORMAL)
+                    if module_number < 3:
+                        self.button_back.config(image = self.back_img, bg = self.bg, 
+                            state = tk.DISABLED, text = '')
+                    else:
+                        mCoord = self.canvas.coords('p'+str(self.id_mod[module_number-1]))
+                        self.button_back.config(image = self.back_img, bg = self.bg, 
+                            command = lambda: self.select(
+                                mCoord[0], mCoord[1]), text = '', state = tk.NORMAL)
                 else:
-                    pCoord = self.canvas.coords('p'+str(self.id_mod[module_number+1]))
-                    self.button_forw = tk.Button(
-                        self.frame4, image = self.forw_img, bg = self.bg, 
-                        command = lambda: self.select(
-                            pCoord[0], pCoord[1]))
-                self.button_forw.grid(column = 6,row = 26)
-                if module_number < 3:
-                    self.button_back = tk.Button(
-                        self.frame4, image = self.back_img, bg = self.bg, 
-                        state = tk.DISABLED)
-                else:
-                    mCoord = self.canvas.coords('p'+str(self.id_mod[module_number-1]))
-                    self.button_back = tk.Button(
-                        self, image = self.back_img, bg = self.bg, 
-                        command = lambda: self.select(
-                            mCoord[0], mCoord[1]))
-                self.button_back.grid(column = 5,row = 26)
+                    if module_number == len(self.id_mod)-1:
+                        self.button_forw = tk.Button(
+                            self.frame4, text = 'Finish', bg = self.bg, 
+                            font = self.controller.pages_font,
+                            fg = 'white', height = 3, width = 15,
+                            command = self.finnish, state = tk.NORMAL, image = '')
+                    else:
+                        pCoord = self.canvas.coords('p'+str(self.id_mod[module_number+1]))
+                        self.button_forw = tk.Button(
+                            self.frame4, image = self.forw_img, bg = self.bg, 
+                            command = lambda: self.select(
+                                pCoord[0], pCoord[1]), state = tk.NORMAL)
+                    self.button_forw.grid(column = 1,row = 0, sticky="news", pady=(0,10))
+                    if module_number < 3:
+                        self.button_back = tk.Button(
+                            self.frame4, image = self.back_img, bg = self.bg, 
+                            state = tk.DISABLED)
+                    else:
+                        mCoord = self.canvas.coords('p'+str(self.id_mod[module_number-1]))
+                        self.button_back = tk.Button(
+                            self.frame4, image = self.back_img, bg = self.bg, 
+                            command = lambda: self.select(
+                                mCoord[0], mCoord[1]), state = tk.NORMAL)
+                    self.button_back.grid(column = 0,row = 0, sticky="news", pady=(0,10))
             else: # If user clicks on Initialiser or Output
                 self.my_label.config(text = '')
                 for widget in self.allWeHearIs:
-                    widget.grid_forget()
+                    widget.grid_remove()
                 if hasattr(self, 'button_forw'):
-                    self.button_forw.grid_forget()
-                    self.button_back.grid_forget()
-                self.button_back = tk.Button(
-                        self.frame4, image = self.back_img, bg = self.bg, 
-                        state = tk.DISABLED)
-                self.button_back.grid(column = 5,row = 26)
-                pCoord = self.canvas.coords('p'+str(self.id_mod[2]))
-                self.button_forw = tk.Button(
-                        self.frame4, image = self.forw_img, bg = self.bg, 
-                        command = lambda: self.select(
-                            pCoord[0], pCoord[1]))
-                self.button_forw.grid(column = 6,row = 26)
+                    self.button_back.config(image = self.back_img, bg = self.bg, 
+                            state = tk.DISABLED, text = '')
+                    pCoord = self.canvas.coords('p'+str(self.id_mod[2]))
+                    self.button_forw.config(image = self.forw_img, bg = self.bg, 
+                            command = lambda: self.select(
+                                pCoord[0], pCoord[1]), text = '', state = tk.NORMAL)
 
     def finnish(self):
         """ Calls function check_quit.
@@ -220,10 +233,10 @@ class pluginCanvas(tk.Frame):
         name = self.canvas.itemcget('t'+str(self.m), 'text')
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
         ps = PluginSpecs()
-        ps.print(ps.class_names())
-        plugin_list = list(ps.class_names()[module].values())
+        ps.print(ps.class_names)
+        plugin_list = list(ps.class_names[module].values())
         plugin_list.append('Custom')
-        descriptions = list(ps.class_descriptions()[module].values())
+        descriptions = list(ps.class_descriptions[module].values())
         descriptions.append('User specified plugin')
         if self.m not in self.plugin:
             self.plugin[self.m] = tk.StringVar()
@@ -533,7 +546,7 @@ class pluginCanvas(tk.Frame):
         self.id_done = [0,1]
         self.plugin = {}
         for widget in self.allWeHearIs:
-                widget.grid_forget()
+                widget.grid_remove()
         self.allWeHearIs = []
         self.my_label.config(text = '')
 
@@ -545,9 +558,6 @@ class pluginCanvas(tk.Frame):
                 "Exit", 
                 "There are some unspecified plugins. Are you sure you want to leave?")
             if response:
-                if hasattr(self, 'button_forw'):
-                    self.button_forw.grid_forget()
-                    self.button_back.grid_forget()
                 self.reset()
                 self.canvas.delete(tk.ALL)
                 self.saved = True
@@ -555,9 +565,6 @@ class pluginCanvas(tk.Frame):
                 self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         else:
-            if hasattr(self, 'button_forw'):
-                self.button_forw.grid_forget()
-                self.button_back.grid_forget()
             self.reset()
             self.canvas.delete(tk.ALL)
             self.s.write_to_XML()

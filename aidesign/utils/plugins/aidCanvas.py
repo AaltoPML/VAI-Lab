@@ -11,7 +11,7 @@ from aidesign.Data.xml_handler import XML_handler
 
 _PLUGIN_CLASS_NAME = "aidCanvas"
 _PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules"
-_PLUGIN_READABLE_NAMES = {"aid_canvas","aidCanvas","aid","AID"}
+_PLUGIN_READABLE_NAMES = {"aid_canvas":"default","aidCanvas":"alias","aid":"alias","AID":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None,}
 _PLUGIN_REQUIRED_SETTINGS = {}
@@ -58,6 +58,8 @@ class aidCanvas(tk.Frame):
         self.width, self.height = 600, 600
         self.canvas = tk.Canvas(frame1, width=self.width, 
             height=self.height, background="white")
+        # self.canvas = ResizingCanvas(frame1, width=self.width, 
+        #     height=self.height, background="white")
         self.canvas.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=10)
         
         self.canvas.startxy = []
@@ -875,7 +877,25 @@ class aidCanvas(tk.Frame):
             if self.save_path not in [None, '']:
                     self.controller.XML.set(True)
             self.controller._show_frame("MainPage")
-            
+
+# class ResizingCanvas(tk.Canvas):
+#     def __init__(self,parent,**kwargs):
+#         tk.Canvas.__init__(self,parent,**kwargs)
+#         self.bind("<Configure>", self.on_resize)
+#         self.height = self.winfo_reqheight()
+#         self.width = self.winfo_reqwidth()
+
+#     def on_resize(self,event):
+#         # determine the ratio of old width/height to new width/height
+#         wscale = float(event.width)/self.width
+#         hscale = float(event.height)/self.height
+#         self.width = event.width
+#         self.height = event.height
+#         # resize the canvas 
+#         self.config(width=self.width, height=self.height)
+#         # rescale all the objects tagged with the "all" tag
+#         self.scale("all",0,0,wscale,hscale)
+        
 if __name__ == "__main__":
     app = aidCanvas()
     app.mainloop()
