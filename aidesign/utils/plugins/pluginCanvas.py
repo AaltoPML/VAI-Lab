@@ -132,7 +132,7 @@ class pluginCanvas(tk.Frame):
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                                 {},
+                                               {**self.req_settings, **self.opt_settings},
                                                  np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
                 self.s._print_pretty(self.s.loaded_modules)
@@ -219,7 +219,7 @@ class pluginCanvas(tk.Frame):
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                                 {},
+                                               {**self.req_settings, **self.opt_settings},
                                                  np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
         self.check_quit()
@@ -256,12 +256,14 @@ class pluginCanvas(tk.Frame):
         
         module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         ps = PluginSpecs()
-        opt_settings = ps.optional_settings[module][self.plugin[self.m].get()+'.py']
-        req_settings = ps.required_settings[module][self.plugin[self.m].get()+'.py']
+        self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get()+'.py']
+        self.req_settings = ps.required_settings[module][self.plugin[self.m].get()+'.py'] 
         # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
         # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
-        print(req_settings)
-        if (len(opt_settings) != 0) or (len(req_settings) != 0):
+        print(self.req_settings)
+        if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
+            if hasattr(self, 'newWindow') and (self.newWindow!= None):
+                self.newWindow.destroy()
             self.newWindow = tk.Toplevel(self.controller)
             # Window options
             self.newWindow.title(self.plugin[self.m].get()+' plugin options')
@@ -284,19 +286,19 @@ class pluginCanvas(tk.Frame):
             self.entry = []
             # Required
             r = 1
-            if len(req_settings) > 0:
+            if len(self.req_settings) > 0:
                 frame2 = tk.Frame(self.newWindow)
                 tk.Label(frame2,
                       text ="Required settings:", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0 , columnspan=2)
-                self.displaySettings(frame2, req_settings)
+                self.displaySettings(frame2, self.req_settings)
                 frame2.grid(column=0, row=r, sticky="nswe")
                 r += 1
             # Optional
-            if len(opt_settings) > 0:
+            if len(self.opt_settings) > 0:
                 frame3 = tk.Frame(self.newWindow)
                 tk.Label(frame3,
                       text ="Optional settings:", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
-                self.displaySeetings(frame3, opt_settings)
+                self.displaySeetings(frame3, self.opt_settings)
                 frame3.grid(column=0, row=r, sticky="nswe")
                 r += 1
                 
@@ -329,6 +331,14 @@ class pluginCanvas(tk.Frame):
         frame.grid_columnconfigure(tuple(range(2)), weight=1)
 
     def removewindow(self):
+        """ Stores settings options and closes window """
+        
+        for e,ent in enumerate(self.entry):
+            if e < len(self.req_settings):
+                self.req_settings[list(self.req_settings.keys())[e]] = ent.get()
+            else:
+                self.opt_settings[list(self.opt_settings.keys())[e-len(self.req_settings)]] = ent.get()
+
         self.newWindow.destroy()
         self.newWindow = None
 
