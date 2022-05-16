@@ -10,22 +10,42 @@
             </coordinates>
         </Initialiser>
         <UserFeedback name="User Feedback">
-            <plugin type="" />
             <relationships>
                 <parent name="Initialiser" />
+                <child name="Data Processing" />
+            </relationships>
+            <coordinates>
+                [(233,151),2,{0:'d0-u2'}]
+            </coordinates>
+            <plugin type="CanvasInput" />
+        </UserFeedback>
+        <DataProcessing name="Data Processing">
+            <relationships>
+                <parent name="User Feedback" />
+                <child name="User Feedback-1" />
+            </relationships>
+            <coordinates>
+                [(300.0,300.0),3,{2:'d2-u3'}]
+            </coordinates>
+            <plugin type="Custom" />
+        </DataProcessing>
+        <UserFeedback name="User Feedback-1">
+            <relationships>
+                <parent name="Data Processing" />
                 <child name="Output" />
             </relationships>
             <coordinates>
-                [(300.0,300.0),2,{0:'d0-u2'}]
+                [(303,416),4,{3:'d3-u4'}]
             </coordinates>
+            <plugin type="ManualInput" />
         </UserFeedback>
         <Output name="Output">
             <plugin type="" />
             <relationships>
-                <parent name="User Feedback" />
+                <parent name="User Feedback-1" />
             </relationships>
             <coordinates>
-                [(300.0,550),1,{2:'d2-u1'}]
+                [(300.0,550),1,{4:'d4-u1'}]
             </coordinates>
         </Output>
     </pipeline>

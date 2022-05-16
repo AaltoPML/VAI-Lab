@@ -135,6 +135,7 @@ class pluginCanvas(tk.Frame):
                                                  {},
                                                  np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
+                self.s._print_pretty(self.s.loaded_modules)
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill = '#46da63')
         else:
@@ -219,7 +220,7 @@ class pluginCanvas(tk.Frame):
                 self.id_done.append(self.m)
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
                                                  {},
-                                                 np.array(self.module_list)[self.m == np.array(self.id_mod)][0],
+                                                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
         self.check_quit()
         
@@ -232,7 +233,6 @@ class pluginCanvas(tk.Frame):
         name = self.canvas.itemcget('t'+str(self.m), 'text')
         self.my_label.config(text = 'Choose a plugin for the '+name+' module')
         ps = PluginSpecs()
-        ps.print(ps.class_names)
         plugin_list = list(ps.class_names[module].values())
         plugin_list.append('Custom')
         descriptions = list(ps.class_descriptions[module].values())
@@ -256,7 +256,6 @@ class pluginCanvas(tk.Frame):
         
         module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         ps = PluginSpecs()
-        ps.print(ps.optional_settings)
         opt_settings = ps.optional_settings[module][self.plugin[self.m].get()+'.py']
         req_settings = ps.required_settings[module][self.plugin[self.m].get()+'.py']
         # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
