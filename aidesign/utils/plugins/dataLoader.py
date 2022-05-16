@@ -9,11 +9,7 @@ from sys import platform
 
 class dataLoader():
     
-    
-    
     def __init__(self,controller,data,filename):
-        
-        
         self.controller = controller
         self.newWindow = tk.Toplevel(self.controller)
         
@@ -28,12 +24,7 @@ class dataLoader():
                     'resources', 
                     'Assets', 
                     'AIDIcon.ico'))
-        # tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
-        #     file = os.path.join(os.path.join(
-        #         script_dir, 
-        #         'resources', 
-        #         'Assets', 
-        #         'AIDIcon.ico'))))
+        
         self.newWindow.geometry("700x400")
         self.newWindow.grid_rowconfigure(2, weight=1)
         self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)

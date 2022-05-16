@@ -1,0 +1,36 @@
+<Settings>
+    <pipeline>
+        <Initialiser name="Init">
+            <plugin type="">
+                <initial_data file="../resources/intial_data_test.csv" />
+                <goal file="../resources/design_goals_test.csv" />
+            </plugin>
+            <relationships>
+                <child name="My First Modelling Module" />
+            </relationships>
+        </Initialiser>
+            <Modelling name="My First Modelling Module">
+                <plugin type="regression">
+                    <power val = "2" />
+                </plugin>
+                <relationships>
+                    <parent name="Init" />
+                    <child name="Data Processing 1" />
+                </relationships>
+            </Modelling>
+        <Output>
+            <plugin type="">
+                <out_data>
+                    all
+                </out_data>
+                <save_to file="../resources/output_test.csv" />
+            </plugin>
+            <relationships>
+                <parent name="My Second UserFeedback Module" />
+            </relationships>
+        </Output>
+    </pipeline>
+    <datastructure name="datatest">
+        <init_data file="./resources/import_test.csv" />
+    </datastructure>
+</Settings>

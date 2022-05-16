@@ -58,13 +58,6 @@
         </Output>
     </pipeline>
     <datastructure name="datatest">
-        <data_fields>
-            State_0
-            State_1
-            Action
-            Reward
-            Termination
-            Goal
-        </data_fields>
+        <init_data file="./resources/import_test.csv" />
     </datastructure>
 </Settings>

@@ -179,8 +179,12 @@ class XML_handler(object):
         """Parses tags associated with data structure"""
         self.data_tree = self.root.find("datastructure")
         for child in self.data_tree:
-            self.loaded_data_options[child.tag]\
-                = self._parse_text_to_list(child)
+            for attr in child.attrib:
+                self.loaded_data_options[child.tag] = child.attrib[attr]
+            if child.text:
+                self.loaded_data_options[child.tag]\
+                    = self._parse_text_to_list(child)
+            
 
     def _parse_text_to_list(self, element: ET.Element) -> list:
         """Formats raw text data
@@ -448,9 +452,9 @@ class XML_handler(object):
 
 
 # Use case examples:
-# if __name__ == "__main__":
+if __name__ == "__main__":
     # s = XML_handler("./resources/Hospital.xml")
-    # s = XML_handler("./resources/example_config.xml")
+    s = XML_handler("./resources/data_passing_test.xml")
     # s = XML_handler()
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
@@ -474,4 +478,4 @@ class XML_handler(object):
     #                       [2,3,4,5])
     # s.write_to_XML()
     # s.append_data_structure_field_to_file("replay_buffer", "1")
-    # s.print_loaded_data_structure()
+    s.print_loaded_data_structure()

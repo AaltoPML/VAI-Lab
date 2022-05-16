@@ -1,9 +1,10 @@
 """Adds aidesign root folder to pythonpath assuming this script is 2 levels down.
 Hacky patch For testing only, normally you'd have aidesign in your
 OS's PYTHONPATH"""
+from os import path
+
 if not __package__:
     import sys 
-    from os import path
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
@@ -17,6 +18,30 @@ class Data(object):
         self.xml_parser = XML_handler()
         self.data = pd.DataFrame()
 
+    def import_csv(self,filename:str):
+        """import data directly into DataFrame
+        TODO: pandas has a lot of inbuilt read functions, including excel - implement
+        """
+        self.data = pd.read_csv(filename,
+                            delimiter=',',
+                            quotechar='|')
+
+    def import_data(self, filename:str):
+        """Import file directly into DataFrame
+
+        Translates relative files to absolute before parsing - not ideal
+
+        Filename to parsing method based on extension name.
+        
+        :param filename: str, filename of file to be loaded
+        """
+        if filename[0] == ".":
+            filename = path.join(path.dirname(__file__), filename)
+        elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
+            filename = filename
+        ext = filename.split(".")[-1]
+        getattr(self,"import_{0}".format(ext))(filename)
+
     def append_data_column(self, col_name:str, data=None):
         self.data[col_name] = data
 
@@ -29,8 +54,8 @@ class Data(object):
         self.loaded_options = self.xml_parser.loaded_data_options
         self._parse_data_options()
         
-
 if __name__ == "__main__":
     d = Data()
-    d.load_data_settings("./resources/basic_operation.xml")
+    # d.load_data_settings("./resources/basic_operation.xml")
+    d.import_data("./resources/import_test.csv")
     print(d.data)

@@ -6,7 +6,7 @@ from aidesign.Data.Data_core import Data
 
 class Core(object):
     def __init__(self) -> None:
-        self.xml_handler = XML_handler()
+        self._xml_handler = XML_handler()
         self.data = Data()
         self.loop_level = 0
 
@@ -22,7 +22,11 @@ class Core(object):
             self.run()
 
     def load_config_file(self, filename: str):
-        self.xml_handler.load_XML(filename)
+        self._xml_handler.load_XML(filename)
+
+    def _load_data(self):
+        init_data_fn = self._xml_handler.loaded_data_options["init_data"]
+        self.data.import_data(init_data_fn)
 
     def _execute_module(self, specs):
         """Executes named module with given options
@@ -31,6 +35,7 @@ class Core(object):
         :param specs: dict of module to be executed
         """
         mod = import_module(globals(), specs["module_type"])()
+        mod.data_in = self.data
         mod.set_options(specs)
         print("\t"*self.loop_level
                 + specs["module_type"]
@@ -91,5 +96,6 @@ class Core(object):
 
     def run(self):
         print("Running pipeline...")
-        self._execute(self.xml_handler.loaded_modules)
+        self._load_data()
+        self._execute(self._xml_handler.loaded_modules)
         print("Pipeline Complete")
