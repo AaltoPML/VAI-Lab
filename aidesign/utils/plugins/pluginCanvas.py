@@ -135,7 +135,6 @@ class pluginCanvas(tk.Frame):
                                                {**self.req_settings, **self.opt_settings},
                                                  np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
-                self.s._print_pretty(self.s.loaded_modules)
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill = '#46da63')
         else:
@@ -260,7 +259,6 @@ class pluginCanvas(tk.Frame):
         self.req_settings = ps.required_settings[module][self.plugin[self.m].get()+'.py'] 
         # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
         # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
-        print(self.req_settings)
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow!= None):
                 self.newWindow.destroy()
@@ -298,7 +296,7 @@ class pluginCanvas(tk.Frame):
                 frame3 = tk.Frame(self.newWindow)
                 tk.Label(frame3,
                       text ="Optional settings:", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
-                self.displaySeetings(frame3, self.opt_settings)
+                self.displaySettings(frame3, self.opt_settings)
                 frame3.grid(column=0, row=r, sticky="nswe")
                 r += 1
                 
@@ -341,7 +339,7 @@ class pluginCanvas(tk.Frame):
 
         self.newWindow.destroy()
         self.newWindow = None
-
+        self.focus()
     def on_return_entry(self, r):
         """ Changes focus to the next available entry. When no more, focuses 
         on the finish button.

@@ -75,6 +75,8 @@ class CanvasInput(tk.Frame,UI):
             self.notebook.add(
                 self.frame[-1], 
                 text = 'Object '+ str(ii) + ' - ' + self.type[-1])
+            
+            # Frames
             self.frame1 = tk.Frame(self.frame[-1], bg = self.parent['bg'])
             tree_frame = tk.Frame(self.frame[-1], bg = self.parent['bg'])
             frame3 = tk.Frame(self.frame[-1], bg = self.parent['bg'])
@@ -204,7 +206,7 @@ class CanvasInput(tk.Frame,UI):
             self.frame[-1].grid_rowconfigure(0, weight=3)
             self.frame[-1].grid_rowconfigure(1, weight=1)
             self.frame[-1].grid_columnconfigure(0, weight=2)
-            self.frame[-1].grid_columnconfigure(0, weight=1)
+            self.frame[-1].grid_columnconfigure(1, weight=1)
 
     def draw_dot(self, event):
         
