@@ -12,6 +12,8 @@
             <Modelling name="My First Modelling Module">
                 <plugin type="regression">
                     <power val = "2" />
+                    <train_name val = "input" />
+                    <target_name val = "target" />
                 </plugin>
                 <relationships>
                     <parent name="Init" />

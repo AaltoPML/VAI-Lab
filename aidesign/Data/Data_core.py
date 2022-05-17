@@ -18,13 +18,20 @@ class Data(object):
         self.xml_parser = XML_handler()
         self.data = pd.DataFrame()
 
-    def import_csv(self,filename:str):
+    def import_csv(self, 
+                    filename:str,
+                    strip_whitespace:bool=True):
         """import data directly into DataFrame
+
+        :param filename: str, filename of csv file to be loaded
+        :param strip_whitespace: bool, remove spaces from before & after header names
         TODO: pandas has a lot of inbuilt read functions, including excel - implement
         """
         self.data = pd.read_csv(filename,
                             delimiter=',',
                             quotechar='|')
+        if strip_whitespace:
+            self.data.columns = [c.strip() for c in self.data.columns]
 
     def import_data(self, filename:str):
         """Import file directly into DataFrame

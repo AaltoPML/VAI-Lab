@@ -7,7 +7,7 @@ _PLUGIN_CLASS_NAME = "Regression"
 _PLUGIN_CLASS_DESCRIPTION = "Regression ML model placeholder"
 _PLUGIN_READABLE_NAMES = {"regression":"default","reg":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
-_PLUGIN_REQUIRED_SETTINGS = {}
+_PLUGIN_REQUIRED_SETTINGS = {"power":"int","train_name":"str","target_name":"str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 
 class Regression(object):
@@ -17,11 +17,19 @@ class Regression(object):
         self.fit_degree = 1
         self.regression_function = linear_model.LinearRegression()
 
-    def set_input_data(self,data):
-        self.input_data = data
+    def set_data_in(self,data_in):
+        self._data_in = data_in
 
-    def set_target_data(self,data):
-        self.target_data = data
+    def configure(self, config:dict):
+        self._config = config
+        self._parse_config()
+
+    def _parse_config(self):
+        train_data_header = self._config["options"]["train_name"]["val"]
+        target_data_header = self._config["options"]["target_name"]["val"]
+        self.input_data = self._data_in.data[train_data_header]
+        self.target_data = self._data_in.data[target_data_header]
+        self.fit_degree = int(self._config["options"]["power"]["val"])
 
     def _reshape(self,data,shape):
         return data.reshape(shape[0],shape[1])
@@ -36,32 +44,23 @@ class Regression(object):
         return self.poly.fit_transform(data)
 
     def solve(self):
-        in_data_poly = self._convert_to_poly(self.input_data)
+        in_data_poly = self._convert_to_poly(self.input_data.values)
         self.regression_function.fit(in_data_poly,self.target_data)
 
     def predict(self,data):
         data = self._convert_to_poly(data)
         return self.regression_function.predict(data)
         
-
-# reg = Regression()
-
-# X_train = np.array([1,2,3,4,5,6,7,8,9])
-# y = X_train ** 5
-# print(X_train)
-# print(y)
-
-# reg.set_input_data(X_train)
-# reg.fit_degree = 1
-# reg.set_target_data(y)
-# reg.solve()
-
-# X_test = X_train
-# pred = reg.predict(X_test)
-# print(pred)
-
-# plt.figure()
-# plt.plot(X_test,pred,c='r',label="Test Data. Degree: {0}".format(reg.fit_degree))
-# plt.scatter(X_train,y,label="Training Data")
-# plt.legend()
-# plt.show()
+    def _test(self):
+        in_test = self.input_data.values*4
+        pred = self.predict(in_test)
+        plt.figure()
+        plt.plot(in_test,
+                    pred,
+                    c='r',
+                    label="Test Data. Degree: {0}".format(self.fit_degree))
+        plt.scatter(self.input_data,
+                    self.target_data.values,
+                    label="Training Data")
+        plt.legend()
+        plt.show()

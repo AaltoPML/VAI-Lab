@@ -2,11 +2,13 @@ from aidesign.utils.import_helper import import_module
 from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
 from aidesign.Data.Data_core import Data
+from aidesign.utils.plugin_helpers import PluginSpecs
 
 
 class Core(object):
     def __init__(self) -> None:
         self._xml_handler = XML_handler()
+        self._avail_plugins = PluginSpecs()
         self.data = Data()
         self.loop_level = 0
 
@@ -34,8 +36,9 @@ class Core(object):
 
         :param specs: dict of module to be executed
         """
-        mod = import_module(globals(), specs["module_type"])()
-        mod.data_in = self.data
+        mod = import_module(globals(), specs["module_type"]).__call__()
+        mod.set_avail_plugins(self._avail_plugins)
+        mod.set_data_in(self.data)
         mod.set_options(specs)
         print("\t"*self.loop_level
                 + specs["module_type"]
