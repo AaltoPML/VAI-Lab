@@ -109,7 +109,7 @@ class UserFeedback(tk.Tk):
         """Runs UserInterface Plugin. 
         If multiple frames exist, they are stacked
         """
-        container = tk.Frame(self, bg='#19232d')
+        container = tk.Frame(self, bg='#064663')
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)

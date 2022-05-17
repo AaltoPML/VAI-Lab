@@ -68,7 +68,7 @@ class pluginCanvas(tk.Frame):
                     bg = self.bg,
                     fg = 'white')
         self.my_label.grid(column = 5,
-                            row = 0, columnspan = 2)
+                            row = 0, columnspan = 2, padx=10)
         
         self.back_img = ImageTk.PhotoImage(Image.open(
             os.path.join(script_dir,
@@ -185,7 +185,7 @@ class pluginCanvas(tk.Frame):
                             self.frame4, image = self.forw_img, bg = self.bg, 
                             command = lambda: self.select(
                                 pCoord[0], pCoord[1]), state = tk.NORMAL)
-                    self.button_forw.grid(column = 1,row = 0, sticky="news", pady=(0,10))
+                    self.button_forw.grid(column = 1,row = 0, sticky="news", pady=(0,10), padx=(0,10))
                     if module_number < 3:
                         self.button_back = tk.Button(
                             self.frame4, image = self.back_img, bg = self.bg, 
