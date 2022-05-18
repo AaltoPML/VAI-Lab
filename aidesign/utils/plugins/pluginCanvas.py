@@ -609,14 +609,14 @@ class pluginCanvas(tk.Frame):
                 self.canvas.delete(tk.ALL)
                 self.saved = True
                 self.s.write_to_XML()
-                self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         # TODO: Check if loaded
-        # elif
+        elif len(self.s.loaded_modules) == 0:
+            self.controller._show_frame("MainPage")
+            self.controller.Plugin.set(False)
         else:
             self.reset()
             self.canvas.delete(tk.ALL)
-            
             self.s.write_to_XML()
             self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")
