@@ -212,11 +212,8 @@ class ManualInput(tk.Frame,UI):
         iw, ih  = self.image_list[n].width, self.image_list[n].height
         iw = iw() if type(iw) is not int else iw
         ih = ih() if type(ih) is not int else ih
-        
-        self.button_forw.update()
-        self.tree.update()
+
         mw, mh  = self.frame1.winfo_width()-14, self.frame1.winfo_height()-14 # Frame border correction
-        print(iw, ih, mw, mh)
         if (iw != mw) and (ih != mh):
             if iw>ih:
                 ih = ih*(mw/iw)
