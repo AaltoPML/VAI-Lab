@@ -611,9 +611,12 @@ class pluginCanvas(tk.Frame):
                 self.s.write_to_XML()
                 self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
+        # TODO: Check if loaded
+        # elif
         else:
             self.reset()
             self.canvas.delete(tk.ALL)
+            
             self.s.write_to_XML()
             self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")

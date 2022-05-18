@@ -3,7 +3,7 @@ import tkinter as tk
 import os
 from PIL import Image, ImageTk
 from tkinter import messagebox, ttk
-from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
+from tkinter.filedialog import asksaveasfile
 import numpy as np
 import pandas as pd
 
@@ -26,33 +26,28 @@ class ManualInput(tk.Frame,UI):
         self.assets_path = os.path.join(self.dirpath,'resources','Assets')
 
         self._class_list = None        
-        pixels = 500
+        pixels = 550
         path = os.path.join(self.dirpath,'resources','example_radiography_images')
         self.N = len(os.listdir(path))
         
         self.image_list = []
         for f in os.listdir(path):
             self.image_list.append(
-                ImageTk.PhotoImage(self.expand2square(
+                self.expand2square(
                     Image.open(os.path.join(path, f)), 
-                    (0, 0, 0)).resize((pixels, pixels)))) # (0, 0, 0) is the padding colour
+                    (0, 0, 0)).resize((pixels, pixels))) # (0, 0, 0) is the padding colour
         
         # Frames
-        frame1 = tk.Frame(self, bg = self.parent['bg'])
+        self.frame1 = tk.Frame(self, bg = self.parent['bg'])
         frame4 = tk.Frame(self, bg = self.parent['bg'])
         frame5 = tk.Frame(self, bg = self.parent['bg'])
         frame6 = tk.Frame(self, bg = self.parent['bg'])
         
-        # Status bar in the lower part of the window
-        self.status = tk.Label(frame6, text='Image 1 of '+str(self.N), bd = 1, 
-                          relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
-                          bg = self.parent['bg'])
-        self.status.pack(fill = tk.BOTH, expand = True, padx=10, pady=(0,10))
-        
-        # Inital image
-        self.my_label = ResizableImgLabel(frame1, image = self.image_list[0], 
-                                 bg = self.parent['bg'])
-        self.my_label.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=(10,0))
+        # # Status bar in the lower part of the window
+        # self.status = tk.Label(frame6, text='Image 1 of '+str(self.N), bd = 1, 
+        #                   relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
+        #                   bg = self.parent['bg'])
+        # self.status.pack(fill = tk.BOTH, expand = True, padx=10, pady=(0,10))
         
         # Buttons initialisation
         self.back_img = ImageTk.PhotoImage(Image.open(
@@ -72,7 +67,7 @@ class ManualInput(tk.Frame,UI):
             command = lambda: self.forward_back(2))
         self.button_forw.grid(column = 2,row = 19, sticky="news", pady=10)
 
-        button_main = tk.Button(
+        tk.Button(
             frame5, text="Done", 
             fg = 'white', bg = self.parent['bg'], height = 3, width = 20, 
             command = self.check_quit).grid(column = 4,row = 19, sticky="news", pady=10)
@@ -80,7 +75,15 @@ class ManualInput(tk.Frame,UI):
         self.save_path = ''
         self.saved = True
         
-        frame1.grid(row = 0, column = 0, sticky="nsew")
+        # Inital image
+        img = ImageTk.PhotoImage(self.image_list[0])
+        self.my_img = tk.Label(self.frame1, image = img, 
+                                 bg = self.parent['bg'])
+        self.my_img.image = img
+        self.my_img.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=(10,0))
+        self.my_img.bind("<Configure>", self.resizing)
+        
+        self.frame1.grid(row = 0, column = 0, sticky="nsew")
         # self.frame3.grid(row = 0, column = 2, sticky="nsew", pady=10, padx=10)
         frame4.grid(row = 1, column = 0, sticky="sew")
         frame5.grid(row = 1, column = 1, sticky="sew")
@@ -158,7 +161,8 @@ class ManualInput(tk.Frame,UI):
         self.tree['columns'] = self._class_list
         
         # Format columns
-        self.tree.column("#0", width = 50)
+        self.tree.column("#0", width = 80, 
+                minwidth = 50)
         for n, cl in enumerate(self._class_list):
             self.tree.column(
                 cl, width = int(self.controller.pages_font.measure(str(cl)))+20, 
@@ -202,6 +206,33 @@ class ManualInput(tk.Frame,UI):
             result.paste(pil_img, ((height - width) // 2, 0))
             return result
 
+    def resizing(self, event):
+        """ Resizes window to tree view height and buttons width """
+        n = int(self.tree.selection()[0])
+        iw, ih  = self.image_list[n].width, self.image_list[n].height
+        iw = iw() if type(iw) is not int else iw
+        ih = ih() if type(ih) is not int else ih
+        
+        self.button_forw.update()
+        self.tree.update()
+        mw, mh  = self.frame1.winfo_width()-14, self.frame1.winfo_height()-14 # Frame border correction
+        print(iw, ih, mw, mh)
+        if (iw != mw) and (ih != mh):
+            if iw>ih:
+                ih = ih*(mw/iw)
+                r = mh/ih if (ih/mh) > 1 else 1
+                iw, ih = mw*r, ih*r
+            else:
+                iw = iw*(mh/ih)
+                r = mw/iw if (iw/mw) > 1 else 1
+                iw, ih = iw*r, mh*r
+            
+            self.image_list[n] = self.image_list[n].resize(
+                (int(iw), int(ih)))
+        img = ImageTk.PhotoImage(self.image_list[n])
+        self.my_img.config(image=img)
+        self.my_img.image = img
+
     def check_quit(self):
         
         if not self.saved:
@@ -215,21 +246,12 @@ class ManualInput(tk.Frame,UI):
                 "Exit?",
                 "Are you sure you are finished?")
             self.controller.destroy()
-    
-    def open_file(self):
-        
-        self.save_path = askopenfile(mode='r+')
-        if self.save_path is not None:
-            t = self.save_path.read()
-            # textentry.delete('0.0', 'end')
-            # textentry.insert('0.0', t)
-            # textentry.focus()
-            
+
     def save_file_as(self):
         
         self.save_path = asksaveasfile(mode='w')
         self.save_file()
-        
+
     def save_file(self):
         
         if self.save_path == '':
@@ -253,8 +275,7 @@ class ManualInput(tk.Frame,UI):
         
         self.tree.selection_set(str(int(image_number-1)))
         # Print the corresponding image
-        self.my_label.config(image=self.image_list[image_number-1])
-        
+        self.resizing((0,0))
         # Update button commands
         self.button_forw.config(image = self.forw_img, bg = self.parent['bg'], 
                             command = lambda: self.forward_back(image_number+1),
@@ -281,10 +302,10 @@ class ManualInput(tk.Frame,UI):
                 variable = self.var[image_number-1,i], 
                 command=(lambda i=i: self.onPress(image_number-1,i)))
 
-        # Status bar    
-        self.status.config(text='Image ' + str(image_number) + ' of '+str(self.N), 
-            bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
-            bg = self.parent['bg'])
+        # # Status bar    
+        # self.status.config(text='Image ' + str(image_number) + ' of '+str(self.N), 
+        #     bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
+        #     bg = self.parent['bg'])
             
     def onPress(self, n,i):
         
@@ -301,34 +322,3 @@ class ManualInput(tk.Frame,UI):
         
         item = self.tree.selection()[0]
         self.forward_back(self.tree.item(item,"text"))
-
-class ResizableImgLabel(tk.Label):
-    def __init__(self, master, image_path:str='', scale:float=1.0, **kwargs):
-        tk.Label.__init__(self, master, **kwargs)
-        self.configure(bg=master['bg'])
-        self.img   = None if not image_path else Image.open(image_path)
-        self.p_img = None
-        self.scale = scale
-                
-        self.bind("<Configure>", self.resizing)
-        
-    def set_image(self, image_path:str):
-        self.img   = Image.open(image_path)
-        self.resizing()
-
-    def resizing(self, event=None):
-        if self.img:
-            iw, ih  = self.img.width, self.img.height
-            mw, mh  = self.master.winfo_width(), self.master.winfo_height()
-            
-            if iw>ih:
-                ih = ih*(mw/iw)
-                r = mh/ih if (ih/mh) > 1 else 1
-                iw, ih = mw*r, ih*r
-            else:
-                iw = iw*(mh/ih)
-                r = mw/iw if (iw/mw) > 1 else 1
-                iw, ih = iw*r, mh*r
-                
-            self.p_img = ImageTk.PhotoImage(self.img.resize((int(iw*self.scale), int(ih*self.scale))))
-            self.config(image=self.p_img)
