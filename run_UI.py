@@ -3,4 +3,9 @@ import aidesign as ai
 
 core = ai.Core()
 core.launch()
-core.run()
+# core.run()
+
+# ['State_a', 'Action_a']
+# ['State_x', 'State_y', 'Action_x', 'Action_y']
+
+# ['a', 'b', 'c', 'd']

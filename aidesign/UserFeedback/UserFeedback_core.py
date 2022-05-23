@@ -81,10 +81,13 @@ class UserFeedback(tk.Tk):
         ui_type = ui_type\
             if isinstance(ui_type, list)\
             else [ui_type]
-
         for ui in ui_type:
+            print(ui)
+            # ui_name = ''.join(kn for kn in self.available_ui_types.keys()
+            #                   if ui.lower() == self.available_ui_types[kn]["name"])
             ui_name = ''.join(kn for kn in self.available_ui_types.keys()
-                              if ui.lower() == self.available_ui_types[kn]["name"])
+                              if self.available_ui_types[kn]["name"] in ui.lower())
+            print(ui_name)
             self._add_UI_type_to_frames(ui_name)
 
 
@@ -106,7 +109,7 @@ class UserFeedback(tk.Tk):
         """Runs UserInterface Plugin. 
         If multiple frames exist, they are stacked
         """
-        container = tk.Frame(self, bg='#19232d')
+        container = tk.Frame(self, bg='#064663')
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)

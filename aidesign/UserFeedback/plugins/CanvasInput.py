@@ -23,8 +23,7 @@ class CanvasInput(tk.Frame,UI):
         
         self.controller.title('Canvas Input')
         self.notebook = ttk.Notebook(self)
-        self.notebook.grid(row=0, column=0, columnspan=7, 
-                           rowspan = 12, pady = 15)
+        self.notebook.pack(fill = tk.BOTH, expand = True)
         self.frame = []
         self.tree = []
         self.canvas = []
@@ -35,7 +34,9 @@ class CanvasInput(tk.Frame,UI):
         self._parse_config(config)
         self.save_path = ''
         self.saved = True
-    
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
     def _parse_config(self, config):
         self.config = config
         self.class_list(self.config["plugin"]["options"]["class_list"])
@@ -63,7 +64,7 @@ class CanvasInput(tk.Frame,UI):
 
         for ii in np.arange(len(self._class_list)):
             self.frame.append(tk.Frame(self, bg = self.parent['bg']))
-            self.frame[-1].grid(row=0, column=0, sticky="nsew", pady = 15)
+            self.frame[-1].pack(fill = tk.BOTH, expand = True)#grid(row=0, column=0, sticky="nsew", pady = 15)
             if self._class_list[ii][0].split('_')[1] == 'a':
                 self.type.append('Rotating')
                 self.clock.append(tk.StringVar())
@@ -74,14 +75,19 @@ class CanvasInput(tk.Frame,UI):
             self.notebook.add(
                 self.frame[-1], 
                 text = 'Object '+ str(ii) + ' - ' + self.type[-1])
-                
             
+            # Frames
+            self.frame1 = tk.Frame(self.frame[-1], bg = self.parent['bg'])
+            tree_frame = tk.Frame(self.frame[-1], bg = self.parent['bg'])
+            frame3 = tk.Frame(self.frame[-1], bg = self.parent['bg'])
+            self.frame4 = tk.Frame(self.frame[-1], bg = self.parent['bg'])
+
             # Create a canvas widget
             self.width, self.height = 600, 600
             self.canvas.append(tk.Canvas(
-                self.frame[-1], width=self.width, 
+                self.frame1, width=self.width, 
                 height=self.height, background="white"))
-            self.canvas[-1].grid(row=0, column=0, columnspan=4, rowspan = 2)
+            self.canvas[-1].pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=(10,0))
             self.canvas[-1].bind('<Button-1>', self.draw_dot)
             self.canvas[-1].bind("<B1-Motion>", self.on_drag)
             # self.canvas[-1].bind('<Motion>', self.motion)
@@ -93,41 +99,41 @@ class CanvasInput(tk.Frame,UI):
             self.state[ii].set('state')    
             # Buttons under the canvas
             self.button_draw = tk.Radiobutton(
-                self.frame[-1], text = 'Draw', fg = 'white', bg = self.parent['bg'],
+                self.frame4, text = 'Draw', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.draw[ii], 
-                selectcolor = 'black', value = 'draw').grid(column = 4, row = 3)
+                selectcolor = 'black', value = 'draw').grid(column = 4, row = 3, sticky="news", pady=(0,10))
             self.button_drag = tk.Radiobutton(
-                self.frame[-1], text = 'Move', fg = 'white', bg = self.parent['bg'],
+                self.frame4, text = 'Move', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.draw[ii], 
-                selectcolor = 'black', value = 'drag').grid(column = 5, row = 3)
+                selectcolor = 'black', value = 'drag').grid(column = 5, row = 3, sticky="news", pady=(0,10))
             self.clock_arc = tk.Radiobutton(
-                self.frame[-1], text = 'Clockwise', fg = 'white', bg = self.parent['bg'],
+                self.frame4, text = 'Clockwise', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.clock[ii], 
-                selectcolor = 'black', value = 'clock').grid(column = 6, row = 3)            
+                selectcolor = 'black', value = 'clock').grid(column = 6, row = 3, sticky="news", pady=(0,10))            
             self.countclock_arc = tk.Radiobutton(
-                self.frame[-1], text = 'Counterclockwise', fg = 'white', bg = self.parent['bg'],
+                self.frame4, text = 'Counterclockwise', fg = 'white', bg = self.parent['bg'],
                 height = 3, width = 20, var = self.clock[ii], 
-                selectcolor = 'black', value = 'countclock').grid(column = 7, row = 3)
+                selectcolor = 'black', value = 'countclock').grid(column = 7, row = 3, sticky="news", pady=(0,10))
             # self.button_edit = tk.Radiobutton(
             #     self.frame[-1], text = 'Edit', fg = 'white', bg = self.parent['bg'],
             #     height = 3, width = 20, var = self.draw[ii], 
             #     selectcolor = 'black', value = 'edit').grid(column = 6,row = 3)
             self.button_save = tk.Button(
-                self.frame[-1], text = 'Save', fg = 'white', bg = self.parent['bg'],
-                height = 3, width = 20, 
-                command = self.save_file).grid(column = 1, row = 3)
+                frame3, text = 'Save', fg = 'white', bg = self.parent['bg'],
+                height = 3, width = 15, 
+                command = self.save_file).grid(column = 1, row = 3, sticky="news", pady=10)
             self.button_upload = tk.Button(
-                self.frame[-1], text = 'Upload coordinates', fg = 'white', 
-                bg = self.parent['bg'], height = 3, width = 20, 
-                command = self.upload_sa).grid(column = 0, row = 3)
+                frame3, text = 'Upload coordinates', fg = 'white', 
+                bg = self.parent['bg'], height = 3, width = 15, 
+                command = self.upload_sa).grid(column = 0, row = 3, sticky="news", pady=10, padx=(10,0))
             self.button_reset = tk.Button(
-                self.frame[-1], text = 'Reset', fg = 'white', 
-                bg = self.parent['bg'], height = 3, width = 20, 
-                command = self.reset).grid(column = 2, row = 3)
+                frame3, text = 'Reset', fg = 'white', 
+                bg = self.parent['bg'], height = 3, width = 15, 
+                command = self.reset).grid(column = 2, row = 3, sticky="news", pady=10)
             button_main = tk.Button(
-                self.frame[-1], text="Done", fg = 'white', 
-                bg = self.parent['bg'], height = 3, width = 20,
-                command = self.check_quit).grid(column = 3, row = 3)
+                frame3, text="Done", fg = 'white', 
+                bg = self.parent['bg'], height = 3, width = 15,
+                command = self.check_quit).grid(column = 3, row = 3, sticky="news", pady=10)
             style = ttk.Style()
             style.configure(
                 "Treeview", background = 'white', foreground = 'white', 
@@ -138,8 +144,7 @@ class CanvasInput(tk.Frame,UI):
             style.map('Treeview', background = [('selected', 'grey')])
             
 
-            tree_frame = tk.Frame(self.frame[-1])
-            tree_frame.grid(row = 0, column = 4, columnspan = 3, rowspan = 10)
+            # tree_frame.grid(row = 0, column = 4, columnspan = 3, rowspan = 10)
             
             tree_scrollx = tk.Scrollbar(tree_frame, orient = 'horizontal')
             tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
@@ -150,7 +155,7 @@ class CanvasInput(tk.Frame,UI):
                 tree_frame, 
                 yscrollcommand = tree_scrolly.set, 
                 xscrollcommand = tree_scrollx.set))
-            self.tree[-1].pack()
+            self.tree[-1].pack(fill='both', expand=True)
             
             tree_scrollx.config(command = self.tree[-1].xview)
             tree_scrolly.config(command = self.tree[-1].yview)
@@ -190,6 +195,18 @@ class CanvasInput(tk.Frame,UI):
         
             # Define double-click on row action
             self.tree[-1].bind("<Double-1>", self.OnDoubleClick)
+
+            self.frame1.grid(row = 0, column = 0, sticky="nsew")
+            tree_frame.grid(row = 0, column = 1, sticky="nsew", pady=10, padx=10)
+            frame3.grid(row = 1, column = 0, sticky="sew")
+            self.frame4.grid(row = 1, column = 1, sticky="sew")
+            
+            frame3.grid_columnconfigure(tuple(range(4)), weight=1)
+            self.frame4.grid_columnconfigure(tuple(range(4)), weight=1)
+            self.frame[-1].grid_rowconfigure(0, weight=3)
+            self.frame[-1].grid_rowconfigure(1, weight=1)
+            self.frame[-1].grid_columnconfigure(0, weight=2)
+            self.frame[-1].grid_columnconfigure(1, weight=1)
 
     def draw_dot(self, event):
         
