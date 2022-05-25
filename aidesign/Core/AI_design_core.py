@@ -1,7 +1,6 @@
-# from importlib import import_module
 from aidesign.utils.import_helper import import_module
-from .. import Settings
-from .. import GUI
+from aidesign.Settings.Settings_core import Settings
+from aidesign.GUI.GUI_core import GUI
 
 
 class Core(Settings):
@@ -10,7 +9,7 @@ class Core(Settings):
         self.loop_level = 0
 
     def launch(self):
-        gui_app = GUI.GUI()
+        gui_app = GUI()
         gui_app.set_plugin_name('main')
         gui_output = gui_app.launch()
         if not gui_app.closed:
@@ -64,6 +63,7 @@ class Core(Settings):
     def _parse_condition(self, condition):
         try:
             condition = int(condition)
+            
             if isinstance(condition, int):
                 return range(0, condition)
         except:

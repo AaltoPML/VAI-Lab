@@ -27,7 +27,7 @@
                     <parent name="Init" />
                     <child name="Data Processing 1" />
                 </relationships>
-        </UserFeedback>
+            </UserFeedback>
             <loop type="for" condition="1" name="For Loop 2">
                 <UserFeedback name="My Second UserFeedback Module">
                     <plugin type="canvas">

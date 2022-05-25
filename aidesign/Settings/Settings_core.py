@@ -16,6 +16,7 @@ class Settings(object):
 
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
+        TODO: Can extend the plugin_helpers.py script to automatically populate these things
         """
         self._valid_tags = {
             "pipeline": "declaration",
@@ -306,6 +307,52 @@ class Settings(object):
         coords_elem.text = str("\n{0}".format(coords))
         return elem
 
+    def _add_plugin_options(self, 
+                            plugin_elem:ET.Element,
+                            options
+                            ):
+        for key in options.keys():
+            if isinstance(options[key], list):
+                new_option = ET.SubElement(plugin_elem, key)
+                option_text = ("\n{}".format(
+                    "\n".join([*options[key]])))
+                new_option.text = option_text
+            elif isinstance(options[key], (int,float,str)):
+                new_option = ET.SubElement(plugin_elem, key)
+                text_lead = "\n" if "\n" not in str(options[key]) else ""
+                new_option.text = "{0} {1}".format(text_lead, str(options[key]))
+            elif isinstance(options[key], (dict)):
+                self._add_plugin_options(plugin_elem,options[key])
+
+    def append_plugin_to_module(self,
+                                plugin_type: str,
+                                plugin_options: dict,
+                                xml_parent: ET.Element or str,
+                                overwrite_existing: bool = False
+                                ):
+        """Appened plugin as subelement to existing module element
+        
+        :param plugin_type: string type of plugin to be loaded into module
+        :param plugin_options: dict where keys & values are options & values
+        :param xml_parent: dict OR str. 
+                            If string given, parent elem is found via search,
+                            Otherwise, plugin appeneded directly
+        """
+        if isinstance(xml_parent,str):
+            xml_parent = self._get_element_from_name(xml_parent)
+            
+        plugin_elem = xml_parent.find("./plugin")
+
+        if plugin_elem is not None and overwrite_existing:
+            xml_parent.remove(plugin_elem)
+            plugin_elem = None
+
+        if plugin_elem is None:
+            plugin_elem = ET.SubElement(xml_parent, "plugin")
+            plugin_elem.set('type', plugin_type) 
+        self._add_plugin_options(plugin_elem,plugin_options)
+        
+
     def append_pipeline_module(self,
                                 module_type: str,
                                 module_name: str,
@@ -332,18 +379,11 @@ class Settings(object):
         new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
 
-        new_plugin = ET.SubElement(new_mod, "plugin")
-        new_plugin.set('type', plugin_type)
-
-        for key in plugin_options.keys():
-            new_option = ET.SubElement(new_plugin, key)
-            if isinstance(plugin_options[key], list):
-                option_text = ("\n{}".format(
-                    "\n".join([*plugin_options[key]])))
-                new_option.text = option_text
-
-            elif isinstance(plugin_options[key], str):
-                new_option.set('value', plugin_options[key])
+        self.append_plugin_to_module(plugin_type,
+                                        plugin_options,
+                                        new_mod,
+                                        0
+                                        )
 
         if xml_parent_element.tag =="loop":
             parents.append(xml_parent_element.attrib["name"])
@@ -415,7 +455,9 @@ class Settings(object):
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
+    # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
     # s.print_loaded_modules()
+    
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
     #                       "10",
