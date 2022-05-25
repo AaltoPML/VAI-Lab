@@ -36,9 +36,17 @@ class CanvasInput(tk.Frame,UI):
         self.save_path = ''
         self.saved = True
     
+    
     def _parse_config(self, config):
         self.config = config
         self.class_list(self.config["plugin"]["options"]["class_list"])
+
+    def set_data_in(self,data_in):
+            self._data_in = data_in
+
+    def configure(self, config:dict):
+        self._config = config
+        self._parse_config()
 
     def class_list(self):
         """Getter for required _class_list variable
