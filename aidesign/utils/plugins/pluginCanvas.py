@@ -280,7 +280,7 @@ class pluginCanvas(tk.Frame):
             # Print settings
             tk.Label(frame1,
                   text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.\n\
-                      Close the window when you are done.", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0)
+                      Close the window when you are done.", anchor = tk.N, justify=tk.LEFT).pack(expand = True)
             self.entry = []
             # Required
             r = 1
@@ -307,9 +307,10 @@ class pluginCanvas(tk.Frame):
             self.finishButton.bind("<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
             
-            frame1.grid(column=0, row=0, sticky="nsew")
+            frame1.grid(column=0, row=0, sticky="new")
             frame4.grid(column=0, row=r, sticky="se")
-            self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=1)
+            self.newWindow.grid_rowconfigure(0, weight=1)
+            self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
     def displaySettings(self, frame, settings):
