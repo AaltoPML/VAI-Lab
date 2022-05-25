@@ -51,7 +51,6 @@ class GUI(tk.Tk):
         plugin = import_plugin_absolute(globals(),
                                         ui_specs["_PLUGIN_PACKAGE"],
                                         ui_specs["_PLUGIN_CLASS_NAME"])
-
         self._desired_ui_types.append(plugin)
         self._compare_layer_priority(ui_specs)
         if ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"] != None:
@@ -72,13 +71,17 @@ class GUI(tk.Tk):
             ui_specs = self._plugin_specs.find_from_readable_name(ui)
             try:
                 self._add_UI_type_to_frames(ui_specs)
+            except ModuleNotFoundError as ex:
+                from sys import exit
+                print(ex.msg)
+                exit(1)
             except:
                 from sys import exit
                 print(
-                    "Error: User Interface \"{0}\" not recognised. \
-                    \nAvailable methods are: \
-                    \n  - {1}"\
-                    .format(ui, ",\n  - ".join(
+                    "Error: User Interface \"{0}\" not recognised.\
+                    \n Available methods are:\
+                    \n   - {1}"\
+                    .format(ui, ",\n   - ".join(
                         [i for i in self._plugin_specs.available_plugin_names])))
                 exit(1)
 
