@@ -27,7 +27,7 @@ class Core(object):
         self._xml_handler.load_XML(filename)
 
     def _load_data(self):
-        init_data_fn = self._xml_handler.loaded_data_options["init_data"]
+        init_data_fn = self._xml_handler.data_to_load
         self.data.import_data(init_data_fn)
 
     def _execute_module(self, specs):

@@ -59,11 +59,11 @@ class Data(object):
 
     def load_data_settings(self, filename:str):
         self.xml_parser.load_XML(filename)
-        self.loaded_options = self.xml_parser.loaded_data_options
+        self.loaded_options = self.xml_parser.init_data_structure
         self._parse_data_options()
         
 if __name__ == "__main__":
     d = Data()
-    # d.load_data_settings("./resources/basic_operation.xml")
+    # d.load_data_settings("./Data/resources/data_passing_test.xml")
     d.import_data("./Data/resources/import_test.csv")
     print(d.data)
