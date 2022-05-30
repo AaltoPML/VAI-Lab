@@ -95,7 +95,8 @@ class XML_handler(object):
                 from sys import exit
                 print("\nError: Invalid XML Tag.")
                 print("XML tag \"{0}\" in \"{1}\" not found".format(child.tag,element.tag))
-                print("Valid tags are: \n\t- {}".format(",\n\t- ".join([*self._valid_tags])))
+                print("Valid tags are:")
+                print("\t\u2022 {}".format(",\n\t\u2022 ".join([*self._valid_tags])))
                 exit(1)
             except AssertionError as Error:
                 from sys import exit
@@ -461,7 +462,7 @@ if __name__ == "__main__":
     # s = XML_handler("./resources/Hospital.xml")
     s = XML_handler("./Data/resources/data_passing_test.xml")
     # s = XML_handler()
-    s.new_config_file("./resources/example_config.xml")
+    # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
     # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
