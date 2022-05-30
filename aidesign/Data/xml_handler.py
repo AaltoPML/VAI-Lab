@@ -65,10 +65,8 @@ class XML_handler(object):
         """Constructs new XML file with minimal format"""
         if filename is not None: 
             self.set_filename(filename)
-        self.tree = ET.ElementTree(ET.Element("Settings"))
+        self.tree = ET.ElementTree(ET.Element("pipeline"))
         self.root = self.tree.getroot()
-        self.pipeline_tree = ET.SubElement(self.root,"pipeline")
-        self.data_tree = ET.SubElement(self.root,"datastructure")
 
     def load_XML(self, filename: str):
         """Loads XML file into class. 
@@ -80,11 +78,7 @@ class XML_handler(object):
 
     def _parse_XML(self):
         self.root = self.tree.getroot()
-
-        self.pipeline_tree = self.root.find("pipeline")
-        self._parse_tags(self.pipeline_tree, self.loaded_modules)
-
-        # self._parse_data_structure()
+        self._parse_tags(self.root, self.loaded_modules)
 
     def _parse_tags(self, element: ET.Element, parent:dict):
         """Detect tags and send them to correct method for parsing
@@ -217,17 +211,6 @@ class XML_handler(object):
             if len(parent[element.tag]) == 1:
                 parent[element.tag] = parent[element.tag][0]
 
-    def _parse_data_structure(self):
-        """Parses tags associated with data structure"""
-        self.data_tree = self.root.find("datastructure")
-        for child in self.data_tree:
-            for attr in child.attrib:
-                self.loaded_data_options[child.tag] = child.attrib[attr]
-            if child.text:
-                self.loaded_data_options[child.tag]\
-                    = self._parse_text_to_list(child)
-            
-
     def _parse_text_to_list(self, element: ET.Element) -> list:
         """Formats raw text data
 
@@ -255,10 +238,6 @@ class XML_handler(object):
     def print_loaded_modules(self):
         """Print indented pipeline specifications to screen"""
         self._print_pretty(self.loaded_modules)
-
-    def print_loaded_data_structure(self):
-        """Print indented data structure specifications to screen"""
-        self._print_pretty(self.loaded_data_options)
 
     def write_to_XML(self):
         """Formats XML Tree correctly, then writes to filename
@@ -294,7 +273,7 @@ class XML_handler(object):
     def _get_element_from_name(self, name: str):
         """Find a module name and return its parent tags"""
         if name == None:
-            return self.pipeline_tree
+            return self.root
         elems = self.root.findall(".//*[@name='{0}']".format(name))
         unique_elem = [e for e in elems if e.tag != "parent" and e.tag != "child"]
         assert len(unique_elem)<2, "Error: More than one tag with same identifier"
@@ -475,22 +454,6 @@ class XML_handler(object):
         xml_parent_element.append(new_loop)
 
 
-    def append_data_structure_field(self,
-                                            field_type: str,
-                                            value: list,
-                                            field_name: str = None):
-        """Add new tags for data structure to XML file
-
-        :param field_type: str of desired XML tag to add
-        :param value: list of values for field_type
-        :param field_name [optional]: str with user defined name for tag
-        """
-        new_field = ET.Element(field_type)
-        if field_name is not None:
-            new_field.set('name', field_name)
-        new_field.text = value
-        self.data_tree.append(new_field)
-
 
 
 # Use case examples:
@@ -498,7 +461,7 @@ if __name__ == "__main__":
     # s = XML_handler("./resources/Hospital.xml")
     s = XML_handler("./Data/resources/data_passing_test.xml")
     # s = XML_handler()
-    # s.new_config_file("./resources/example_config.xml")
+    s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
     # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
@@ -519,5 +482,3 @@ if __name__ == "__main__":
     #                       "loop0",
     #                       [2,3,4,5])
     # s.write_to_XML()
-    # s.append_data_structure_field_to_file("replay_buffer", "1")
-    # s.print_loaded_data_structure()

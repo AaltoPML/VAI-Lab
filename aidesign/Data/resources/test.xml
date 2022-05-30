@@ -1,42 +1,39 @@
-<Settings>
-    <pipeline>
-        <Initialiser name="Initialiser">
-            <plugin type="" />
-            <relationships>
-                <child name="User Feedback" />
-            </relationships>
-            <coordinates>
-                (300.0, 50)
-            </coordinates>
-        </Initialiser>
-        <UserFeedback name="UserFeedback">
-            <plugin type="manuald">
-                <class_list>
-                    test_1
-                    test_2
-                </class_list>
-                <class_list_2>
-                    test_1
-                    test_2
-                </class_list_2>
-            </plugin>
-            <relationships>
-                <parent name="Initialiser" />
-                <child name="Output" />
-            </relationships>
-            <coordinates>
-                (300.0, 300.0)
-            </coordinates>
-        </UserFeedback>
-        <Output name="Output">
-            <plugin type="" />
-            <relationships>
-                <parent name="User Feedback" />
-            </relationships>
-            <coordinates>
-                (300.0, 550)
-            </coordinates>
-        </Output>
-    </pipeline>
-    <datastructure />
-</Settings>
+<pipeline>
+    <Initialiser name="Initialiser">
+        <plugin type="" />
+        <relationships>
+            <child name="User Feedback" />
+        </relationships>
+        <coordinates>
+            (300.0, 50)
+        </coordinates>
+    </Initialiser>
+    <UserFeedback name="UserFeedback">
+        <plugin type="manuald">
+            <class_list>
+                test_1
+                test_2
+            </class_list>
+            <class_list_2>
+                test_1
+                test_2
+            </class_list_2>
+        </plugin>
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            (300.0, 300.0)
+        </coordinates>
+    </UserFeedback>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="User Feedback" />
+        </relationships>
+        <coordinates>
+            (300.0, 550)
+        </coordinates>
+    </Output>
+</pipeline>

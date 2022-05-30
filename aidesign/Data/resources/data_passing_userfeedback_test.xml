@@ -1,36 +1,30 @@
-<Settings>
-    <pipeline>
-        <Initialiser name="Init">
-            <plugin type="">
-                <initial_data file="../resources/import_test user_interface.csv" />
-                <goal file="../resources/design_goals_test.csv" />
-            </plugin>
-            <relationships>
-                <child name="My First UserFeedback Module" />
-            </relationships>
-        </Initialiser>
-        <Modelling name="My First UserFeedback Module">
-            <plugin type="manual">
-                <power val = "2" />
-            </plugin>
-            <relationships>
-                <parent name="Init" />
-                <child name="Output" />
-            </relationships>
-        </Modelling>
-        <Output>
-            <plugin type="">
-                <out_data>
-                    all
-                </out_data>
-                <save_to file="../resources/output_test.csv" />
-            </plugin>
-            <relationships>
-                <parent name="My Second UserFeedback Module" />
-            </relationships>
-        </Output>
-    </pipeline>
-    <datastructure name="datatest">
-        <init_data file="./resources/import_test user_interface.csv" />
-    </datastructure>
-</Settings>
+<pipeline>
+    <Initialiser name="Init">
+        <inputdata>
+            <X_data file="./Data/resources/import_test user_interface.csv" />
+        </inputdata>
+        <relationships>
+            <child name="My First UserFeedback Module" />
+        </relationships>
+    </Initialiser>
+    <Modelling name="My First UserFeedback Module">
+        <plugin type="manual">
+            <power val = "2" />
+        </plugin>
+        <relationships>
+            <parent name="Init" />
+            <child name="Output" />
+        </relationships>
+    </Modelling>
+    <Output>
+        <plugin type="">
+            <out_data>
+                all
+            </out_data>
+            <save_to file="../resources/output_test.csv" />
+        </plugin>
+        <relationships>
+            <parent name="My Second UserFeedback Module" />
+        </relationships>
+    </Output>
+</pipeline>
