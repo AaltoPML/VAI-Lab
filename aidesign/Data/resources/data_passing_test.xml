@@ -1,10 +1,15 @@
 <Settings>
     <pipeline>
         <Initialiser name="Init">
-            <plugin type="">
-                <initial_data file="../resources/intial_data_test.csv" />
-                <goal file="../resources/design_goals_test.csv" />
-            </plugin>
+
+            <!-- <inputdata name="datatest"> -->
+            <inputdata>
+                <X_data file="./Data/resources/import_test.csv" />
+                <X_test_data file="./Data/resources/import_test.csv" />
+                <Y_data file="./Data/resources/import_test.csv" />
+                <Y_test_data file="./Data/resources/import_test.csv" />
+            </inputdata>
+
             <relationships>
                 <child name="My First Modelling Module" />
             </relationships>
@@ -32,7 +37,5 @@
             </relationships>
         </Output>
     </pipeline>
-    <datastructure name="datatest">
-        <init_data file="./resources/import_test.csv" />
-    </datastructure>
+
 </Settings>

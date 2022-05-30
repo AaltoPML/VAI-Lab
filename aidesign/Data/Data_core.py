@@ -15,6 +15,7 @@ import numpy as np
 
 class Data(object):
     def __init__(self) -> None:
+        self.lib_base_path = __file__.split("aidesign")[0] + "aidesign"
         self.xml_parser = XML_handler()
         self.data = pd.DataFrame()
 
@@ -43,7 +44,7 @@ class Data(object):
         :param filename: str, filename of file to be loaded
         """
         if filename[0] == ".":
-            filename = path.join(path.dirname(__file__), filename)
+            filename = path.join(self.lib_base_path,filename)
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             filename = filename
         ext = filename.split(".")[-1]
@@ -64,5 +65,5 @@ class Data(object):
 if __name__ == "__main__":
     d = Data()
     # d.load_data_settings("./resources/basic_operation.xml")
-    d.import_data("./resources/import_test.csv")
+    d.import_data("./Data/resources/import_test.csv")
     print(d.data)

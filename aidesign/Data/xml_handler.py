@@ -11,8 +11,8 @@ class XML_handler(object):
 
         :param filename [optional]: filename from which to load XML
         """
+        self.lib_base_path = __file__.split("aidesign")[0] + "aidesign"
         self.loaded_modules = {}
-        self.loaded_data_options = {}
 
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
@@ -20,11 +20,11 @@ class XML_handler(object):
         """
         self._valid_tags = {
             "pipeline": "declaration",
-            "datastructure": "declaration",
             "relationships": "relationships",
             "plugin": "plugin",
             "coordinates": "list",
             "Initialiser": "entry_point",
+            "inputdata": "data",
             "Output": "exit_point",
             "UserFeedback": "module",
             "DataProcessing": "module",
@@ -37,12 +37,19 @@ class XML_handler(object):
         if filename is not None:
             self.load_XML(filename)
 
-    def set_filename(self, filename: str):
-        """Converts relative paths into absolute before setting."""
+    def _filename_abs_rel_check(self, filename: str):
+        """Checks if path is relative or absolute
+        If absolute, returns original path 
+        If relative, converts path to absolute by appending to base directory
+        """
         if filename[0] == ".":
-            self.filename = path.join(path.dirname(__file__), filename)
+            return path.join(self.lib_base_path,filename)
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
-            self.filename = filename
+            return filename
+
+    def set_filename(self, filename: str):
+        """Sets filename. Converts relative paths to absolute first."""
+        self.filename = self._filename_abs_rel_check(filename)
 
     def new_config_file(self, filename: str = None):
         """Constructs new XML file with minimal format"""
@@ -67,7 +74,7 @@ class XML_handler(object):
         self.pipeline_tree = self.root.find("pipeline")
         self._parse_tags(self.pipeline_tree, self.loaded_modules)
 
-        self._parse_data_structure()
+        # self._parse_data_structure()
 
     def _parse_tags(self, element: ET.Element, parent:dict):
         """Detect tags and send them to correct method for parsing
@@ -84,6 +91,8 @@ class XML_handler(object):
                 print("\nError: Invalid XML Tag.")
                 print("XML tag \"{0}\" in \"{1}\" not found".format(child.tag,element.tag))
                 print("Valid tags are: \n\t- {}".format(",\n\t- ".join([*self._valid_tags])))
+            except AssertionError as Error:
+                print (Error)
 
     def _load_module(self, element: ET.Element, parent:dict):
         """Parses tags associated with modules and appends to parent dict
@@ -125,6 +134,21 @@ class XML_handler(object):
         parent[initialiser_name] = {"name":initialiser_name,
                                     "class":self._valid_tags[element.tag]}
         self._parse_tags(element,parent[initialiser_name])
+
+    def _load_data(self, element: ET.Element, parent:dict):
+        """Parses tags associated with initial data files and appends to parent dict
+
+        :param elem: xml.etree.ElementTree.Element to be parsed
+        :param parent: dict or dict fragment parsed tags will be appened to
+        """
+        data_name = (element.attrib["name"] if "name" in element.attrib else "input_data")
+        parent[data_name] = {"name": data_name}
+        for child in element:
+            assert "file" in child.attrib, str("XML Parse Error \
+                                            \n\tA path to data file must be specified. \
+                                            \n\t{0} does not contain the \"file\" tag. \
+                                            \n\tCorrect usage: {0} file = <path-to-file>".format(child.tag))
+            parent[data_name][child.tag] = child.attrib["file"]
 
     def _load_exit_point(self, element: ET.Element, parent:dict):
         """Parses tags associated with output and appends to parent dict
@@ -454,13 +478,13 @@ class XML_handler(object):
 # Use case examples:
 if __name__ == "__main__":
     # s = XML_handler("./resources/Hospital.xml")
-    s = XML_handler("./resources/data_passing_test.xml")
+    s = XML_handler("./Data/resources/data_passing_test.xml")
     # s = XML_handler()
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
     # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
-    # s.print_loaded_modules()
+    s.print_loaded_modules()
     
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
@@ -478,4 +502,4 @@ if __name__ == "__main__":
     #                       [2,3,4,5])
     # s.write_to_XML()
     # s.append_data_structure_field_to_file("replay_buffer", "1")
-    s.print_loaded_data_structure()
+    # s.print_loaded_data_structure()
