@@ -37,7 +37,7 @@ class XML_handler(object):
         if filename is not None:
             self.load_XML(filename)
 
-    def _filename_abs_rel_check(self, filename: str):
+    def _check_filename_abs_rel(self, filename: str):
         """Checks if path is relative or absolute
         If absolute, returns original path 
         If relative, converts path to absolute by appending to base directory
@@ -47,9 +47,19 @@ class XML_handler(object):
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             return filename
 
+    def _check_file_exists(self, filename:str):
+        """Checks if a given path exists
+        Convert any rel path to abs first
+        :returns: 
+            - True if file exists
+            - False if file does not exist
+        """
+        abs_path = self._check_filename_abs_rel(filename)
+        return path.exists(abs_path)
+
     def set_filename(self, filename: str):
         """Sets filename. Converts relative paths to absolute first."""
-        self.filename = self._filename_abs_rel_check(filename)
+        self.filename = self._check_filename_abs_rel(filename)
 
     def new_config_file(self, filename: str = None):
         """Constructs new XML file with minimal format"""
@@ -88,11 +98,15 @@ class XML_handler(object):
                 tag_type = self._valid_tags[child.tag]
                 getattr(self, "_load_{}".format(tag_type))(child, parent)
             except KeyError:
+                from sys import exit
                 print("\nError: Invalid XML Tag.")
                 print("XML tag \"{0}\" in \"{1}\" not found".format(child.tag,element.tag))
                 print("Valid tags are: \n\t- {}".format(",\n\t- ".join([*self._valid_tags])))
+                exit(1)
             except AssertionError as Error:
+                from sys import exit
                 print (Error)
+                exit(1)
 
     def _load_module(self, element: ET.Element, parent:dict):
         """Parses tags associated with modules and appends to parent dict
@@ -148,6 +162,10 @@ class XML_handler(object):
                                             \n\tA path to data file must be specified. \
                                             \n\t{0} does not contain the \"file\" tag. \
                                             \n\tCorrect usage: {0} file = <path-to-file>".format(child.tag))
+            assert self._check_file_exists(child.attrib["file"]),\
+                                            str("Error: Data file not found. \
+                                                \n\tFile: {0} does not exist"\
+                                                .format(self._check_filename_abs_rel(child.attrib["file"])))
             parent[data_name][child.tag] = child.attrib["file"]
 
     def _load_exit_point(self, element: ET.Element, parent:dict):
