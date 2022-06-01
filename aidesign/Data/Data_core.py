@@ -17,26 +17,25 @@ class Data(object):
     def __init__(self) -> None:
         self.lib_base_path = __file__.split("aidesign")[0] + "aidesign"
         self.xml_parser = XML_handler()
+        self.data_names = []
 
-    def import_csv(self, 
+    def _import_csv(self, 
                     filename:str,
                     data_name:str,
                     strip_whitespace:bool=True):
         """import data directly into DataFrame
 
         :param filename: str, filename of csv file to be loaded
+        :param data_name: str, name of class variable data will be loaded to
         :param strip_whitespace: bool, remove spaces from before & after header names
         TODO: pandas has a lot of inbuilt read functions, including excel - implement
         """
         setattr(self,data_name,pd.read_csv(filename,
                             delimiter=',',
                             quotechar='|'))
-
         if strip_whitespace:
             getattr(self,data_name).columns = [c.strip() for c in getattr(self,data_name).columns]
-            # self.data.columns = [c.strip() for c in self.data.columns]
 
-    # def import_data(self, filename:str):
     def import_data_file(self,
                         filename:str,
                         data_name:str = "data"):
@@ -47,13 +46,15 @@ class Data(object):
         Filename to parsing method based on extension name.
         
         :param filename: str, filename of file to be loaded
+        :param data_name: str, name of class variable data will be loaded to
         """
         if filename[0] == ".":
             filename = path.join(self.lib_base_path,filename)
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             filename = filename
         ext = filename.split(".")[-1]
-        getattr(self,"import_{0}".format(ext))(filename,data_name)
+        getattr(self,"_import_{0}".format(ext))(filename,data_name)
+        self.data_names.append(data_name)
 
     def import_data_from_config(self,config:dict):
         for c in config.keys():
@@ -75,4 +76,5 @@ if __name__ == "__main__":
     d = Data()
     # d.load_data_settings("./Data/resources/data_passing_test.xml")
     d.import_data_file("./Data/resources/import_test.csv")
-    print(d.data)
+    print(d.data_names)
+    d.data_names
