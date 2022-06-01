@@ -25,10 +25,12 @@ class Regression(object):
         self._parse_config()
 
     def _parse_config(self):
-        train_data_header = self._config["options"]["train_name"]["val"]
-        target_data_header = self._config["options"]["target_name"]["val"]
-        self.input_data = self._data_in.data[train_data_header]
-        self.target_data = self._data_in.data[target_data_header]
+        # train_data_header = self._config["options"]["train_name"]["val"]
+        # target_data_header = self._config["options"]["target_name"]["val"]
+        # self.input_data = self._data_in.data[train_data_header]
+        # self.target_data = self._data_in.data[target_data_header]
+        self.input_data = self._data_in.X
+        self.target_data = self._data_in.Y
         self.fit_degree = int(self._config["options"]["power"]["val"])
 
     def _reshape(self,data,shape):

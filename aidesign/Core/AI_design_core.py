@@ -28,7 +28,7 @@ class Core(object):
 
     def _load_data(self):
         init_data_fn = self._xml_handler.data_to_load
-        self.data.import_data(init_data_fn)
+        self.data.import_data_from_config(init_data_fn)
 
     def _execute_module(self, specs):
         """Executes named module with given options

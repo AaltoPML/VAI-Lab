@@ -17,10 +17,10 @@ class Data(object):
     def __init__(self) -> None:
         self.lib_base_path = __file__.split("aidesign")[0] + "aidesign"
         self.xml_parser = XML_handler()
-        self.data = pd.DataFrame()
 
     def import_csv(self, 
                     filename:str,
+                    data_name:str,
                     strip_whitespace:bool=True):
         """import data directly into DataFrame
 
@@ -28,13 +28,18 @@ class Data(object):
         :param strip_whitespace: bool, remove spaces from before & after header names
         TODO: pandas has a lot of inbuilt read functions, including excel - implement
         """
-        self.data = pd.read_csv(filename,
+        setattr(self,data_name,pd.read_csv(filename,
                             delimiter=',',
-                            quotechar='|')
-        if strip_whitespace:
-            self.data.columns = [c.strip() for c in self.data.columns]
+                            quotechar='|'))
 
-    def import_data(self, filename:str):
+        if strip_whitespace:
+            getattr(self,data_name).columns = [c.strip() for c in getattr(self,data_name).columns]
+            # self.data.columns = [c.strip() for c in self.data.columns]
+
+    # def import_data(self, filename:str):
+    def import_data_file(self,
+                        filename:str,
+                        data_name:str = "data"):
         """Import file directly into DataFrame
 
         Translates relative files to absolute before parsing - not ideal
@@ -48,7 +53,11 @@ class Data(object):
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             filename = filename
         ext = filename.split(".")[-1]
-        getattr(self,"import_{0}".format(ext))(filename)
+        getattr(self,"import_{0}".format(ext))(filename,data_name)
+
+    def import_data_from_config(self,config:dict):
+        for c in config.keys():
+            self.import_data_file(config[c],c)
 
     def append_data_column(self, col_name:str, data=None):
         self.data[col_name] = data
@@ -65,5 +74,5 @@ class Data(object):
 if __name__ == "__main__":
     d = Data()
     # d.load_data_settings("./Data/resources/data_passing_test.xml")
-    d.import_data("./Data/resources/import_test.csv")
+    d.import_data_file("./Data/resources/import_test.csv")
     print(d.data)
