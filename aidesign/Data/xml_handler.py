@@ -158,15 +158,24 @@ class XML_handler(object):
                              "class": "data",
                              "to_load":{}}
         for child in element:
-            assert "file" in child.attrib, str("XML Parse Error \
-                                            \n\tA path to data file must be specified. \
-                                            \n\t{0} does not contain the \"file\" tag. \
-                                            \n\tCorrect usage: {0} file = <path-to-file>".format(child.tag))
-            assert self._check_file_exists(child.attrib["file"]),\
-                str("Error: Data file not found. \
-                                                \n\tFile: {0} does not exist"
-                    .format(self._check_filename_abs_rel(child.attrib["file"])))
-            parent[data_name]["to_load"][child.tag] = child.attrib["file"]
+            assert "file" in child.attrib \
+                or "folder" in child.attrib,\
+                str("XML Parse Error \
+                    \n\tA path to data file must be specified. \
+                    \n\t{0} does not contain the \"file\" tag. \
+                    \n\tCorrect usage: {0} file = <path-to-file>".format(child.tag))
+            if "file" in child.attrib:
+                assert self._check_file_exists(child.attrib["file"]),\
+                    str("Error: Data file not found. \
+                        \n\tFile: {0} does not exist"
+                        .format(self._check_filename_abs_rel(child.attrib["file"])))
+                parent[data_name]["to_load"][child.tag] = child.attrib["file"]
+            if "folder" in child.attrib:
+                assert self._check_file_exists(child.attrib["folder"]),\
+                    str("Error: Data folder not found. \
+                        \n\tFolder: {0} does not exist"
+                        .format(self._check_filename_abs_rel(child.attrib["folder"])))
+                parent[data_name]["to_load"][child.tag] = child.attrib["folder"]
 
     def _load_exit_point(self, element: ET.Element, parent: dict):
         """Parses tags associated with output and appends to parent dict
@@ -294,9 +303,10 @@ class XML_handler(object):
         if out is None:
             out = []
         for k in parent.keys():
-            if key in parent[k]:
-                if parent[k][key] == val:
-                    out.append(parent[k])
+            if isinstance(parent[k], dict):
+                if key in parent[k]:
+                    if parent[k][key] == val:
+                        out.append(parent[k])
             if isinstance(parent[k], dict):
                 self._find_dict_with_key_val_pair(parent[k], key, val, out)
         return out

@@ -14,6 +14,7 @@ _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None,}
 _PLUGIN_REQUIRED_SETTINGS = {"class_list":"list","image_dir":"str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
+_PLUGIN_REQUIRED_DATA = {"X","Y"}
 class ManualInput(tk.Frame,UI):
     def __init__(self, parent, controller, config:dict):
         self.parent = parent    
@@ -21,34 +22,11 @@ class ManualInput(tk.Frame,UI):
         self.controller = controller
         self.controller.title('Manual Input')
         
-        
         self.dirpath = os.path.dirname(os.path.realpath(__file__))
         self.assets_path = os.path.join(self.dirpath,'resources','Assets')
 
         self._class_list = None        
-        pixels = 500
-        path = os.path.join(self.dirpath,'resources','example_radiography_images')
-        self.N = len(os.listdir(path))
         
-        self.image_list = []
-        for f in os.listdir(path):
-            self.image_list.append(
-                ImageTk.PhotoImage(self.expand2square(
-                    Image.open(os.path.join(path, f)), 
-                    (0, 0, 0)).resize((pixels, pixels)))) # (0, 0, 0) is the padding colour
-        
-        # Status bar in the lower part of the window
-        status = tk.Label(self, text='Image 1 of '+str(self.N), bd = 1, 
-                          relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
-                          bg = self.parent['bg'])
-        status.grid(row=20, column=0, columnspan=4, pady = 10, 
-                    sticky = tk.W+tk.E)
-        
-        # Inital window
-        self.my_label = tk.Label(self, image = self.image_list[0], 
-                                 bg = self.parent['bg'])
-        self.my_label.grid(column = 0, row = 0, rowspan = 10, columnspan = 3)
-    
         # Buttons initialisation
         self.back_img = ImageTk.PhotoImage(Image.open(
             os.path.join(self.assets_path,'back_arrow.png')).resize((150, 50)))
@@ -68,13 +46,43 @@ class ManualInput(tk.Frame,UI):
             self, text="Done", 
             fg = 'white', bg = self.parent['bg'], height = 3, width = 20, 
             command = self.check_quit).grid(column = 4,row = 19)
-        self._parse_config(config)
+        self.config = config
         self.save_path = ''
         self.saved = True
 
-    def _parse_config(self, config):
-        self.config = config
-        self.class_list(self.config["plugin"]["options"]["class_list"])
+    def _load_images_from_data(self):
+        self.image_list = []
+        pixels = 500
+        for f in self._data_in["X"].keys():
+            self.image_list.append(
+                ImageTk.PhotoImage(
+                    self.expand2square(self._data_in["X"][f], (0, 0, 0))
+                    .resize((pixels, pixels)))) # (0, 0, 0) is the padding colour
+
+        # Inital window
+        self.my_label = tk.Label(self, image = self.image_list[0], 
+                                 bg = self.parent['bg'])
+        self.my_label.grid(column = 0, row = 0, rowspan = 10, columnspan = 3)
+        self.N = len(self._data_in["X"])
+        
+        # Status bar in the lower part of the window
+        status = tk.Label(self, text='Image 1 of '+str(self.N), bd = 1, 
+                          relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
+                          bg = self.parent['bg'])
+        status.grid(row=20, column=0, columnspan=4, pady = 10, 
+                    sticky = tk.W+tk.E)
+
+    def set_data_in(self,data_in):
+        req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
+        if len(req_check) > 0:
+            raise Exception("Minimal Data Requirements not met"   \
+                            +"\n\t{0} ".format(_PLUGIN_CLASS_NAME) \
+                            +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
+                            + "\n\tThe following data is missing:"\
+                            + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
+        self._data_in = data_in
+        self._load_images_from_data()
+        self._load_classes_from_data()
 
     def class_list(self):
         """Getter for required _class_list variable
@@ -84,13 +92,13 @@ class ManualInput(tk.Frame,UI):
         """
         return self._class_list
 
-    def class_list(self,value):
+    def _load_classes_from_data(self):
         """Setter for required _class_list variable
         
         :param value: class labels for binary classification
         :type value: list of strings
         """
-        self._class_list = value
+        self._class_list = list(self._data_in["Y"]["Class"])
         self.out_data = np.zeros((self.N, len(self._class_list)))
         self.button_cl = {}
         

@@ -19,11 +19,11 @@ class GUI(tk.Tk):
                                       weight="bold")
         self.pages_font = Font(family='Helvetica',
                                       size=12)
-
         self._desired_ui_types = []
         self._top_ui_layer = None
         self._module_config = None
         self.closed = False
+        self.startpage = False
         self.output = {}
 
     def set_avail_plugins(self,avail_plugins):
@@ -31,6 +31,10 @@ class GUI(tk.Tk):
 
     def set_data_in(self,data_in):
         self._data_in = data_in
+
+    def set_gui_as_startpage(self):
+        self.startpage = True
+        self._load_plugin("main")
 
     def _compare_layer_priority(self, ui_specs):
         """Check if a new module should have higher layer priority than the existing one
@@ -123,6 +127,8 @@ class GUI(tk.Tk):
             page_name = F.__name__
             frame = F(parent=container, controller=self,
                       config=self._module_config)
+            if not self.startpage:
+                frame.set_data_in(self._data_in)
             self.frames[page_name] = frame
 
             frame.grid(row=0, column=0, sticky="nsew")

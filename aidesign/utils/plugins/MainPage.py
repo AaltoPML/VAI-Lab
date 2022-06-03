@@ -159,6 +159,9 @@ class MainPage(tk.Frame):
         frame2.grid(column=0, row=1, sticky="n")
         frame3.grid(column=0, row=2, sticky="n")
         
+    def set_data_in(self, _):
+        pass
+
     def trace_XML(self,*args):
         """ Checks if XML variable has been updated
         """

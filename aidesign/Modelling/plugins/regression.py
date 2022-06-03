@@ -20,7 +20,7 @@ class Regression(object):
         self.regression_function = linear_model.LinearRegression()
 
     def set_data_in(self,data_in):
-        req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.data_names]
+        req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
                             +"\n\t{0} ".format(_PLUGIN_CLASS_NAME) \
@@ -34,8 +34,8 @@ class Regression(object):
         self._parse_config()
 
     def _parse_config(self):
-        self.input_data = self._data_in.X
-        self.target_data = self._data_in.Y
+        self.input_data = self._data_in["X"]
+        self.target_data = self._data_in["Y"]
         self.fit_degree = int(self._config["options"]["power"]["val"])
 
     def _reshape(self,data,shape):

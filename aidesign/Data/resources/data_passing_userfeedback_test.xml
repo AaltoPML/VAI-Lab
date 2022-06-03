@@ -1,21 +1,22 @@
 <pipeline>
     <Initialiser name="Init">
         <inputdata>
-            <X_data file="./Data/resources/import_test user_interface.csv" />
+            <X folder="./Data/resources/image_classification/training_images/" />
+            <Y file="./Data/resources/image_classification/Y_data.csv" />
         </inputdata>
         <relationships>
             <child name="My First UserFeedback Module" />
         </relationships>
     </Initialiser>
-    <Modelling name="My First UserFeedback Module">
+    <UserFeedback name="My First UserFeedback Module">
         <plugin type="manual">
-            <power val = "2" />
+            <some_param val = "2" />
         </plugin>
         <relationships>
             <parent name="Init" />
             <child name="Output" />
         </relationships>
-    </Modelling>
+    </UserFeedback>
     <Output>
         <plugin type="">
             <out_data>
