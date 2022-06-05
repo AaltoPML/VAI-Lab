@@ -9,7 +9,7 @@ from sys import platform
 
 class dataLoader():
     
-    def __init__(self,controller,data,filename):
+    def __init__(self,controller,data):
         self.controller = controller
         self.newWindow = tk.Toplevel(self.controller)
         
@@ -30,7 +30,7 @@ class dataLoader():
         self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
         
         frame1 = tk.Frame(self.newWindow)
-        frame2 = tk.Frame(self.newWindow)
+        # frame2 = tk.Frame(self.newWindow)
         tree_frame1 = tk.Frame(self.newWindow, height=300,width=300)
         tree_frame2 = tk.Frame(self.newWindow, height=300,width=300)
         frame3 = tk.Frame(self.newWindow)
@@ -42,9 +42,9 @@ class dataLoader():
         tk.Label(frame1,
               text ="Select variables to import", 
               justify=tk.LEFT).pack()
-        tk.Label(frame2,
-              text ="Variables in "+filename, 
-              justify=tk.LEFT).pack()
+        # tk.Label(frame2,
+        #       text ="Variables in "+filename, 
+        #       justify=tk.LEFT).pack()
         
         #Treeview 1
         style = ttk.Style()
@@ -69,18 +69,15 @@ class dataLoader():
         columns = ['Import', 'Name', 'Size', 'Class']
         self.add_treeview(tree_frame1, data, columns)
         self.add_treeview(tree_frame2, None, [])
-        tk.Radiobutton(
-            frame3, text = 'Supervised', fg = 'black', 
-            height = 2, width = 10).pack(side = tk.RIGHT, anchor = tk.W)
         tk.Button(
             frame3, text = 'Finish', fg = 'black', 
             height = 2, width = 10, #font = self.controller.pages_font, 
-            command = self.check_quit).pack(side = tk.RIGHT, anchor = tk.W)
+            command = lambda v = data.keys(): self.check_quit(v)).pack(side = tk.RIGHT, anchor = tk.W)
 
         tree_frame1.grid(column=0, row=2, sticky="nsew")
         tree_frame2.grid(column=1, row=2, sticky="nsew")
         frame1.grid(column=0, row=0, columnspan=2, sticky="nw")
-        frame2.grid(column=0, row=1, columnspan=2, sticky="nw")
+        # frame2.grid(column=0, row=1, columnspan=2, sticky="nw")
         frame3.grid(column=0, row=3, columnspan=2, sticky="n")
         frame4.grid(column=0, row=4, columnspan=2, sticky="se")
 
@@ -131,10 +128,10 @@ class dataLoader():
             for n, var in enumerate(variables):
                 if n%2 == 0:
                     tree.insert(parent = '', index = 'end', iid = n, text = '', 
-                                     values = (var, data[var].shape, data[var].dtype), tags = ('even',))
+                                     values = (var, data[var].values.shape, data[var].values.dtype), tags = ('even',))
                 else:
                     tree.insert(parent = '', index = 'end', iid = n, text = '', 
-                                     values = (var, data[var].shape, data[var].dtype), tags = ('odd',))
+                                     values = (var, data[var].shape, data[var].values.dtype), tags = ('odd',))
 
             # Define double-click on row action
             if len(self.tree) == 1:
@@ -142,9 +139,10 @@ class dataLoader():
         else:
             tree.heading("#0", text = 'No variable selected for preview.', anchor = tk.CENTER)
 
-    def check_quit(self):
+    def check_quit(self, v):
         """ Saves the information and closes the window """
-        self.controller.Data.set(True)
+        if 'X' in v:
+            self.controller.Data.set(True)
         self.newWindow.destroy()
 
     def OnClick(self,event,d):
@@ -156,7 +154,7 @@ class dataLoader():
                 # Reset treeview
                 self.resetTree(self.tree[1])
                 # refill second treeview
-                self.tree[1]['columns'] = list(np.arange(data.shape[1]))
+                self.tree[1]['columns'] = list(d[self.tree[0].item(treerow,"values")[0]].columns)
                 # Format columns
                 self.tree[1].column("#0", width = self.controller.pages_font.measure('0'*3)+20, 
                         minwidth = 0, stretch=tk.NO)
@@ -171,7 +169,7 @@ class dataLoader():
                 for cl in self.tree[1]['columns']:
                     self.tree[1].heading(cl, text = cl, anchor = tk.CENTER)
                 # Data filling
-                for n,row in enumerate(data):
+                for n,row in enumerate(data.values):
                     if n%2 == 0:
                         self.tree[1].insert(parent = '', index = 'end', iid = n, text = n, 
                                          values = tuple(np.around(row, 3)), tags = ('even',))

@@ -3,7 +3,7 @@ import os
 from PIL import Image, ImageTk
 
 from tkinter.filedialog import askopenfilename, askdirectory
-from scipy.io import loadmat
+import pandas as pd
 
 from aidesign.utils.plugins.dataLoader import dataLoader
 
@@ -206,7 +206,7 @@ class MainPage(tk.Frame):
         
         self.newWindow = tk.Toplevel(self.controller)
         # Window options
-        self.newWindow.title(self.plugin[self.m].get()+' plugin options')
+        self.newWindow.title('Data upload')
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
             file = os.path.join(os.path.join(
@@ -214,41 +214,68 @@ class MainPage(tk.Frame):
                 'resources', 
                 'Assets', 
                 'AIDIcon.ico'))))
-        self.newWindow.geometry("350x400")
+        self.newWindow.geometry("600x200")
         
-        frame_list = []
-        label_list = []
-        var = ['X$^*$', 'Y', 'X test', 'Y test']
-        for r,v in enumerate(var):
-            frame_list.append(tk.Frame(self))
-            tk.Label(frame_list[-1], text = v,
+        frame1 = tk.Frame(self.newWindow)
+        self.label_list = []
+        self.var = ['X', 'Y', 'X test', 'Y test']
+        for r,v in enumerate(self.var):
+            v = v + '*' if r == 0 else v
+            tk.Label(frame1, text = v,
                                     pady= 10,
                                     padx= 10,
                                     fg = 'black'
-                                    ).grid(column = 0, row = r, sticky = 'nsew')
-            tk.Button(frame_list[-1], 
-                                    text="Browse", 
-                                    command=self.upload_file
-                                    ).grid(column = 1, row = r, sticky = 'nsew')
-            label_list.append(tk.Label(frame_list[-1], text = '',
+                                    ).grid(column = 0, row = r)
+            tk.Button(frame1, 
+                      text="Browse", 
+                      command = lambda a = r: self.upload_file(a)
+                      ).grid(column = 1, row = r)
+            self.label_list.append(tk.Label(frame1, text = '',
                                     pady= 10,
                                     padx= 10,
                                     fg = 'black'
                                     ))
-            label_list[-1].grid(column = 2, row = r, sticky = 'nsew')
+            self.label_list[-1].grid(column = 2, row = r)
+        frame2 = tk.Frame(self.newWindow)
+        tk.Label(frame2, text = '* This data file is mandatory.',
+                                pady= 10,
+                                padx= 10,
+                                fg = 'black'
+                                ).pack(side = tk.LEFT)
+        tk.Button(frame2, 
+                      text="Done", 
+                      command = self.start_dataloader
+                      ).pack(side = tk.RIGHT)
+        frame1.grid(column=0, row=0, sticky="nsew")
+        frame2.grid(column=0, row=1, sticky="nsew")
 
-    def upload_file(self):
+    def upload_file(self, r):
         filename = askopenfilename(initialdir = os.getcwd(), 
                                    title = 'Select a file', 
                                    defaultextension = '.csv', 
                                    filetypes = [('CSV', '.csv'), 
                                                 ('All Files', '*.*')])
-        
-        # if filename is not None and len(filename) > 0:
-        #     if filename.lower().endswith(('.mat')):
+        self.label_list[r].config(text = filename)
+        # if filename is not None and len(filename) > 0 and r == 0:
+        #     if filename.lower().endswith(('.csv')):
         #         data = loadmat(filename)
         #         dL = dataLoader(self.controller, data, filename)
         #         self.controller.Data = dL.controller.Data
+
+    def start_dataloader(self):
+        """ Reads all the selected files, loads the data and passes it to 
+        dataLoader."""
+        data = {}
+        for i,label in enumerate(self.label_list):
+            filename = label.cget("text")
+            variable = self.var[i]
+            if filename is not None and len(filename) > 0:
+                if filename.lower().endswith(('.csv')):
+                    data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
+        self.newWindow.destroy()
+        dL = dataLoader(self.controller, data)
+        self.controller.Data = dL.controller.Data
+
 
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
