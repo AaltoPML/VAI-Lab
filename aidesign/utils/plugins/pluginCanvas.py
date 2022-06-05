@@ -250,7 +250,7 @@ class pluginCanvas(tk.Frame):
             rb.grid(column = 5+ (p%2 != 0), row = int(p/2)+1)
             self.CreateToolTip(rb, text = descriptions[p])
             self.allWeHearIs.append(rb)
-    
+
     def optionsWindow(self):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""

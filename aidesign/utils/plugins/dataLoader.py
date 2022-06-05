@@ -69,6 +69,9 @@ class dataLoader():
         columns = ['Import', 'Name', 'Size', 'Class']
         self.add_treeview(tree_frame1, data, columns)
         self.add_treeview(tree_frame2, None, [])
+        tk.Radiobutton(
+            frame3, text = 'Supervised', fg = 'black', 
+            height = 2, width = 10).pack(side = tk.RIGHT, anchor = tk.W)
         tk.Button(
             frame3, text = 'Finish', fg = 'black', 
             height = 2, width = 10, #font = self.controller.pages_font, 

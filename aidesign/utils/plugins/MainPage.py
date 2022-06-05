@@ -203,18 +203,52 @@ class MainPage(tk.Frame):
 
     def upload_data_file(self):
         """ Loads a data file containing the data required for the pipeline """
+        
+        self.newWindow = tk.Toplevel(self.controller)
+        # Window options
+        self.newWindow.title(self.plugin[self.m].get()+' plugin options')
+        script_dir = os.path.dirname(__file__)
+        self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
+            file = os.path.join(os.path.join(
+                script_dir, 
+                'resources', 
+                'Assets', 
+                'AIDIcon.ico'))))
+        self.newWindow.geometry("350x400")
+        
+        frame_list = []
+        label_list = []
+        var = ['X$^*$', 'Y', 'X test', 'Y test']
+        for r,v in enumerate(var):
+            frame_list.append(tk.Frame(self))
+            tk.Label(frame_list[-1], text = v,
+                                    pady= 10,
+                                    padx= 10,
+                                    fg = 'black'
+                                    ).grid(column = 0, row = r, sticky = 'nsew')
+            tk.Button(frame_list[-1], 
+                                    text="Browse", 
+                                    command=self.upload_file
+                                    ).grid(column = 1, row = r, sticky = 'nsew')
+            label_list.append(tk.Label(frame_list[-1], text = '',
+                                    pady= 10,
+                                    padx= 10,
+                                    fg = 'black'
+                                    ))
+            label_list[-1].grid(column = 2, row = r, sticky = 'nsew')
+
+    def upload_file(self):
         filename = askopenfilename(initialdir = os.getcwd(), 
                                    title = 'Select a file', 
-                                   defaultextension = '.mat', 
-                                   filetypes = [('mat file', '.mat'), 
-                                                ('CSV', '.csv'), 
+                                   defaultextension = '.csv', 
+                                   filetypes = [('CSV', '.csv'), 
                                                 ('All Files', '*.*')])
         
-        if filename is not None and len(filename) > 0:
-            if filename.lower().endswith(('.mat')):
-                data = loadmat(filename)
-                dL = dataLoader(self.controller, data, filename)
-                self.controller.Data = dL.controller.Data
+        # if filename is not None and len(filename) > 0:
+        #     if filename.lower().endswith(('.mat')):
+        #         data = loadmat(filename)
+        #         dL = dataLoader(self.controller, data, filename)
+        #         self.controller.Data = dL.controller.Data
 
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
