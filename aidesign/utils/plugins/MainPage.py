@@ -92,25 +92,29 @@ class MainPage(tk.Frame):
         self.controller.Datalabel.grid(column = 2,
                             row = 12)
         
-        tk.Button(frame3,
+        self.interactButton = tk.Button(frame3,
                     text = 'Interact with canvas',
                     fg = 'white',
                     font = controller.title_font,
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
+                    state = tk.DISABLED, 
                     command = lambda: self.canvas("aidCanvas")
-                    ).grid(column = 0, row = 13)
+                    )
+        self.interactButton.grid(column = 0, row = 13)
 
-        tk.Button(frame3,
+        self. uploadButton = tk.Button(frame3,
                     text = 'Upload XML file',
                     fg = 'white',
                     font = controller.title_font, 
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
+                    state = tk.DISABLED, 
                     command = self.upload_xml,
-                    ).grid(column = 1, row = 13)
+                    )
+        self. uploadButton.grid(column = 1, row = 13)
         
         self.controller.XMLlabel = tk.Label(frame3, 
                                 text = 'Incomplete',
@@ -167,16 +171,27 @@ class MainPage(tk.Frame):
         """
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
-            if self.controller.Data.get():
-                self.PluginButton.config(state = 'normal')
+            # if self.controller.Data.get():
+            self.PluginButton.config(state = 'normal')
+            if self.controller.Plugin.get():
+                self.RunButton.config(state = 'normal')
 
     def trace_Data(self,*args):
         """ Checks if Data variable has been updated
         """
         if self.controller.Data.get():
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
+<<<<<<< Updated upstream
             if self.controller.XML.get():
                 self.PluginButton.config(state = 'normal')
+=======
+            self.interactButton.config(state = 'normal')
+            self.uploadButton.config(state = 'normal')
+            # if self.controller.XML.get():
+                # self.PluginButton.config(state = 'normal')
+            # if self.controller.Plugin.get():
+            #     self.RunButton.config(state = 'normal')
+>>>>>>> Stashed changes
 
     def trace_Plugin(self,*args):
         """ Checks if Plugin variable has been updated
