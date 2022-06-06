@@ -11,7 +11,7 @@ _PLUGIN_CLASS_NAME = "ManualInput"
 _PLUGIN_CLASS_DESCRIPTION = "Method of user feedback for binary or classification data"
 _PLUGIN_READABLE_NAMES = {"manual":"default","binary":"alias","classification":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
-                            "required_children": None,}
+                            "required_children": None}
 _PLUGIN_REQUIRED_SETTINGS = {"class_list":"list","image_dir":"str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}

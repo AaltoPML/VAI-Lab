@@ -79,17 +79,17 @@ class GUI(tk.Tk):
 
         for ui in ui_type:
             ui_specs = self._avail_plugins.find_from_readable_name(ui)
-            try:
-                self._add_UI_type_to_frames(ui_specs)
-            except:
-                from sys import exit
-                print(
-                    "Error: User Interface \"{0}\" not recognised. \
-                    \nAvailable methods are: \
-                    \n  - {1}"\
-                    .format(ui, ",\n  - ".join(
-                        [i for i in self._avail_plugins.available_plugin_names])))
-                exit(1)
+            # try:
+            self._add_UI_type_to_frames(ui_specs)
+            # except:
+            #     from sys import exit
+            #     print(
+            #         "Error: User Interface \"{0}\" not recognised. \
+            #         \nAvailable methods are: \
+            #         \n  - {1}"\
+            #         .format(ui, ",\n  - ".join(
+            #             [i for i in self._avail_plugins.available_plugin_names])))
+            #     exit(1)
 
     def _append_to_output(self, key:str, value:any):
         self.output[key] = value

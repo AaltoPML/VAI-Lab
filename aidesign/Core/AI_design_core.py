@@ -16,9 +16,6 @@ class Core(object):
         gui_app = GUI()
         gui_app.set_avail_plugins(self._avail_plugins)
         gui_app.set_gui_as_startpage()
-        # options = {"plugin":{"plugin_name":"main"}}
-        # gui_app.set_data_in(None)
-        # gui_app.set_options(options)
         gui_output = gui_app.launch()
         if not gui_app.closed:
             try:
