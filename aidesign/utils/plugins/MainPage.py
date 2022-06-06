@@ -277,13 +277,20 @@ class MainPage(tk.Frame):
         """ Reads all the selected files, loads the data and passes it to 
         dataLoader."""
         data = {}
-        for i,label in enumerate(self.label_list):
-            filename = label.cget("text")
-            variable = self.var[i]
-            data = self.checkFile(filename,data,variable)
-        self.newWindow.destroy()
-        dL = dataLoader(self.controller, data)
-        self.controller.Data = dL.controller.Data
+        if len(self.label_list[0].cget("text")) > 0:
+            for i,label in enumerate(self.label_list):
+                filename = label.cget("text")
+                variable = self.var[i]
+                if filename is not None and len(filename) > 0:
+                    if filename.lower().endswith(('.csv')):
+                        data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
+                        self.controller._append_to_output("data_"+variable+"_filename",filename)
+            self.newWindow.destroy()
+            dL = dataLoader(self.controller, data)
+            self.controller.Data = dL.controller.Data
+        else:
+            tk.messagebox.showwarning(title = 'Error - X not specified',
+                                      message = 'You need to specify X before proceeding.')
 
 
     def upload_data_folder(self):
@@ -314,10 +321,3 @@ class MainPage(tk.Frame):
                     elif name[0] == 'y':
                         # data = self.checkFile(filename,data,'Y')
                         self.label_list[1].config(text = filename)
-
-    def checkFile(self,file,data,var):
-        if file is not None and len(file) > 0:
-            if file.lower().endswith(('.csv')):
-                data[var] = pd.read_csv(file) #Infers by default, should it be None?
-                self.controller._append_to_output("data_"+var+"_filename",file)
-        return data

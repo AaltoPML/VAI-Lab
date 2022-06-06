@@ -66,7 +66,7 @@ class dataLoader():
                       ('Treeitem.image', {'side': 'right', 'sticky': 'e'})])
         
         self.tree = []
-        columns = ['Import', 'Name', 'Size', 'Class']
+        columns = ['Name', 'Size', 'Class']
         self.add_treeview(tree_frame1, data, columns)
         self.add_treeview(tree_frame2, None, [])
         tk.Button(
@@ -89,7 +89,7 @@ class dataLoader():
         tree_scrolly = tk.Scrollbar(frame)
         tree_scrolly.pack(side = tk.RIGHT, fill = tk.BOTH)
         if data is not None:
-            self.tree.append(CheckboxTreeview(
+            self.tree.append(ttk.Treeview(
                 frame, 
                 yscrollcommand = tree_scrolly.set, 
                 xscrollcommand = tree_scrollx.set,
@@ -109,10 +109,10 @@ class dataLoader():
 
     def fill_treeview(self,tree,data,columns):
         if data is not None:
-            tree['columns'] = columns[1:]
+            tree['columns'] = columns
 
             # Format columns
-            tree.column("#0", width = 50, stretch=tk.NO)
+            tree.column("#0", width = 0, stretch=tk.NO)
             for cl in tree['columns']:
                 tree.column(
                     cl, width = int(
@@ -120,7 +120,7 @@ class dataLoader():
                     minwidth = 50, anchor = tk.CENTER, stretch=tk.NO)
 
             # Headings
-            tree.heading("#0", text = columns[0], anchor = tk.CENTER)
+            tree.heading("#0")
             for cl in tree['columns']:
                 tree.heading(cl, text = cl, anchor = tk.CENTER)
             
