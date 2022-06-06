@@ -6,7 +6,8 @@
                 <child name="DataProcessing" />
             </relationships>
             <coordinates>
-                [(300.0, 50), 0, {}]
+                                [(300.0, 50), 0, {}]
+                            
             </coordinates>
         </Initialiser>
         <DataProcessing name="DataProcessing">
@@ -16,7 +17,8 @@
                 <child name="Output" />
             </relationships>
             <coordinates>
-                [(296, 203), 2, {0: 'd0-u2'}]
+                                [(296, 203), 2, {0: 'd0-u2'}]
+                            
             </coordinates>
         </DataProcessing>
         <Output name="Output">
@@ -25,7 +27,8 @@
                 <parent name="DataProcessing" />
             </relationships>
             <coordinates>
-                [(300.0, 550), 1, {2: 'd2-u1'}]
+                                [(300.0, 550), 1, {2: 'd2-u1'}]
+                            
             </coordinates>
         </Output>
     </pipeline>

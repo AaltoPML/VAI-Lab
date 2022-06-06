@@ -181,17 +181,13 @@ class MainPage(tk.Frame):
         """
         if self.controller.Data.get():
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
-<<<<<<< Updated upstream
-            if self.controller.XML.get():
-                self.PluginButton.config(state = 'normal')
-=======
             self.interactButton.config(state = 'normal')
             self.uploadButton.config(state = 'normal')
             # if self.controller.XML.get():
                 # self.PluginButton.config(state = 'normal')
             # if self.controller.Plugin.get():
             #     self.RunButton.config(state = 'normal')
->>>>>>> Stashed changes
+
 
     def trace_Plugin(self,*args):
         """ Checks if Plugin variable has been updated
@@ -284,9 +280,7 @@ class MainPage(tk.Frame):
         for i,label in enumerate(self.label_list):
             filename = label.cget("text")
             variable = self.var[i]
-            if filename is not None and len(filename) > 0:
-                if filename.lower().endswith(('.csv')):
-                    data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
+            data = self.checkFile(filename,data,variable)
         self.newWindow.destroy()
         dL = dataLoader(self.controller, data)
         self.controller.Data = dL.controller.Data
@@ -295,9 +289,35 @@ class MainPage(tk.Frame):
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
         """
-        filename = askdirectory(initialdir = os.getcwd(),
+        folder = askdirectory(initialdir = os.getcwd(),
                                     title = 'Select a folder',
                                     mustexist = True)
-        self.controller._append_to_output("data_filename",filename)
-        if filename is not None and len(filename) > 0:
-            self.controller.Data.set(True)
+        onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+        self.upload_data_file()
+        for file in onlyfiles:
+            name = file.lower()
+            filename = os.path.join(folder, file)
+            if name.endswith(('.csv')):
+                name = ''.join(ch for ch in name if ch.isalnum())
+                if 'test' in name or 'tst' in name:
+                    if name[0] == 'x':
+                        # data = self.checkFile(filename,data,'X test')
+                        self.label_list[2].config(text = filename)
+                    elif name[0] == 'y':
+                        # data = self.checkFile(filename,data,'Y test')
+                        self.label_list[3].config(text = filename)
+                else:
+                    if name[0] == 'x':
+                        # data = self.checkFile(filename,data,'X')
+                        self.label_list[0].config(text = filename)
+                        self.controller.Data.set(True)
+                    elif name[0] == 'y':
+                        # data = self.checkFile(filename,data,'Y')
+                        self.label_list[1].config(text = filename)
+
+    def checkFile(self,file,data,var):
+        if file is not None and len(file) > 0:
+            if file.lower().endswith(('.csv')):
+                data[var] = pd.read_csv(file) #Infers by default, should it be None?
+                self.controller._append_to_output("data_"+var+"_filename",file)
+        return data
