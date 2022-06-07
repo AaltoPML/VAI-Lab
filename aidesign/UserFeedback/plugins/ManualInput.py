@@ -3,7 +3,7 @@ import tkinter as tk
 import os
 from PIL import Image, ImageTk
 from tkinter import messagebox, ttk
-from tkinter.filedialog import asksaveasfile
+from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 import numpy as np
 import pandas as pd
 
@@ -33,39 +33,22 @@ class ManualInput(tk.Frame,UI):
         self.forw_img = ImageTk.PhotoImage(Image.open(
             os.path.join(self.assets_path,'forw_arrow.png')).resize((150, 50)))
         self.button_back = tk.Button(
-            frame4, image = self.back_img, bg = self.parent['bg'], 
-            state = tk.DISABLED)
-        self.button_back.grid(column = 0,row = 19, padx=(10,0), pady=10, sticky="news")
+            self, image = self.back_img, bg = self.parent['bg'], 
+            state = tk.DISABLED).grid(column = 0,row = 19)
         self.button_save = tk.Button(
-            frame4, text = 'Save', fg = 'white', bg = self.parent['bg'], height = 3, 
-            width = 20, command = self.save_file)
-        self.button_save.grid(column = 1,row = 19, sticky="news", pady=10)
+            self, text = 'Save', fg = 'white', bg = self.parent['bg'], height = 3, 
+            width = 20, command = self.save_file).grid(column = 1,row = 19)
         self.button_forw = tk.Button(
-            frame4, image = self.forw_img, bg = self.parent['bg'], 
-            command = lambda: self.forward_back(2))
-        self.button_forw.grid(column = 2,row = 19, sticky="news", pady=10)
+            self, image = self.forw_img, bg = self.parent['bg'], 
+            command = lambda: self.forward_back(2)).grid(column = 2,row = 19)
 
-        tk.Button(
-            frame5, text="Done", 
+        button_main = tk.Button(
+            self, text="Done", 
             fg = 'white', bg = self.parent['bg'], height = 3, width = 20, 
             command = self.check_quit).grid(column = 4,row = 19)
         self.config = config
         self.save_path = ''
         self.saved = True
-        
-        # Inital image
-        img = ImageTk.PhotoImage(self.image_list[0])
-        self.my_img = tk.Label(self.frame1, image = img, 
-                                 bg = self.parent['bg'])
-        self.my_img.image = img
-        self.my_img.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=(10,0))
-        self.my_img.bind("<Configure>", self.resizing)
-        
-        self.frame1.grid(row = 0, column = 0, sticky="nsew")
-        # self.frame3.grid(row = 0, column = 2, sticky="nsew", pady=10, padx=10)
-        frame4.grid(row = 1, column = 0, sticky="sew")
-        frame5.grid(row = 1, column = 1, sticky="sew")
-        frame6.grid(row = 2, column = 0, columnspan =3, sticky="sew")
 
     def _load_images_from_data(self):
         self.image_list = []
@@ -117,16 +100,13 @@ class ManualInput(tk.Frame,UI):
         """
         self._class_list = list(self._data_in["Y"]["Class"])
         self.out_data = np.zeros((self.N, len(self._class_list)))
-        
-        frame2 = tk.Frame(self, bg = self.parent['bg'])
-        frame2.grid(row = 0, column = 1, sticky="nsew")
-        
         self.button_cl = {}
+        
         self.var = {}
         for i,cl in enumerate(self._class_list):
             self.var[0,i] = tk.IntVar(value=self.out_data[0,i])
             self.button_cl[cl] = tk.Checkbutton(
-                frame2, text = cl, fg = 'white', bg = self.parent['bg'], 
+                self, text = cl, fg = 'white', bg = self.parent['bg'], 
                 selectcolor = 'black', height = 3, width = 20, 
                 variable = self.var[0,i], 
                 command=(lambda i=i: self.onPress(0,i)))
@@ -142,7 +122,7 @@ class ManualInput(tk.Frame,UI):
         style.map('Treeview', background = [('selected', 'grey')])
         
         tree_frame = tk.Frame(self)
-        tree_frame.grid(row = 0, column = 2, sticky="nsew", pady=10, padx=10)
+        tree_frame.grid(row = 0, column = 5, columnspan = 4, rowspan = 10)
         
         tree_scrollx = tk.Scrollbar(tree_frame, orient = 'horizontal')
         tree_scrollx.pack(side = tk.BOTTOM, fill = tk.X)
@@ -152,7 +132,7 @@ class ManualInput(tk.Frame,UI):
         self.tree = ttk.Treeview(tree_frame, 
                                  yscrollcommand = tree_scrolly.set, 
                                  xscrollcommand = tree_scrollx.set)
-        self.tree.pack(fill='both', expand=True)
+        self.tree.pack()
         
         tree_scrollx.config(command = self.tree.xview)
         tree_scrolly.config(command = self.tree.yview)
@@ -160,8 +140,7 @@ class ManualInput(tk.Frame,UI):
         self.tree['columns'] = self._class_list
         
         # Format columns
-        self.tree.column("#0", width = 80, 
-                minwidth = 50)
+        self.tree.column("#0", width = 50)
         for n, cl in enumerate(self._class_list):
             self.tree.column(
                 cl, width = int(self.controller.pages_font.measure(str(cl)))+20, 
@@ -205,30 +184,6 @@ class ManualInput(tk.Frame,UI):
             result.paste(pil_img, ((height - width) // 2, 0))
             return result
 
-    def resizing(self, event):
-        """ Resizes window to tree view height and buttons width """
-        n = int(self.tree.selection()[0])
-        iw, ih  = self.image_list[n].width, self.image_list[n].height
-        iw = iw() if type(iw) is not int else iw
-        ih = ih() if type(ih) is not int else ih
-
-        mw, mh  = self.frame1.winfo_width()-14, self.frame1.winfo_height()-14 # Frame border correction
-        if (iw != mw) and (ih != mh):
-            if iw>ih:
-                ih = ih*(mw/iw)
-                r = mh/ih if (ih/mh) > 1 else 1
-                iw, ih = mw*r, ih*r
-            else:
-                iw = iw*(mh/ih)
-                r = mw/iw if (iw/mw) > 1 else 1
-                iw, ih = iw*r, mh*r
-            
-            self.image_list[n] = self.image_list[n].resize(
-                (int(iw), int(ih)))
-        img = ImageTk.PhotoImage(self.image_list[n])
-        self.my_img.config(image=img)
-        self.my_img.image = img
-
     def check_quit(self):
         
         if not self.saved:
@@ -242,12 +197,21 @@ class ManualInput(tk.Frame,UI):
                 "Exit?",
                 "Are you sure you are finished?")
             self.controller.destroy()
-
+    
+    def open_file(self):
+        
+        self.save_path = askopenfile(mode='r+')
+        if self.save_path is not None:
+            t = self.save_path.read()
+            # textentry.delete('0.0', 'end')
+            # textentry.insert('0.0', t)
+            # textentry.focus()
+            
     def save_file_as(self):
         
         self.save_path = asksaveasfile(mode='w')
         self.save_file()
-
+        
     def save_file(self):
         
         if self.save_path == '':
@@ -271,18 +235,28 @@ class ManualInput(tk.Frame,UI):
         
         self.tree.selection_set(str(int(image_number-1)))
         # Print the corresponding image
-        self.resizing((0,0))
+        self.my_label.grid_forget()
+        self.my_label = tk.Label(self, image=self.image_list[image_number-1])
+        
         # Update button commands
-        self.button_forw.config(image = self.forw_img, bg = self.parent['bg'], 
-                            command = lambda: self.forward_back(image_number+1),
-                            text = '', state = tk.NORMAL)
-        self.button_back.config(image = self.back_img, bg = self.parent['bg'], 
-                            command = lambda: self.forward_back(image_number-1),
-                            text = '', state = tk.NORMAL)
+        self.button_forw = tk.Button(
+            self, image = self.forw_img, bg = self.parent['bg'], 
+            command = lambda: self.forward_back(
+                image_number+1)).grid(column = 2,row = 19)
+        self.button_back = tk.Button(
+            self, image = self.back_img, bg = self.parent['bg'], 
+            command = lambda: self.forward_back(
+                image_number-1)).grid(column = 0,row = 19)
         if image_number == self.N:
-            self.button_forw.config(state = tk.DISABLED)
+            self.button_forw = tk.Button(
+                self, image = self.forw_img, bg = self.parent['bg'], 
+                state = tk.DISABLED).grid(column = 2,row = 19)
         if image_number == 1:
-            self.button_back.config(state = tk.DISABLED)
+            self.button_back = tk.Button(
+                self, image = self.back_img, bg = self.parent['bg'], 
+                state = tk.DISABLED).grid(column = 0,row = 19)
+            
+        self.my_label.grid(column=0, row=0, rowspan = 10, columnspan=3)
         
         # Classes buttons
         # var = {}
@@ -293,15 +267,20 @@ class ManualInput(tk.Frame,UI):
             # var[i] = tk.IntVar(value = int(self.out_data[image_number-1,i]))
             # I can not make this be selected when going backwards or forward 
             # if it was previously selected.
-            self.button_cl[cl].config(text = cl, fg = 'white', bg = self.parent['bg'], 
+            self.button_cl[cl] = tk.Checkbutton(
+                self, text = cl, fg = 'white', bg = self.parent['bg'], 
                 selectcolor = 'black', height = 3, width = 20, 
                 variable = self.var[image_number-1,i], 
                 command=(lambda i=i: self.onPress(image_number-1,i)))
+            self.button_cl[cl].grid(column = 4,row = i)
 
-        # # Status bar    
-        # self.status.config(text='Image ' + str(image_number) + ' of '+str(self.N), 
-        #     bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
-        #     bg = self.parent['bg'])
+        # Status bar    
+        status = tk.Label(
+            self, text='Image ' + str(image_number) + ' of '+str(self.N), 
+            bd = 1, relief = tk.SUNKEN, anchor = tk.E, fg = 'white', 
+            bg = self.parent['bg'])
+        status.grid(row=20, column=0, columnspan=4, pady = 10, 
+                    sticky = tk.W+tk.E)
             
     def onPress(self, n,i):
         
