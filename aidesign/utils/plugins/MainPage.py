@@ -6,6 +6,7 @@ from tkinter.filedialog import askopenfilename, askdirectory
 import pandas as pd
 
 from aidesign.utils.plugins.dataLoader import dataLoader
+from aidesign.Settings.Settings_core import Settings
 
 _PLUGIN_CLASS_NAME = "MainPage"
 _PLUGIN_CLASS_DESCRIPTION = "Splash and Menu page used as GUI entry-point"
@@ -181,18 +182,15 @@ class MainPage(tk.Frame):
         """
         if self.controller.Data.get():
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
-            self.interactButton.config(state = 'normal')
-            self.uploadButton.config(state = 'normal')
-            # if self.controller.XML.get():
-                # self.PluginButton.config(state = 'normal')
-            # if self.controller.Plugin.get():
-            #     self.RunButton.config(state = 'normal')
-
+            if self.controller.XML.get():
+                self.PluginButton.config(state = 'normal')
+            if self.controller.Plugin.get():
+                self.RunButton.config(state = 'normal')
 
     def trace_Plugin(self,*args):
         """ Checks if Plugin variable has been updated
         """
-        if self.controller.Plugin.get():
+        if self.controller.Plugin.get() and self.controller.Data.get():
             self.RunButton.config(state = 'normal')
 
     def canvas(self,name: str):
@@ -209,8 +207,24 @@ class MainPage(tk.Frame):
                                    filetypes = [('XML file', '.xml'), 
                                                 ('All Files', '*.*')])
         if filename is not None and len(filename) > 0:
+            self.s = Settings()
+            self.s.load_XML(filename)
+            self.isPlug = []
+            self.checkPlugin(self.s.loaded_modules)
             self.controller._append_to_output("xml_filename",filename)
             self.controller.XML.set(True)
+            if len(self.isPlug)-2 == sum(self.isPlug): # Considering Init and Out don't have plugins now
+                self.controller.Plugin.set(True)
+
+    def checkPlugin(self, modules: dict):
+        
+        for key, arg in modules.items():
+            if arg['class'] == 'loop':
+                for k, a in arg.items():
+                    if type(a) == dict:
+                        self.checkPlugin({k: a})
+            else:
+                self.isPlug.append(arg['plugin']['plugin_name'] != '')
 
     def upload_data_file(self):
         """ Loads a data file containing the data required for the pipeline """
