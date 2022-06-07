@@ -1,0 +1,33 @@
+<Settings>
+    <pipeline>
+        <Initialiser name="Initialiser">
+            <plugin type="" />
+            <relationships>
+                <child name="Decision Making" />
+            </relationships>
+            <coordinates>
+                [(300.0, 50), 0, {}]
+            </coordinates>
+        </Initialiser>
+        <DecisionMaking name="Decision Making">
+            <plugin type="" />
+            <relationships>
+                <parent name="Initialiser" />
+                <child name="Output" />
+            </relationships>
+            <coordinates>
+                [(300.0, 300.0), 2, {0: 'd0-u2'}]
+            </coordinates>
+        </DecisionMaking>
+        <Output name="Output">
+            <plugin type="" />
+            <relationships>
+                <parent name="Decision Making" />
+            </relationships>
+            <coordinates>
+                [(300.0, 550), 1, {2: 'd2-u1'}]
+            </coordinates>
+        </Output>
+    </pipeline>
+    <datastructure />
+</Settings>

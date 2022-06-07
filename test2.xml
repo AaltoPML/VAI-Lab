@@ -1,0 +1,43 @@
+<Settings>
+    <pipeline>
+        <Initialiser name="Initialiser">
+            <plugin type="" />
+            <relationships>
+                <child name="DataProcessing" />
+            </relationships>
+            <coordinates>
+                (300.0, 50)
+            </coordinates>
+        </Initialiser>
+        <loop type="For/While" condition="Condition" name="loop0">
+            <relationships>
+                <child name="DataProcessing" />
+            </relationships>
+            <coordinates>
+                (150.0, 197.0, 469.0, 418.0)
+            </coordinates>
+            <relationships />
+            <DataProcessing name="DataProcessing">
+                <plugin type="" />
+                <relationships>
+                    <parent name="Initialiser" />
+                    <parent name="loop0" />
+                    <child name="Output" />
+                </relationships>
+                <coordinates>
+                    (300.0, 300.0)
+                </coordinates>
+            </DataProcessing>
+        </loop>
+        <Output name="Output">
+            <plugin type="" />
+            <relationships>
+                <parent name="DataProcessing" />
+            </relationships>
+            <coordinates>
+                (300.0, 550)
+            </coordinates>
+        </Output>
+    </pipeline>
+    <datastructure />
+</Settings>

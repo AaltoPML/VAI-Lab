@@ -60,6 +60,7 @@ class GUI(tk.Tk):
         plugin = import_plugin_absolute(globals(),
                                         ui_specs["_PLUGIN_PACKAGE"],
                                         ui_specs["_PLUGIN_CLASS_NAME"])
+
         self._desired_ui_types.append(plugin)
         self._compare_layer_priority(ui_specs)
         if ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"] != None:
@@ -89,7 +90,6 @@ class GUI(tk.Tk):
             #         .format(ui, ",\n  - ".join(
             #             [i for i in self._avail_plugins.available_plugin_names])))
             #     exit(1)
-
 
     def _append_to_output(self, key:str, value:any):
         self.output[key] = value
