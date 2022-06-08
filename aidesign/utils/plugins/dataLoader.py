@@ -71,7 +71,7 @@ class dataLoader():
         tk.Button(
             frame3, text = 'Finish', fg = 'black', 
             height = 2, width = 10, #font = self.controller.pages_font, 
-            command = lambda v = data.keys(): self.check_quit(v)).pack(side = tk.RIGHT, anchor = tk.W)
+            command = lambda: self.check_quit()).pack(side = tk.RIGHT, anchor = tk.W)
 
         tree_frame1.grid(column=0, row=2, sticky="nsew")
         tree_frame2.grid(column=1, row=2, sticky="nsew")
@@ -138,10 +138,8 @@ class dataLoader():
         else:
             tree.heading("#0", text = 'No variable selected for preview.', anchor = tk.CENTER)
 
-    def check_quit(self, v):
+    def check_quit(self):
         """ Saves the information and closes the window """
-        if 'X' in v:
-            self.controller.Data.set(True)
         self.newWindow.destroy()
 
     def OnClick(self,event,d):

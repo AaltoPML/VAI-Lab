@@ -225,7 +225,7 @@ class MainPage(tk.Frame):
                 'resources', 
                 'Assets', 
                 'AIDIcon.ico'))))
-        self.newWindow.geometry("600x200")
+        # self.newWindow.geometry("600x200")
         
         frame1 = tk.Frame(self.newWindow)
         self.label_list = []
@@ -242,10 +242,10 @@ class MainPage(tk.Frame):
                       command = lambda a = r: self.upload_file(a)
                       ).grid(column = 1, row = r)
             tk.Button(frame1, 
-                      text="X", 
+                      text="Delete", 
                       command = lambda a = r: self.delete_file(a)
                       ).grid(column = 2, row = r)
-            self.label_list.append(tk.Label(frame1, text = '',
+            self.label_list.append(tk.Label(frame1, text = ' '*150,
                                     pady= 10,
                                     padx= 10,
                                     fg = 'black'
@@ -260,7 +260,7 @@ class MainPage(tk.Frame):
         tk.Button(frame2, 
                       text="Done", 
                       command = self.start_dataloader
-                      ).pack(side = tk.RIGHT)
+                      ).pack(side = tk.RIGHT, padx=(0,5))
         frame1.grid(column=0, row=0, sticky="nsew")
         frame2.grid(column=0, row=1, sticky="nsew")
 
@@ -271,11 +271,6 @@ class MainPage(tk.Frame):
                                    filetypes = [('CSV', '.csv'), 
                                                 ('All Files', '*.*')])
         self.label_list[r].config(text = filename)
-        # if filename is not None and len(filename) > 0 and r == 0:
-        #     if filename.lower().endswith(('.csv')):
-        #         data = loadmat(filename)
-        #         dL = dataLoader(self.controller, data, filename)
-        #         self.controller.Data = dL.controller.Data
 
     def delete_file(self, r):
         self.label_list[r].config(text = '')
@@ -292,9 +287,11 @@ class MainPage(tk.Frame):
                     if filename.lower().endswith(('.csv')):
                         data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
                         self.controller._append_to_output("data_"+variable+"_filename",filename)
+                        if i == 0:
+                            self.controller.Data.set(True)
             self.newWindow.destroy()
-            dL = dataLoader(self.controller, data)
-            self.controller.Data = dL.controller.Data
+            dataLoader(self.controller, data)
+
         else:
             tk.messagebox.showwarning(title = 'Error - X not specified',
                                       message = 'You need to specify X before proceeding.')
@@ -306,25 +303,26 @@ class MainPage(tk.Frame):
         folder = askdirectory(initialdir = os.getcwd(),
                                     title = 'Select a folder',
                                     mustexist = True)
-        onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
-        self.upload_data_file()
-        for file in onlyfiles:
-            name = file.lower()
-            filename = os.path.join(folder, file)
-            if name.endswith(('.csv')):
-                name = ''.join(ch for ch in name if ch.isalnum())
-                if 'test' in name or 'tst' in name:
-                    if name[0] == 'x':
-                        # data = self.checkFile(filename,data,'X test')
-                        self.label_list[2].config(text = filename)
-                    elif name[0] == 'y':
-                        # data = self.checkFile(filename,data,'Y test')
-                        self.label_list[3].config(text = filename)
-                else:
-                    if name[0] == 'x':
-                        # data = self.checkFile(filename,data,'X')
-                        self.label_list[0].config(text = filename)
-                        self.controller.Data.set(True)
-                    elif name[0] == 'y':
-                        # data = self.checkFile(filename,data,'Y')
-                        self.label_list[1].config(text = filename)
+        if folder is not None and len(folder) > 0:
+            onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+            self.upload_data_file()
+            for file in onlyfiles:
+                name = file.lower()
+                filename = os.path.join(folder, file)
+                if name.endswith(('.csv')):
+                    name = ''.join(ch for ch in name if ch.isalnum())
+                    if 'test' in name or 'tst' in name:
+                        if name[0] == 'x':
+                            # data = self.checkFile(filename,data,'X test')
+                            self.label_list[2].config(text = filename)
+                        elif name[0] == 'y':
+                            # data = self.checkFile(filename,data,'Y test')
+                            self.label_list[3].config(text = filename)
+                    else:
+                        if name[0] == 'x':
+                            # data = self.checkFile(filename,data,'X')
+                            self.label_list[0].config(text = filename)
+                            # self.controller.Data.set(True)
+                        elif name[0] == 'y':
+                            # data = self.checkFile(filename,data,'Y')
+                            self.label_list[1].config(text = filename)
