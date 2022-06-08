@@ -65,18 +65,30 @@ class CanvasInput(tk.Frame,UI):
         :param value: labels for state-action pair headers
         :type value: list of strings
         """
-        self._class_list = list(self._data_in["X"].columns)
-        self.out_data = {}
-        for ii in np.arange(len(self._class_list)):
-            self.out_data = {}
-            for key in self._class_list:
-                self.out_data[key] = []
 
+        self._class_list = list(self._data_in["X"].columns)
+        self._class_list = np.squeeze(self._class_list)
+        islist = []
         for ii in np.arange(len(self._class_list)):
+            islist.append(isinstance(self._class_list[ii], list))
+        if not all(islist):
+            self._class_list = [list(self._class_list)]
+        
+        self.out_data = {}
+        self.out_data[0] = {}
+        for ii in np.arange(len(self._class_list)):
+            self.out_data[ii] = {}
+            for k in np.arange(len(self._class_list[ii])):
+                self._class_list[ii][k] = self._class_list[ii][k].replace(' ', '_').lower()
+                self.out_data[ii][self._class_list[ii][k]] = []
+        print(self._class_list)
+        print(self.out_data)
+        
+        for ii in np.arange(len(self.out_data)):
             self.frame.append(tk.Frame(self, bg = self.parent['bg']))
             self.frame[-1].grid(row=0, column=0, sticky="nsew", pady = 15)
             # if self._class_list[ii][0].split('_')[1] == 'a':
-            if self._class_list[ii].split('_')[1] == 'a':
+            if self._class_list[ii][0].split('_')[1] == 'a':
                 self.type.append('Rotating')
                 self.clock.append(tk.StringVar())
                 self.clock[ii].set('clock')
@@ -175,11 +187,11 @@ class CanvasInput(tk.Frame,UI):
                 self.create_circle(self.x_ini, self.y_ini, self.r, 
                                     fill="", outline="#DDD", width=4)
                 
-            self.tree[-1]['columns'] = self._class_list
+            self.tree[-1]['columns'] = self._class_list[ii]
             
             # Format columns
             self.tree[-1].column("#0", width = 50)
-            for n, cl in enumerate(self._class_list):
+            for n, cl in enumerate(self._class_list[ii]):
                 self.tree[-1].column(
                     cl, width = int(
                         self.controller.pages_font.measure(str(cl)))+20, 
@@ -187,7 +199,7 @@ class CanvasInput(tk.Frame,UI):
                     
             # Headings
             self.tree[-1].heading("#0", text = "Sample", anchor = tk.CENTER)
-            for cl in self._class_list:
+            for cl in self._class_list[ii]:
                 self.tree[-1].heading(cl, text = cl, anchor = tk.CENTER)
             
             # for nn in np.arange(N):
@@ -229,8 +241,8 @@ class CanvasInput(tk.Frame,UI):
                     self.canvas[ii].create_oval(
                         x_o-3, y_o-3, x_o+3, y_o+3, fill="black", width=0, 
                         tags=("state"+str(ii)+'-'
-                              + str(len(self.out_data['State_a']))))
-                    self.out_data['State_a'].append((
+                              + str(len(self.out_data[ii]['state_a']))))
+                    self.out_data[ii]['state_a'].append((
                         -np.rad2deg(alpha)+360)%360)
                     self.state[ii].set('action')
                     if self.tree[ii].selection(): # Update coordinates in corresponding row if exists.
@@ -242,46 +254,46 @@ class CanvasInput(tk.Frame,UI):
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = n, text = n+1, 
                             values = tuple(self.dict2mat(
-                                self.out_data)[n,:].astype(int)), 
+                                self.out_data[ii])[n,:].astype(int)), 
                             tags = tag)
                         self.tree[ii].selection_set(str(n))
                     else:
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = 0, text = 1, 
                             values = tuple(self.dict2mat(
-                                self.out_data)[0,:].astype(int)), 
+                                self.out_data[ii])[0,:].astype(int)), 
                                 tags = ('even',))
                         self.tree[ii].selection_set(str(0))
                     
                 elif self.state[ii].get()  == 'action':
                     if self.clock[ii].get()  == 'clock':
-                        start = self.out_data['State_a'][-1]
+                        start = self.out_data[ii]['state_a'][-1]
                         end = np.rad2deg(-alpha)
                     else:
-                        start = self.out_data['State_a'][-1] - 360
+                        start = self.out_data[ii]['state_a'][-1] - 360
                         end = 360 - np.rad2deg(alpha)
                     self.create_circle_arc(
                         self.x_ini, self.y_ini, self.r, fill = "", 
                         outline = "red", start = start, end = end, width=2, 
                         style = tk.ARC, tags = ("action"+str(ii)+'-' + str(len(
-                            self.out_data['Action_a']))))              
-                    self.out_data['Action_a'].append((
+                            self.out_data[ii]['action_a']))))              
+                    self.out_data[ii]['action_a'].append((
                         -np.rad2deg(alpha)+360)%360)
                     self.state[ii].set('state')
                     n = int(self.tree[ii].selection()[0])
                     self.tree[ii].item(
                         self.tree[ii].get_children()[n], text = n+1, 
                         values = tuple(self.dict2mat(
-                            self.out_data)[n,:].astype(int)))
+                            self.out_data[ii])[n,:].astype(int)))
             else:
                 if self.state[ii].get()  == 'state': # Write state coordinates
                     self.canvas[ii].create_oval(
                         event.x-3, event.y-3, event.x+3, event.y+3, 
                         fill="black", width=0, 
                         tags=("state"+str(ii)+'-'+ str(len(
-                            self.out_data['State_x']))))
-                    self.out_data['State_x'].append(event.x)
-                    self.out_data['State_y'].append(event.y)
+                            self.out_data[ii]['state_x']))))
+                    self.out_data[ii]['state_x'].append(event.x)
+                    self.out_data[ii]['state_y'].append(event.y)
                     self.state[ii].set('action')
                     if self.tree[ii].selection(): # Update coordinates in corresponding row if exists.
                         n = int(self.tree[ii].selection()[0]) + 1
@@ -292,32 +304,32 @@ class CanvasInput(tk.Frame,UI):
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = n, text = n+1, 
                             values = tuple(self.dict2mat(
-                                self.out_data)[n,:].astype(int)), 
+                                self.out_data[ii])[n,:].astype(int)), 
                             tags = tag)
                         self.tree[ii].selection_set(str(n))
                     else:
                         self.tree[ii].insert(
                             parent = '', index = 'end', iid = 0, text = 1, 
                             values = tuple(self.dict2mat(
-                                self.out_data)[0,:].astype(int)), 
+                                self.out_data[ii])[0,:].astype(int)), 
                                 tags = ('even',))
                         self.tree[ii].selection_set(str(0))
                     
                 elif self.state[ii].get()  == 'action':
                     self.canvas[ii].create_line(
-                        self.out_data['State_x'][-1], 
-                        self.out_data['State_y'][-1], event.x, event.y, 
+                        self.out_data[ii]['state_x'][-1], 
+                        self.out_data[ii]['state_y'][-1], event.x, event.y, 
                         fill="red", arrow=tk.LAST, 
                         tags=("action"+str(ii)+'-' + str(len(
-                            self.out_data['Action_x']))))
-                    self.out_data['Action_x'].append(event.x)
-                    self.out_data['Action_y'].append(event.y)
+                            self.out_data[ii]['action_x']))))
+                    self.out_data[ii]['action_x'].append(event.x)
+                    self.out_data[ii]['action_y'].append(event.y)
                     self.state[ii].set('state')
                     n = int(self.tree[ii].selection()[0])
                     self.tree[ii].item(
                         self.tree[ii].get_children()[n], text = n+1, 
                         values = tuple(self.dict2mat(
-                            self.out_data)[n,:].astype(int)))
+                            self.out_data[ii])[n,:].astype(int)))
         
     def on_drag(self, event):
         
@@ -332,21 +344,21 @@ class CanvasInput(tk.Frame,UI):
                     self.canvas[ii].startxy[0], self.canvas[ii].startxy[1], 
                     circxy=True)
                 xa = self.r * np.cos(
-                    np.deg2rad(self.out_data['Action_a'][n])) + self.x_ini
+                    np.deg2rad(self.out_data[ii]['action_a'][n])) + self.x_ini
                 ya = self.r * np.sin(
-                    np.deg2rad(self.out_data['Action_a'][n])) + self.y_ini
+                    np.deg2rad(self.out_data[ii]['action_a'][n])) + self.y_ini
                 if self.canvas[ii].gettags(
                         "current")[0].split('-')[0] == 'state'+str(ii): # If state, updates both the state placement and the arrow
                     self.canvas[ii].move(
                         self.canvas[ii].selected, dx-dx_pr, 
                         dy-dy_pr)
-                    self.out_data['State_a'][n] = (360-np.rad2deg(alpha))%360
+                    self.out_data[ii]['state_a'][n] = (360-np.rad2deg(alpha))%360
 
                     if self.clock[ii].get()  == 'clock':
-                        start = self.out_data['Action_a'][n]
+                        start = self.out_data[ii]['action_a'][n]
                         end = np.rad2deg(-alpha)
                     else:
-                        start = self.out_data['Action_a'][n] - 360
+                        start = self.out_data[ii]['action_a'][n] - 360
                         end = 360 - np.rad2deg(alpha)
 
                     self.canvas[ii].itemconfigure(
@@ -356,13 +368,13 @@ class CanvasInput(tk.Frame,UI):
                 elif self.canvas[ii].gettags(
                         "current")[0].split('-')[0] == 'action'+str(ii): # If action, updates the arrow end of the line position
                     
-                    self.out_data['Action_a'][n] = (360-np.rad2deg(alpha))%360
+                    self.out_data[ii]['action_a'][n] = (360-np.rad2deg(alpha))%360
 
                     if self.clock[ii].get()  == 'clock':
-                        start = self.out_data['State_a'][n]
+                        start = self.out_data[ii]['state_a'][n]
                         end = np.rad2deg(-alpha)
                     else:
-                        start = self.out_data['State_a'][n] - 360
+                        start = self.out_data[ii]['state_a'][n] - 360
                         end = 360 - np.rad2deg(alpha)
                     
                     self.canvas[ii].itemconfigure(
@@ -378,23 +390,23 @@ class CanvasInput(tk.Frame,UI):
                     self.canvas[ii].move(self.canvas[ii].selected, dx, dy)
                     self.canvas[ii].coords(
                         "action"+str(ii)+'-'+str(n), 
-                        (event.x, event.y, self.out_data['Action_x'][n], 
-                        self.out_data['Action_y'][n]))
-                    self.out_data['State_x'][n] = event.x
-                    self.out_data['State_y'][n] = event.y  
+                        (event.x, event.y, self.out_data[ii]['action_x'][n], 
+                        self.out_data[ii]['action_y'][n]))
+                    self.out_data[ii]['state_x'][n] = event.x
+                    self.out_data[ii]['state_y'][n] = event.y  
                 elif self.canvas[ii].gettags(
                         "current")[0].split('-')[0] == 'action'+str(ii): # If action, updates the arrow end of the line position
                     self.canvas[ii].coords(
                         self.canvas[ii].gettags("current")[0], 
-                        (self.out_data['State_x'][n], 
-                         self.out_data['State_y'][n], event.x, event.y))
-                    self.out_data['Action_x'][n] = event.x
-                    self.out_data['Action_y'][n] = event.y
+                        (self.out_data[ii]['state_x'][n], 
+                         self.out_data[ii]['state_y'][n], event.x, event.y))
+                    self.out_data[ii]['action_x'][n] = event.x
+                    self.out_data[ii]['action_y'][n] = event.y
             # update last position
             self.canvas[ii].startxy = (event.x, event.y)                
             self.tree[ii].item(self.tree[ii].get_children()[n], text = n+1, 
                            values = tuple(self.dict2mat(
-                               self.out_data)[n,:].astype(int)))
+                               self.out_data[ii])[n,:].astype(int)))
             self.tree[ii].selection_set(str(n))
 
     def checkered(self, line_distance):
@@ -463,38 +475,38 @@ class CanvasInput(tk.Frame,UI):
         
         if self.type[ii] == 'Rotating':
             dx, dy = self.coord_calc(np.deg2rad(360 - val[0]))
-            dx_pr, dy_pr = self.coord_calc(np.deg2rad(360 - self.out_data['State_a'][self.treerow]))            
-            self.out_data['State_a'][self.treerow] = float(val[0])
+            dx_pr, dy_pr = self.coord_calc(np.deg2rad(360 - self.out_data[ii]['state_a'][self.treerow]))            
+            self.out_data[ii]['state_a'][self.treerow] = float(val[0])
             self.canvas[ii].move("state"+str(ii)+'-'+str(self.treerow), dx-dx_pr, 
                 dy-dy_pr)
             
-            self.out_data['Action_a'][self.treerow] = float(val[1])
+            self.out_data[ii]['action_a'][self.treerow] = float(val[1])
             if self.clock[ii].get()  == 'clock':
-                start = self.out_data['State_a'][self.treerow]
-                end = self.out_data['Action_a'][self.treerow]
+                start = self.out_data[ii]['state_a'][self.treerow]
+                end = self.out_data[ii]['action_a'][self.treerow]
             else:
-                start = self.out_data['State_a'][self.treerow] - 360
-                end = self.out_data['Action_a'][self.treerow]
+                start = self.out_data[ii]['state_a'][self.treerow] - 360
+                end = self.out_data[ii]['action_a'][self.treerow]
             
             self.canvas[ii].itemconfigure(
                 "action"+str(ii)+'-'+str(self.treerow), start = start, 
                 extent = end - start)
         else:
             # calculate distance moved from last position
-            dx_s = val[0] - self.out_data['State_x'][self.treerow]
-            dy_s = val[1] - self.out_data['State_y'][self.treerow]
+            dx_s = val[0] - self.out_data[ii]['state_x'][self.treerow]
+            dy_s = val[1] - self.out_data[ii]['state_y'][self.treerow]
 
             self.canvas[ii].move("state"+str(ii)+'-'+str(self.treerow), dx_s, dy_s)
 
-            self.out_data['State_x'][self.treerow] = val[0]
-            self.out_data['State_y'][self.treerow] = val[1]
+            self.out_data[ii]['state_x'][self.treerow] = val[0]
+            self.out_data[ii]['state_y'][self.treerow] = val[1]
 
             self.canvas[ii].coords(
                 "action"+str(ii)+'-'+str(self.treerow), 
-                (self.out_data['State_x'][self.treerow], 
-                  self.out_data['State_y'][self.treerow], val[2], val[3]))
-            self.out_data['Action_x'][self.treerow] = val[2]
-            self.out_data['Action_y'][self.treerow] = val[3]
+                (self.out_data[ii]['state_x'][self.treerow], 
+                  self.out_data[ii]['state_y'][self.treerow], val[2], val[3]))
+            self.out_data[ii]['action_x'][self.treerow] = val[2]
+            self.out_data[ii]['action_y'][self.treerow] = val[3]
             
     def OnDoubleClick(self, event):
         
@@ -553,26 +565,26 @@ class CanvasInput(tk.Frame,UI):
                         float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3, 
                         fill="black", width=0, 
                         tags=("state-" + str(len(
-                            self.out_data['State_x']))))
+                            self.out_data[ii]['state_x']))))
                     self.canvas[ii].create_line(
                         float(sx), float(sy), float(ax), float(ay), 
                         fill="red", arrow=tk.LAST, 
                         tags=("action"+str(ii)+"-"+ str(len(
-                            self.out_data['Action_x']))))
-                    self.out_data['State_x'].append(sx)
-                    self.out_data['State_y'].append(sy)
-                    self.out_data['Action_x'].append(ax)
-                    self.out_data['Action_y'].append(ay)
+                            self.out_data[ii]['action_x']))))
+                    self.out_data[ii]['state_x'].append(sx)
+                    self.out_data[ii]['state_y'].append(sy)
+                    self.out_data[ii]['action_x'].append(ax)
+                    self.out_data[ii]['action_y'].append(ay)
                     self.tree.insert(
                         parent = '', index = 'end', 
-                        iid = len(self.out_data['Action_x'])-1, 
-                        text = len(self.out_data['Action_x']), 
+                        iid = len(self.out_data[ii]['action_x'])-1, 
+                        text = len(self.out_data[ii]['action_x']), 
                         values = tuple(self.dict2mat(
-                            self.out_data)
-                            [len(self.out_data
-                                 ['Action_x'])-1,:].astype(int)))
+                            self.out_data[ii])
+                            [len(self.out_data[ii]
+                                 ['action_x'])-1,:].astype(int)))
                     self.tree.selection_set(str(len(
-                        self.out_data['Action_x'])-1))
+                        self.out_data[ii]['action_x'])-1))
                 else:
                     read = True
     
