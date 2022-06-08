@@ -17,13 +17,12 @@ class dataLoader():
         self.newWindow.title('Data Importer')
         script_dir = os.path.dirname(__file__)
 
-        #temp fix - this call does not work on linux
-        if platform != "linux":
-            self.newWindow.iconbitmap(os.path.join(
-                    script_dir, 
-                    'resources', 
-                    'Assets', 
-                    'AIDIcon.ico'))
+        self.newWindow.tk.call('wm','iconphoto', self.newWindow._w, ImageTk.PhotoImage(
+            file = os.path.join(os.path.join(
+                script_dir, 
+                'resources', 
+                'Assets', 
+                'ADDIcon.ico'))))
         
         self.newWindow.geometry("700x400")
         self.newWindow.grid_rowconfigure(2, weight=1)
