@@ -230,6 +230,7 @@ class MainPage(tk.Frame):
         frame1 = tk.Frame(self.newWindow)
         self.label_list = []
         self.var = ['X', 'Y', 'X test', 'Y test']
+        self.filenames = ['']*len(self.var)
         for r,v in enumerate(self.var):
             v = v + '*' if r == 0 else v
             tk.Label(frame1, text = v,
@@ -245,7 +246,7 @@ class MainPage(tk.Frame):
                       text="Delete", 
                       command = lambda a = r: self.delete_file(a)
                       ).grid(column = 2, row = r)
-            self.label_list.append(tk.Label(frame1, text = ' '*150,
+            self.label_list.append(tk.Label(frame1, text = ' '*120,
                                     pady= 10,
                                     padx= 10,
                                     fg = 'black'
@@ -270,18 +271,20 @@ class MainPage(tk.Frame):
                                    defaultextension = '.csv', 
                                    filetypes = [('CSV', '.csv'), 
                                                 ('All Files', '*.*')])
+        self.filenames[r] = filename
+        width = 63
+        filename =  '...' + filename[-width+3:] if filename and len(filename) > width else filename
         self.label_list[r].config(text = filename)
 
     def delete_file(self, r):
         self.label_list[r].config(text = '')
-        
+
     def start_dataloader(self):
         """ Reads all the selected files, loads the data and passes it to 
         dataLoader."""
         data = {}
         if len(self.label_list[0].cget("text")) > 0:
-            for i,label in enumerate(self.label_list):
-                filename = label.cget("text")
+            for i,filename in enumerate(self.filenames):
                 variable = self.var[i]
                 if filename is not None and len(filename) > 0:
                     if filename.lower().endswith(('.csv')):
