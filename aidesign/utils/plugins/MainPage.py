@@ -241,12 +241,16 @@ class MainPage(tk.Frame):
                       text="Browse", 
                       command = lambda a = r: self.upload_file(a)
                       ).grid(column = 1, row = r)
+            tk.Button(frame1, 
+                      text="X", 
+                      command = lambda a = r: self.delete_file(a)
+                      ).grid(column = 2, row = r)
             self.label_list.append(tk.Label(frame1, text = '',
                                     pady= 10,
                                     padx= 10,
                                     fg = 'black'
                                     ))
-            self.label_list[-1].grid(column = 2, row = r)
+            self.label_list[-1].grid(column = 3, row = r)
         frame2 = tk.Frame(self.newWindow)
         tk.Label(frame2, text = '* This data file is mandatory.',
                                 pady= 10,
@@ -273,6 +277,9 @@ class MainPage(tk.Frame):
         #         dL = dataLoader(self.controller, data, filename)
         #         self.controller.Data = dL.controller.Data
 
+    def delete_file(self, r):
+        self.label_list[r].config(text = '')
+        
     def start_dataloader(self):
         """ Reads all the selected files, loads the data and passes it to 
         dataLoader."""
