@@ -313,15 +313,21 @@ class MainPage(tk.Frame):
             for file in onlyfiles:
                 name = file.lower()
                 filename = os.path.join(folder, file)
+                width = 63
+                filenm =  '...' + filename[-width+3:] if filename and len(filename) > width else filename
                 if name.endswith(('.csv')):
                     name = ''.join(ch for ch in name if ch.isalnum())
                     if 'test' in name or 'tst' in name:
                         if name[0] == 'x':
-                            self.label_list[2].config(text = filename)
+                            self.filenames[2] = filename
+                            self.label_list[2].config(text = filenm)
                         elif name[0] == 'y':
-                            self.label_list[3].config(text = filename)
+                            self.filenames[3] = filename
+                            self.label_list[3].config(text = filenm)
                     else:
                         if name[0] == 'x':
-                            self.label_list[0].config(text = filename)
+                            self.filenames[0] = filename
+                            self.label_list[0].config(text = filenm)
                         elif name[0] == 'y':
-                            self.label_list[1].config(text = filename)
+                            self.filenames[1] = filename
+                            self.label_list[1].config(text = filenm)
