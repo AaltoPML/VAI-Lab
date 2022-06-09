@@ -323,6 +323,5 @@ class MainPage(tk.Frame):
                     else:
                         if name[0] == 'x':
                             self.label_list[0].config(text = filename)
-                            # self.controller.Data.set(True)
                         elif name[0] == 'y':
                             self.label_list[1].config(text = filename)
