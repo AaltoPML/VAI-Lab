@@ -171,7 +171,6 @@ class MainPage(tk.Frame):
         """
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
-            # if self.controller.Data.get():
             self.PluginButton.config(state = 'normal')
             if self.controller.Plugin.get():
                 self.RunButton.config(state = 'normal')
@@ -183,11 +182,6 @@ class MainPage(tk.Frame):
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
             self.interactButton.config(state = 'normal')
             self.uploadButton.config(state = 'normal')
-            # if self.controller.XML.get():
-                # self.PluginButton.config(state = 'normal')
-            # if self.controller.Plugin.get():
-            #     self.RunButton.config(state = 'normal')
-
 
     def trace_Plugin(self,*args):
         """ Checks if Plugin variable has been updated
@@ -213,7 +207,7 @@ class MainPage(tk.Frame):
             self.controller.XML.set(True)
 
     def upload_data_file(self):
-        """ Loads a data file containing the data required for the pipeline """
+        """ Opens a window to indicate the path to the data. """
         
         self.newWindow = tk.Toplevel(self.controller)
         # Window options
@@ -266,6 +260,9 @@ class MainPage(tk.Frame):
         frame2.grid(column=0, row=1, sticky="nsew")
 
     def upload_file(self, r):
+        """ Asks for a file and stores the path and displays it.
+        :param r: int type of data variable number.
+        """
         filename = askopenfilename(initialdir = os.getcwd(), 
                                    title = 'Select a file', 
                                    defaultextension = '.csv', 
@@ -277,11 +274,16 @@ class MainPage(tk.Frame):
         self.label_list[r].config(text = filename)
 
     def delete_file(self, r):
+        """ Deletes the specified file from storage and display.
+        :param r: int type of data variable number.
+        """
+        self.filenames[r] = ''
         self.label_list[r].config(text = '')
 
     def start_dataloader(self):
         """ Reads all the selected files, loads the data and passes it to 
-        dataLoader."""
+        dataLoader.
+        """
         data = {}
         if len(self.label_list[0].cget("text")) > 0:
             for i,filename in enumerate(self.filenames):
@@ -299,7 +301,6 @@ class MainPage(tk.Frame):
             tk.messagebox.showwarning(title = 'Error - X not specified',
                                       message = 'You need to specify X before proceeding.')
 
-
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
         """
@@ -316,16 +317,12 @@ class MainPage(tk.Frame):
                     name = ''.join(ch for ch in name if ch.isalnum())
                     if 'test' in name or 'tst' in name:
                         if name[0] == 'x':
-                            # data = self.checkFile(filename,data,'X test')
                             self.label_list[2].config(text = filename)
                         elif name[0] == 'y':
-                            # data = self.checkFile(filename,data,'Y test')
                             self.label_list[3].config(text = filename)
                     else:
                         if name[0] == 'x':
-                            # data = self.checkFile(filename,data,'X')
                             self.label_list[0].config(text = filename)
                             # self.controller.Data.set(True)
                         elif name[0] == 'y':
-                            # data = self.checkFile(filename,data,'Y')
                             self.label_list[1].config(text = filename)

@@ -17,7 +17,7 @@ class StartPage(tk.Frame):
         " This leads to the different methods to provide feedback."
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
-        self.controller.title('User feedback adaptation')
+        self.controller.title('User interaction adaptation')
         
         script_dir = os.path.dirname(__file__)
         self.my_img1 = ImageTk.PhotoImage(

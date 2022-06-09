@@ -111,9 +111,9 @@ class aidCanvas(tk.Frame):
                                               self.height/2)
             ).grid(column = 5, row = 3, padx=(0,10), sticky="news")
         tk.Button(
-            frame4, text = 'User Feedback', fg = 'white', bg = parent['bg'],
+            frame4, text = 'User Interaction', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('User Feedback', 
+            command = lambda: self.add_module('User Interaction', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 4, padx=(0,10), sticky="news")

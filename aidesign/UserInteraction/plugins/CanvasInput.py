@@ -10,7 +10,7 @@ import pandas as pd
 import math
 
 _PLUGIN_CLASS_NAME = "CanvasInput"
-_PLUGIN_CLASS_DESCRIPTION = "Method of user feedback for state-action pairs"
+_PLUGIN_CLASS_DESCRIPTION = "Method of user interaction for state-action pairs"
 _PLUGIN_READABLE_NAMES = {"canvas":"default","state-action":"alias","robot":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None}

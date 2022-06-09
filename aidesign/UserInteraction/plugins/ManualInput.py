@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 _PLUGIN_CLASS_NAME = "ManualInput"
-_PLUGIN_CLASS_DESCRIPTION = "Method of user feedback for binary or classification data"
+_PLUGIN_CLASS_DESCRIPTION = "Method of user interaction for binary or classification data"
 _PLUGIN_READABLE_NAMES = {"manual":"default","binary":"alias","classification":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None}

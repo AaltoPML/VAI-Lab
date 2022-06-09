@@ -8,8 +8,10 @@ from sys import platform
 
 
 class dataLoader():
-    
+    """ Creates a window 
+    """
     def __init__(self,controller,data):
+        
         self.controller = controller
         self.newWindow = tk.Toplevel(self.controller)
         

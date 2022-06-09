@@ -7,7 +7,7 @@
             <child name="My First UserFeedback Module" />
         </relationships>
     </Initialiser>
-    <UserFeedback name="My First UserFeedback Module">
+    <UserInteraction name="My First UserFeedback Module">
         <plugin type="canvas">
             <some_param val = "2" />
         </plugin>
@@ -15,7 +15,7 @@
             <parent name="Init" />
             <child name="Output" />
         </relationships>
-    </UserFeedback>
+    </UserInteraction>
     <Output>
         <plugin type="">
             <out_data>

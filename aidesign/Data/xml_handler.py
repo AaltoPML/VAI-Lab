@@ -26,7 +26,7 @@ class XML_handler(object):
             "Initialiser": "entry_point",
             "inputdata": "data",
             "Output": "exit_point",
-            "UserFeedback": "module",
+            "UserInteraction": "module",
             "DataProcessing": "module",
             "Modelling": "module",
             "InputData": "module",
