@@ -3,7 +3,7 @@ import tkinter as tk
 import os
 from PIL import Image, ImageTk
 from tkinter import messagebox, ttk
-from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
+from tkinter.filedialog import asksaveasfile
 import numpy as np
 import pandas as pd
 
@@ -197,15 +197,6 @@ class ManualInput(tk.Frame,UI):
                 "Exit?",
                 "Are you sure you are finished?")
             self.controller.destroy()
-    
-    def open_file(self):
-        
-        self.save_path = askopenfile(mode='r+')
-        if self.save_path is not None:
-            t = self.save_path.read()
-            # textentry.delete('0.0', 'end')
-            # textentry.insert('0.0', t)
-            # textentry.focus()
             
     def save_file_as(self):
         
