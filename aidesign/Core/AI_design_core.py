@@ -1,16 +1,21 @@
 from aidesign.utils.import_helper import import_module
-from aidesign.Settings.Settings_core import Settings
+from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
+from aidesign.Data.Data_core import Data
+from aidesign.utils.plugin_helpers import PluginSpecs
 
 
-class Core(Settings):
+class Core(object):
     def __init__(self) -> None:
-        super().__init__()
+        self._xml_handler = XML_handler()
+        self._avail_plugins = PluginSpecs()
+        self.data = Data()
         self.loop_level = 0
 
     def launch(self):
         gui_app = GUI()
-        gui_app.set_plugin_name('main')
+        gui_app.set_avail_plugins(self._avail_plugins)
+        gui_app.set_gui_as_startpage()
         gui_output = gui_app.launch()
         if not gui_app.closed:
             try:
@@ -20,7 +25,11 @@ class Core(Settings):
             self.run()
 
     def load_config_file(self, filename: str):
-        self.load_XML(filename)
+        self._xml_handler.load_XML(filename)
+
+    def _load_data(self):
+        init_data_fn = self._xml_handler.data_to_load
+        self.data.import_data_from_config(init_data_fn)
 
     def _execute_module(self, specs):
         """Executes named module with given options
@@ -28,7 +37,9 @@ class Core(Settings):
 
         :param specs: dict of module to be executed
         """
-        mod = import_module(globals(), specs["module_type"])()
+        mod = import_module(globals(), specs["module_type"]).__call__()
+        mod.set_avail_plugins(self._avail_plugins)
+        mod.set_data_in(self.data)
         mod.set_options(specs)
         print("\t"*self.loop_level
                 + specs["module_type"]
@@ -40,10 +51,10 @@ class Core(Settings):
     def _execute_loop(self, specs):
         try:
             print("\t"*self.loop_level
-                  + specs["type"]
-                  + " loop: "
-                    + "\"{}\"".format(specs["name"])
-                    + " starting...")
+                        + specs["type"]
+                        + " loop: "
+                        + "\"{}\"".format(specs["name"])
+                        + " starting...")
             self.loop_level += 1
             getattr(self, "_execute_{}_loop".format(specs["type"]))(specs)
             self.loop_level -= 1
@@ -89,5 +100,6 @@ class Core(Settings):
 
     def run(self):
         print("Running pipeline...")
-        self._execute(self.loaded_modules)
+        self._load_data()
+        self._execute(self._xml_handler.loaded_modules)
         print("Pipeline Complete")

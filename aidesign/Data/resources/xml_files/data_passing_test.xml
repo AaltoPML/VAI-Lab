@@ -1,0 +1,35 @@
+<pipeline>
+    <Initialiser name="Init">
+        <inputdata>
+            <X file="../Data/X_tr.csv" />
+            <!-- <X_test file="./Data/resources/import_test.csv" /> -->
+            <Y file="../Data/Y_tr.csv" />
+            <!-- <Y_test file="./Data/resources/import_test.csv" /> -->
+        </inputdata>
+        <relationships>
+            <child name="My First Modelling Module" />
+        </relationships>
+    </Initialiser>
+        <Modelling name="My First Modelling Module">
+            <plugin type="regression">
+                <power val = "2" />
+                <train_name val = "input" />
+                <target_name val = "target" />
+            </plugin>
+            <relationships>
+                <parent name="Init" />
+                <child name="Data Processing 1" />
+            </relationships>
+        </Modelling>
+    <Output>
+        <plugin type="">
+            <out_data>
+                all
+            </out_data>
+            <save_to file="../resources/output_test.csv" />
+        </plugin>
+        <relationships>
+            <parent name="My Second UserFeedback Module" />
+        </relationships>
+    </Output>
+</pipeline>

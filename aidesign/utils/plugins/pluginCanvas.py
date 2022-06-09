@@ -7,7 +7,7 @@ import pandas as pd
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 from tkinter import messagebox
 
-from aidesign.Settings.Settings_core import Settings
+from aidesign.Data.xml_handler import XML_handler
 from aidesign.utils.plugin_helpers import PluginSpecs
 
 _PLUGIN_CLASS_NAME = "pluginCanvas"
@@ -29,7 +29,7 @@ class pluginCanvas(tk.Frame):
         super().__init__(parent, bg = parent['bg'])
         self.bg = parent['bg']
         self.controller = controller
-        self.s = Settings()
+        self.s = XML_handler()
         
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
@@ -131,8 +131,9 @@ class pluginCanvas(tk.Frame):
                 (self.plugin[self.m].get() != 'None') and \
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
+                print(np.array(self.module_names)[self.m == np.array(self.id_mod)][0])
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                               {**self.req_settings, **self.opt_settings},
+                                                 {**self.req_settings, **self.opt_settings},
                                                  np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                                                  True)
         if self.m in self.id_done and self.m > 1:
@@ -211,7 +212,7 @@ class pluginCanvas(tk.Frame):
     def finnish(self):
         """ Calls function check_quit.
         Before that, it checks if the current module plugins have been changed 
-        and, if so, updates their information in the Settings class.
+        and, if so, updates their information in the XML_handler class.
         """
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None') and \
@@ -248,7 +249,7 @@ class pluginCanvas(tk.Frame):
             rb.grid(column = 5+ (p%2 != 0), row = int(p/2)+1)
             self.CreateToolTip(rb, text = descriptions[p])
             self.allWeHearIs.append(rb)
-    
+
     def optionsWindow(self):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
@@ -273,10 +274,10 @@ class pluginCanvas(tk.Frame):
                     'Assets', 
                     'AIDIcon.ico'))))
             self.newWindow.geometry("350x400")
-            
+
             frame1 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
-        
+            
             # Print settings
             tk.Label(frame1,
                   text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.\n\
@@ -299,14 +300,14 @@ class pluginCanvas(tk.Frame):
                 self.displaySettings(frame3, self.opt_settings)
                 frame3.grid(column=0, row=r, sticky="nswe")
                 r += 1
-                
+
             self.entry[0].focus()
             self.finishButton = tk.Button(
                 frame4, text = 'Finish', command = self.removewindow)
             self.finishButton.grid(column = 1, row = r+1, sticky="es", pady=(0,10), padx=(0,10))
             self.finishButton.bind("<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
-            
+
             frame1.grid(column=0, row=0, sticky="new")
             frame4.grid(column=0, row=r, sticky="se")
             self.newWindow.grid_rowconfigure(0, weight=1)
@@ -331,16 +332,18 @@ class pluginCanvas(tk.Frame):
 
     def removewindow(self):
         """ Stores settings options and closes window """
-        
         for e,ent in enumerate(self.entry):
             if e < len(self.req_settings):
                 self.req_settings[list(self.req_settings.keys())[e]] = ent.get()
             else:
+                print(self.opt_settings)
+                print(list(self.opt_settings.keys()))
+                print(e-len(self.req_settings))
                 self.opt_settings[list(self.opt_settings.keys())[e-len(self.req_settings)]] = ent.get()
-
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
+
     def on_return_entry(self, r):
         """ Changes focus to the next available entry. When no more, focuses 
         on the finish button.
@@ -470,6 +473,7 @@ class pluginCanvas(tk.Frame):
         
         self.reset()
 
+        self.s = XML_handler()
         self.s.load_XML(filename)
         self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
@@ -576,7 +580,7 @@ class pluginCanvas(tk.Frame):
         
         if hasattr(self, 'newWindow') and (self.newWindow!= None):
             self.newWindow.destroy()
-        
+            
         self.canvas.startxy = []
         self.out_data = pd.DataFrame()
         self.connections = {}
@@ -610,6 +614,7 @@ class pluginCanvas(tk.Frame):
                 self.canvas.delete(tk.ALL)
                 self.saved = True
                 self.s.write_to_XML()
+                self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         # TODO: Check if loaded
         elif len(self.s.loaded_modules) == 0:
@@ -679,7 +684,7 @@ class EntryWithPlaceholder(tk.Entry):
     def foc_out(self, *args):
         if not self.get():
             self.put_placeholder()
-            
+
 if __name__ == "__main__":
     app = pluginCanvas()
     app.mainloop()

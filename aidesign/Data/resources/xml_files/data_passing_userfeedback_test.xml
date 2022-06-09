@@ -1,0 +1,31 @@
+<pipeline>
+    <Initialiser name="Init">
+        <inputdata>
+            <X folder="./Data/resources/image_classification/training_images/" />
+            <Y file="./Data/resources/image_classification/Y_data.csv" />
+        </inputdata>
+        <relationships>
+            <child name="My First UserFeedback Module" />
+        </relationships>
+    </Initialiser>
+    <UserFeedback name="My First UserFeedback Module">
+        <plugin type="manual">
+            <some_param val = "2" />
+        </plugin>
+        <relationships>
+            <parent name="Init" />
+            <child name="Output" />
+        </relationships>
+    </UserFeedback>
+    <Output>
+        <plugin type="">
+            <out_data>
+                all
+            </out_data>
+            <save_to file="../resources/output_test.csv" />
+        </plugin>
+        <relationships>
+            <parent name="My Second UserFeedback Module" />
+        </relationships>
+    </Output>
+</pipeline>

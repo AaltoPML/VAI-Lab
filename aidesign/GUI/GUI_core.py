@@ -19,13 +19,22 @@ class GUI(tk.Tk):
                                       weight="bold")
         self.pages_font = Font(family='Helvetica',
                                       size=12)
-
         self._desired_ui_types = []
         self._top_ui_layer = None
         self._module_config = None
         self.closed = False
+        self.startpage = False
         self.output = {}
-        self._plugin_specs = PluginSpecs()
+
+    def set_avail_plugins(self,avail_plugins):
+        self._avail_plugins = avail_plugins
+
+    def set_data_in(self,data_in):
+        self._data_in = data_in
+
+    def set_gui_as_startpage(self):
+        self.startpage = True
+        self._load_plugin("main")
 
     def _compare_layer_priority(self, ui_specs):
         """Check if a new module should have higher layer priority than the existing one
@@ -51,13 +60,14 @@ class GUI(tk.Tk):
         plugin = import_plugin_absolute(globals(),
                                         ui_specs["_PLUGIN_PACKAGE"],
                                         ui_specs["_PLUGIN_CLASS_NAME"])
+
         self._desired_ui_types.append(plugin)
         self._compare_layer_priority(ui_specs)
         if ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"] != None:
             for children in ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"]:
-                self.set_plugin_name(children)
+                self._load_plugin(children)
 
-    def set_plugin_name(self, ui_type: list):
+    def _load_plugin(self, ui_type: list):
         """"Given user input, create a list of classes of the corresponding User Interface Type 
 
         :param ui_name: name of the desired User Interface Method
@@ -68,7 +78,7 @@ class GUI(tk.Tk):
             else [ui_type]
 
         for ui in ui_type:
-            ui_specs = self._plugin_specs.find_from_readable_name(ui)
+            ui_specs = self._avail_plugins.find_from_readable_name(ui)
             try:
                 self._add_UI_type_to_frames(ui_specs)
             except ModuleNotFoundError as ex:
@@ -78,11 +88,11 @@ class GUI(tk.Tk):
             except:
                 from sys import exit
                 print(
-                    "Error: User Interface \"{0}\" not recognised.\
-                    \n Available methods are:\
-                    \n   - {1}"\
-                    .format(ui, ",\n   - ".join(
-                        [i for i in self._plugin_specs.available_plugin_names])))
+                    "Error: User Interface \"{0}\" not recognised. \
+                    \nAvailable methods are: \
+                    \n  - {1}"\
+                    .format(ui, ",\n  - ".join(
+                        [i for i in self._avail_plugins.available_plugin_names])))
                 exit(1)
 
     def _append_to_output(self, key:str, value:any):
@@ -94,7 +104,7 @@ class GUI(tk.Tk):
         :param module_config: dict of settings to congfigure the plugin
         """
         self._module_config = module_config
-        self.set_plugin_name(self._module_config["plugin"]["plugin_name"])
+        self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
     def _show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -121,6 +131,8 @@ class GUI(tk.Tk):
             page_name = F.__name__
             frame = F(parent=container, controller=self,
                       config=self._module_config)
+            if not self.startpage:
+                frame.set_data_in(self._data_in)
             self.frames[page_name] = frame
 
             frame.grid(row=0, column=0, sticky="nsew")

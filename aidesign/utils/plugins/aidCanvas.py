@@ -7,7 +7,7 @@ import pandas as pd
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 from tkinter import messagebox
 
-from aidesign.Settings.Settings_core import Settings
+from aidesign.Data.xml_handler import XML_handler
 
 _PLUGIN_CLASS_NAME = "aidCanvas"
 _PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules"
@@ -111,9 +111,9 @@ class aidCanvas(tk.Frame):
                                               self.height/2)
             ).grid(column = 5, row = 3, padx=(0,10), sticky="news")
         tk.Button(
-            frame4, text = 'User Feedback', fg = 'white', bg = parent['bg'],
+            frame4, text = 'User Interaction', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = lambda: self.add_module('User Feedback', 
+            command = lambda: self.add_module('User Interaction', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 4, padx=(0,10), sticky="news")
@@ -672,7 +672,7 @@ class aidCanvas(tk.Frame):
             # to avoid numpy bug during elementwise comparison of lists 
             loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
 
-            s = Settings()
+            s = XML_handler()
             s.new_config_file(self.save_path.name)
             s.filename = self.save_path.name
             s.append_pipeline_module(self.module_list[0], # Initialiser
@@ -734,7 +734,7 @@ class aidCanvas(tk.Frame):
         if filename is not None:
             self.reset()
 
-            s = Settings()
+            s = XML_handler()
             s.load_XML(filename)
             s._print_pretty(s.loaded_modules)
             modules = s.loaded_modules

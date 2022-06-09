@@ -3,10 +3,9 @@ import os
 from PIL import Image, ImageTk
 
 from tkinter.filedialog import askopenfilename, askdirectory
-from scipy.io import loadmat
+import pandas as pd
 
 from aidesign.utils.plugins.dataLoader import dataLoader
-from aidesign.Settings.Settings_core import Settings
 
 _PLUGIN_CLASS_NAME = "MainPage"
 _PLUGIN_CLASS_DESCRIPTION = "Splash and Menu page used as GUI entry-point"
@@ -93,25 +92,29 @@ class MainPage(tk.Frame):
         self.controller.Datalabel.grid(column = 2,
                             row = 12)
         
-        tk.Button(frame3,
+        self.interactButton = tk.Button(frame3,
                     text = 'Interact with canvas',
                     fg = 'white',
                     font = controller.title_font,
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
+                    state = tk.DISABLED, 
                     command = lambda: self.canvas("aidCanvas")
-                    ).grid(column = 0, row = 13)
+                    )
+        self.interactButton.grid(column = 0, row = 13)
 
-        tk.Button(frame3,
+        self. uploadButton = tk.Button(frame3,
                     text = 'Upload XML file',
                     fg = 'white',
                     font = controller.title_font, 
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
+                    state = tk.DISABLED, 
                     command = self.upload_xml,
-                    ).grid(column = 1, row = 13)
+                    )
+        self. uploadButton.grid(column = 1, row = 13)
         
         self.controller.XMLlabel = tk.Label(frame3, 
                                 text = 'Incomplete',
@@ -160,28 +163,30 @@ class MainPage(tk.Frame):
         frame2.grid(column=0, row=1, sticky="n")
         frame3.grid(column=0, row=2, sticky="n")
         
+    def set_data_in(self, _):
+        pass
+
     def trace_XML(self,*args):
         """ Checks if XML variable has been updated
         """
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
-            if self.controller.Data.get():
-                self.PluginButton.config(state = 'normal')
+            self.PluginButton.config(state = 'normal')
+            if self.controller.Plugin.get():
+                self.RunButton.config(state = 'normal')
 
     def trace_Data(self,*args):
         """ Checks if Data variable has been updated
         """
         if self.controller.Data.get():
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
-            if self.controller.XML.get():
-                self.PluginButton.config(state = 'normal')
-            if self.controller.Plugin.get():
-                self.RunButton.config(state = 'normal')
+            self.interactButton.config(state = 'normal')
+            self.uploadButton.config(state = 'normal')
 
     def trace_Plugin(self,*args):
         """ Checks if Plugin variable has been updated
         """
-        if self.controller.Plugin.get() and self.controller.Data.get():
+        if self.controller.Plugin.get():
             self.RunButton.config(state = 'normal')
 
     def canvas(self,name: str):
@@ -198,46 +203,131 @@ class MainPage(tk.Frame):
                                    filetypes = [('XML file', '.xml'), 
                                                 ('All Files', '*.*')])
         if filename is not None and len(filename) > 0:
-            self.s = Settings()
-            self.s.load_XML(filename)
-            self.isPlug = []
-            self.checkPlugin(self.s.loaded_modules)
             self.controller._append_to_output("xml_filename",filename)
             self.controller.XML.set(True)
-            if len(self.isPlug)-2 == sum(self.isPlug): # Considering Init and Out don't have plugins now
-                self.controller.Plugin.set(True)
-
-    def checkPlugin(self, modules: dict):
-        
-        for key, arg in modules.items():
-            if arg['class'] == 'loop':
-                for k, a in arg.items():
-                    if type(a) == dict:
-                        self.checkPlugin({k: a})
-            else:
-                self.isPlug.append(arg['plugin']['plugin_name'] != '')
 
     def upload_data_file(self):
-        """ Loads a data file containing the data required for the pipeline """
+        """ Opens a window to indicate the path to the data. """
+        
+        self.newWindow = tk.Toplevel(self.controller)
+        # Window options
+        self.newWindow.title('Data upload')
+        script_dir = os.path.dirname(__file__)
+        self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
+            file = os.path.join(os.path.join(
+                script_dir, 
+                'resources', 
+                'Assets', 
+                'AIDIcon.ico'))))
+        # self.newWindow.geometry("600x200")
+        
+        frame1 = tk.Frame(self.newWindow)
+        self.label_list = []
+        self.var = ['X', 'Y', 'X test', 'Y test']
+        self.filenames = ['']*len(self.var)
+        for r,v in enumerate(self.var):
+            v = v + '*' if r == 0 else v
+            tk.Label(frame1, text = v,
+                                    pady= 10,
+                                    padx= 10,
+                                    fg = 'black'
+                                    ).grid(column = 0, row = r)
+            tk.Button(frame1, 
+                      text="Browse", 
+                      command = lambda a = r: self.upload_file(a)
+                      ).grid(column = 1, row = r)
+            tk.Button(frame1, 
+                      text="Delete", 
+                      command = lambda a = r: self.delete_file(a)
+                      ).grid(column = 2, row = r)
+            self.label_list.append(tk.Label(frame1, text = ' '*120,
+                                    pady= 10,
+                                    padx= 10,
+                                    fg = 'black'
+                                    ))
+            self.label_list[-1].grid(column = 3, row = r)
+        frame2 = tk.Frame(self.newWindow)
+        tk.Label(frame2, text = '* This data file is mandatory.',
+                                pady= 10,
+                                padx= 10,
+                                fg = 'black'
+                                ).pack(side = tk.LEFT)
+        tk.Button(frame2, 
+                      text="Done", 
+                      command = self.start_dataloader
+                      ).pack(side = tk.RIGHT, padx=(0,5))
+        frame1.grid(column=0, row=0, sticky="nsew")
+        frame2.grid(column=0, row=1, sticky="nsew")
+
+    def upload_file(self, r):
+        """ Asks for a file and stores the path and displays it.
+        :param r: int type of data variable number.
+        """
         filename = askopenfilename(initialdir = os.getcwd(), 
                                    title = 'Select a file', 
-                                   defaultextension = '.mat', 
-                                   filetypes = [('mat file', '.mat'), 
-                                                ('CSV', '.csv'), 
+                                   defaultextension = '.csv', 
+                                   filetypes = [('CSV', '.csv'), 
                                                 ('All Files', '*.*')])
-        
-        if filename is not None and len(filename) > 0:
-            if filename.lower().endswith(('.mat')):
-                data = loadmat(filename)
-                dL = dataLoader(self.controller, data, filename)
-                self.controller.Data = dL.controller.Data
+        self.filenames[r] = filename
+        width = 63
+        filename =  '...' + filename[-width+3:] if filename and len(filename) > width else filename
+        self.label_list[r].config(text = filename)
+
+    def delete_file(self, r):
+        """ Deletes the specified file from storage and display.
+        :param r: int type of data variable number.
+        """
+        self.filenames[r] = ''
+        self.label_list[r].config(text = '')
+
+    def start_dataloader(self):
+        """ Reads all the selected files, loads the data and passes it to 
+        dataLoader.
+        """
+        data = {}
+        if len(self.label_list[0].cget("text")) > 0:
+            for i,filename in enumerate(self.filenames):
+                variable = self.var[i]
+                if filename is not None and len(filename) > 0:
+                    if filename.lower().endswith(('.csv')):
+                        data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
+                        self.controller._append_to_output("data_"+variable+"_filename",filename)
+                        if i == 0:
+                            self.controller.Data.set(True)
+            self.newWindow.destroy()
+            dataLoader(self.controller, data)
+
+        else:
+            tk.messagebox.showwarning(title = 'Error - X not specified',
+                                      message = 'You need to specify X before proceeding.')
 
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
         """
-        filename = askdirectory(initialdir = os.getcwd(),
+        folder = askdirectory(initialdir = os.getcwd(),
                                     title = 'Select a folder',
                                     mustexist = True)
-        self.controller._append_to_output("data_filename",filename)
-        if filename is not None and len(filename) > 0:
-            self.controller.Data.set(True)
+        if folder is not None and len(folder) > 0:
+            onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+            self.upload_data_file()
+            for file in onlyfiles:
+                name = file.lower()
+                filename = os.path.join(folder, file)
+                width = 63
+                filenm =  '...' + filename[-width+3:] if filename and len(filename) > width else filename
+                if name.endswith(('.csv')):
+                    name = ''.join(ch for ch in name if ch.isalnum())
+                    if 'test' in name or 'tst' in name:
+                        if name[0] == 'x':
+                            self.filenames[2] = filename
+                            self.label_list[2].config(text = filenm)
+                        elif name[0] == 'y':
+                            self.filenames[3] = filename
+                            self.label_list[3].config(text = filenm)
+                    else:
+                        if name[0] == 'x':
+                            self.filenames[0] = filename
+                            self.label_list[0].config(text = filenm)
+                        elif name[0] == 'y':
+                            self.filenames[1] = filename
+                            self.label_list[1].config(text = filenm)
