@@ -3,8 +3,6 @@ from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 from matplotlib import pyplot as plt
 
-_PLUGIN_CLASS_NAME = "Regression"
-_PLUGIN_CLASS_DESCRIPTION = "Regression ML model placeholder"
 _PLUGIN_READABLE_NAMES = {"regression":"default","reg":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"power":"int","train_name":"str","target_name":"str"}
@@ -13,6 +11,8 @@ _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {}
 
 class Regression(object):
+    """Regression for supervised training"""
+
     def __init__(self):
         self.input_data = None
         self.target_data = None
@@ -23,7 +23,7 @@ class Regression(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(_PLUGIN_CLASS_NAME) \
+                            +"\n\t{0} ".format(Regression) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
