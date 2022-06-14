@@ -63,7 +63,28 @@ class PluginSpecs(ast.NodeVisitor):
                 tree = ast.parse(source.read())
             self.visit(tree)
 
+    def visit_ClassDef(self,node):
+        """Append the name of the main class of the plugin to specs
+        Called as a callback from "self.visit(tree)"
+        Adds only the first class name - works for now, but may be suboptimal
+
+        :param node: ast node of class name
+        """
+        c_tag = "_PLUGIN_CLASS_NAME"
+        d_tag = "_PLUGIN_CLASS_DESCRIPTION"
+        if c_tag not in self.available_plugins[self.curr_module][self.curr_plugin].keys():
+            self.available_plugins[self.curr_module][self.curr_plugin][c_tag] = node.name
+            ds = ast.get_docstring(node)
+            self.available_plugins[self.curr_module][self.curr_plugin][d_tag] = ds
+        
+
     def visit_Assign(self, node):
+        """Append the name of all plugin specs to available_plugins dict
+        Plugin specs should be declared with consants beginning with "_PLUGIN_<option_name>"
+        Called as a callback from "self.visit(tree)"
+
+        :param node: ast node of class name
+        """
         if type(node.targets[0]) == ast.Name:
             if "_PLUGIN" in node.targets[0].id:
                 key = node.targets[0].id
@@ -135,9 +156,9 @@ class PluginSpecs(ast.NodeVisitor):
         pp.pprint(value)
 
 
-# if __name__ == "__main__":
-#     ps = PluginSpecs()
-#     ps.print(ps.get_all_available_plugin_names())
+if __name__ == "__main__":
+    ps = PluginSpecs()
+    ps.print(ps.available_plugin_names)
     # ps.print(ps.names)
     # ps.print(ps.class_descriptions)
     # print(list(ps.class_descriptions()['GUI'].values()))
