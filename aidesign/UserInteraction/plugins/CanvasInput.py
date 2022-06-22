@@ -81,8 +81,6 @@ class CanvasInput(tk.Frame,UI):
             for k in np.arange(len(self._class_list[ii])):
                 self._class_list[ii][k] = self._class_list[ii][k].replace(' ', '_').lower()
                 self.out_data[ii][self._class_list[ii][k]] = []
-        print(self._class_list)
-        print(self.out_data)
         
         for ii in np.arange(len(self.out_data)):
             self.frame.append(tk.Frame(self, bg = self.parent['bg']))
@@ -222,7 +220,7 @@ class CanvasInput(tk.Frame,UI):
             self.selected = self.canvas[ii].find_overlapping(
                 event.x-10, event.y-10, event.x+10, event.y+10)
             if self.selected:
-                if len(self.selected) > 2:
+                if len(self.selected) >= 2:
                     self.canvas[ii].selected = self.selected[-2]
                 else:
                     self.canvas[ii].selected = self.selected[-1]
