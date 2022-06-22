@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 from os import path
 from ast import literal_eval
+from aidesign.utils.import_helper import get_lib_parent_dir
 
 
 class XML_handler(object):
@@ -11,10 +12,7 @@ class XML_handler(object):
 
         :param filename [optional]: filename from which to load XML
         """
-        self.lib_base_path = [__file__[:i] \
-                                for i,_ in enumerate(__file__)\
-                                if __file__[:i].\
-                                endswith("{0}aidesign{0}".format(path.sep))][-1]
+        self.lib_base_path = get_lib_parent_dir()
         self.loaded_modules = {}
 
         """valid_tags lists the available XML tags and their function
