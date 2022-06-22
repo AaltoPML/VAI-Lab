@@ -8,7 +8,7 @@ if not __package__:
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
-from aidesign.utils.import_helper import import_module
+from aidesign.utils.import_helper import get_lib_parent_dir
 from aidesign.Data.xml_handler import XML_handler
 import pandas as pd
 import numpy as np
@@ -16,7 +16,7 @@ import numpy as np
 
 class Data(object):
     def __init__(self) -> None:
-        self.lib_base_path = __file__.split("aidesign")[0] + "aidesign"
+        self.lib_base_path = get_lib_parent_dir()
         self.xml_parser = XML_handler()
         self.data = {}
 

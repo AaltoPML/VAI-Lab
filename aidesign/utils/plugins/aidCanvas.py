@@ -9,17 +9,13 @@ from tkinter import messagebox
 
 from aidesign.Data.xml_handler import XML_handler
 
-_PLUGIN_CLASS_NAME = "aidCanvas"
-_PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of pipeline modules"
 _PLUGIN_READABLE_NAMES = {"aid_canvas":"default","aidCanvas":"alias","aid":"alias","AID":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None,}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 class aidCanvas(tk.Frame):
-
-    """ Creates a frame with a canvas and allows to include different modules
-    for display which translate into new modules defined for the framework."""
+    """Canvas for graphical specification of pipeline modules"""
     
     def __init__(self, parent, controller, config:dict):
         

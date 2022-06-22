@@ -10,8 +10,6 @@ from tkinter import messagebox
 from aidesign.Data.xml_handler import XML_handler
 from aidesign.utils.plugin_helpers import PluginSpecs
 
-_PLUGIN_CLASS_NAME = "pluginCanvas"
-_PLUGIN_CLASS_DESCRIPTION = "Canvas for graphical specification of plugins"
 _PLUGIN_READABLE_NAMES = {"plugin_canvas":"default","pluginCanvas":"alias","plugin canvas":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                             "required_children": None}
@@ -19,8 +17,7 @@ _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 
 class pluginCanvas(tk.Frame):
-    """ Creates a frame with a canvas and allows to upload a pipeline and 
-    specify the plugins used in each module."""
+    """Canvas for graphical specification of plugins"""
     
     def __init__(self, parent, controller, config:dict):
         

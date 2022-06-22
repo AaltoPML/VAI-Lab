@@ -7,14 +7,12 @@ import pandas as pd
 
 from aidesign.utils.plugins.dataLoader import dataLoader
 
-_PLUGIN_CLASS_NAME = "MainPage"
-_PLUGIN_CLASS_DESCRIPTION = "Splash and Menu page used as GUI entry-point"
 _PLUGIN_READABLE_NAMES = {"main":"default","main page":"alias","launch page":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 1,"required_children": ['aidCanvas', 'pluginCanvas']}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 class MainPage(tk.Frame):
-
+    """Splash and Menu page used as GUI entry-point"""
     def __init__(self, parent, controller, config:dict):
         " Here we define the main frame displayed upon opening the program."
         " This leads to the different methods to provide feedback."
