@@ -25,8 +25,7 @@ def import_module(script_config, module_name):
     return module_class
 
 def get_lib_parent_dir():
-    """Returns the absolute path of the library
-    :param file: str of the builtin __file__ property of the calling script
+    """Returns the absolute path of the current library
     
     :returns: str of absolute path of the library root dir
     """
