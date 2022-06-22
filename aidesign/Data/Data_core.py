@@ -16,7 +16,7 @@ import numpy as np
 
 class Data(object):
     def __init__(self) -> None:
-        self.lib_base_path = __file__.split("aidesign")[0] + "aidesign"
+        self.lib_base_path = [__file__[:i] for i,_ in enumerate(__file__) if __file__[:i].endswith("aidesign/")][-1]
         self.xml_parser = XML_handler()
         self.data = {}
 

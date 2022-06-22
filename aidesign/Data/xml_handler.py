@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from os import path
+import os
 from ast import literal_eval
 
 
@@ -11,7 +11,7 @@ class XML_handler(object):
 
         :param filename [optional]: filename from which to load XML
         """
-        self.lib_base_path = __file__.split("aidesign")[0] + "aidesign"
+        self.lib_base_path = [__file__[:i] for i,_ in enumerate(__file__) if __file__[:i].endswith("aidesign/")][-1]
         self.loaded_modules = {}
 
         """valid_tags lists the available XML tags and their function
@@ -43,7 +43,7 @@ class XML_handler(object):
         If relative, converts path to absolute by appending to base directory
         """
         if filename[0] == ".":
-            return path.join(self.lib_base_path, filename)
+            return os.path.join(self.lib_base_path, filename)
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             return filename
 
@@ -55,7 +55,7 @@ class XML_handler(object):
             - False if file does not exist
         """
         abs_path = self._check_filename_abs_rel(filename)
-        return path.exists(abs_path)
+        return os.path.exists(abs_path)
 
     def set_filename(self, filename: str):
         """Sets filename. Converts relative paths to absolute first."""
