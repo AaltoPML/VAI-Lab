@@ -512,8 +512,6 @@ class XML_handler(object):
     def data_to_load(self):
         return(self._get_init_data_structure()["to_load"])
         
-
-
             
 
 

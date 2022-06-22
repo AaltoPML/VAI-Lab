@@ -14,7 +14,7 @@ Simple launchers were added to `Core` for easy execution. To load and execute co
 import aidesign as ai
 
 core = ai.Core()
-core.launch_canvas()
+core.launch()
 core.run()
 ```
 
