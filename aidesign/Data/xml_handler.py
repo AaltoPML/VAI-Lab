@@ -61,12 +61,23 @@ class XML_handler(object):
         """Sets filename. Converts relative paths to absolute first."""
         self.filename = self._check_filename_abs_rel(filename)
 
+    def append_initialiser(self):
+        self.append_pipeline_module("Initialiser",
+                            "Init",
+                            None,
+                            None,
+                            [],
+                            [],
+                            None,
+                            [0,0,0])
+
     def new_config_file(self, filename: str = None):
         """Constructs new XML file with minimal format"""
         if filename is not None:
             self.set_filename(filename)
         self.tree = ET.ElementTree(ET.Element("pipeline"))
         self.root = self.tree.getroot()
+        self.append_initialiser()
 
     def load_XML(self, filename: str):
         """Loads XML file into class. 
@@ -251,9 +262,12 @@ class XML_handler(object):
         pp = PrettyPrinter(sort_dicts=False, width=100)
         pp.pprint(element)
 
-    def print_loaded_modules(self):
+    def _print_xml_config(self):
         """Print indented pipeline specifications to screen"""
+        if len(self.loaded_modules) == 0:
+            self._parse_XML()
         self._print_pretty(self.loaded_modules)
+
 
     def write_to_XML(self):
         """Formats XML Tree correctly, then writes to filename
@@ -448,11 +462,12 @@ class XML_handler(object):
         new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
 
-        self.append_plugin_to_module(plugin_type,
-                                     plugin_options,
-                                     new_mod,
-                                     0
-                                     )
+        if plugin_type != None:
+            self.append_plugin_to_module(plugin_type,
+                                        plugin_options,
+                                        new_mod,
+                                        0
+                                        )
 
         if xml_parent_element.tag == "loop":
             parents.append(xml_parent_element.attrib["name"])
@@ -518,15 +533,16 @@ class XML_handler(object):
 # Use case examples:
 if __name__ == "__main__":
     # s = XML_handler("./resources/Hospital.xml")
-    s = XML_handler("./Data/resources/data_passing_test.xml")
-    # s = XML_handler()
+    # s = XML_handler("./Data/resources/data_passing_test.xml")
+    s = XML_handler()
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
     # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
-    print(s._get_init_data_structure())
-    print(s.data_to_load)
-    # s.print_loaded_modules()
+    s.new_config_file()
+    # print(s.root)
+    # print(s.data_to_load)
+    s._print_xml_config()
 
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
