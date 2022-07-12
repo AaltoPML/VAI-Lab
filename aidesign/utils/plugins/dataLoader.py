@@ -3,9 +3,8 @@ import os
 from PIL import ImageTk
 from tkinter import ttk
 import numpy as np
-from ttkwidgets import CheckboxTreeview
+# from ttkwidgets import CheckboxTreeview
 from sys import platform
-
 
 class dataLoader():
     """ Creates a window 

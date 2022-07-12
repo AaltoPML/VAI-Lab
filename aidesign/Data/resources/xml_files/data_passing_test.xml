@@ -1,9 +1,9 @@
 <pipeline>
     <Initialiser name="Init">
         <inputdata>
-            <X file="../Data/X_tr.csv" />
+            <X file="./Data/resources/supervised_regression/x_train.csv" />
             <!-- <X_test file="./Data/resources/import_test.csv" /> -->
-            <Y file="../Data/Y_tr.csv" />
+            <Y file="./Data/resources/supervised_regression/y_train.csv" />
             <!-- <Y_test file="./Data/resources/import_test.csv" /> -->
         </inputdata>
         <relationships>

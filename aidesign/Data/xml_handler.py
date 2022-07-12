@@ -63,7 +63,7 @@ class XML_handler(object):
 
     def append_initialiser(self):
         self.append_pipeline_module("Initialiser",
-                            "Init",
+                            "Initialiser",
                             None,
                             None,
                             [],
