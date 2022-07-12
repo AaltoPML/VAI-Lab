@@ -253,8 +253,8 @@ class pluginCanvas(tk.Frame):
         
         module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         ps = PluginSpecs()
-        self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get()+'.py']
-        self.req_settings = ps.required_settings[module][self.plugin[self.m].get()+'.py'] 
+        self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get().lower()+'.py']
+        self.req_settings = ps.required_settings[module][self.plugin[self.m].get().lower()+'.py'] 
         # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
         # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
@@ -277,8 +277,7 @@ class pluginCanvas(tk.Frame):
             
             # Print settings
             tk.Label(frame1,
-                  text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.\n\
-                      Close the window when you are done.", anchor = tk.N, justify=tk.LEFT).pack(expand = True)
+                  text ="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.", anchor = tk.N, justify=tk.LEFT).pack(expand = True)
             self.entry = []
             # Required
             r = 1

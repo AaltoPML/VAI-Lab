@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 from tkinter.filedialog import askopenfilename, askdirectory
 import pandas as pd
 
+from aidesign.Data.xml_handler import XML_handler
 from aidesign.utils.plugins.dataLoader import dataLoader
 
 _PLUGIN_READABLE_NAMES = {"main":"default","main page":"alias","launch page":"alias"}
@@ -19,6 +20,7 @@ class MainPage(tk.Frame):
         super().__init__(parent, bg = parent['bg'])
         self.controller = controller
         self.controller.title('AI Assisted Framework Design')
+        
         
         self.bg = parent['bg']
         
@@ -221,7 +223,7 @@ class MainPage(tk.Frame):
         
         frame1 = tk.Frame(self.newWindow)
         self.label_list = []
-        self.var = ['X', 'Y', 'X test', 'Y test']
+        self.var = ['X', 'Y', 'X_test', 'Y_test']
         self.filenames = ['']*len(self.var)
         for r,v in enumerate(self.var):
             v = v + '*' if r == 0 else v
@@ -282,6 +284,17 @@ class MainPage(tk.Frame):
         """ Reads all the selected files, loads the data and passes it to 
         dataLoader.
         """
+        
+        # s = XML_handler()
+        # s.new_config_file(self.save_path.name)
+        # s.filename = self.save_path.name
+        
+        # self.s = XML_handler()
+        # self.s.new_config_file()
+        
+        # self.s._print_xml_config()
+        # self.s.load_XML(self.controller.output["xml_filename"])
+        
         data = {}
         if len(self.label_list[0].cget("text")) > 0:
             for i,filename in enumerate(self.filenames):
@@ -289,9 +302,10 @@ class MainPage(tk.Frame):
                 if filename is not None and len(filename) > 0:
                     if filename.lower().endswith(('.csv')):
                         data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
-                        self.controller._append_to_output("data_"+variable+"_filename",filename)
+                        self.controller.s.append_input_data(variable,filename)
                         if i == 0:
                             self.controller.Data.set(True)
+
             self.newWindow.destroy()
             dataLoader(self.controller, data)
 

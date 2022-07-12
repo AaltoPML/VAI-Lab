@@ -62,12 +62,23 @@ class XML_handler(object):
         """Sets filename. Converts relative paths to absolute first."""
         self.filename = self._check_filename_abs_rel(filename)
 
+    def append_initialiser(self):
+        self.append_pipeline_module("Initialiser",
+                            "Initialiser",
+                            None,
+                            None,
+                            [],
+                            [],
+                            None,
+                            [0,0,0])
+
     def new_config_file(self, filename: str = None):
         """Constructs new XML file with minimal format"""
         if filename is not None:
             self.set_filename(filename)
         self.tree = ET.ElementTree(ET.Element("pipeline"))
         self.root = self.tree.getroot()
+        self.append_initialiser()
 
     def load_XML(self, filename: str):
         """Loads XML file into class. 
@@ -131,10 +142,14 @@ class XML_handler(object):
         for child in element:
             if child.text != None:
                 val = self._parse_text_to_list(child)
+                val = (val[0] if len(val) == 1 else val)
                 parent["plugin"]["options"][child.tag] = val
             for key in child.attrib:
-                parent["plugin"]["options"][child.tag] = {
-                    key: child.attrib[key]}
+                if key == "val":
+                    parent["plugin"]["options"][child.tag] = child.attrib[key]
+                else:
+                    parent["plugin"]["options"][child.tag] = {
+                        key: child.attrib[key]}
 
     def _load_entry_point(self, element: ET.Element, parent: dict):
         """Parses tags associated with initialiser and appends to parent dict
@@ -252,9 +267,12 @@ class XML_handler(object):
         pp = PrettyPrinter(sort_dicts=False, width=100)
         pp.pprint(element)
 
-    def print_loaded_modules(self):
+    def _print_xml_config(self):
         """Print indented pipeline specifications to screen"""
+        if len(self.loaded_modules) == 0:
+            self._parse_XML()
         self._print_pretty(self.loaded_modules)
+
 
     def write_to_XML(self):
         """Formats XML Tree correctly, then writes to filename
@@ -357,7 +375,9 @@ class XML_handler(object):
         :param parents: list of strings of parents to be appended
         :param children: list of strings of children to be appended
         """
-        rels_elem = ET.SubElement(elem, "relationships")
+        rels_elem = elem.find("./relationships")
+        if rels_elem is None:
+            rels_elem = ET.SubElement(elem, "relationships")
         for p in parents:
             if not elem.findall(".//parent/[@name='{0}']".format(p)):
                 new_parent = ET.SubElement(rels_elem, "parent")
@@ -368,12 +388,27 @@ class XML_handler(object):
                 new_child.set('name', c)
         return elem
 
+    def append_module_relationships(self,
+                        module_name: str,
+                        parents: list,
+                        children: list):
+        elem = self._get_element_from_name(module_name)
+        self._add_relationships(elem,parents,children)
+
+    def update_module_coords(self,
+                    module_name: str,
+                    coords: list = None):
+        elem = self._get_element_from_name(module_name)
+        self._add_coords(elem,coords)
+
     def _add_coords(self,
                     elem: ET.Element,
                     coords: list = None):
         if coords == None:
             return elem
-        coords_elem = ET.SubElement(elem, "coordinates")
+        coords_elem = elem.find("./coordinates")
+        if coords_elem is None:
+            coords_elem = ET.SubElement(elem, "coordinates")
         coords_elem.text = str("\n{0}".format(coords))
         return elem
 
@@ -394,6 +429,21 @@ class XML_handler(object):
                     text_lead, str(options[key]))
             elif isinstance(options[key], (dict)):
                 self._add_plugin_options(plugin_elem, options[key])
+
+    def append_input_data(self,
+                            data_name: str,
+                            data_dir: str,
+                            xml_parent: ET.Element or str = "Initialiser"):
+        if isinstance(xml_parent, str):
+            xml_parent = self._get_element_from_name(xml_parent)
+
+        input_data_elem = xml_parent.find("./inputdata")
+
+        if input_data_elem is None:
+            input_data_elem = ET.SubElement(xml_parent, "inputdata")
+            
+        plugin_elem = ET.SubElement(input_data_elem, data_name)
+        plugin_elem.set('file', data_dir)
 
     def append_plugin_to_module(self,
                                 plugin_type: str,
@@ -449,11 +499,12 @@ class XML_handler(object):
         new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
 
-        self.append_plugin_to_module(plugin_type,
-                                     plugin_options,
-                                     new_mod,
-                                     0
-                                     )
+        if plugin_type != None:
+            self.append_plugin_to_module(plugin_type,
+                                        plugin_options,
+                                        new_mod,
+                                        0
+                                        )
 
         if xml_parent_element.tag == "loop":
             parents.append(xml_parent_element.attrib["name"])
@@ -513,21 +564,24 @@ class XML_handler(object):
     def data_to_load(self):
         return(self._get_init_data_structure()["to_load"])
         
-            
-
 
 # Use case examples:
 if __name__ == "__main__":
     # s = XML_handler("./resources/Hospital.xml")
-    s = XML_handler("./Data/resources/data_passing_test.xml")
-    # s = XML_handler()
+    # s = XML_handler("./Data/resources/data_passing_test.xml")
+    s = XML_handler()
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
     # s.load_XML("./resources/example_config.xml")
     # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
-    print(s._get_init_data_structure())
-    print(s.data_to_load)
-    # s.print_loaded_modules()
+    s.new_config_file()
+    s.append_input_data("X","./Data/resources/supervised_regression/1/y_train.csv")
+    s.append_input_data("Y","./Data/resources/supervised_regression/1/y_train.csv")
+    # print(s.root)
+    # print(s.data_to_load)
+    # s.update_module_coords("Initialiser",[1,1,1])
+    # s.append_module_relationships("Initialiser",["test1","test2"],[])
+    s._print_xml_config()
 
     # s.write_to_XML()
     # s.append_pipeline_loop("for",

@@ -4,6 +4,8 @@ from tkinter.font import Font
 from aidesign.utils.import_helper import import_plugin_absolute
 from aidesign.utils.plugin_helpers import PluginSpecs
 
+from aidesign.Data.xml_handler import XML_handler
+
 class GUI(tk.Tk):
     """
     TODO: This structure still needs serious overhaul. 
@@ -35,6 +37,8 @@ class GUI(tk.Tk):
     def set_gui_as_startpage(self):
         self.startpage = True
         self._load_plugin("main")
+        self.s = XML_handler()
+        self.s.new_config_file()
 
     def _compare_layer_priority(self, ui_specs):
         """Check if a new module should have higher layer priority than the existing one
@@ -126,6 +130,8 @@ class GUI(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        
+        
         self.frames = {}
         for F in self._desired_ui_types:
             page_name = F.__name__

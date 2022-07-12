@@ -3,7 +3,7 @@ from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"regression":"default","reg":"alias"}
+_PLUGIN_READABLE_NAMES = {"Regression":"default","Regression":"alias","reg":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"power":"int","train_name":"str","target_name":"str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
@@ -36,7 +36,7 @@ class Regression(object):
     def _parse_config(self):
         self.input_data = self._data_in["X"]
         self.target_data = self._data_in["Y"]
-        self.fit_degree = int(self._config["options"]["power"]["val"])
+        self.fit_degree = int(self._config["options"]["power"])
 
     def _reshape(self,data,shape):
         return data.reshape(shape[0],shape[1])
