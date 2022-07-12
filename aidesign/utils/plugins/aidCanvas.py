@@ -670,15 +670,18 @@ class aidCanvas(tk.Frame):
 
             # self.s = XML_handler()
             # self.controller.s.new_config_file(self.save_path.name)
+            
+            self.controller.s.update_module_coords(self.module_list[0],[self.canvas.startxy[0], 0, self.connections[0]])
+            self.controller.s.append_module_relationships(self.module_list[0],list(mn[values[:,0]]),list(mn[values[0,:]]))
             self.controller.s.filename = self.save_path.name
-            self.controller.s.append_pipeline_module(self.module_list[0], # Initialiser
-                                  mn[0],
-                                  "",
-                                  {},
-                                  list(mn[values[:,0]]),
-                                  list(mn[values[0,:]]),
-                                  None,
-                                  [self.canvas.startxy[0], 0, self.connections[0]])
+            # self.controller.s.append_pipeline_module(self.module_list[0], # Initialiser
+            #                       mn[0],
+            #                       "",
+            #                       {},
+            #                       ,
+            #                       ,
+            #                       None,
+            #                       )
             for i, mnn in enumerate(mn_id):
                 if (i > 1) and mnn:
                     xml_parent = None

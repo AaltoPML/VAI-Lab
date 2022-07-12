@@ -23,6 +23,7 @@ class Core(object):
             except:
                 raise Exception("No XML File Selected. Cannot Run Pipeline")
             self.run()
+            self._load_data()
 
     def load_config_file(self, filename: str):
         self._xml_handler.load_XML(filename)
@@ -30,6 +31,7 @@ class Core(object):
     def _load_data(self):
         init_data_fn = self._xml_handler.data_to_load
         self.data.import_data_from_config(init_data_fn)
+        print(init_data_fn)
 
     def _execute_module(self, specs):
         """Executes named module with given options

@@ -4,11 +4,11 @@ import os
 # from setup import SetupPrequisties
 
 core = ai.Core()
-# core.load_config_file(os.path.join(
-#     ".", 
-#     "Data",
-#     'resources', 
-#     'xml_files', 
-#     'data_passing_test.xml'))
-core.launch()
+core.load_config_file(os.path.join(
+    ".", 
+    "Data",
+    'resources', 
+    'xml_files', 
+    'regerssion_test.xml'))
+# core.launch()
 core.run()

@@ -1,0 +1,47 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships />
+        <coordinates>
+            [0,0,0]
+        </coordinates>
+        <plugin type="inputdata">
+            <X file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/Data/resources/supervised_regression/1\x_train.csv" />
+            <Y file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/Data/resources/supervised_regression/1\y_train.csv" />
+        </plugin>
+        <coordinates>
+            [(300.0,50),0,{}]
+        </coordinates>
+        <relationships>
+            <child name="Modelling" />
+        </relationships>
+    </Initialiser>
+    <Modelling name="Modelling">
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(300.0,300.0),2,{0:'d0-u2'}]
+        </coordinates>
+        <plugin type="Regression">
+            <power>
+                 2
+            </power>
+            <train_name>
+                 X
+            </train_name>
+            <target_name>
+                 Y
+            </target_name>
+        </plugin>
+    </Modelling>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(300.0,550),1,{2:'d2-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>

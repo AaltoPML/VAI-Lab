@@ -223,7 +223,7 @@ class MainPage(tk.Frame):
         
         frame1 = tk.Frame(self.newWindow)
         self.label_list = []
-        self.var = ['X', 'Y', 'X test', 'Y test']
+        self.var = ['X', 'Y', 'X_test', 'Y_test']
         self.filenames = ['']*len(self.var)
         for r,v in enumerate(self.var):
             v = v + '*' if r == 0 else v
@@ -305,10 +305,11 @@ class MainPage(tk.Frame):
                         self.controller.s.append_plugin_to_module('inputdata',
                                                          {variable: filename},
                                                          'Initialiser',
-                                                         True)
+                                                         False)
                         # self.controller.appendplu("data_"+variable+"_filename",filename)
                         if i == 0:
                             self.controller.Data.set(True)
+
             self.newWindow.destroy()
             dataLoader(self.controller, data)
 
