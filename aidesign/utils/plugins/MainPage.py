@@ -302,11 +302,7 @@ class MainPage(tk.Frame):
                 if filename is not None and len(filename) > 0:
                     if filename.lower().endswith(('.csv')):
                         data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
-                        self.controller.s.append_plugin_to_module('inputdata',
-                                                         {variable: filename},
-                                                         'Initialiser',
-                                                         False)
-                        # self.controller.appendplu("data_"+variable+"_filename",filename)
+                        self.controller.s.append_input_data(variable,filename)
                         if i == 0:
                             self.controller.Data.set(True)
 

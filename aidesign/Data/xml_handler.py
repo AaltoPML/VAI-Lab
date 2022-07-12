@@ -141,10 +141,14 @@ class XML_handler(object):
         for child in element:
             if child.text != None:
                 val = self._parse_text_to_list(child)
+                val = (val[0] if len(val) == 1 else val)
                 parent["plugin"]["options"][child.tag] = val
             for key in child.attrib:
-                parent["plugin"]["options"][child.tag] = {
-                    key: child.attrib[key]}
+                if key == "val":
+                    parent["plugin"]["options"][child.tag] = child.attrib[key]
+                else:
+                    parent["plugin"]["options"][child.tag] = {
+                        key: child.attrib[key]}
 
     def _load_entry_point(self, element: ET.Element, parent: dict):
         """Parses tags associated with initialiser and appends to parent dict
@@ -370,7 +374,9 @@ class XML_handler(object):
         :param parents: list of strings of parents to be appended
         :param children: list of strings of children to be appended
         """
-        rels_elem = ET.SubElement(elem, "relationships")
+        rels_elem = elem.find("./relationships")
+        if rels_elem is None:
+            rels_elem = ET.SubElement(elem, "relationships")
         for p in parents:
             if not elem.findall(".//parent/[@name='{0}']".format(p)):
                 new_parent = ET.SubElement(rels_elem, "parent")
@@ -399,7 +405,9 @@ class XML_handler(object):
                     coords: list = None):
         if coords == None:
             return elem
-        coords_elem = ET.SubElement(elem, "coordinates")
+        coords_elem = elem.find("./coordinates")
+        if coords_elem is None:
+            coords_elem = ET.SubElement(elem, "coordinates")
         coords_elem.text = str("\n{0}".format(coords))
         return elem
 
@@ -420,6 +428,21 @@ class XML_handler(object):
                     text_lead, str(options[key]))
             elif isinstance(options[key], (dict)):
                 self._add_plugin_options(plugin_elem, options[key])
+
+    def append_input_data(self,
+                            data_name: str,
+                            data_dir: str,
+                            xml_parent: ET.Element or str = "Initialiser"):
+        if isinstance(xml_parent, str):
+            xml_parent = self._get_element_from_name(xml_parent)
+
+        input_data_elem = xml_parent.find("./inputdata")
+
+        if input_data_elem is None:
+            input_data_elem = ET.SubElement(xml_parent, "inputdata")
+            
+        plugin_elem = ET.SubElement(input_data_elem, data_name)
+        plugin_elem.set('file', data_dir)
 
     def append_plugin_to_module(self,
                                 plugin_type: str,
@@ -540,8 +563,6 @@ class XML_handler(object):
     def data_to_load(self):
         return(self._get_init_data_structure()["to_load"])
         
-            
-
 
 # Use case examples:
 if __name__ == "__main__":
@@ -553,10 +574,12 @@ if __name__ == "__main__":
     # s.load_XML("./resources/example_config.xml")
     # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
     s.new_config_file()
+    s.append_input_data("X","./Data/resources/supervised_regression/1/y_train.csv")
+    s.append_input_data("Y","./Data/resources/supervised_regression/1/y_train.csv")
     # print(s.root)
     # print(s.data_to_load)
-    s.update_module_coords("Initialiser",[1,1,1])
-    s.append_module_relationships("Initialiser",["test1","test2"],[])
+    # s.update_module_coords("Initialiser",[1,1,1])
+    # s.append_module_relationships("Initialiser",["test1","test2"],[])
     s._print_xml_config()
 
     # s.write_to_XML()
