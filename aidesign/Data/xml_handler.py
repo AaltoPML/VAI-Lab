@@ -381,6 +381,19 @@ class XML_handler(object):
                 new_child.set('name', c)
         return elem
 
+    def append_module_relationships(self,
+                        module_name: str,
+                        parents: list,
+                        children: list):
+        elem = self._get_element_from_name(module_name)
+        self._add_relationships(elem,parents,children)
+
+    def update_module_coords(self,
+                    module_name: str,
+                    coords: list = None):
+        elem = self._get_element_from_name(module_name)
+        self._add_coords(elem,coords)
+
     def _add_coords(self,
                     elem: ET.Element,
                     coords: list = None):
@@ -542,6 +555,8 @@ if __name__ == "__main__":
     s.new_config_file()
     # print(s.root)
     # print(s.data_to_load)
+    s.update_module_coords("Initialiser",[1,1,1])
+    s.append_module_relationships("Initialiser",["test1","test2"],[])
     s._print_xml_config()
 
     # s.write_to_XML()
