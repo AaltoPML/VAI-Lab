@@ -9,6 +9,6 @@ core.load_config_file(os.path.join(
     "Data",
     'resources', 
     'xml_files', 
-    'regerssion_test.xml'))
+    'logisticregression_test.xml'))
 # core.launch()
 core.run()
