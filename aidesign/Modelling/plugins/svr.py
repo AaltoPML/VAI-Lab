@@ -1,29 +1,31 @@
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVR as SVR_clf
 import numpy as np
 from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"KNNClassifier":"default","KNN-C":"alias"}
+_PLUGIN_READABLE_NAMES = {"SVR":"default","SupportVectorRegression":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
+_PLUGIN_OPTIONAL_SETTINGS = {"C": "float", "kernel": "str", "gamma": "float"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class KNNClassifier(object):
-    """KNN for supervised classification"""
+class SVR(object):
+    """
+    Linear least squares with l2 regularization.
+    """
 
     def __init__(self):
         self.X = None
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.clf = KNeighborsClassifier()
+        self.clf = SVR_clf()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(KNNClassifier) \
+                            +"\n\t{0} ".format(SVR_clf) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
@@ -42,20 +44,19 @@ class KNNClassifier(object):
 
     def _is_name_passed(self, dic: dict, key: str, default = None):
         return dic[key] if key in dic.keys() and dic[key] is not None else default
-
+    
     def _reshape(self,data,shape):
         return data.reshape(shape[0],shape[1])
-
+    
     def _check_numeric(self, dict_opt):
         for key, val in dict_opt.items():
             """ 
-            TODO: Maybe, if list -> cv
+            TODO: maybe, if list -> cv
             """
             if type(val) == str and val.replace('.','').replace(',','').isnumeric():
                 val = float(val)
                 if val.is_integer():
                     val = int(val)
-                print(val)
             dict_opt[key] = val
         return dict_opt
 
@@ -71,6 +72,6 @@ class KNNClassifier(object):
         return self.clf.score(X_tst, Y_tst)
 
     def _test(self):
-        print('Training accuracy: %.2f%%' %(self.score(self.X, self.Y)*100))
+        print('Training R2 score: %.3f' %(self.score(self.X, self.Y)))
         if self.Y_tst is not None:
-            print('Test accuracy: %.2f%%' %(self.score(self.X_tst, self.Y_tst)*100))
+            print('Training R2 score: %.3f' %(self.score(self.X_tst, self.Y_tst)))

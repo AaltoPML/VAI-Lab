@@ -53,7 +53,7 @@ class LogisticRegression(object):
             """ 
             TODO: maybe, if list -> cv
             """
-            if val.replace('.','').replace(',','').isnumeric():
+            if type(val) == str and val.replace('.','').replace(',','').isnumeric():
                 val = float(val)
                 if val.is_integer():
                     val = int(val)

@@ -9,6 +9,6 @@ core.load_config_file(os.path.join(
     "Data",
     'resources', 
     'xml_files', 
-    'ridge_test.xml'))
+    'svr_test.xml'))
 # core.launch()
 core.run()
