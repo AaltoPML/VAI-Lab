@@ -39,6 +39,10 @@ class GUI(tk.Tk):
         self._load_plugin("main")
         self.s = XML_handler()
         self.s.new_config_file()
+        
+    def set_gui(self):
+        self.startpage = True
+        self._load_plugin("pipelineCanvas")
 
     def _compare_layer_priority(self, ui_specs):
         """Check if a new module should have higher layer priority than the existing one

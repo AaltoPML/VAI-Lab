@@ -102,5 +102,10 @@ class Core(object):
     def run(self):
         print("Running pipeline...")
         self._load_data()
+        gui_app = GUI()
+        gui_app.set_avail_plugins(self._avail_plugins)
+        gui_app.set_gui()
+        gui_app._append_to_output("xml_filename", self._xml_handler.filename)
+        gui_app.launch()
         self._execute(self._xml_handler.loaded_modules)
         print("Pipeline Complete")
