@@ -1,0 +1,49 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Data Processing" />
+        </relationships>
+        <coordinates>
+            [(300.0,50),0,{}]
+        </coordinates>
+        <inputdata>
+            <X file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/Data/resources/supervised_regression\X_tr.csv" />
+            <Y file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/Data/resources/supervised_regression\Y_tr.csv" />
+            <X_test file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/Data/resources/supervised_regression\X_tst.csv" />
+            <Y_test file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/Data/resources/supervised_regression\Y_tst.csv" />
+        </inputdata>
+    </Initialiser>
+    <DataProcessing name="Data Processing">
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(300,214),2,{0:'d0-u2'}]
+        </coordinates>
+        <plugin type="StandardScaler" />
+    </DataProcessing>
+    <Modelling name="Modelling">
+        <relationships>
+            <parent name="Data Processing" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(300,390),3,{2:'d2-u3'}]
+        </coordinates>
+        <plugin type="RidgeRegression">
+            <alpha>
+                 0.01
+            </alpha>
+        </plugin>
+    </Modelling>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(300.0,550),1,{3:'d3-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>
