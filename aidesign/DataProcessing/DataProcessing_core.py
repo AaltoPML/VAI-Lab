@@ -18,7 +18,6 @@ class DataProcessing(object):
                                 avail_plugins["_PLUGIN_PACKAGE"],\
                                 avail_plugins["_PLUGIN_CLASS_NAME"])\
                                 .__call__()
-        # import 
 
     def set_options(self, module_config: dict):
         """Send configuration arguments to plugin

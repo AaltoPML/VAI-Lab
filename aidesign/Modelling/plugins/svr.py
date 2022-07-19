@@ -40,7 +40,7 @@ class SVR(object):
         self.Y = np.array(self._data_in["Y"]).ravel()
         self.X_tst = self._is_name_passed(self._data_in, "X_test")
         self.Y_tst = np.array(self._is_name_passed(self._data_in, "Y_test")).ravel()
-        print(self._config["options"])
+        # print(self._config["options"])
 
     def _is_name_passed(self, dic: dict, key: str, default = None):
         return dic[key] if key in dic.keys() and dic[key] is not None else default

@@ -349,7 +349,6 @@ class pluginCanvas(tk.Frame):
                     self.req_settings.pop(req_keys[e], None)
                 else:
                     self.req_settings[req_keys[e]] = ent.get()
-                print('req', self.req_settings)
             else:
                 # print(self.opt_settings)
                 # print(list(self.opt_settings.keys()))
@@ -358,11 +357,8 @@ class pluginCanvas(tk.Frame):
                     self.opt_settings.pop(opt_keys[e-len(req_keys)], None)
                 else:
                     self.opt_settings[opt_keys[e-len(req_keys)]] = ent.get()
-                print('opt', self.opt_settings)
         if self.m in self.dataType:
             self.req_settings['Data'] = self.dataType[self.m].get()
-        print('req new', self.req_settings)
-        print('req opt', self.opt_settings)
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
@@ -498,7 +494,7 @@ class pluginCanvas(tk.Frame):
 
         self.s = XML_handler()
         self.s.load_XML(filename)
-        self.s._print_pretty(self.s.loaded_modules)
+        # self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
         modout = modules['output']
         del modules['Initialiser'], modules['output'] # They are generated when resetting
