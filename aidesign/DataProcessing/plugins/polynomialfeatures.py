@@ -1,32 +1,28 @@
-from sklearn.preprocessing import StandardScaler as SS
+from sklearn.preprocessing import PolynomialFeatures as PF
 import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"StandardScaler":"default","standardscaler":"alias"}
+_PLUGIN_READABLE_NAMES = {"PolynomialFeatures":"default","polyfeat":"alias","polynomialfeatures":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
-_PLUGIN_OPTIONAL_SETTINGS = {"with_mean": "bool"}
+_PLUGIN_OPTIONAL_SETTINGS = {"degree": "int", "interaction_only": "bool", "include_bias": "bool"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class StandardScaler(object):
-    """
-    Standardize features by removing the mean and scaling to unit variance
-    """
+class PolynomialFeatures(object):
+    """ Generate polynomial and interaction features """
 
     def __init__(self):
         self.X = None
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.proc = SS()
+        self.proc = PF()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(StandardScaler) \
+                            +"\n\t{0} ".format(PolynomialFeatures) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
@@ -71,8 +67,7 @@ class StandardScaler(object):
         self.proc.fit(self.X)
 
     def transform(self,data):
-        data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
-        if self.X_tst is not None:
-            data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
-            print('Hi')
+        data.append_data_column("X", self.proc.transform(self.X))
+        if self.Y_tst is not None:
+            data.append_data_column("X_test", self.proc.transform(self.X_tst))
         return data

@@ -16,41 +16,20 @@
     <DataProcessing name="Data Processing">
         <relationships>
             <parent name="Initialiser" />
-            <child name="Modelling" />
-        </relationships>
-        <coordinates>
-            [(304,203),2,{0:'d0-u2'}]
-        </coordinates>
-        <plugin type="StandardScaler">
-            <Data>
-                X
-            </Data>           
-            <with_mean>
-                            
-            </with_mean>
-        </plugin>
-    </DataProcessing>
-    <Modelling name="Modelling">
-        <relationships>
-            <parent name="Data Processing" />
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300.0,300.0),3,{2:'d2-u3'}]
+            [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="RidgeRegression">
-            <alpha>
-                0.01
-            </alpha>
-        </plugin>
-    </Modelling>
+        <plugin type="StandardScaler" />
+    </DataProcessing>
     <Output name="Output">
         <plugin type="" />
         <relationships>
-            <parent name="Modelling" />
+            <parent name="Data Processing" />
         </relationships>
         <coordinates>
-            [(300.0,550),1,{3:'d3-u1'}]
+            [(300.0,550),1,{2:'d2-u1'}]
         </coordinates>
     </Output>
 </pipeline>
