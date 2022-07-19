@@ -55,6 +55,7 @@ class pluginCanvas(tk.Frame):
         self.id_done = [0,1]
         self.id_mod = [0,1]
         self.plugin = {}
+        self.dataType = {}
         self.allWeHearIs = []
         
         self.my_label = tk.Label(self.frame2, 
@@ -128,7 +129,7 @@ class pluginCanvas(tk.Frame):
                 (self.plugin[self.m].get() != 'None') and \
                 (self.m not in self.id_done): # add
                 self.id_done.append(self.m)
-                print(np.array(self.module_names)[self.m == np.array(self.id_mod)][0])
+                # print(np.array(self.module_names)[self.m == np.array(self.id_mod)][0])
                 self.s.append_plugin_to_module(self.plugin[self.m].get(),
                                                  {**self.req_settings, **self.opt_settings},
                                                  np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
@@ -255,8 +256,6 @@ class pluginCanvas(tk.Frame):
         ps = PluginSpecs()
         self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get().lower()+'.py']
         self.req_settings = ps.required_settings[module][self.plugin[self.m].get().lower()+'.py'] 
-        # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
-        # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow!= None):
                 self.newWindow.destroy()
@@ -296,8 +295,8 @@ class pluginCanvas(tk.Frame):
                 self.displaySettings(frame3, self.opt_settings)
                 frame3.grid(column=0, row=r, sticky="nswe")
                 r += 1
-
-            self.entry[0].focus()
+            if len(self.entry) > 0:
+                self.entry[0].focus()
             self.finishButton = tk.Button(
                 frame4, text = 'Finish', command = self.removewindow)
             self.finishButton.grid(column = 1, row = r+1, sticky="es", pady=(0,10), padx=(0,10))
@@ -317,25 +316,53 @@ class pluginCanvas(tk.Frame):
         """
         r = 1
         for arg, val in settings.items():
-                tk.Label(frame,
-                  text = arg).grid(row=r,column=0)
+            tk.Label(frame,
+              text = arg).grid(row=r,column=0)
+            if arg == 'Data':
+                if self.m not in self.dataType:
+                    self.dataType[self.m] = tk.StringVar()
+                    self.dataType[self.m].set('X')
+                tk.Radiobutton(frame, text = 'Input (X)', fg = 'black', 
+                               var = self.dataType[self.m], value = 'X'
+                               ).grid(row=r, column=1)
+                if len(self.s._get_all_elements_with_tag("Y")) > 0 or \
+                    len(self.s._get_all_elements_with_tag("Y_test")) > 0:
+                    tk.Radiobutton(frame, text = 'Output (Y)', fg = 'black', 
+                                   var = self.dataType[self.m], value = 'Y'
+                                   ).grid(row=r, column=2)
+            else:
                 self.entry.append(EntryWithPlaceholder(frame, val))
                 self.entry[-1].grid(row=r, column=1)
                 self.entry[-1].bind("<Return>", lambda event, a = len(self.entry): self.on_return_entry(a))
-                r += 1
+            r += 1
         frame.grid_rowconfigure(tuple(range(r)), weight=1)
         frame.grid_columnconfigure(tuple(range(2)), weight=1)
 
     def removewindow(self):
         """ Stores settings options and closes window """
+        self.req_settings.pop("Data", None)
+        req_keys = list(self.req_settings.keys())
+        opt_keys = list(self.opt_settings.keys())
         for e,ent in enumerate(self.entry):
             if e < len(self.req_settings):
-                self.req_settings[list(self.req_settings.keys())[e]] = ent.get()
+                if ent.get() == self.entry[e].placeholder or len(ent.get()) == 0:
+                    self.req_settings.pop(req_keys[e], None)
+                else:
+                    self.req_settings[req_keys[e]] = ent.get()
+                print('req', self.req_settings)
             else:
-                print(self.opt_settings)
-                print(list(self.opt_settings.keys()))
-                print(e-len(self.req_settings))
-                self.opt_settings[list(self.opt_settings.keys())[e-len(self.req_settings)]] = ent.get()
+                # print(self.opt_settings)
+                # print(list(self.opt_settings.keys()))
+                # print(e-len(self.req_settings))
+                if ent.get() == self.entry[e].placeholder or len(ent.get()) == 0:
+                    self.opt_settings.pop(opt_keys[e-len(req_keys)], None)
+                else:
+                    self.opt_settings[opt_keys[e-len(req_keys)]] = ent.get()
+                print('opt', self.opt_settings)
+        if self.m in self.dataType:
+            self.req_settings['Data'] = self.dataType[self.m].get()
+        print('req new', self.req_settings)
+        print('req opt', self.opt_settings)
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
