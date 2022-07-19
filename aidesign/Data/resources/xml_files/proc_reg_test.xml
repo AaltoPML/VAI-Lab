@@ -23,11 +23,8 @@
         </coordinates>
         <plugin type="StandardScaler">
             <Data>
-                X
-            </Data>           
-            <with_mean>
-                            
-            </with_mean>
+                 X
+            </Data>
         </plugin>
     </DataProcessing>
     <Modelling name="Modelling">
@@ -38,10 +35,10 @@
         <coordinates>
             [(300.0,300.0),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="RidgeRegression">
-            <alpha>
-                0.01
-            </alpha>
+        <plugin type="SVR">
+            <C>
+                 0.1
+            </C>
         </plugin>
     </Modelling>
     <Output name="Output">
