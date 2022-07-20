@@ -1,8 +1,7 @@
-from sklearn.linear_model import Ridge as RR
+from sklearn.kernel_ridge import Ridge as model
 import numpy as np
-from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"RidgeRegression":"default","Ridge":"alias","L2RegularisedLinearRegression":"alias"}
+_PLUGIN_READABLE_NAMES = {"Ridge":"default"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "regressor"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float"}
@@ -11,7 +10,7 @@ _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
 class RidgeRegression(object):
     """
-    Linear least squares with l2 regularization.
+    Linear least squares with l2 regularization
     """
 
     def __init__(self):
@@ -19,7 +18,7 @@ class RidgeRegression(object):
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.clf = RR()
+        self.clf = model()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
@@ -72,6 +71,11 @@ class RidgeRegression(object):
         return self.clf.score(X_tst, Y_tst)
 
     def _test(self):
-        print('Training R2 score: %.3f' %(self.score(self.X, self.Y)))
-        if self.Y_tst is not None:
-            print('Training R2 score: %.3f' %(self.score(self.X_tst, self.Y_tst)))
+        if _PLUGIN_MODULE_OPTIONS['Type'] == 'classifier':
+            print('Training accuracy: %.2f%%' %(self.score(self.X, self.Y)*100))
+            if self.Y_tst is not None:
+                print('Test accuracy: %.2f%%' %(self.score(self.X_tst, self.Y_tst)*100))
+        elif _PLUGIN_MODULE_OPTIONS['Type'] == 'regressor':
+            print('Training R2 score: %.3f' %(self.score(self.X, self.Y)))
+            if self.Y_tst is not None:
+                print('Training R2 score: %.3f' %(self.score(self.X_tst, self.Y_tst)))

@@ -1,6 +1,5 @@
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier as model
 import numpy as np
-from matplotlib import pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"KNNClassifier":"default","KNN-C":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classifier"}
@@ -10,14 +9,16 @@ _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
 class KNNClassifier(object):
-    """KNN for supervised classification"""
+    """
+    Classifier implementing the k-nearest neighbors vote
+    """
 
     def __init__(self):
         self.X = None
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.clf = KNeighborsClassifier()
+        self.clf = model()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
@@ -71,6 +72,11 @@ class KNNClassifier(object):
         return self.clf.score(X_tst, Y_tst)
 
     def _test(self):
-        print('Training accuracy: %.2f%%' %(self.score(self.X, self.Y)*100))
-        if self.Y_tst is not None:
-            print('Test accuracy: %.2f%%' %(self.score(self.X_tst, self.Y_tst)*100))
+        if _PLUGIN_MODULE_OPTIONS['Type'] == 'classifier':
+            print('Training accuracy: %.2f%%' %(self.score(self.X, self.Y)*100))
+            if self.Y_tst is not None:
+                print('Test accuracy: %.2f%%' %(self.score(self.X_tst, self.Y_tst)*100))
+        elif _PLUGIN_MODULE_OPTIONS['Type'] == 'regressor':
+            print('Training R2 score: %.3f' %(self.score(self.X, self.Y)))
+            if self.Y_tst is not None:
+                print('Training R2 score: %.3f' %(self.score(self.X_tst, self.Y_tst)))

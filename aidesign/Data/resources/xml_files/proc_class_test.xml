@@ -35,7 +35,7 @@
         <coordinates>
             [(302,391),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="KNNClassifier" />
+        <plugin type="RandomForestClassifier" />
     </Modelling>
     <Output name="Output">
         <plugin type="" />

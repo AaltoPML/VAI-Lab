@@ -1,16 +1,16 @@
-from sklearn.linear_model import LogisticRegression as model
+from sklearn.linear_model import ElasticNet as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"LogisticRegression":"default","logit":"alias","MaxEnt":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "classifier"}
+_PLUGIN_READABLE_NAMES = {"ElasticNet":"default"}
+_PLUGIN_MODULE_OPTIONS = {"Type": "regressor"}
 _PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"penalty":"str", "C": "float"}
+_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float", "l1_ratio": "float"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class LogisticRegression(object):
+class ElasticNet(object):
     """
-    Logistic regression classifier.
+    Linear regression with combined L1 and L2 priors as regularizer
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class LogisticRegression(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(LogisticRegression) \
+                            +"\n\t{0} ".format(ElasticNet) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))

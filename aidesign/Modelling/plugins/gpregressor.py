@@ -1,16 +1,16 @@
-from sklearn.linear_model import LogisticRegression as model
+from sklearn.gaussian_process import GaussianProcessRegressor as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"LogisticRegression":"default","logit":"alias","MaxEnt":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "classifier"}
+_PLUGIN_READABLE_NAMES = {"GPRegressor":"default","GPR":"alias","GaussianProcessRegressor":"alias"}
+_PLUGIN_MODULE_OPTIONS = {"Type": "regressor"}
 _PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"penalty":"str", "C": "float"}
+_PLUGIN_OPTIONAL_SETTINGS = {"n_restarts_optimizer": "int", "random_state": "int"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class LogisticRegression(object):
+class GPRegressor(object):
     """
-    Logistic regression classifier.
+    Gaussian process regresion
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class LogisticRegression(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(LogisticRegression) \
+                            +"\n\t{0} ".format(GPRegressor) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
@@ -43,19 +43,20 @@ class LogisticRegression(object):
 
     def _is_name_passed(self, dic: dict, key: str, default = None):
         return dic[key] if key in dic.keys() and dic[key] is not None else default
-    
+
     def _reshape(self,data,shape):
         return data.reshape(shape[0],shape[1])
-    
+
     def _check_numeric(self, dict_opt):
         for key, val in dict_opt.items():
             """ 
-            TODO: maybe, if list -> cv
+            TODO: Maybe, if list -> cv
             """
             if type(val) == str and val.replace('.','').replace(',','').isnumeric():
                 val = float(val)
                 if val.is_integer():
                     val = int(val)
+                print(val)
             dict_opt[key] = val
         return dict_opt
 

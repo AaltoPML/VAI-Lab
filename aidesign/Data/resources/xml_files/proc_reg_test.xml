@@ -35,11 +35,7 @@
         <coordinates>
             [(300.0,300.0),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="SVR">
-            <C>
-                 0.1
-            </C>
-        </plugin>
+        <plugin type="SVR" />
     </Modelling>
     <Output name="Output">
         <plugin type="" />

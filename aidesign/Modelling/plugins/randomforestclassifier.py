@@ -1,16 +1,16 @@
-from sklearn.linear_model import LogisticRegression as model
+from sklearn.ensemble import RandomForestClassifier as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"LogisticRegression":"default","logit":"alias","MaxEnt":"alias"}
+_PLUGIN_READABLE_NAMES = {"RandomForestClassifier":"default","RFClassifier":"alias","RFC":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classifier"}
 _PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"penalty":"str", "C": "float"}
+_PLUGIN_OPTIONAL_SETTINGS = {"max_depth": "int", "n_estimators": "int"} # model().get_params()
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class LogisticRegression(object):
+class RandomForestClassifier(object):
     """
-    Logistic regression classifier.
+    A random forest classifier
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class LogisticRegression(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(LogisticRegression) \
+                            +"\n\t{0} ".format(RandomForestClassifier) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
