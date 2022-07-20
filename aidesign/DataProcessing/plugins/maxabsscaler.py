@@ -1,7 +1,6 @@
-from sklearn.preprocessing import MaxAbsScaler as MAS
+from sklearn.preprocessing import MaxAbsScaler as model
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"Binarizer":"default","binarizer":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
@@ -20,7 +19,7 @@ class MaxAbsScaler(object):
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.proc = MAS()
+        self.proc = model()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
@@ -74,5 +73,4 @@ class MaxAbsScaler(object):
         data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
         if self.X_tst is not None:
             data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
-            print('Hi')
         return data

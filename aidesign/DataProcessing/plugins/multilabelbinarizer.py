@@ -74,5 +74,4 @@ class MultiLabelBinarizer(object):
         data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
         if self.X_tst is not None:
             data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
-            print('Hi')
         return data
