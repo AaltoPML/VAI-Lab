@@ -25,6 +25,7 @@ class pluginCanvas(tk.Frame):
         
         super().__init__(parent, bg = parent['bg'])
         self.bg = parent['bg']
+        self.parent = parent
         self.controller = controller
         self.s = XML_handler()
         
@@ -229,18 +230,27 @@ class pluginCanvas(tk.Frame):
         """
         module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         name = self.canvas.itemcget('t'+str(self.m), 'text')
-        self.my_label.config(text = 'Choose a plugin for the '+name+' module')
         ps = PluginSpecs()
         plugin_list = list(ps.class_names[module].values())
         plugin_list.append('Custom')
         descriptions = list(ps.class_descriptions[module].values())
         descriptions.append('User specified plugin')
+        # colour = ['black']*len(plugin_list)
+        text = ''
+        if module.lower() == 'modelling':
+            Type = 'classifier' if self.controller.output_type else 'regressor'
+            text = '\nPluggins in white correspond to '+Type+'s'
+        self.my_label.config(text = 'Choose a plugin for the '+name+' module'+text)
         if self.m not in self.plugin:
             self.plugin[self.m] = tk.StringVar()
             self.plugin[self.m].set(None)
         self.allWeHearIs = []
         for p, plug in enumerate(plugin_list):
-            rb = tk.Radiobutton(self.frame2, text = plug, fg = 'white', bg = self.bg,
+            if module.lower() == 'modelling'and p < len(plugin_list)-1:
+                colour = 'white' if ps.module_options[module][plug.lower()+'.py'].get('Type', None) == Type else 'grey'
+            else:
+                colour = 'white'
+            rb = tk.Radiobutton(self.frame2, text = plug, fg = colour, bg = self.bg,
                 height = 3, width = 20, var = self.plugin[self.m], 
                 selectcolor = 'black', value = plug,
                 font = self.controller.pages_font, command = self.optionsWindow)

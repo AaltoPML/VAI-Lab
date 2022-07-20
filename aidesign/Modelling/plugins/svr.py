@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"SVR":"default","SupportVectorRegression":"alias"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "regressor"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"C": "float", "kernel": "str", "gamma": "float"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}

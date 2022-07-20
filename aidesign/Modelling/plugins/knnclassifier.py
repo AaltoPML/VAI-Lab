@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"KNNClassifier":"default","KNN-C":"alias"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "classifier"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}

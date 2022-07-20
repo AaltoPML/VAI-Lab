@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"LogisticRegression":"default","logit":"alias","MaxEnt":"alias"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "classifier"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"penalty":"str", "C": "float"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}

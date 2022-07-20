@@ -21,7 +21,7 @@ class MainPage(tk.Frame):
         self.controller = controller
         self.controller.title('AI Assisted Framework Design')
         
-        
+        self.controller.output_type = False
         self.bg = parent['bg']
         
         script_dir = os.path.dirname(__file__)
@@ -305,10 +305,11 @@ class MainPage(tk.Frame):
                         self.controller.s.append_input_data(variable,filename)
                         if i == 0:
                             self.controller.Data.set(True)
-
+                        if (variable == 'Y' or variable == 'Y_test') and (
+                                len(pd.unique(data[variable].to_numpy().flatten())) < 30):
+                            self.controller.output_type = all([float(i).is_integer() for i in data[variable].to_numpy().flatten()])
             self.newWindow.destroy()
             dataLoader(self.controller, data)
-
         else:
             tk.messagebox.showwarning(title = 'Error - X not specified',
                                       message = 'You need to specify X before proceeding.')

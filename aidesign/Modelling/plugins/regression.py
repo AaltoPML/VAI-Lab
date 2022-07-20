@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"Regression":"default","Regression":"alias","reg":"alias"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "regressor"}
 _PLUGIN_REQUIRED_SETTINGS = {"power":"int","train_name":"str","target_name":"str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
