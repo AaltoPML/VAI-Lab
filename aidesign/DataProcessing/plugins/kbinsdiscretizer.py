@@ -1,9 +1,9 @@
-from sklearn.preprocessing import KBinsDiscretizer as KBD
+from sklearn.preprocessing import KBinsDiscretizer as model
 import numpy as np
 import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"KBinsDiscretizer":"default"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_bins": "int"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
@@ -19,7 +19,7 @@ class KBinsDiscretizer(object):
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.proc = KBD()
+        self.proc = model()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]

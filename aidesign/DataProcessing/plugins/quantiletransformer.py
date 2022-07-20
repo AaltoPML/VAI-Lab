@@ -1,10 +1,9 @@
-from sklearn.preprocessing import QuantileTransformer as Trans
+from sklearn.preprocessing import QuantileTransformer as model
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"QuantileTransformer":"default","Quantile":"alias"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_quantiles": "int"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
@@ -20,7 +19,7 @@ class QuantileTransformer(object):
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.proc = Trans()
+        self.proc = model()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]

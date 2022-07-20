@@ -1,9 +1,9 @@
 from sklearn.preprocessing import MinMaxScaler as model
 import numpy as np
-from matplotlib import pyplot as plt
+import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"MinMaxScaler":"default"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "scaler"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"feature_range": "tuple"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
@@ -71,7 +71,7 @@ class MinMaxScaler(object):
         self.proc.fit(self.X)
 
     def transform(self,data):
-        data.append_data_column("X", self.proc.transform(self.X))
-        if self.Y_tst is not None:
-            data.append_data_column("X_test", self.proc.transform(self.X_tst))
+        data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
+        if self.X_tst is not None:
+            data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
         return data

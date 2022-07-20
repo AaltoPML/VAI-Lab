@@ -41,6 +41,7 @@ class pluginCanvas(tk.Frame):
         
         frame1 = tk.Frame(self, bg = self.bg)
         self.frame2 = tk.Frame(self, bg = self.bg)
+        self.framex = tk.Frame(self, bg = self.bg)
         frame3 = tk.Frame(self, bg = self.bg)
         self.frame4 = tk.Frame(self, bg = self.bg)
         
@@ -92,11 +93,13 @@ class pluginCanvas(tk.Frame):
         
         self.save_path = ''
         self.saved = True
-        frame1.grid(column=0, row=0, sticky="nsew")
+        frame1.grid(column=0, row=0, rowspan=2, sticky="nsew")
         self.frame2.grid(column=1, row=0, sticky="ne")
-        frame3.grid(column=0, row=1, sticky="swe")
-        self.frame4.grid(column=1, row=1, sticky="sew")
+        self.framex.grid(column=1, row=1, sticky="ne")
+        frame3.grid(column=0, row=2, sticky="swe")
+        self.frame4.grid(column=1, row=2, sticky="sew")
         
+        self.framex.grid_columnconfigure(tuple(range(2)), weight=1)
         frame3.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
         
@@ -235,6 +238,9 @@ class pluginCanvas(tk.Frame):
         plugin_list.append('Custom')
         descriptions = list(ps.class_descriptions[module].values())
         descriptions.append('User specified plugin')
+        type_list = np.array([x.get('Type', None) for x in list(ps.module_options[module].values())])
+        type_list = np.append(type_list, None)
+        print(plugin_list, type_list)
         # colour = ['black']*len(plugin_list)
         text = ''
         if module.lower() == 'modelling':
@@ -245,16 +251,39 @@ class pluginCanvas(tk.Frame):
             self.plugin[self.m] = tk.StringVar()
             self.plugin[self.m].set(None)
         self.allWeHearIs = []
+        
+        framexx = []
+        framexx_name = np.array([])
+        framexx_i = []
+        values = np.append(np.unique(type_list[type_list != None]), 'other') if not any(type_list == 'other') else np.unique(type_list[type_list != None])
+        for i,t in enumerate(values):
+            framexx.append(tk.Frame(self.framex, bg = self.bg))
+            framexx_name = np.append(framexx_name, t if t is not None else 'other')
+            framexx_i.append(0)
+            self.my_label = tk.Label(framexx[-1], 
+                        text = framexx_name[-1].capitalize(),
+                        pady= 10,
+                        font = self.controller.title_font,
+                        bg = self.bg,
+                        fg = 'white')
+            self.my_label.grid(column = 0,
+                                row = 0, columnspan = 2, padx=10)
+            framexx[-1].grid(column = 0, row = i, sticky="nw")
+        
         for p, plug in enumerate(plugin_list):
             if module.lower() == 'modelling'and p < len(plugin_list)-1:
-                colour = 'white' if ps.module_options[module][plug.lower()+'.py'].get('Type', None) == Type else 'grey'
+                colour = 'white' if type_list[p] == Type else 'grey'
             else:
                 colour = 'white'
-            rb = tk.Radiobutton(self.frame2, text = plug, fg = colour, bg = self.bg,
+            print(framexx_name, type_list[p])
+            frame_idx = np.where(framexx_name == type_list[p])[0][0] if type_list[p] in framexx_name else np.where(framexx_name == 'other')[0][0]
+            print(frame_idx)
+            rb = tk.Radiobutton(framexx[frame_idx], text = plug, fg = colour, bg = self.bg,
                 height = 3, width = 20, var = self.plugin[self.m], 
                 selectcolor = 'black', value = plug,
                 font = self.controller.pages_font, command = self.optionsWindow)
-            rb.grid(column = 5+ (p%2 != 0), row = int(p/2)+1)
+            rb.grid(column = 5+ (framexx_i[frame_idx]%2 != 0), row = int(framexx_i[frame_idx]/2)+1)
+            framexx_i[frame_idx] += 1
             self.CreateToolTip(rb, text = descriptions[p])
             self.allWeHearIs.append(rb)
 

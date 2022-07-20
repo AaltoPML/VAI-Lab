@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"MaxAbsScaler":"default"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "scaler"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}

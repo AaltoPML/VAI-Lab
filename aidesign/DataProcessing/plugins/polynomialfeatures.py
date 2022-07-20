@@ -1,8 +1,9 @@
 from sklearn.preprocessing import PolynomialFeatures as PF
 import numpy as np
+import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"PolynomialFeatures":"default","polyfeat":"alias","polynomialfeatures":"alias"}
-_PLUGIN_MODULE_OPTIONS = {}
+_PLUGIN_MODULE_OPTIONS = {"Type": "other"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"degree": "int", "interaction_only": "bool", "include_bias": "bool"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
@@ -69,7 +70,7 @@ class PolynomialFeatures(object):
         self.proc.fit(self.X)
 
     def transform(self,data):
-        data.append_data_column("X", self.proc.transform(self.X))
-        if self.Y_tst is not None:
-            data.append_data_column("X_test", self.proc.transform(self.X_tst))
+        data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
+        if self.X_tst is not None:
+            data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
         return data
