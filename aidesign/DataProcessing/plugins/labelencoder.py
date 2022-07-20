@@ -1,9 +1,8 @@
-from sklearn.preprocessing import LabelEncoder as LE
+from sklearn.preprocessing import LabelEncoder as model
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"Binarizer":"default","binarizer":"alias"}
+_PLUGIN_READABLE_NAMES = {"LabelEncoder":"default","LE":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
@@ -20,7 +19,7 @@ class LabelEncoder(object):
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.proc = LE()
+        self.proc = model()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]

@@ -10,7 +10,9 @@ _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
 class Normalizer(object):
-    """ Normalize samples individually to unit norm """
+    """
+    Normalize samples individually to unit norm
+    """
 
     def __init__(self):
         self.X = None

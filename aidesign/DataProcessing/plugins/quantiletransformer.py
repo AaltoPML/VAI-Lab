@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"Binarizer":"default","binarizer":"alias"}
+_PLUGIN_READABLE_NAMES = {"QuantileTransformer":"default","Quantile":"alias"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_quantiles": "int"}

@@ -1,9 +1,8 @@
 from sklearn.preprocessing import KBinsDiscretizer as KBD
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"Binarizer":"default","binarizer":"alias"}
+_PLUGIN_READABLE_NAMES = {"KBinsDiscretizer":"default"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_bins": "int"}

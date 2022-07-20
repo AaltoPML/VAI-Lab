@@ -1,8 +1,8 @@
-from sklearn.preprocessing import MinMaxScaler as MMS
+from sklearn.preprocessing import MinMaxScaler as model
 import numpy as np
 from matplotlib import pyplot as plt
 
-_PLUGIN_READABLE_NAMES = {"MinMaxScaler":"default","minmaxscaler":"alias"}
+_PLUGIN_READABLE_NAMES = {"MinMaxScaler":"default"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"feature_range": "tuple"}
@@ -12,14 +12,15 @@ _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 class MinMaxScaler(object):
     """
     This estimator scales and translates each feature individually such that it\n
-    is in the given range on the training set, e.g. between zero and one"""
+    is in the given range on the training set, e.g. between zero and one
+    """
 
     def __init__(self):
         self.X = None
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
-        self.proc = MMS()
+        self.proc = model()
 
     def set_data_in(self,data_in):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]

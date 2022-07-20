@@ -9,7 +9,9 @@ _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
 class PolynomialFeatures(object):
-    """ Generate polynomial and interaction features """
+    """ 
+    Generate polynomial and interaction features
+    """
 
     def __init__(self):
         self.X = None

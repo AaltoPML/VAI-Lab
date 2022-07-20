@@ -21,7 +21,7 @@
         <coordinates>
             [(304,203),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="MaxAbsScaler">
+        <plugin type="MinMaxScaler">
             <Data>
                  X
             </Data>
@@ -35,7 +35,7 @@
         <coordinates>
             [(300.0,300.0),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="KernelRidge" />
+        <plugin type="Lasso" />
     </Modelling>
     <Output name="Output">
         <plugin type="" />

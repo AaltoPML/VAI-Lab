@@ -2,7 +2,7 @@ from sklearn.preprocessing import MaxAbsScaler as model
 import numpy as np
 import pandas as pd
 
-_PLUGIN_READABLE_NAMES = {"Binarizer":"default","binarizer":"alias"}
+_PLUGIN_READABLE_NAMES = {"MaxAbsScaler":"default"}
 _PLUGIN_MODULE_OPTIONS = {}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {}
