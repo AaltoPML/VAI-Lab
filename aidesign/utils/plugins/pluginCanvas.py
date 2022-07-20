@@ -68,7 +68,7 @@ class pluginCanvas(tk.Frame):
                     bg = self.bg,
                     fg = 'white')
         self.my_label.grid(column = 5,
-                            row = 0, columnspan = 2, padx=10)
+                            row = 0, columnspan = 2, padx=10, pady=(0,36))
         
         self.back_img = ImageTk.PhotoImage(Image.open(
             os.path.join(script_dir,
@@ -240,8 +240,6 @@ class pluginCanvas(tk.Frame):
         descriptions.append('User specified plugin')
         type_list = np.array([x.get('Type', None) for x in list(ps.module_options[module].values())])
         type_list = np.append(type_list, None)
-        print(plugin_list, type_list)
-        # colour = ['black']*len(plugin_list)
         text = ''
         if module.lower() == 'modelling':
             Type = 'classifier' if self.controller.output_type else 'regressor'
@@ -260,14 +258,14 @@ class pluginCanvas(tk.Frame):
             framexx.append(tk.Frame(self.framex, bg = self.bg))
             framexx_name = np.append(framexx_name, t if t is not None else 'other')
             framexx_i.append(0)
-            self.my_label = tk.Label(framexx[-1], 
+            label = tk.Label(framexx[-1], 
                         text = framexx_name[-1].capitalize(),
                         pady= 10,
                         font = self.controller.title_font,
                         bg = self.bg,
                         fg = 'white')
-            self.my_label.grid(column = 0,
-                                row = 0, columnspan = 2, padx=10)
+            label.grid(column = 0,
+                                row = 0, columnspan = 2, padx = (10,0))
             framexx[-1].grid(column = 0, row = i, sticky="nw")
         
         for p, plug in enumerate(plugin_list):
@@ -275,9 +273,7 @@ class pluginCanvas(tk.Frame):
                 colour = 'white' if type_list[p] == Type else 'grey'
             else:
                 colour = 'white'
-            print(framexx_name, type_list[p])
             frame_idx = np.where(framexx_name == type_list[p])[0][0] if type_list[p] in framexx_name else np.where(framexx_name == 'other')[0][0]
-            print(frame_idx)
             rb = tk.Radiobutton(framexx[frame_idx], text = plug, fg = colour, bg = self.bg,
                 height = 3, width = 20, var = self.plugin[self.m], 
                 selectcolor = 'black', value = plug,
