@@ -4,7 +4,6 @@ from PIL import Image, ImageTk
 import os
 import numpy as np
 import pandas as pd
-from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
 from tkinter import messagebox
 
 from aidesign.Data.xml_handler import XML_handler
@@ -23,7 +22,7 @@ class pluginCanvas(tk.Frame):
         
         """ Here we define the frame displayed for the plugin specification."""
         
-        super().__init__(parent, bg = parent['bg'])
+        super().__init__(parent, bg = 'blue')#parent['bg'])
         self.bg = parent['bg']
         self.parent = parent
         self.controller = controller
@@ -36,12 +35,12 @@ class pluginCanvas(tk.Frame):
                 'resources', 
                 'Assets', 
                 'AIDIcon.ico'))))
-        self.grid_rowconfigure(tuple(range(2)), weight=1)
+        self.grid_rowconfigure(tuple(range(5)), weight=1)
         self.grid_columnconfigure(0, weight=1)
         
         frame1 = tk.Frame(self, bg = self.bg)
-        self.frame2 = tk.Frame(self, bg = self.bg)
-        self.framex = tk.Frame(self, bg = self.bg)
+        self.frame2 = tk.Frame(self, bg = 'red')#self.bg)
+        self.framex = tk.Frame(self, bg = 'blue')#self.bg)
         frame3 = tk.Frame(self, bg = self.bg)
         self.frame4 = tk.Frame(self, bg = self.bg)
         
@@ -66,9 +65,10 @@ class pluginCanvas(tk.Frame):
                     pady= 10,
                     font = self.controller.title_font,
                     bg = self.bg,
-                    fg = 'white')
+                    fg = 'white',
+                    anchor = tk.CENTER)
         self.my_label.grid(column = 5,
-                            row = 0, columnspan = 2, padx=10, pady=(0,36))
+                            row = 0, columnspan = 2, padx=10)
         
         self.back_img = ImageTk.PhotoImage(Image.open(
             os.path.join(script_dir,
@@ -93,16 +93,15 @@ class pluginCanvas(tk.Frame):
         
         self.save_path = ''
         self.saved = True
-        frame1.grid(column=0, row=0, rowspan=2, sticky="nsew")
-        self.frame2.grid(column=1, row=0, sticky="ne")
-        self.framex.grid(column=1, row=1, sticky="ne")
-        frame3.grid(column=0, row=2, sticky="swe")
-        self.frame4.grid(column=1, row=2, sticky="sew")
+        frame1.grid(column=0, row=0, rowspan=5, sticky="nsew")
+        self.frame2.grid(column=1, row=0, sticky="new")
+        frame3.grid(column=0, row=5, sticky="swe")
+        self.frame4.grid(column=1, row=5, sticky="sew")
         
-        self.framex.grid_columnconfigure(tuple(range(2)), weight=1)
-        frame3.grid_columnconfigure(tuple(range(2)), weight=1)
-        self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
-        
+        # self.frame2.grid_columnconfigure(tuple(range(2)), weight=1)
+        frame3.grid_columnconfigure(tuple(range(2)), weight=2)
+        self.frame4.grid_columnconfigure(tuple(range(2)), weight=2)
+
     def class_list(self,value):
         """ Temporary fix """
         return value
@@ -255,7 +254,7 @@ class pluginCanvas(tk.Frame):
         framexx_i = []
         values = np.append(np.unique(type_list[type_list != None]), 'other') if not any(type_list == 'other') else np.unique(type_list[type_list != None])
         for i,t in enumerate(values):
-            framexx.append(tk.Frame(self.framex, bg = self.bg))
+            framexx.append(tk.Frame(self.framep, bg = self.bg))
             framexx_name = np.append(framexx_name, t if t is not None else 'other')
             framexx_i.append(0)
             label = tk.Label(framexx[-1], 
@@ -265,8 +264,8 @@ class pluginCanvas(tk.Frame):
                         bg = self.bg,
                         fg = 'white')
             label.grid(column = 0,
-                                row = 0, columnspan = 2, padx = (10,0))
-            framexx[-1].grid(column = 0, row = i, sticky="nw")
+                                row = 0, padx = (10,0), sticky = 'nw')
+            framexx[-1].grid(column = 0, row = i, sticky="nsew")
         
         for p, plug in enumerate(plugin_list):
             if module.lower() == 'modelling'and p < len(plugin_list)-1:
@@ -275,10 +274,13 @@ class pluginCanvas(tk.Frame):
                 colour = 'white'
             frame_idx = np.where(framexx_name == type_list[p])[0][0] if type_list[p] in framexx_name else np.where(framexx_name == 'other')[0][0]
             rb = tk.Radiobutton(framexx[frame_idx], text = plug, fg = colour, bg = self.bg,
-                height = 3, width = 20, var = self.plugin[self.m], 
-                selectcolor = 'black', value = plug,
+                height = 3, var = self.plugin[self.m], 
+                selectcolor = 'black', value = plug, justify = tk.LEFT,
                 font = self.controller.pages_font, command = self.optionsWindow)
-            rb.grid(column = 5+ (framexx_i[frame_idx]%2 != 0), row = int(framexx_i[frame_idx]/2)+1)
+            rb.grid(column = int(framexx_i[frame_idx]%2 != 0), 
+                    row = int(framexx_i[frame_idx]/2)+1, 
+                    sticky = 'w',
+                    padx=(10, 0))
             framexx_i[frame_idx] += 1
             self.CreateToolTip(rb, text = descriptions[p])
             self.allWeHearIs.append(rb)
@@ -558,8 +560,32 @@ class pluginCanvas(tk.Frame):
                     int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
         self.m = self.id_mod[2]
         x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
+        
+        # Configure frame for scrollbar
+        self.frame_canvas = tk.Canvas(self.framex, bg = 'yellow', bd = 0, highlightthickness=0)#self.bg, bd = 0, highlightthickness=0)
+        tree_scrolly = tk.Scrollbar(self.framex, command=self.frame_canvas.yview)
+        tree_scrolly.pack(side=tk.RIGHT, fill = tk.Y)
+        tree_scrollx = tk.Scrollbar(self.framex, command=self.frame_canvas.xview, orient = 'horizontal')
+        tree_scrollx.pack(side=tk.BOTTOM, fill = tk.X)
+        self.frame_canvas.configure(yscrollcommand=tree_scrolly.set, xscrollcommand=tree_scrollx.set)
+        self.frame_canvas.bind('<Configure>', lambda e: self.frame_canvas.configure(scrollregion = self.frame_canvas.bbox("all")))
+        self.framep = tk.Frame(self.frame_canvas, bg = 'pink')
+        self.frame_canvas.create_window((0,0), window = self.framep)
+        
+        self.set_mousewheel(self.frame_canvas, lambda e: self.frame_canvas.yview_scroll(-1*(e.delta//120), "units"))
+        
         self.select(x0, y0)
+        
+        self.framex.grid(column=1, row=1, sticky="nswe", rowspan=4, pady=(0,10))
+        self.framex.grid_columnconfigure(tuple(range(2)), weight=1)
+        self.frame_canvas.pack(side=tk.LEFT, fill = tk.BOTH, expand = True)
 
+    def set_mousewheel(self, widget, command):
+        """Activate / deactivate mousewheel scrolling when 
+        cursor is over / not over the widget respectively."""
+        widget.bind("<Enter>", lambda _: widget.bind_all('<MouseWheel>', command))
+        widget.bind("<Leave>", lambda _: widget.unbind_all('<MouseWheel>'))
+            
     def place_modules(self,modules: dict):
         """Places the modules in the dictionary in the canvas.
         :param modules: dict type of modules in the pipeline.
