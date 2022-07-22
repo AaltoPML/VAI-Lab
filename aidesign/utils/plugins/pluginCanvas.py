@@ -91,6 +91,12 @@ class pluginCanvas(tk.Frame):
             height = 3, width = 15, font = self.controller.pages_font, 
             command = self.check_quit).grid(column = 1, row = 26, sticky="news", pady=(0,10))
         
+        self.frame_canvas = tk.Canvas(self.framex, bg = self.bg, bd = 0, highlightthickness=0)
+        self.tree_scrolly = tk.Scrollbar(self.framex, command=self.frame_canvas.yview)
+        self.tree_scrolly.pack(side=tk.RIGHT, fill = tk.Y)
+        self.tree_scrollx = tk.Scrollbar(self.framex, command=self.frame_canvas.xview, orient = 'horizontal')
+        self.tree_scrollx.pack(side=tk.BOTTOM, fill = tk.X)
+        
         self.save_path = ''
         self.saved = True
         frame1.grid(column=0, row=0, rowspan=5, sticky="nsew")
@@ -561,12 +567,7 @@ class pluginCanvas(tk.Frame):
         x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
         
         # Configure frame for scrollbar
-        self.frame_canvas = tk.Canvas(self.framex, bg = self.bg, bd = 0, highlightthickness=0)
-        tree_scrolly = tk.Scrollbar(self.framex, command=self.frame_canvas.yview)
-        tree_scrolly.pack(side=tk.RIGHT, fill = tk.Y)
-        tree_scrollx = tk.Scrollbar(self.framex, command=self.frame_canvas.xview, orient = 'horizontal')
-        tree_scrollx.pack(side=tk.BOTTOM, fill = tk.X)
-        self.frame_canvas.configure(yscrollcommand=tree_scrolly.set, xscrollcommand=tree_scrollx.set)
+        self.frame_canvas.configure(yscrollcommand=self.tree_scrolly.set, xscrollcommand=self.tree_scrollx.set)
         self.frame_canvas.bind('<Configure>', lambda e: self.frame_canvas.configure(scrollregion = self.frame_canvas.bbox("all")))
         self.framep = tk.Frame(self.frame_canvas, bg = self.bg)
         self.frame_canvas.create_window((0,0), window = self.framep)
@@ -691,6 +692,7 @@ class pluginCanvas(tk.Frame):
             if response:
                 self.reset()
                 self.canvas.delete(tk.ALL)
+                self.frame_canvas.delete(tk.ALL)
                 self.saved = True
                 self.s.write_to_XML()
                 self.controller.Plugin.set(True)
@@ -702,6 +704,7 @@ class pluginCanvas(tk.Frame):
         else:
             self.reset()
             self.canvas.delete(tk.ALL)
+            self.frame_canvas.delete(tk.ALL)
             self.s.write_to_XML()
             self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")

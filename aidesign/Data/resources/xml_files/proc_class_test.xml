@@ -23,7 +23,7 @@
         </coordinates>
         <plugin type="StandardScaler">
             <Data>
-                 X
+                X
             </Data>
         </plugin>
     </DataProcessing>
