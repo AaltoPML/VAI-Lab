@@ -308,7 +308,7 @@ class MainPage(tk.Frame):
                         if i == 0:
                             self.controller.Data.set(True)
                         if any(isVar[1::2]) and (
-                                len(pd.unique(data[variable].to_numpy().flatten())) < 30):
+                                len(pd.unique(data[variable].to_numpy().flatten())) < len(data[variable].to_numpy().flatten())*0.2):
                             self.controller.output_type = 'classification'*all([float(i).is_integer() for i in data[variable].to_numpy().flatten()])
             if not any(isVar[1::2]):
                 self.controller.output_type = 'unsupervised'
