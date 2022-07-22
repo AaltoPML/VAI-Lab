@@ -6,8 +6,8 @@ _PLUGIN_READABLE_NAMES = {"StandardScaler":"default","standardscaler":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "scaler"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"with_mean": "bool"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_REQUIRED_DATA = {}
+_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}
 
 class StandardScaler(object):
     """

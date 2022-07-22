@@ -6,8 +6,8 @@ _PLUGIN_READABLE_NAMES = {"PolynomialFeatures":"default","polyfeat":"alias","pol
 _PLUGIN_MODULE_OPTIONS = {"Type": "other"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"degree": "int", "interaction_only": "bool", "include_bias": "bool"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_REQUIRED_DATA = {}
+_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}
 
 class PolynomialFeatures(object):
     """ 

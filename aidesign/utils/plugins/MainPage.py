@@ -21,7 +21,7 @@ class MainPage(tk.Frame):
         self.controller = controller
         self.controller.title('AI Assisted Framework Design')
         
-        self.controller.output_type = False
+        self.controller.output_type = 'regression'
         self.bg = parent['bg']
         
         script_dir = os.path.dirname(__file__)
@@ -296,18 +296,22 @@ class MainPage(tk.Frame):
         # self.s.load_XML(self.controller.output["xml_filename"])
         
         data = {}
+        isVar = [0] * len(self.var)
         if len(self.label_list[0].cget("text")) > 0:
             for i,filename in enumerate(self.filenames):
                 variable = self.var[i]
                 if filename is not None and len(filename) > 0:
                     if filename.lower().endswith(('.csv')):
                         data[variable] = pd.read_csv(filename) #Infers by default, should it be None?
+                        isVar[i] = 1
                         self.controller.s.append_input_data(variable,filename)
                         if i == 0:
                             self.controller.Data.set(True)
-                        if (variable == 'Y' or variable == 'Y_test') and (
+                        if any(isVar[1::2]) and (
                                 len(pd.unique(data[variable].to_numpy().flatten())) < 30):
-                            self.controller.output_type = all([float(i).is_integer() for i in data[variable].to_numpy().flatten()])
+                            self.controller.output_type = 'classification'*all([float(i).is_integer() for i in data[variable].to_numpy().flatten()])
+            if not any(isVar[1::2]):
+                self.controller.output_type = 'unsupervised'
             self.newWindow.destroy()
             dataLoader(self.controller, data)
         else:

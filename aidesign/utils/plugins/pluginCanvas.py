@@ -22,7 +22,7 @@ class pluginCanvas(tk.Frame):
         
         """ Here we define the frame displayed for the plugin specification."""
         
-        super().__init__(parent, bg = 'blue')#parent['bg'])
+        super().__init__(parent, bg = parent['bg'])
         self.bg = parent['bg']
         self.parent = parent
         self.controller = controller
@@ -39,8 +39,8 @@ class pluginCanvas(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         
         frame1 = tk.Frame(self, bg = self.bg)
-        self.frame2 = tk.Frame(self, bg = 'red')#self.bg)
-        self.framex = tk.Frame(self, bg = 'blue')#self.bg)
+        self.frame2 = tk.Frame(self, bg = self.bg)
+        self.framex = tk.Frame(self, bg = self.bg)
         frame3 = tk.Frame(self, bg = self.bg)
         self.frame4 = tk.Frame(self, bg = self.bg)
         
@@ -241,8 +241,7 @@ class pluginCanvas(tk.Frame):
         type_list = np.append(type_list, None)
         text = ''
         if module.lower() == 'modelling':
-            Type = 'classifier' if self.controller.output_type else 'regressor'
-            text = '\nPluggins in white correspond to '+Type+'s'
+            text = '\nPluggins in white correspond to '+self.controller.output_type
         self.my_label.config(text = 'Choose a plugin for the '+name+' module'+text)
         if self.m not in self.plugin:
             self.plugin[self.m] = tk.StringVar()
@@ -266,10 +265,10 @@ class pluginCanvas(tk.Frame):
             label.grid(column = 0,
                                 row = 0, padx = (10,0), sticky = 'nw')
             framexx[-1].grid(column = 0, row = i, sticky="nsew")
-        
+        unsupervised = ['clustering', 'RL']
         for p, plug in enumerate(plugin_list):
             if module.lower() == 'modelling'and p < len(plugin_list)-1:
-                colour = 'white' if type_list[p] == Type else 'grey'
+                colour = 'white' if type_list[p] == self.controller.output_type or (self.controller.output_type == 'unsupervised' and type_list[p] in unsupervised) else 'grey'
             else:
                 colour = 'white'
             frame_idx = np.where(framexx_name == type_list[p])[0][0] if type_list[p] in framexx_name else np.where(framexx_name == 'other')[0][0]
@@ -562,14 +561,14 @@ class pluginCanvas(tk.Frame):
         x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
         
         # Configure frame for scrollbar
-        self.frame_canvas = tk.Canvas(self.framex, bg = 'yellow', bd = 0, highlightthickness=0)#self.bg, bd = 0, highlightthickness=0)
+        self.frame_canvas = tk.Canvas(self.framex, bg = self.bg, bd = 0, highlightthickness=0)
         tree_scrolly = tk.Scrollbar(self.framex, command=self.frame_canvas.yview)
         tree_scrolly.pack(side=tk.RIGHT, fill = tk.Y)
         tree_scrollx = tk.Scrollbar(self.framex, command=self.frame_canvas.xview, orient = 'horizontal')
         tree_scrollx.pack(side=tk.BOTTOM, fill = tk.X)
         self.frame_canvas.configure(yscrollcommand=tree_scrolly.set, xscrollcommand=tree_scrollx.set)
         self.frame_canvas.bind('<Configure>', lambda e: self.frame_canvas.configure(scrollregion = self.frame_canvas.bbox("all")))
-        self.framep = tk.Frame(self.frame_canvas, bg = 'pink')
+        self.framep = tk.Frame(self.frame_canvas, bg = self.bg)
         self.frame_canvas.create_window((0,0), window = self.framep)
         
         self.set_mousewheel(self.frame_canvas, lambda e: self.frame_canvas.yview_scroll(-1*(e.delta//120), "units"))

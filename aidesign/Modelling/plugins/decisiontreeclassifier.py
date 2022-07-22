@@ -1,16 +1,16 @@
-from sklearn.tree import DecisionTreeClassifier as model
+from sklearn.tree import DecisionTreeclassification as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"DecissionTreeClassifier":"default","DTClassifier":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "classifier"}
+_PLUGIN_READABLE_NAMES = {"DecissionTreeclassification":"default","DTclassification":"alias"}
+_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"max_depth": "int"} # model().get_params()
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class DecisionTreeClassifier(object):
+class DecisionTreeclassification(object):
     """
-    A decision tree classifier
+    A decision tree classification
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class DecisionTreeClassifier(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(DecisionTreeClassifier) \
+                            +"\n\t{0} ".format(DecisionTreeclassification) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
@@ -70,12 +70,23 @@ class DecisionTreeClassifier(object):
     def score(self,X_tst, Y_tst):
         return self.clf.score(X_tst, Y_tst)
 
-    def _test(self):
-        if _PLUGIN_MODULE_OPTIONS['Type'] == 'classifier':
+    def _test(self, data):
+        if _PLUGIN_MODULE_OPTIONS['Type'] == 'classification':
             print('Training accuracy: %.2f%%' %(self.score(self.X, self.Y)*100))
             if self.Y_tst is not None:
                 print('Test accuracy: %.2f%%' %(self.score(self.X_tst, self.Y_tst)*100))
-        elif _PLUGIN_MODULE_OPTIONS['Type'] == 'regressor':
+            if self.X_tst is not None:
+                data.append_data_column("Y_pred", self.predict(self.X_tst))
+            return data
+        elif _PLUGIN_MODULE_OPTIONS['Type'] == 'regression':
             print('Training R2 score: %.3f' %(self.score(self.X, self.Y)))
             if self.Y_tst is not None:
                 print('Training R2 score: %.3f' %(self.score(self.X_tst, self.Y_tst)))
+            if self.X_tst is not None:
+                data.append_data_column("Y_pred", self.predict(self.X_tst))
+            return data
+        elif _PLUGIN_MODULE_OPTIONS['Type'] == 'clustering':
+            print('Clustering completed')
+            if self.X_tst is not None:
+                data.append_data_column("Y_pred", self.predict(self.X_tst))
+            return data

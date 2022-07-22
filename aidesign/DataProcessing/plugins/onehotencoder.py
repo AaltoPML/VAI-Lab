@@ -6,8 +6,8 @@ _PLUGIN_READABLE_NAMES = {"OneHotEncoder":"default"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
 _PLUGIN_OPTIONAL_SETTINGS = {"categories": "array-like"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_REQUIRED_DATA = {}
+_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}
 
 class OneHotEncoder(object):
     """
