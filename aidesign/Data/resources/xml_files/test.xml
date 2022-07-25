@@ -18,7 +18,7 @@
         </coordinates>
         <plugin type="ManualInput">
             <image_dir>
-                 C:\Users\sevisal\Documents\GitHub\ai-assisted-design-framework\aidesign\Data\resources\image_classification\training_images
+                 .\Data\resources\image_classification\training_images
             </image_dir>
         </plugin>
     </UserInteraction>
