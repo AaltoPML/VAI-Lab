@@ -44,7 +44,6 @@ class Binarizer(object):
             self.X_tst = self._is_name_passed(self._data_in, "Y_test")
         else:
             print('Invalid Data name. Indicate whether to use `X` or `Y`')
-        del self._config["options"]["Data"]
 
     def _is_name_passed(self, dic: dict, key: str, default = None):
         return dic[key] if key in dic.keys() and dic[key] is not None else default
@@ -53,20 +52,22 @@ class Binarizer(object):
         return data.reshape(shape[0],shape[1])
 
     def _check_numeric(self, dict_opt):
+        new_dict = {}
         for key, val in dict_opt.items():
             """ 
             TODO: Maybe, if list -> cv
             """
-            if type(val) == str and val.replace('.','').replace(',','').isnumeric():
-                val = float(val)
-                if val.is_integer():
-                    val = int(val)
-            dict_opt[key] = val
-        return dict_opt
+            if key != 'Data':
+                if type(val) == str and val.replace('.','').replace(',','').isnumeric():
+                    val = float(val)
+                    if val.is_integer():
+                        val = int(val)
+                new_dict[key] = val
+        return new_dict
 
     def fit(self):
-        self._check_numeric(self._config["options"])
-        self.proc.set_params(**self._config["options"])
+        config = self._check_numeric(self._config["options"])
+        self.proc.set_params(**config)
         self.proc.fit(self.X)
 
     def transform(self,data):

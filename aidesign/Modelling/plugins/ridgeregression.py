@@ -1,7 +1,7 @@
-from sklearn.kernel_ridge import Ridge as model
+from sklearn.linear_model import Ridge as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"Ridge":"default"}
+_PLUGIN_READABLE_NAMES = {"Ridge":"default", "RidgeRegression": "alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float"}

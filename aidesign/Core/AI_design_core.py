@@ -23,7 +23,6 @@ class Core(object):
                 self.load_config_file(gui_output["xml_filename"])
             except:
                 raise Exception("No XML File Selected. Cannot Run Pipeline")
-            self.run()
             self._load_data()
 
     def load_config_file(self, filename: str):

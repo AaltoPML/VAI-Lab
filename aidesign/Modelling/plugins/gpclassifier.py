@@ -1,16 +1,16 @@
-from sklearn.gaussian_process import GaussianProcessclassification as model
+from sklearn.gaussian_process import GaussianProcessClassifier as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"GPclassification":"default","GPC":"alias","GaussianProcessclassification":"alias"}
+_PLUGIN_READABLE_NAMES = {"GPClassifier":"default","GPC":"alias","GaussianProcessClassifier":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_restarts_optimizer": "int", "random_state": "int"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class GPclassification(object):
+class GPClassifier(object):
     """
-    Gaussian process classification (GPC) based on Laplace approximation
+    Gaussian process Classifier (GPC) based on Laplace approximation
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class GPclassification(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(GPclassification) \
+                            +"\n\t{0} ".format(GPClassifier) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
