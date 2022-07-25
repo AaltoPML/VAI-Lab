@@ -1,7 +1,7 @@
-from sklearn.ensemble import RandomForestclassification as model
+from sklearn.ensemble import RandomForestClassifier as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"RandomForestclassification":"default","RFclassification":"alias","RFC":"alias"}
+_PLUGIN_READABLE_NAMES = {"RandomForestclassification":"default","RFclassification":"alias","RFC":"alias","RandomForestClassifier":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"max_depth": "int", "n_estimators": "int"} # model().get_params()
