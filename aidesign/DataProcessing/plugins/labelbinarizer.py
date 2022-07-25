@@ -1,4 +1,5 @@
 from sklearn.preprocessing import LabelBinarizer as model
+from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 import numpy as np
 import pandas as pd
 
@@ -9,16 +10,16 @@ _PLUGIN_OPTIONAL_SETTINGS = {"neg_label": "int", "pos_label": "int"}
 _PLUGIN_REQUIRED_DATA = {}
 _PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}
 
-class LabelBinarizer(object):
+class LabelBinarizer(ModellingPluginTemplate):
     """
     Binarize labels in a one-vs-all fashion
     """
-
     def __init__(self):
-        self.X = None
-        self.Y = None
-        self.X_tst = None
-        self.Y_tst = None
+        super.__init__()
+        # self.X = None
+        # self.Y = None
+        # self.X_tst = None
+        # self.Y_tst = None
         self.proc = model()
 
     def set_data_in(self,data_in):

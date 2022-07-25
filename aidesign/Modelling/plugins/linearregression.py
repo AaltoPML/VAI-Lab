@@ -1,3 +1,4 @@
+from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.linear_model import LinearRegression as model
 import numpy as np
 
@@ -8,16 +9,13 @@ _PLUGIN_OPTIONAL_SETTINGS = {}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class LinearRegression(object):
+class LinearRegression(ModellingPluginTemplate):
     """
     Ordinary least squares Linear Regression
     """
 
     def __init__(self):
-        self.X = None
-        self.Y = None
-        self.X_tst = None
-        self.Y_tst = None
+        super(self.__class__,self).__init__()
         self.clf = model()
 
     def set_data_in(self,data_in):
