@@ -11,6 +11,7 @@ class Core(object):
         self._avail_plugins = PluginSpecs()
         self.data = Data()
         self.loop_level = 0
+        self.setup_complete = False
 
     def launch(self):
         gui_app = GUI()
@@ -27,6 +28,7 @@ class Core(object):
 
     def load_config_file(self, filename: str):
         self._xml_handler.load_XML(filename)
+        self.setup_complete = True
 
     def _load_data(self):
         init_data_fn = self._xml_handler.data_to_load
@@ -101,15 +103,11 @@ class Core(object):
                 specs[key]["class"]))(specs[key])
 
     def run(self):
+        if not self.setup_complete:
+            print("No pipeline specified. Running GUI.")
+            print("To load existing config, run core.load_config_file(<path_to_file>)")
+            self.launch()
         print("Running pipeline...")
         self._load_data()
-        """
-        TODO: Pipeline GUI
-        """
-        # gui_app = GUI()
-        # gui_app.set_avail_plugins(self._avail_plugins)
-        # gui_app.set_gui()
-        # gui_app._append_to_output("xml_filename", self._xml_handler.filename)
-        # gui_app.launch()
         self._execute(self._xml_handler.loaded_modules)
         print("Pipeline Complete")

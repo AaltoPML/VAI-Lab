@@ -1,16 +1,16 @@
-from sklearn.tree import DecisionTreeclassification as model
+from sklearn.tree import DecisionTreeClassifier as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"DecissionTreeclassification":"default","DTclassification":"alias"}
+_PLUGIN_READABLE_NAMES = {"DecissionTreeClassifier":"default","DTClassifier":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"max_depth": "int"} # model().get_params()
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class DecisionTreeclassification(object):
+class DecisionTreeClassifier(object):
     """
-    A decision tree classification
+    A decision tree classifier
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class DecisionTreeclassification(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(DecisionTreeclassification) \
+                            +"\n\t{0} ".format(DecisionTreeClassifier) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))

@@ -1,16 +1,16 @@
-from sklearn.neighbors import KNeighborsclassification as model
+from sklearn.neighbors import KNeighborsClassifier as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"KNNclassification":"default","KNN-C":"alias"}
+_PLUGIN_READABLE_NAMES = {"KNNClassifier":"default","KNN-C":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class KNNclassification(object):
+class KNNclassifier(object):
     """
-    classification implementing the k-nearest neighbors vote
+    Classifier implementing the k-nearest neighbors vote
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class KNNclassification(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(KNNclassification) \
+                            +"\n\t{0} ".format(KNNclassifier) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
