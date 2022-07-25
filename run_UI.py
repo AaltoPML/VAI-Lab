@@ -10,5 +10,5 @@ core = ai.Core()
 #     'resources', 
 #     'xml_files', 
 #     'proc_reg_test.xml'))
-# core.run()
 core.launch()
+core.run()

@@ -23,7 +23,7 @@
         </coordinates>
         <plugin type="RidgeRegression">
             <alpha>
-                 0.001
+                 0.02
             </alpha>
         </plugin>
     </Modelling>
