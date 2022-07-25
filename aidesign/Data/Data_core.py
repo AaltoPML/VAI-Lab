@@ -3,6 +3,8 @@ Hacky patch For testing only, normally you'd have aidesign in your
 OS's PYTHONPATH"""
 from os import path
 
+from imageio import imopen
+
 if not __package__:
     import sys 
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
@@ -12,12 +14,13 @@ from aidesign.utils.import_helper import get_lib_parent_dir
 from aidesign.Data.xml_handler import XML_handler
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 
 
 class Data(object):
     def __init__(self) -> None:
-        self.lib_base_path = get_lib_parent_dir()
-        self.xml_parser = XML_handler()
+        self._lib_base_path = get_lib_parent_dir()
+        self._xml_parser = XML_handler()
         self.data = {}
 
     def _import_csv(self, 
@@ -65,7 +68,7 @@ class Data(object):
         If relative, converts path to absolute by appending to base directory
         """
         if filename[0] == ".":
-            filename = path.join(self.lib_base_path,filename)
+            filename = path.join(self._lib_base_path,filename)
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             filename = filename
         return filename
@@ -110,8 +113,8 @@ class Data(object):
             self.append_data_column(s)
 
     def load_data_settings(self, filename:str):
-        self.xml_parser.load_XML(filename)
-        self.loaded_options = self.xml_parser.init_data_structure
+        self._xml_parser.load_XML(filename)
+        self.loaded_options = self._xml_parser.init_data_structure
         self._parse_data_options()
         
     def keys(self):
@@ -120,9 +123,18 @@ class Data(object):
     def __getitem__(self, key:str):
         return self.data[key]
 
+    def copy(self):
+        return deepcopy(self)
+
 if __name__ == "__main__":
     d = Data()
     # d.load_data_settings("./Data/resources/data_passing_test.xml")
-    d.import_data("./Data/resources/import_test.csv")
-    print(d.data_names)
-    d.data_names
+    d.import_data("./Data/resources/supervised_regression/1/x_train.csv")
+    # print(d.data["data"])
+    print(d["data"]["input"].loc[0:3])
+    dc = d.get_deepcopy()
+    d["data"]["input"].loc[0:3] = 9
+    print(d["data"]["input"].loc[0:3])
+    print(dc["data"]["input"].loc[0:3])
+    # print(dc["input"])
+    # d.data_names
