@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from aidesign.utils.import_helper import import_plugin_absolute
 from copy import copy
-class Modelling(object):
+class DataProcessing(object):
     def __init__(self):
         self.output_data = None
 
@@ -30,9 +30,9 @@ class Modelling(object):
     def launch(self):
         self._plugin.set_data_in(self._data_in)
         self._plugin.configure(self._module_config["plugin"])
-        self._plugin.solve()
+        self._plugin.fit()
         self.output_data = copy(self._data_in)
-        self.output_data = self._plugin._test(self.output_data)
+        self.output_data = self._plugin.transform(self.output_data)
 
     def get_result(self):
         return self.output_data

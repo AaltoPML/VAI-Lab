@@ -94,7 +94,7 @@ class Data(object):
         :param filename: str, filename of file to be loaded
         :param data_name: str, name of class variable data will be loaded to
         """
-        filename = self._rel_to_abs(filename)
+        filename = self._rel_to_abs(filename).replace("\\","/").replace("/",path.sep)
         ext = self._get_ext(filename)
         getattr(self,"_import_{0}".format(ext))(filename,data_name)
 

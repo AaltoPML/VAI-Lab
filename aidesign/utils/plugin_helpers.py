@@ -92,12 +92,22 @@ class PluginSpecs(ast.NodeVisitor):
                 self.available_plugins[self.curr_module][self.curr_plugin][key] = val
 
     def get_option_specs(self, option:str) -> dict:
+        """Gets either required OR optional settings for each plugin.
+        
+        :param option: str containing either:
+                        "_PLUGIN_OPTIONAL_SETTINGS"
+                        OR
+                        "_PLUGIN_REQUIRED_SETTINGS"
+
+        :returns output: nested dict of options by [Module][Plugin Class Name]
+        """
         output = {}
         for module in self.available_plugins.keys():
             output[module] = {}
             for plugin in self.available_plugins[module].keys():
                 if option in self.available_plugins[module][plugin]:
-                    output[module][plugin] = self.available_plugins\
+                    cn = self.available_plugins[module][plugin]["_PLUGIN_CLASS_NAME"]
+                    output[module][cn] = self.available_plugins\
                                                         [module]\
                                                         [plugin]\
                                                         [option]
@@ -122,6 +132,10 @@ class PluginSpecs(ast.NodeVisitor):
         return self.get_option_specs("_PLUGIN_CLASS_NAME")
 
     @property
+    def module_options(self):
+        return self.get_option_specs("_PLUGIN_MODULE_OPTIONS")
+
+    @property
     def required_settings(self):
         return self.get_option_specs("_PLUGIN_REQUIRED_SETTINGS")
 
@@ -132,7 +146,7 @@ class PluginSpecs(ast.NodeVisitor):
     @property
     def optional_settings(self):
         return self.get_option_specs("_PLUGIN_OPTIONAL_SETTINGS")
-
+    
     @property
     def available_plugin_names(self):
         names = self.names

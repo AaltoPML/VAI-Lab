@@ -1,16 +1,16 @@
-from sklearn.neighbors import KNeighborsClassifier as model
+from sklearn.linear_model import Perceptron as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"KNNClassifier":"default","KNN-C":"alias"}
+_PLUGIN_READABLE_NAMES = {"Perceptron":"default","LinearPerceptron":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
 _PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
+_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float", "penalty": "str"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class KNNclassifier(object):
+class Perceptron(object):
     """
-    Classifier implementing the k-nearest neighbors vote
+    Linear perceptron classification
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class KNNclassifier(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(KNNclassifier) \
+                            +"\n\t{0} ".format(Perceptron) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
@@ -43,14 +43,14 @@ class KNNclassifier(object):
 
     def _is_name_passed(self, dic: dict, key: str, default = None):
         return dic[key] if key in dic.keys() and dic[key] is not None else default
-
+    
     def _reshape(self,data,shape):
         return data.reshape(shape[0],shape[1])
-
+    
     def _check_numeric(self, dict_opt):
         for key, val in dict_opt.items():
             """ 
-            TODO: Maybe, if list -> cv
+            TODO: maybe, if list -> cv
             """
             if type(val) == str and val.replace('.','').replace(',','').isnumeric():
                 val = float(val)

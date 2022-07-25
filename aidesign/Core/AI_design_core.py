@@ -11,6 +11,7 @@ class Core(object):
         self._avail_plugins = PluginSpecs()
         self.data = Data()
         self.loop_level = 0
+        self.setup_complete = False
 
     def launch(self):
         gui_app = GUI()
@@ -22,11 +23,11 @@ class Core(object):
                 self.load_config_file(gui_output["xml_filename"])
             except:
                 raise Exception("No XML File Selected. Cannot Run Pipeline")
-            self.run()
             self._load_data()
 
     def load_config_file(self, filename: str):
         self._xml_handler.load_XML(filename)
+        self.setup_complete = True
 
     def _load_data(self):
         init_data_fn = self._xml_handler.data_to_load
@@ -48,6 +49,7 @@ class Core(object):
                 + "processing..."
               )
         mod.launch()
+        self.data = mod.get_result()
 
     def _execute_loop(self, specs):
         try:
@@ -100,6 +102,10 @@ class Core(object):
                 specs[key]["class"]))(specs[key])
 
     def run(self):
+        if not self.setup_complete:
+            print("No pipeline specified. Running GUI.")
+            print("To load existing config, run core.load_config_file(<path_to_file>)")
+            self.launch()
         print("Running pipeline...")
         self._load_data()
         self._execute(self._xml_handler.loaded_modules)

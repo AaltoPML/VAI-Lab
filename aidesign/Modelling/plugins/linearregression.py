@@ -1,16 +1,16 @@
-from sklearn.neighbors import KNeighborsClassifier as model
+from sklearn.linear_model import LinearRegression as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"KNNClassifier":"default","KNN-C":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
+_PLUGIN_READABLE_NAMES = {"LinearRegression":"default","LR":"alias"}
+_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
 _PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
+_PLUGIN_OPTIONAL_SETTINGS = {}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class KNNclassifier(object):
+class LinearRegression(object):
     """
-    Classifier implementing the k-nearest neighbors vote
+    Ordinary least squares Linear Regression
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class KNNclassifier(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(KNNclassifier) \
+                            +"\n\t{0} ".format(LinearRegression) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
