@@ -1,7 +1,7 @@
-from sklearn.neighbors import KNeighborsclassification as model
+from sklearn.neighbors import KNeighborsClassifier as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"KNNclassification":"default","KNN-C":"alias"}
+_PLUGIN_READABLE_NAMES = {"KNNclassification":"default","KNN-C":"alias","KNNClassifier":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
