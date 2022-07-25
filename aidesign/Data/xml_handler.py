@@ -433,7 +433,20 @@ class XML_handler(object):
     def append_input_data(self,
                             data_name: str,
                             data_dir: str,
-                            xml_parent: ET.Element or str = "Initialiser"):
+                            xml_parent: ET.Element or str = "Initialiser",
+                            save_dir_as_relative: bool = True):
+        """Appened path to input datafile. Replaces windows backslash
+
+        :param plugin_type: string type of plugin to be loaded into module
+        :param plugin_options: dict where keys & values are options & values
+        :param xml_parent: dict OR str. 
+                            If string given, parent elem is found via search,
+                            Otherwise, plugin appeneded directly
+        :param save_dir_as_relative: bool. If True [default], attempts to 
+                            replace the library base path in the absolute
+                            filename with "./" to make it relative to library
+                            path. Recommended.
+        """
         if isinstance(xml_parent, str):
             xml_parent = self._get_element_from_name(xml_parent)
 
@@ -443,6 +456,9 @@ class XML_handler(object):
             input_data_elem = ET.SubElement(xml_parent, "inputdata")
             
         plugin_elem = ET.SubElement(input_data_elem, data_name)
+        if save_dir_as_relative:
+            data_dir = data_dir.replace(self.lib_base_path,"./")
+        data_dir = data_dir.replace("\\","/")
         plugin_elem.set('file', data_dir)
 
     def append_plugin_to_module(self,
