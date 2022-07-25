@@ -1,16 +1,16 @@
-from sklearn.gaussian_process import GaussianProcessregression as model
+from sklearn.gaussian_process import GaussianProcessRegressor as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"GPregression":"default","GPR":"alias","GaussianProcessregression":"alias"}
+_PLUGIN_READABLE_NAMES = {"GPRegressor":"default","GPR":"alias","GaussianProcessRegressor":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_restarts_optimizer": "int", "random_state": "int"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class GPregression(object):
+class GPRegressor(object):
     """
-    Gaussian process regresion
+    Gaussian process regressor
     """
 
     def __init__(self):
@@ -24,7 +24,7 @@ class GPregression(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(GPregression) \
+                            +"\n\t{0} ".format(GPRegressor) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))

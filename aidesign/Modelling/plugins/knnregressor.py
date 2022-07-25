@@ -1,14 +1,14 @@
-from sklearn.neighbors import KNeighborsregression as model
+from sklearn.neighbors import KNeighborsRegressor as model
 import numpy as np
 
-_PLUGIN_READABLE_NAMES = {"KNNregression":"default","KNN-R":"alias"}
+_PLUGIN_READABLE_NAMES = {"KNNRegressor":"default","KNN-R":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
 _PLUGIN_REQUIRED_SETTINGS = {}
 _PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
 _PLUGIN_REQUIRED_DATA = {"X","Y"}
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
 
-class KNNregression(object):
+class KNNRegressor(object):
     """
     Regression based on k-nearest neighbors
     """
@@ -24,7 +24,7 @@ class KNNregression(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(KNNregression) \
+                            +"\n\t{0} ".format(KNNRegressor) \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
