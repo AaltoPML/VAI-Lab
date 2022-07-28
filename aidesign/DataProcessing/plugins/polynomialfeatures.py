@@ -1,5 +1,5 @@
 from sklearn.preprocessing import PolynomialFeatures as PF
-import numpy as np
+from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
 import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"PolynomialFeatures":"default","polyfeat":"alias","polynomialfeatures":"alias"}
@@ -9,7 +9,7 @@ _PLUGIN_OPTIONAL_SETTINGS = {"degree": "int", "interaction_only": "bool", "inclu
 _PLUGIN_REQUIRED_DATA = {}
 _PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}
 
-class PolynomialFeatures(object):
+class PolynomialFeatures(DataProcessingPluginTemplate):
     """ 
     Generate polynomial and interaction features
     """
@@ -25,7 +25,7 @@ class PolynomialFeatures(object):
         req_check = [r for r in _PLUGIN_REQUIRED_DATA if r not in data_in.keys()]
         if len(req_check) > 0:
             raise Exception("Minimal Data Requirements not met"   \
-                            +"\n\t{0} ".format(PolynomialFeatures) \
+                            +"\n\t{0} ".format() \
                             +"requires data: {0}".format(_PLUGIN_REQUIRED_DATA)\
                             + "\n\tThe following data is missing:"\
                             + "\n\t\u2022 {}".format(",\n\t\u2022 ".join([*req_check])))
@@ -66,8 +66,8 @@ class PolynomialFeatures(object):
         return new_dict
 
     def fit(self):
-        config = self._check_numeric(self._config["options"])
-        self.proc.set_params(**config)
+        cleaned_options = self._clean_solver_options()
+        self.proc.set_params(**cleaned_options)
         self.proc.fit(self.X)
 
     def transform(self,data):
