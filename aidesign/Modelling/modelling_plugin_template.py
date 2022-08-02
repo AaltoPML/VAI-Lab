@@ -1,4 +1,4 @@
-from aidesign.utils.common_plugin_template import PluginTemplate
+from aidesign._plugin_template import PluginTemplate
 from aidesign.Data.Data_core import Data
 from abc import ABC, abstractmethod
 
