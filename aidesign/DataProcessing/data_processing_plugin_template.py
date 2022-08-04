@@ -2,7 +2,6 @@ from aidesign._plugin_template import PluginTemplate
 from aidesign.Data.Data_core import Data
 from abc import ABC, abstractmethod
 
-
 class DataProcessingPluginTemplate(PluginTemplate, ABC):
     def __init__(self, plugin_globals: dict) -> None:
         """Instantiates data containers and parses plugin-specific options

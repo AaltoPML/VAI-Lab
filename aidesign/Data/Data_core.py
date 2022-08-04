@@ -3,15 +3,16 @@ Hacky patch For testing only, normally you'd have aidesign in your
 OS's PYTHONPATH"""
 from os import path
 
-from imageio import imopen
-
 if not __package__:
     import sys 
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
+from typing import Dict
+
 from aidesign.utils.import_helper import get_lib_parent_dir
 from aidesign.Data.xml_handler import XML_handler
+
 import pandas as pd
 import numpy as np
 from copy import deepcopy
@@ -117,10 +118,10 @@ class Data(object):
         self.loaded_options = self._xml_parser.init_data_structure
         self._parse_data_options()
         
-    def keys(self):
+    def keys(self) -> Dict.keys:
         return self.data.keys()
     
-    def __getitem__(self, key:str):
+    def __getitem__(self, key:str) -> pd.core.frame.DataFrame:
         return self.data[key]
 
     def copy(self):
@@ -132,9 +133,10 @@ if __name__ == "__main__":
     d.import_data("./Data/resources/supervised_regression/1/x_train.csv")
     # print(d.data["data"])
     print(d["data"]["input"].loc[0:3])
-    dc = d.get_deepcopy()
+    dc = d.copy()
     d["data"]["input"].loc[0:3] = 9
     print(d["data"]["input"].loc[0:3])
     print(dc["data"]["input"].loc[0:3])
+    dc.keys()
     # print(dc["input"])
     # d.data_names

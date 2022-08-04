@@ -1,3 +1,10 @@
+from os import path
+
+if not __package__:
+    import sys 
+    root_mod = path.dirname(path.dirname(path.dirname(__file__)))
+    sys.path.append(root_mod)
+
 import xml.etree.ElementTree as ET
 from os import path
 from ast import literal_eval
@@ -595,7 +602,7 @@ if __name__ == "__main__":
     s.append_input_data("Y","./Data/resources/supervised_regression/1/y_train.csv")
     # print(s.root)
     # print(s.data_to_load)
-    # s.update_module_coords("Initialiser",[1,1,1])
+    s.update_module_coords("Initialiser",[1,1,1])
     # s.append_module_relationships("Initialiser",["test1","test2"],[])
     s._print_xml_config()
 

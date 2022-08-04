@@ -1,4 +1,4 @@
-from aidesign.Data.Data_core import Data
+from aidesign._types import Data
 import numpy as np
 
 class PluginTemplate:
@@ -7,6 +7,15 @@ class PluginTemplate:
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
+
+        # self._PLUGIN_READABLE_NAMES : dict
+        # self._PLUGIN_MODULE_OPTIONS: dict
+        # self._PLUGIN_REQUIRED_SETTINGS: dict
+        # self._PLUGIN_OPTIONAL_SETTINGS: dict
+        # self._PLUGIN_REQUIRED_DATA: dict
+        # self._PLUGIN_OPTIONAL_DATA: dict
+
+        
         self._parse_plugin_requirements(plugin_globals)
 
     def configure(self, config: dict):
