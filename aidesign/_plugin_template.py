@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
 from aidesign.Data.Data_core import Data
 import numpy as np
 
-class PluginTemplate(ABC):
+class PluginTemplate:
     def __init__(self,plugin_globals: dict) -> None:
         self.X = None
         self.Y = None
