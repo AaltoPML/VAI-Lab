@@ -1,5 +1,4 @@
-import builtins
-from typing import Protocol
+from typing import Protocol, KeysView
 
 
 class PluginOptions(Protocol):
@@ -24,5 +23,5 @@ class Data(Protocol):
     def append_data_column(self, col_name:str, data=None) -> None:
         ...
 
-    def keys(self):
+    def keys(self) -> KeysView:
         ...

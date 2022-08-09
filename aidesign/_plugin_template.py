@@ -8,12 +8,12 @@ class PluginTemplate:
         self.X_tst = None
         self.Y_tst = None
 
-        # self._PLUGIN_READABLE_NAMES : dict
-        # self._PLUGIN_MODULE_OPTIONS: dict
-        # self._PLUGIN_REQUIRED_SETTINGS: dict
-        # self._PLUGIN_OPTIONAL_SETTINGS: dict
-        # self._PLUGIN_REQUIRED_DATA: dict
-        # self._PLUGIN_OPTIONAL_DATA: dict
+        self._PLUGIN_READABLE_NAMES : dict
+        self._PLUGIN_MODULE_OPTIONS: dict
+        self._PLUGIN_REQUIRED_SETTINGS: dict
+        self._PLUGIN_OPTIONAL_SETTINGS: dict
+        self._PLUGIN_REQUIRED_DATA: dict
+        self._PLUGIN_OPTIONAL_DATA: dict
 
         
         self._parse_plugin_requirements(plugin_globals)
@@ -38,13 +38,6 @@ class PluginTemplate:
 
     def _parse_plugin_requirements(self, plugin_globals: dict):
         """Get all plugin options from child plugin.
-        Variables declared: 
-            self._PLUGIN_READABLE_NAMES
-            self._PLUGIN_MODULE_OPTIONS
-            self._PLUGIN_REQUIRED_SETTINGS
-            self._PLUGIN_OPTIONAL_SETTINGS
-            self._PLUGIN_REQUIRED_DATA
-            self._PLUGIN_OPTIONAL_DATA
         """
         for key in plugin_globals.keys():
             if key.startswith("_PLUG"):
