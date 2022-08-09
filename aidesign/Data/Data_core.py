@@ -8,7 +8,7 @@ if not __package__:
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
-from typing import Dict
+from typing import Dict, KeysView
 
 from aidesign.utils.import_helper import get_lib_parent_dir
 from aidesign.Data.xml_handler import XML_handler
@@ -22,7 +22,7 @@ class Data(object):
     def __init__(self) -> None:
         self._lib_base_path = get_lib_parent_dir()
         self._xml_parser = XML_handler()
-        self.data = {}
+        self.data: Dict[str,pd.core.frame.DataFrame] = {}
 
     def _import_csv(self, 
                     filename:str,
@@ -115,10 +115,10 @@ class Data(object):
 
     def load_data_settings(self, filename:str):
         self._xml_parser.load_XML(filename)
-        self.loaded_options = self._xml_parser.init_data_structure
+        self.loaded_options = self._xml_parser._get_init_data_structure()
         self._parse_data_options()
         
-    def keys(self) -> Dict.keys:
+    def keys(self) -> KeysView:
         return self.data.keys()
     
     def __getitem__(self, key:str) -> pd.core.frame.DataFrame:
