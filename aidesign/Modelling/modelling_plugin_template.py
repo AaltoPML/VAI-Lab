@@ -1,5 +1,5 @@
 from aidesign._plugin_template import PluginTemplate
-from aidesign._types import Data
+from aidesign._types import DataInterface
 from abc import ABC, abstractmethod
 
 
@@ -15,7 +15,7 @@ class ModellingPluginTemplate(PluginTemplate,ABC):
         """Implemented by parent: aidesign.utils.common_plugin_template.PluginTemplate"""
         super().configure(config)
 
-    def set_data_in(self, data_in: Data):
+    def set_data_in(self, data_in: DataInterface):
         """Implemented by parent: aidesign.utils.common_plugin_template.PluginTemplate"""
         super().set_data_in(data_in)
 

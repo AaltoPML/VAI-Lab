@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+from aidesign._import_helper import import_plugin_absolute
+from aidesign._plugin_helpers import PluginSpecs
+from aidesign.Data.xml_handler import XML_handler
+from aidesign._types import DataInterface, PluginSpecsInterface, DictT
+
 import tkinter as tk
 from tkinter.font import Font
-from aidesign.utils.import_helper import import_plugin_absolute
-from aidesign.utils.plugin_helpers import PluginSpecs
 
-from aidesign.Data.xml_handler import XML_handler
 
 class GUI(tk.Tk):
     """
@@ -28,18 +30,26 @@ class GUI(tk.Tk):
         self.startpage = False
         self.output = {}
 
-    def set_avail_plugins(self,avail_plugins):
+    def set_avail_plugins(self, avail_plugins: PluginSpecsInterface):
         self._avail_plugins = avail_plugins
 
-    def set_data_in(self,data_in):
+    def set_data_in(self, data_in: DataInterface):
         self._data_in = data_in
+
+    def set_options(self, module_config: DictT):
+        """Send configuration arguments to GUI
+
+        :param module_config: dict of settings to congfigure the plugin
+        """
+        self._module_config = module_config
+        self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
     def set_gui_as_startpage(self):
         self.startpage = True
         self._load_plugin("main")
         self.s = XML_handler()
         self.s.new_config_file()
-        
+
     def set_gui(self):
         self.startpage = True
         self._load_plugin("pipelineCanvas")
@@ -98,25 +108,19 @@ class GUI(tk.Tk):
                 print(
                     "Error: User Interface \"{0}\" not recognised. \
                     \nAvailable methods are: \
-                    \n  - {1}"\
+                    \n  - {1}"
                     .format(ui, ",\n  - ".join(
                         [i for i in self._avail_plugins.available_plugin_names])))
                 exit(1)
 
-    def _append_to_output(self, key:str, value:any):
+    def _append_to_output(self, key: str, value: any):
         self.output[key] = value
 
-    def set_options(self, module_config: dict):
-        """Send configuration arguments to GUI
 
-        :param module_config: dict of settings to congfigure the plugin
-        """
-        self._module_config = module_config
-        self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
     def _show_frame(self, page_name):
         '''Show a frame for the given page name'''
-        if isinstance(page_name,dict):
+        if isinstance(page_name, dict):
             page_name = page_name["_PLUGIN_CLASS_NAME"]
         frame = self.frames[page_name]
         frame.tkraise()
@@ -124,7 +128,7 @@ class GUI(tk.Tk):
     def _on_closing(self):
         self.closed = True
         self.destroy()
-        
+
     def launch(self):
         """Runs UserInterface Plugin. 
         If multiple frames exist, they are stacked
@@ -134,8 +138,6 @@ class GUI(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        
-        
         self.frames = {}
         for F in self._desired_ui_types:
             page_name = F.__name__

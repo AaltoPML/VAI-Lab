@@ -7,7 +7,7 @@ import pandas as pd
 from tkinter import messagebox
 
 from aidesign.Data.xml_handler import XML_handler
-from aidesign.utils.plugin_helpers import PluginSpecs
+from aidesign._plugin_helpers import PluginSpecs
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas":"default","pluginCanvas":"alias","plugin canvas":"alias"}
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,

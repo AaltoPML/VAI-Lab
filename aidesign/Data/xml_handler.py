@@ -6,7 +6,7 @@ if not __package__:
     sys.path.append(root_mod)
 
 
-from aidesign.utils.import_helper import get_lib_parent_dir
+from aidesign._import_helper import get_lib_parent_dir
 
 from typing import Dict, Union, Optional
 from os import path

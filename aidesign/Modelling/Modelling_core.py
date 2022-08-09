@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from aidesign.utils.import_helper import import_plugin_absolute
+from aidesign._import_helper import import_plugin_absolute
 class Modelling(object):
     def __init__(self):
         self.output_data = None

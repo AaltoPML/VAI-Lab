@@ -1,5 +1,7 @@
-from typing import Protocol, KeysView
+from typing import Protocol, KeysView, Dict, TypeVar
 
+DataInterfaceT = TypeVar("DataInterfaceT",bound="DataInterface")
+DictT = Dict[str,Dict]
 
 class PluginOptions(Protocol):
     _PLUGIN_READABLE_NAMES: dict
@@ -9,8 +11,7 @@ class PluginOptions(Protocol):
     _PLUGIN_REQUIRED_DATA: dict
     _PLUGIN_OPTIONAL_DATA: dict
 
-
-class Data(Protocol):
+class DataInterface(Protocol):
     def __init__(self) -> None:
         ...
 
@@ -20,8 +21,81 @@ class Data(Protocol):
     def import_data_from_config(self, config: dict) -> None:
         ...
 
-    def append_data_column(self, col_name:str, data=None) -> None:
+    def append_data_column(self, col_name: str, data=None) -> None:
         ...
 
     def keys(self) -> KeysView:
+        ...
+
+    def copy(self: DataInterfaceT) -> DataInterfaceT:
+        ...
+
+
+
+class PluginInterface(Protocol):
+    def configure(self, config: dict) -> None:
+        ...
+
+    def set_data_in(self, data_in: DataInterface) -> None:
+        ...
+
+class DataProcessingPluginInterface(PluginInterface,Protocol):
+    def fit(self):
+        ...
+
+    def transform(self, data:DataInterfaceT) -> DataInterface:
+        ...
+
+class PluginSpecsInterface(Protocol):
+    @property
+    def names(self):
+        ...
+
+    @property
+    def class_names(self):
+        ...
+
+    @property
+    def module_options(self):
+        ...
+
+    @property
+    def required_settings(self):
+        ...
+
+    @property
+    def class_descriptions(self):
+        ...
+
+    @property
+    def optional_settings(self):
+        ...
+
+    @property
+    def available_plugin_names(self):
+        ...
+
+    def find_from_class_name(self, value):
+        ...
+
+    def find_from_readable_name(self, value):
+        ...
+
+    def print(self, value):
+        ...
+
+class ModuleInterface(Protocol):
+    def set_avail_plugins(self,avail_plugins:PluginSpecsInterface):
+        ...
+
+    def set_data_in(self, data_in: DataInterface):
+        ...
+
+    def set_options(self, module_config: DictT):
+        ...
+
+    def launch(self):
+        ...
+
+    def get_result(self) -> DataInterface:
         ...

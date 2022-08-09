@@ -1,5 +1,7 @@
-from sklearn.preprocessing import Normalizer as model
 from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
+from aidesign._types import DataInterface
+
+from sklearn.preprocessing import Normalizer as model
 import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"Normalizer":"default","Norm":"alias","normalizer":"alias"}
@@ -39,7 +41,7 @@ class Normalizer(DataProcessingPluginTemplate):
         self.proc.set_params(**cleaned_options)
         self.proc.fit(self.X)
 
-    def transform(self,data):
+    def transform(self, data:DataInterface) -> DataInterface:
         data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
         if self.X_tst is not None:
             data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
