@@ -4,7 +4,7 @@ OS's PYTHONPATH"""
 from os import path
 
 if not __package__:
-    import sys 
+    import sys
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
@@ -18,16 +18,16 @@ import numpy as np
 from copy import deepcopy
 
 
-class Data(object):
+class Data:
     def __init__(self) -> None:
         self._lib_base_path = get_lib_parent_dir()
         self._xml_parser = XML_handler()
-        self.data: Dict[str,pd.core.frame.DataFrame] = {}
+        self.data: Dict[str, pd.core.frame.DataFrame] = {}
 
-    def _import_csv(self, 
-                    filename:str,
-                    data_name:str,
-                    strip_whitespace:bool=True):
+    def _import_csv(self,
+                    filename: str,
+                    data_name: str,
+                    strip_whitespace: bool = True):
         """import data directly into DataFrame
 
         :param filename: str, filename of csv file to be loaded
@@ -36,14 +36,15 @@ class Data(object):
         TODO: pandas has a lot of inbuilt read functions, including excel - implement
         """
         self.data[data_name] = pd.read_csv(filename,
-                            delimiter=',',
-                            quotechar='|')
+                                           delimiter=',',
+                                           quotechar='|')
         if strip_whitespace:
-            self.data[data_name].columns = [c.strip() for c in self.data[data_name].columns]
+            self.data[data_name].columns = [c.strip()
+                                            for c in self.data[data_name].columns]
 
-    def _import_png(self, 
-                    filename:str,
-                    data_name:str):
+    def _import_png(self,
+                    filename: str,
+                    data_name: str):
         """Loads png into PIL.Image class. Adds instance to self.data
         The image is stored as a function (not a matrix - can be added if needed)
 
@@ -53,15 +54,14 @@ class Data(object):
         from PIL import Image
         self.data[data_name][filename] = Image.open(filename)
 
-
     def _import_dir(self,
-                        folder_dir:str,
-                        data_name:str = "data"):
+                    folder_dir: str,
+                    data_name: str = "data"):
         from glob import glob
-        files =np.sort(glob(folder_dir + "*"))
+        files = np.sort(glob(folder_dir + "*"))
         self.data[data_name] = {}
         for f in files:
-            self.import_data(f,data_name)
+            self.import_data(f, data_name)
 
     def _rel_to_abs(self, filename: str):
         """Checks if path is relative or absolute
@@ -69,12 +69,12 @@ class Data(object):
         If relative, converts path to absolute by appending to base directory
         """
         if filename[0] == ".":
-            filename = path.join(self._lib_base_path,filename)
+            filename = path.join(self._lib_base_path, filename)
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             filename = filename
         return filename
 
-    def _get_ext(self, path_dir:str):
+    def _get_ext(self, path_dir: str):
         """Extracts extension from path_dir, or check if is dir
 
         :param path_dir: str, path_dir to be checked
@@ -87,45 +87,47 @@ class Data(object):
             return path_dir.split(".")[-1]
 
     def import_data(self,
-                        filename:str,
-                        data_name:str = "data"):
+                    filename: str,
+                    data_name: str = "data"):
         """Import file directly into DataFrame
 
         Translates relative files to absolute before parsing - not ideal
 
         Filename to parsing method based on extension name.
-        
+
         :param filename: str, filename of file to be loaded
         :param data_name: str, name of class variable data will be loaded to
         """
-        filename = self._rel_to_abs(filename).replace("\\","/").replace("/",path.sep)
+        filename = self._rel_to_abs(filename).replace(
+            "\\", "/").replace("/", path.sep)
         ext = self._get_ext(filename)
-        getattr(self,"_import_{0}".format(ext))(filename,data_name)
+        getattr(self, "_import_{0}".format(ext))(filename, data_name)
 
-    def import_data_from_config(self,config:dict):
+    def import_data_from_config(self, config: dict):
         for c in config.keys():
-            self.import_data(config[c],c)
+            self.import_data(config[c], c)
 
-    def append_data_column(self, col_name:str, data=None):
+    def append_data_column(self, col_name: str, data=None):
         self.data[col_name] = data
 
     def _parse_data_options(self):
         for s in self.loaded_options["data_fields"]:
             self.append_data_column(s)
 
-    def load_data_settings(self, filename:str):
+    def load_data_settings(self, filename: str):
         self._xml_parser.load_XML(filename)
         self.loaded_options = self._xml_parser._get_init_data_structure()
         self._parse_data_options()
-        
+
     def keys(self) -> KeysView:
         return self.data.keys()
-    
-    def __getitem__(self, key:str) -> pd.core.frame.DataFrame:
+
+    def __getitem__(self, key: str) -> pd.core.frame.DataFrame:
         return self.data[key]
 
     def copy(self):
         return deepcopy(self)
+
 
 if __name__ == "__main__":
     d = Data()

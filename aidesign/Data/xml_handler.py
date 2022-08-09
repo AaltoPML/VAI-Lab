@@ -1,20 +1,20 @@
 from os import path
 
 if not __package__:
-    import sys 
+    import sys
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
-from typing import Dict, Union, Optional
 
 from aidesign.utils.import_helper import get_lib_parent_dir
 
+from typing import Dict, Union, Optional
 from os import path
 from ast import literal_eval
 import xml.etree.ElementTree as ET
 
 
-class XML_handler(object):
+class XML_handler:
     def __init__(self, filename: str = None):
         """Loads XML file and parses into nested dictionaries
         This module is used as the backbone for all future modules.
@@ -23,7 +23,7 @@ class XML_handler(object):
         :param filename [optional]: filename from which to load XML
         """
         self.lib_base_path = get_lib_parent_dir()
-        self.loaded_modules: Dict[str,Dict] = {}
+        self.loaded_modules: Dict[str, Dict] = {}
 
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
@@ -74,13 +74,13 @@ class XML_handler(object):
 
     def append_initialiser(self):
         self.append_pipeline_module("Initialiser",
-                            "Initialiser",
-                            None,
-                            None,
-                            [],
-                            [],
-                            None,
-                            [0,0,0])
+                                    "Initialiser",
+                                    None,
+                                    None,
+                                    [],
+                                    [],
+                                    None,
+                                    [0, 0, 0])
 
     def new_config_file(self, filename: str = None):
         """Constructs new XML file with minimal format"""
@@ -182,7 +182,7 @@ class XML_handler(object):
                      if "name" in element.attrib else "input_data")
         parent[data_name] = {"name": data_name,
                              "class": "data",
-                             "to_load":{}}
+                             "to_load": {}}
         for child in element:
             assert "file" in child.attrib \
                 or "folder" in child.attrib,\
@@ -285,7 +285,6 @@ class XML_handler(object):
             self._parse_XML()
         self._print_pretty(self.loaded_modules)
 
-
     def write_to_XML(self):
         """Formats XML Tree correctly, then writes to filename
         TODO: add overwrite check and alternate filename option
@@ -321,7 +320,7 @@ class XML_handler(object):
                                      parent: dict,
                                      key: str,
                                      val,
-                                     out = None):
+                                     out=None):
         """Seach nested dict for a given key-value pair
 
         :param parent: dict to be searched
@@ -342,7 +341,7 @@ class XML_handler(object):
                 self._find_dict_with_key_val_pair(parent[k], key, val, out)
         return out
 
-    def _get_element_from_name(self, name: Union[str,Optional[str]]) -> ET.Element:
+    def _get_element_from_name(self, name: Union[str, Optional[str]]) -> ET.Element:
         """Find a module name and return its parent tags"""
         if name == None:
             return self.root
@@ -401,17 +400,17 @@ class XML_handler(object):
         return elem
 
     def append_module_relationships(self,
-                        module_name: str,
-                        parents: list,
-                        children: list):
+                                    module_name: str,
+                                    parents: list,
+                                    children: list):
         elem = self._get_element_from_name(module_name)
-        self._add_relationships(elem,parents,children)
+        self._add_relationships(elem, parents, children)
 
     def update_module_coords(self,
-                    module_name: str,
-                    coords: list = None):
+                             module_name: str,
+                             coords: list = None):
         elem = self._get_element_from_name(module_name)
-        self._add_coords(elem,coords)
+        self._add_coords(elem, coords)
 
     def _add_coords(self,
                     elem: ET.Element,
@@ -443,10 +442,10 @@ class XML_handler(object):
                 self._add_plugin_options(plugin_elem, options[key])
 
     def append_input_data(self,
-                            data_name: str,
-                            data_dir: str,
-                            xml_parent: Union[ET.Element, str] = "Initialiser",
-                            save_dir_as_relative: bool = True):
+                          data_name: str,
+                          data_dir: str,
+                          xml_parent: Union[ET.Element, str] = "Initialiser",
+                          save_dir_as_relative: bool = True):
         """Appened path to input datafile. Replaces windows backslash
 
         :param plugin_type: string type of plugin to be loaded into module
@@ -466,18 +465,18 @@ class XML_handler(object):
 
         if input_data_elem is None:
             input_data_elem = ET.SubElement(xml_parent, "inputdata")
-            
+
         plugin_elem = ET.SubElement(input_data_elem, data_name)
         if save_dir_as_relative:
-            data_dir = data_dir.replace(self.lib_base_path,"./")
-        data_dir = data_dir.replace("\\","/")
+            data_dir = data_dir.replace(self.lib_base_path, "./")
+        data_dir = data_dir.replace("\\", "/")
         plugin_elem.set('file', data_dir)
 
     def append_plugin_to_module(self,
                                 plugin_type: str,
                                 plugin_options: dict,
                                 xml_parent: Union[ET.Element, str],
-                                overwrite_existing: Union[bool,int] = False
+                                overwrite_existing: Union[bool, int] = False
                                 ):
         """Appened plugin as subelement to existing module element
 
@@ -522,17 +521,18 @@ class XML_handler(object):
         :param xml_parent_element_name: str containing name of parent Element for new module
         :param coords [optional]: list of coordinates for UserFeedback canvas
         """
-        xml_parent_element: ET.Element = self._get_element_from_name(xml_parent_element_name)
+        xml_parent_element: ET.Element = self._get_element_from_name(
+            xml_parent_element_name)
 
         new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
 
         if plugin_type != None:
             self.append_plugin_to_module(plugin_type,
-                                        plugin_options,
-                                        new_mod,
-                                        0
-                                        )
+                                         plugin_options,
+                                         new_mod,
+                                         0
+                                         )
 
         if xml_parent_element.tag == "loop":
             parents.append(xml_parent_element.attrib["name"])
@@ -561,7 +561,8 @@ class XML_handler(object):
         :param xml_parent_element_name: str containing name of parent Element for new module
         :param coords [optional]: list of coordinates for UserFeedback canvas
         """
-        xml_parent_element: ET.Element = self._get_element_from_name(xml_parent_element_name)
+        xml_parent_element: ET.Element = self._get_element_from_name(
+            xml_parent_element_name)
 
         new_loop = ET.Element("loop")
         new_loop.set('type', loop_type)
@@ -579,19 +580,19 @@ class XML_handler(object):
 
     def _get_init_data_structure(self):
         data_struct = self._find_dict_with_key_val_pair(
-                            self.loaded_modules, "class", "data")
+            self.loaded_modules, "class", "data")
         if len(data_struct) == 1:
             return data_struct[0]
         elif len(data_struct) > 1:
             print("Multiple data options specified, please check XML")
             return data_struct
-        else: 
+        else:
             return data_struct
 
     @property
     def data_to_load(self):
         return(self._get_init_data_structure()["to_load"])
-        
+
 
 # Use case examples:
 if __name__ == "__main__":
