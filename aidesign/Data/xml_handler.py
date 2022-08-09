@@ -5,10 +5,13 @@ if not __package__:
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
-import xml.etree.ElementTree as ET
+from typing import Dict, Union, Optional
+
+from aidesign.utils.import_helper import get_lib_parent_dir
+
 from os import path
 from ast import literal_eval
-from aidesign.utils.import_helper import get_lib_parent_dir
+import xml.etree.ElementTree as ET
 
 
 class XML_handler(object):
@@ -20,7 +23,7 @@ class XML_handler(object):
         :param filename [optional]: filename from which to load XML
         """
         self.lib_base_path = get_lib_parent_dir()
-        self.loaded_modules = {}
+        self.loaded_modules: Dict[str,Dict] = {}
 
         """valid_tags lists the available XML tags and their function
         TODO: populate the modules in this list automatically
@@ -147,7 +150,7 @@ class XML_handler(object):
         parent["plugin"]["plugin_name"] = element.attrib["type"]
         parent["plugin"]["options"] = {}
         for child in element:
-            if child.text != None:
+            if child.text is not None:
                 val = self._parse_text_to_list(child)
                 val = (val[0] if len(val) == 1 else val)
                 parent["plugin"]["options"][child.tag] = val
@@ -245,7 +248,7 @@ class XML_handler(object):
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
-        if element.text != None:
+        if element.text is not None:
             parent[element.tag] = self._parse_text_to_list(element)
             if len(parent[element.tag]) == 1:
                 parent[element.tag] = parent[element.tag][0]
@@ -256,7 +259,9 @@ class XML_handler(object):
         :param elem: xml.etree.ElementTree.Element to be parsed
         :returns out: list containing parsed text data
         """
-        new = element.text.strip().replace(" ", "")
+        if element.text is not None:
+            new = element.text.strip().replace(" ", "")
+
         out = new.split("\n")
         raw_elem_text = str()
         for idx in range(0, len(out)):
@@ -337,7 +342,7 @@ class XML_handler(object):
                 self._find_dict_with_key_val_pair(parent[k], key, val, out)
         return out
 
-    def _get_element_from_name(self, name: str):
+    def _get_element_from_name(self, name: Union[str,Optional[str]]) -> ET.Element:
         """Find a module name and return its parent tags"""
         if name == None:
             return self.root
@@ -440,7 +445,7 @@ class XML_handler(object):
     def append_input_data(self,
                             data_name: str,
                             data_dir: str,
-                            xml_parent: ET.Element or str = "Initialiser",
+                            xml_parent: Union[ET.Element, str] = "Initialiser",
                             save_dir_as_relative: bool = True):
         """Appened path to input datafile. Replaces windows backslash
 
@@ -471,8 +476,8 @@ class XML_handler(object):
     def append_plugin_to_module(self,
                                 plugin_type: str,
                                 plugin_options: dict,
-                                xml_parent: ET.Element or str,
-                                overwrite_existing: bool = False
+                                xml_parent: Union[ET.Element, str],
+                                overwrite_existing: Union[bool,int] = False
                                 ):
         """Appened plugin as subelement to existing module element
 
@@ -503,7 +508,7 @@ class XML_handler(object):
                                plugin_options: dict,
                                parents: list,
                                children: list,
-                               xml_parent_element: str,
+                               xml_parent_element_name: str,
                                coords: list = None
                                ):
         """Append new pipeline module to existing XML elementTree to be written later
@@ -514,10 +519,10 @@ class XML_handler(object):
         :param plugin_options: dict where keys & values are options & values
         :param parents: list of parent names for this module (can be empty)
         :param children: list of child names for this module (can be empty)
-        :param xml_parent_element: str containing name of parent Element for new module
+        :param xml_parent_element_name: str containing name of parent Element for new module
         :param coords [optional]: list of coordinates for UserFeedback canvas
         """
-        xml_parent_element = self._get_element_from_name(xml_parent_element)
+        xml_parent_element: ET.Element = self._get_element_from_name(xml_parent_element_name)
 
         new_mod = ET.Element(module_type.replace(" ", ""))
         new_mod.set('name', module_name)
@@ -543,7 +548,7 @@ class XML_handler(object):
                              loop_name: str,
                              parents: list,
                              children: list,
-                             xml_parent_element: str = None,
+                             xml_parent_element_name: str = None,
                              coords: list = None
                              ):
         """Append new pipeline module to existing XML file
@@ -553,10 +558,10 @@ class XML_handler(object):
         :param plugin_type: string type of plugin to be loaded into module
         :param parents: list of parent names for this module (can be empty)
         :param children: list of child names for this module (can be empty)
-        :param xml_parent_element: str containing name of parent Element for new module
+        :param xml_parent_element_name: str containing name of parent Element for new module
         :param coords [optional]: list of coordinates for UserFeedback canvas
         """
-        xml_parent_element = self._get_element_from_name(xml_parent_element)
+        xml_parent_element: ET.Element = self._get_element_from_name(xml_parent_element_name)
 
         new_loop = ET.Element("loop")
         new_loop.set('type', loop_type)
@@ -595,14 +600,14 @@ if __name__ == "__main__":
     s = XML_handler()
     # s.new_config_file("./resources/example_config.xml")
     # s._get_all_elements_with_tag("loop")
-    # s.load_XML("./resources/example_config.xml")
+    s.load_XML("./Data/resources/xml_files/regerssion_test.xml")
     # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
-    s.new_config_file()
-    s.append_input_data("X","./Data/resources/supervised_regression/1/y_train.csv")
-    s.append_input_data("Y","./Data/resources/supervised_regression/1/y_train.csv")
+    # s.new_config_file()
+    # s.append_input_data("X","./Data/resources/supervised_regression/1/y_train.csv")
+    # s.append_input_data("Y","./Data/resources/supervised_regression/1/y_train.csv")
     # print(s.root)
     # print(s.data_to_load)
-    s.update_module_coords("Initialiser",[1,1,1])
+    # s.update_module_coords("Initialiser",[1,1,1])
     # s.append_module_relationships("Initialiser",["test1","test2"],[])
     s._print_xml_config()
 
