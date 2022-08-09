@@ -19,16 +19,7 @@
         <coordinates>
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="Regression">
-            <power>
-                 2
-            </power>
-            <train_name>
-                 x
-            </train_name>
-            <target_name>
-                 c
-            </target_name>
+        <plugin type="LinearRegression">
         </plugin>
     </Modelling>
     <Output name="Output">
