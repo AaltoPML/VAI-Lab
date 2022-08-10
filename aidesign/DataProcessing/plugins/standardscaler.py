@@ -2,12 +2,14 @@ from sklearn.preprocessing import StandardScaler as model
 from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
 import pandas as pd
 
-_PLUGIN_READABLE_NAMES = {"StandardScaler":"default","standardscaler":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "scaler"}
-_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
-_PLUGIN_OPTIONAL_SETTINGS = {"with_mean": "bool"}
-_PLUGIN_REQUIRED_DATA = {}
-_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {
+    "StandardScaler": "default", "standardscaler": "alias"}     # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "scaler"}                     # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}                     # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"with_mean": "bool"}               # type:ignore
+_PLUGIN_REQUIRED_DATA = {}                                      # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X", "Y", "X_tst", 'Y_tst'}            # type:ignore
+
 
 class StandardScaler(DataProcessingPluginTemplate):
     """
@@ -39,8 +41,9 @@ class StandardScaler(DataProcessingPluginTemplate):
         self.proc.set_params(**cleaned_options)
         self.proc.fit(self.X)
 
-    def transform(self,data):
+    def transform(self, data):
         data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
         if self.X_tst is not None:
-            data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
+            data.append_data_column("X_test", pd.DataFrame(
+                self.proc.transform(self.X_tst)))
         return data

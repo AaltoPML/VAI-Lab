@@ -2,12 +2,12 @@ from sklearn.preprocessing import LabelEncoder as model
 from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
 import pandas as pd
 
-_PLUGIN_READABLE_NAMES = {"LabelEncoder":"default","LE":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}
-_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}
-_PLUGIN_OPTIONAL_SETTINGS = {}
-_PLUGIN_REQUIRED_DATA = {}
-_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"LabelEncoder":"default","LE":"alias"}    # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}                        # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}                         # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                                      # type:ignore
+_PLUGIN_REQUIRED_DATA = {}                                          # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}                  # type:ignore
 
 class LabelEncoder(DataProcessingPluginTemplate):
     """
