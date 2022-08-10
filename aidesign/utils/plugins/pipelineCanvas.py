@@ -51,6 +51,7 @@ class pipelineCanvas(tk.Frame):
                                 height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
+        self.m: int
         self.w, self.h = 100, 50
         self.cr = 4
         """
