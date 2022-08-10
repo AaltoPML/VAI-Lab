@@ -1,4 +1,5 @@
 from aidesign.UserInteraction.User_Interaction_template import UI
+from aidesign._types import DictT
 
 import os
 import numpy as np
@@ -21,7 +22,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                                              
 class ManualInput(tk.Frame, UI):
     """Method of user interaction for binary or classification data"""
 
-    def __init__(self, parent, controller, config: dict):
+    def __init__(self, parent, controller, config: DictT):
         self.parent = parent
         super().__init__(parent, bg=self.parent['bg'])
         self.controller = controller
@@ -32,8 +33,8 @@ class ManualInput(tk.Frame, UI):
 
         self._class_list = None
         pixels = 550
-        path = os.path.join(self.dirpath, 'resources',
-                            'example_radiography_images')
+        path = os.path.join(self.dirpath, 'resources','image_classification',
+                            'training_images')
         self.N = len(os.listdir(path))
 
         self.image_list = []
@@ -70,7 +71,8 @@ class ManualInput(tk.Frame, UI):
 
         tk.Button(
             frame5, text="Done",
-            fg='white', bg=self.parent['bg'], height=3, width=20,
+            fg='white', bg=self.parent['bg'],
+            height=3, width=20,
             command=self.check_quit).grid(column=4, row=19, sticky="news", pady=10)
         self.config = config
         self.save_path = ''
