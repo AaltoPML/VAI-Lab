@@ -135,11 +135,12 @@ class pluginCanvas(tk.Frame):
         """
         self.selected = self.canvas.find_overlapping(
             x-5, y-5, x+5, y+5)
+        self.canvas_selected: int
         if self.selected:
             if len(self.selected) > 2:
-                self.canvas.selected = self.selected[-2]
+                self.canvas_selected = self.selected[-2]
             else:
-                self.canvas.selected = self.selected[-1]
+                self.canvas_selected = self.selected[-1]
 
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None') and \
@@ -157,10 +158,10 @@ class pluginCanvas(tk.Frame):
         else:
             self.canvas.itemconfig('p'+str(self.m), fill=self.bg)
 
-        if len(self.canvas.gettags(self.canvas.selected)) > 0:
-            if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
-                    not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
-                self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
+        if len(self.canvas.gettags(self.canvas_selected)) > 0:
+            if not (len(self.canvas.gettags(self.canvas_selected)[0].split('-')) > 1) and\
+                    not (self.canvas.gettags(self.canvas_selected)[0].split('-')[0] == 'loop'):
+                self.m = int(self.canvas.gettags(self.canvas_selected)[0][1:])
             if self.m > 1:
                 if self.m not in self.id_done and self.m > 1:
                     self.canvas.itemconfig('p'+str(self.m), fill='#dbaa21')
@@ -169,28 +170,7 @@ class pluginCanvas(tk.Frame):
 
                 self.display_buttons()
                 module_number = self.id_mod.index(self.m)
-                if hasattr(self, 'button_forw'):
-                    if module_number == len(self.id_mod)-1:
-                        self.button_forw.config(text='Finish', bg=self.bg,
-                                                font=self.controller.pages_font,
-                                                fg='white', height=3, width=15,
-                                                command=self.finnish, state=tk.NORMAL, image='')
-                    else:
-                        pCoord = self.canvas.coords(
-                            'p'+str(self.id_mod[module_number+1]))
-                        self.button_forw.config(image=self.forw_img, bg=self.bg,
-                                                command=lambda: self.select(
-                                                    pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
-                    if module_number < 3:
-                        self.button_back.config(image=self.back_img, bg=self.bg,
-                                                state=tk.DISABLED, text='')
-                    else:
-                        mCoord = self.canvas.coords(
-                            'p'+str(self.id_mod[module_number-1]))
-                        self.button_back.config(image=self.back_img, bg=self.bg,
-                                                command=lambda: self.select(
-                                                    mCoord[0], mCoord[1]), text='', state=tk.NORMAL)
-                else:
+                if not hasattr(self, 'button_forw'):
                     if module_number == len(self.id_mod)-1:
                         self.button_forw = tk.Button(
                             self.frame4, text='Finish', bg=self.bg,
@@ -219,6 +199,27 @@ class pluginCanvas(tk.Frame):
                                 mCoord[0], mCoord[1]), state=tk.NORMAL)
                     self.button_back.grid(
                         column=0, row=0, sticky="news", pady=(0, 10))
+                else:
+                    if module_number == len(self.id_mod)-1:
+                        self.button_forw.config(text='Finish', bg=self.bg,
+                                                font=self.controller.pages_font,
+                                                fg='white', height=3, width=15,
+                                                command=self.finnish, state=tk.NORMAL, image='')
+                    else:
+                        pCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[module_number+1]))
+                        self.button_forw.config(image=self.forw_img, bg=self.bg,
+                                                command=lambda: self.select(
+                                                    pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
+                    if module_number < 3:
+                        self.button_back.config(image=self.back_img, bg=self.bg,
+                                                state=tk.DISABLED, text='')
+                    else:
+                        mCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[module_number-1]))
+                        self.button_back.config(image=self.back_img, bg=self.bg,
+                                                command=lambda: self.select(
+                                                    mCoord[0], mCoord[1]), text='', state=tk.NORMAL)
             else:  # If user clicks on Initialiser or Output
                 self.my_label.config(text='')
                 for widget in self.allWeHearIs:
@@ -550,7 +551,7 @@ class pluginCanvas(tk.Frame):
                 fill='black',
                 tags=tag + ('r'+str(self.modules),))
 
-        self.canvas.startxy.append((x, y))
+        self.canvas_startxy.append((x, y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
         self.module_list.append(boxName)
@@ -706,7 +707,7 @@ class pluginCanvas(tk.Frame):
         if hasattr(self, 'newWindow') and (self.newWindow != None):
             self.newWindow.destroy()
 
-        self.canvas.startxy = []
+        self.canvas_startxy = []
         self.out_data = pd.DataFrame()
         self.connections = {}
         self.modules = 0
@@ -813,8 +814,3 @@ class EntryWithPlaceholder(tk.Entry):
     def foc_out(self, *args):
         if not self.get():
             self.put_placeholder()
-
-
-if __name__ == "__main__":
-    app = pluginCanvas()
-    app.mainloop()

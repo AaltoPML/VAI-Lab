@@ -1,14 +1,15 @@
-# Import the required libraries
-import tkinter as tk
-from PIL import Image, ImageTk
+from aidesign.Data.xml_handler import XML_handler
+from aidesign._plugin_helpers import PluginSpecs
+
 import os
 import numpy as np
 import pandas as pd
-from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
-from tkinter import messagebox
+from PIL import Image, ImageTk
 
-from aidesign.Data.xml_handler import XML_handler
-from aidesign._plugin_helpers import PluginSpecs
+import tkinter as tk
+from tkinter import messagebox
+from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
+
 
 _PLUGIN_READABLE_NAMES = {"pipeline_canvas": "default",
                           "pipelineCanvas": "alias",
@@ -95,9 +96,9 @@ class pipelineCanvas(tk.Frame):
             x-5, y-5, x+5, y+5)
         if self.selected:
             if len(self.selected) > 2:
-                self.canvas.selected = self.selected[-2]
+                self.canvas_selected = self.selected[-2]
             else:
-                self.canvas.selected = self.selected[-1]
+                self.canvas_selected = self.selected[-1]
 
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None') and \
@@ -116,10 +117,10 @@ class pipelineCanvas(tk.Frame):
         else:
             self.canvas.itemconfig('p'+str(self.m), fill=self.bg)
 
-        if len(self.canvas.gettags(self.canvas.selected)) > 0:
-            if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
-                    not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
-                self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
+        if len(self.canvas.gettags(self.canvas_selected)) > 0:
+            if not (len(self.canvas.gettags(self.canvas_selected)[0].split('-')) > 1) and\
+                    not (self.canvas.gettags(self.canvas_selected)[0].split('-')[0] == 'loop'):
+                self.m = int(self.canvas.gettags(self.canvas_selected)[0][1:])
             if self.m > 1:
                 if self.m not in self.id_done and self.m > 1:
                     self.canvas.itemconfig('p'+str(self.m), fill='#dbaa21')
@@ -444,7 +445,7 @@ class pipelineCanvas(tk.Frame):
                 fill='black',
                 tags=tag + ('r'+str(self.modules),))
 
-        self.canvas.startxy.append((x, y))
+        self.canvas_startxy.append((x, y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
         self.module_list.append(boxName)
@@ -576,7 +577,7 @@ class pipelineCanvas(tk.Frame):
         if hasattr(self, 'newWindow') and (self.newWindow != None):
             self.newWindow.destroy()
 
-        self.canvas.startxy = []
+        self.canvas_startxy = []
         self.out_data = pd.DataFrame()
         self.connections = {}
         self.modules = 0
@@ -681,8 +682,3 @@ class EntryWithPlaceholder(tk.Entry):
     def foc_out(self, *args):
         if not self.get():
             self.put_placeholder()
-
-
-if __name__ == "__main__":
-    app = pluginCanvas()
-    app.mainloop()

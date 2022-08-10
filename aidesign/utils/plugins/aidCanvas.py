@@ -1,8 +1,10 @@
 from aidesign.Data.xml_handler import XML_handler
+from aidesign._types import DictT
 
 import os
 import numpy as np
 import pandas as pd
+from typing import List,Tuple
 
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -63,12 +65,12 @@ class aidCanvas(tk.Frame):
         #     height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
-        self.canvas.startxy = []
+        self.canvas_startxy: List[Tuple] = []
         self.out_data = pd.DataFrame()
-        self.connections = {}
+        self.connections: DictT = {}
         self.modules = 0
-        self.module_list = []
-        self.module_names = []
+        self.module_list: List[str] = []
+        self.module_names: List[str] = []
 
         # Create module
         self.w, self.h = 100, 50
@@ -83,7 +85,7 @@ class aidCanvas(tk.Frame):
         self.canvas.bind('<Button-1>', self.select)
         self.l = 0  # number of loops
         self.drawLoop = False
-        self.loops = []
+        self.loops: List[DictT] = []
 
         # self.canvas.bind("<ButtonPress-1>", self.on_button_press)
         self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
@@ -282,7 +284,7 @@ class aidCanvas(tk.Frame):
                 self.canvas.selected = self.selected[-2]
             else:
                 self.canvas.selected = self.selected[-1]
-            # self.canvas.startxy = (event.x, event.y)
+            # self.canvas_startxy = (event.x, event.y)
         else:
             self.canvas.selected = None
             # save mouse drag start position
@@ -342,8 +344,8 @@ class aidCanvas(tk.Frame):
             self.select(event)
 
             self.m = int(self.canvas.gettags("current")[0][1:])
-            dx = event.x - self.canvas.startxy[self.m][0]
-            dy = event.y - self.canvas.startxy[self.m][1]
+            dx = event.x - self.canvas_startxy[self.m][0]
+            dy = event.y - self.canvas_startxy[self.m][1]
             # if self.isLoop:
             # self.canvas.move('loop-'+str(self.m), dx, dy)
             # else:
@@ -378,7 +380,7 @@ class aidCanvas(tk.Frame):
                                         xycoord_o[0] + self.cr,
                                         xycoord_o[1] + self.cr))
             # Update module location
-            self.canvas.startxy[self.m] = (event.x, event.y)
+            self.canvas_startxy[self.m] = (event.x, event.y)
 
     def module_out(self, name):
         """ Updates the output DataFrame.
@@ -477,7 +479,7 @@ class aidCanvas(tk.Frame):
                 tags=tag + ('r'+str(self.modules),))
             self.canvas.tag_bind('r'+str(self.modules),
                                  "<Button-1>", self.join_modules)
-        self.canvas.startxy.append((x,
+        self.canvas_startxy.append((x,
                                     y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
@@ -680,7 +682,7 @@ class aidCanvas(tk.Frame):
             # self.controller.s.new_config_file(self.save_path.name)
 
             self.controller.s.update_module_coords(
-                self.module_list[0], [self.canvas.startxy[0], 0, self.connections[0]])
+                self.module_list[0], [self.canvas_startxy[0], 0, self.connections[0]])
             self.controller.s.append_module_relationships(
                 self.module_list[0], list(mn[values[:, 0]]), list(mn[values[0, :]]))
             self.controller.s.filename = self.save_path.name
@@ -724,7 +726,7 @@ class aidCanvas(tk.Frame):
                                                              list(
                                                                  mn[values[i, :]]),
                                                              xml_parent,
-                                                             [self.canvas.startxy[i], i, self.connections[i]])
+                                                             [self.canvas_startxy[i], i, self.connections[i]])
 
             self.controller.s.append_pipeline_module(self.module_list[1],  # Out
                                                      mn[1],
@@ -733,7 +735,7 @@ class aidCanvas(tk.Frame):
                                                      list(mn[values[:, 1]]),
                                                      list(mn[values[1, :]]),
                                                      None,
-                                                     [self.canvas.startxy[1], 1, self.connections[1]])
+                                                     [self.canvas_startxy[1], 1, self.connections[1]])
             self.controller.s.write_to_XML()
             self.saved = True
             self.controller._append_to_output(
@@ -873,7 +875,7 @@ class aidCanvas(tk.Frame):
             if hasattr(self, 'entry2'):
                 self.entry2.destroy()
 
-            self.canvas.startxy = []
+            self.canvas_startxy = []
             self.out_data = pd.DataFrame()
             self.connections = {}
             self.modules = 0
@@ -921,8 +923,3 @@ class aidCanvas(tk.Frame):
 #         self.config(width=self.width, height=self.height)
 #         # rescale all the objects tagged with the "all" tag
 #         self.scale("all",0,0,wscale,hscale)
-
-
-if __name__ == "__main__":
-    app = aidCanvas()
-    app.mainloop()
