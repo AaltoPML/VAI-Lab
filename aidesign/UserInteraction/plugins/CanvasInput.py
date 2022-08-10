@@ -11,12 +11,12 @@ import pandas as pd
 import math
 
 _PLUGIN_READABLE_NAMES = {"canvas": "default",
-                          "state-action": "alias", "robot": "alias"}
+                          "state-action": "alias", "robot": "alias"}    # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
-                          "required_children": None}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {}
-_PLUGIN_REQUIRED_DATA = {"X"}
+                          "required_children": None}                    # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                                          # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                                          # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X"}                                           # type:ignore
 
 
 class CanvasInput(tk.Frame, UI):

@@ -10,12 +10,12 @@ from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile
 
 _PLUGIN_READABLE_NAMES = {"manual": "default",
-                          "binary": "alias", "classification": "alias"}
+                          "binary": "alias", "classification": "alias"}         # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
-                          "required_children": None}
-_PLUGIN_REQUIRED_SETTINGS = {"image_dir": "str"}
-_PLUGIN_OPTIONAL_SETTINGS = {}
-_PLUGIN_REQUIRED_DATA = {"X", "Y"}
+                          "required_children": None}                            # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {"image_dir": "str"}                                # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                                                  # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                                              # type:ignore
 
 
 class ManualInput(tk.Frame, UI):
