@@ -1,12 +1,16 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.gaussian_process import GaussianProcessRegressor as model
 
-_PLUGIN_READABLE_NAMES = {"GPRegressor":"default","GPR":"alias","GaussianProcessRegressor":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"n_restarts_optimizer": "int", "random_state": "int"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"GPRegressor": "default",
+                          "GPR": "alias",
+                          "GaussianProcessRegressor": "alias"}      # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}                     # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                                      # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"n_restarts_optimizer": "int",
+                             "random_state": "int"}                 # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                                  # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                          # type:ignore
+
 
 class GPRegressor(ModellingPluginTemplate):
     """

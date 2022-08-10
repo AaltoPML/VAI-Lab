@@ -11,7 +11,7 @@ class UI(ABC):
         pass
         # """Set the class list"""
         
-    @class_list.setter
+    @class_list.setter # type: ignore
     @abstractmethod
     def class_list(self,value):
         pass

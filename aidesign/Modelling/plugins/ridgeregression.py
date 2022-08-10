@@ -1,12 +1,14 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.linear_model import Ridge as model
 
-_PLUGIN_READABLE_NAMES = {"Ridge":"default", "RidgeRegression": "alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"Ridge": "default",
+                          "RidgeRegression": "alias"}       # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}             # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                              # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float"}              # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                          # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                  # type:ignore
+
 
 class RidgeRegression(ModellingPluginTemplate):
     """

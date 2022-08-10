@@ -1,12 +1,13 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.linear_model import BayesianRidge as model
 
-_PLUGIN_READABLE_NAMES = {"BayesianRidge":"default"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"n_iter": "int"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"BayesianRidge": "default"}   # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}         # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                          # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"n_iter": "int"}           # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                      # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}              # type:ignore
+
 
 class BayesianRidge(ModellingPluginTemplate):
     """

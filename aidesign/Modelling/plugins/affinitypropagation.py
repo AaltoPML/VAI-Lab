@@ -1,12 +1,13 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.cluster import AffinityPropagation as model
 
-_PLUGIN_READABLE_NAMES = {"Birch":"default"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "clustering"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"damping": "float"}
-_PLUGIN_REQUIRED_DATA = {"X"}
-_PLUGIN_OPTIONAL_DATA = {"Y", "X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"Birch": "default"}       # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "clustering"}     # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                      # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"damping": "float"}    # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X"}                       # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"Y", "X_tst", 'Y_tst'}     # type:ignore
+
 
 class AffinityPropagation(ModellingPluginTemplate):
     """
@@ -38,7 +39,7 @@ class AffinityPropagation(ModellingPluginTemplate):
         self.clf.set_params(**self._config["options"])
         self.clf.fit(self.X, self.Y)
 
-    def predict(self,data):
+    def predict(self, data):
         """Uses fitted model to predict output of a given Y
         :param data: array-like or sparse matrix, shape (n_samples, n_features)
                     Samples

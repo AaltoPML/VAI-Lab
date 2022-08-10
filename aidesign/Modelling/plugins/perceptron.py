@@ -1,12 +1,15 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.linear_model import Perceptron as model
 
-_PLUGIN_READABLE_NAMES = {"Perceptron":"default","LinearPerceptron":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float", "penalty": "str"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"Perceptron": "default",
+                          "LinearPerceptron": "alias"}      # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}         # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                              # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float",
+                             "penalty": "str"}              # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                          # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                  # type:ignore
+
 
 class Perceptron(ModellingPluginTemplate):
     """
