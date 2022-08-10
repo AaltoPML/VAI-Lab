@@ -1,13 +1,15 @@
-# Import the required libraries
-import tkinter as tk
-from PIL import Image, ImageTk
+from aidesign.Data.xml_handler import XML_handler
+from aidesign._plugin_helpers import PluginSpecs
+from aidesign._types import DictT
+
 import os
 import numpy as np
 import pandas as pd
+
+from PIL import Image, ImageTk
+import tkinter as tk
 from tkinter import messagebox
 
-from aidesign.Data.xml_handler import XML_handler
-from aidesign._plugin_helpers import PluginSpecs
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas": "default",
                           "pluginCanvas": "alias",
@@ -52,12 +54,13 @@ class pluginCanvas(tk.Frame):
                                 height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
+        self.m: int
         self.w, self.h = 100, 50
         self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
         self.id_done = [0, 1]
         self.id_mod = [0, 1]
-        self.plugin = {}
+        self.plugin: DictT = {}
         self.dataType = {}
         self.allWeHearIs = []
 
