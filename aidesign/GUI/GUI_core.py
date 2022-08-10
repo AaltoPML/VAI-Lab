@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 from aidesign._import_helper import import_plugin_absolute
-from aidesign._plugin_helpers import PluginSpecs
 from aidesign.Data.xml_handler import XML_handler
 from aidesign._types import DataInterface, PluginSpecsInterface, DictT
 
+from typing import Any
 import tkinter as tk
 from tkinter.font import Font
 
@@ -113,10 +112,8 @@ class GUI(tk.Tk):
                         [i for i in self._avail_plugins.available_plugin_names])))
                 exit(1)
 
-    def _append_to_output(self, key: str, value: any):
+    def _append_to_output(self, key: str, value: Any):
         self.output[key] = value
-
-
 
     def _show_frame(self, page_name):
         '''Show a frame for the given page name'''
