@@ -1,0 +1,36 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(300.0,50),0,{}]
+        </coordinates>
+        <inputdata>
+            <X file="./Data/resources/supervised_classification/X_tr.csv" />
+        </inputdata>
+    </Initialiser>
+    <UserInteraction name="User Interaction">
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(300.0,300.0),2,{0:'d0-u2'}]
+        </coordinates>
+        <plugin type="ManualInput">
+            <image_dir>
+                 ./aidesign/Data/resources/image_classification/training_images
+            </image_dir>
+        </plugin>
+    </UserInteraction>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(300.0,550),1,{2:'d2-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>
