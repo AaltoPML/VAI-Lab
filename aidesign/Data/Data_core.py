@@ -13,7 +13,7 @@ from typing import Dict, KeysView, TypeVar
 from aidesign._import_helper import get_lib_parent_dir
 from aidesign.Data.xml_handler import XML_handler
 
-import pandas as pd
+import pandas as pd # type: ignore
 import numpy as np
 
 DataT = TypeVar("DataT",bound="Data")
