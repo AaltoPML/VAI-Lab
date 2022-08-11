@@ -1,7 +1,10 @@
 from typing import Protocol, KeysView, Dict, TypeVar
+from pandas.core.frame import DataFrame  # type: ignore
+from tkinter.font import Font
 
-DataInterfaceT = TypeVar("DataInterfaceT",bound="DataInterface")
-DictT = Dict[str,Dict]
+DataInterfaceT = TypeVar("DataInterfaceT", bound="DataInterface")
+DictT = Dict[str, Dict]
+
 
 class PluginOptions(Protocol):
     _PLUGIN_READABLE_NAMES: dict
@@ -10,6 +13,7 @@ class PluginOptions(Protocol):
     _PLUGIN_OPTIONAL_SETTINGS: dict
     _PLUGIN_REQUIRED_DATA: dict
     _PLUGIN_OPTIONAL_DATA: dict
+
 
 class DataInterface(Protocol):
     def __init__(self) -> None:
@@ -30,6 +34,8 @@ class DataInterface(Protocol):
     def copy(self: DataInterfaceT) -> DataInterfaceT:
         ...
 
+    def __getitem__(self, key: str) -> DataFrame:
+        ...
 
 
 class PluginInterface(Protocol):
@@ -39,12 +45,14 @@ class PluginInterface(Protocol):
     def set_data_in(self, data_in: DataInterface) -> None:
         ...
 
-class DataProcessingPluginInterface(PluginInterface,Protocol):
+
+class DataProcessingPluginInterface(PluginInterface, Protocol):
     def fit(self):
         ...
 
-    def transform(self, data:DataInterfaceT) -> DataInterface:
+    def transform(self, data: DataInterfaceT) -> DataInterface:
         ...
+
 
 class PluginSpecsInterface(Protocol):
     @property
@@ -84,8 +92,9 @@ class PluginSpecsInterface(Protocol):
     def print(self, value):
         ...
 
+
 class ModuleInterface(Protocol):
-    def set_avail_plugins(self,avail_plugins:PluginSpecsInterface):
+    def set_avail_plugins(self, avail_plugins: PluginSpecsInterface):
         ...
 
     def set_data_in(self, data_in: DataInterface):
@@ -98,4 +107,12 @@ class ModuleInterface(Protocol):
         ...
 
     def get_result(self) -> DataInterface:
+        ...
+
+
+class GUICoreInterface(ModuleInterface,Protocol):
+    title: Font
+    pages_font: Font
+
+    def destroy(self) -> None:
         ...

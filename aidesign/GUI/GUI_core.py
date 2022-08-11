@@ -1,5 +1,5 @@
-from aidesign._import_helper import import_plugin_absolute
 from aidesign.Data.xml_handler import XML_handler
+from aidesign._import_helper import import_plugin_absolute
 from aidesign._types import DataInterface, PluginSpecsInterface, DictT
 
 from typing import Any
@@ -122,9 +122,12 @@ class GUI(tk.Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
-    def _on_closing(self):
+    def _on_closing(self) -> None:
         self.closed = True
         self.destroy()
+
+    def destroy(self) -> None:
+        return super().destroy()
 
     def launch(self):
         """Runs UserInterface Plugin. 
@@ -134,7 +137,7 @@ class GUI(tk.Tk):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-
+        self.output_data= []
         self.frames = {}
         for F in self._desired_ui_types:
             page_name = F.__name__
@@ -145,8 +148,16 @@ class GUI(tk.Tk):
             self.frames[page_name] = frame
 
             frame.grid(row=0, column=0, sticky="nsew")
+            self.output_data.append(frame.out_data)
 
         self._show_frame(self._top_ui_layer)
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
         self.mainloop()
         return self.output
+
+    def get_result(self):
+        """TODO: This currently does not work, as the output data is stored in a list
+        This is due to the way this module is constructed, it cycles through plugins, 
+        which is useful for the startpage, but complicates things when running
+        UserInterface plugins"""
+        return self.output_data

@@ -1,12 +1,8 @@
 <pipeline>
     <Initialiser name="Init">
-        <plugin type="">
-            <initial_data file="../resources/intial_data_test.csv" />
-            <goal file="../resources/design_goals_test.csv" />
-        </plugin>
         <inputdata>
-            <X file="./Data/resources/supervised_regression/1/x_train.csv" />
-            <Y file="./Data/resources/supervised_regression/1/y_train.csv" />
+            <X file="./Data/resources/image_classification/training_images/" />
+            <Y file="./Data/resources/image_classification/Y_data.csv" />
         </inputdata>
         <relationships>
             <child name="My First UserInteraction Module" />
@@ -15,7 +11,7 @@
     <loop type="for" condition="2" name="For Loop 1">
         <UserInteraction name="My First UserInteraction Module">
             <plugin type="manual">
-                <class_list>
+                <!-- <class_list>
                     Atelectasis
                     Cardiomelagy
                     Effusion
@@ -24,7 +20,7 @@
                     Nodule
                     Pneumonia
                     Pneumothorax
-                </class_list>
+                </class_list> -->
             </plugin>
             <relationships>
                 <parent name="Init" />
