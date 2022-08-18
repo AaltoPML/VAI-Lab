@@ -83,6 +83,13 @@ class PluginTemplate:
         return data_dict[key] if key in data_dict.keys() and data_dict[key] is not None else default
 
     def _reshape(self, data, shape):
+        """Reshapes data to shape. Primarily used for arrays with shape (n,)
+        
+        :param data: data to reshape
+        :param shape: shape to reshape to
+
+        :returns reshaped data: reshaped data
+        """
         return data.reshape(shape[0], shape[1])
 
     def _clean_options(self):
