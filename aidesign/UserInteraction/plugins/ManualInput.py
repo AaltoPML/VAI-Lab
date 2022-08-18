@@ -1,22 +1,25 @@
 from aidesign.UserInteraction.User_Interaction_template import UI
-from aidesign._types import DictT
+from aidesign._import_helper import get_lib_parent_dir
+from aidesign._types import DictT, DataInterface, GUICoreInterface
 
 import os
 import numpy as np
 import pandas as pd
-from PIL import Image, ImageTk
+from typing import Tuple, List, Union
+from PIL import Image, ImageTk, PngImagePlugin
 
 import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile
 
 _PLUGIN_READABLE_NAMES = {"manual": "default",
-                          "binary": "alias", "classification": "alias"}         # type:ignore
+                          "binary": "alias",
+                          "classification": "alias"}            # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
-                          "required_children": None}                            # type:ignore
-_PLUGIN_REQUIRED_SETTINGS = {"image_dir": "str"}                                # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {}                                                  # type:ignore
-_PLUGIN_REQUIRED_DATA = {"X", "Y"}                                              # type:ignore
+                          "required_children": None}            # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {"image_dir": "str"}                # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                                  # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                              # type:ignore
 
 
 class ManualInput(tk.Frame, UI):
@@ -25,26 +28,43 @@ class ManualInput(tk.Frame, UI):
     def __init__(self, parent, controller, config: DictT):
         self.parent = parent
         super().__init__(parent, bg=self.parent['bg'])
-        self.controller = controller
+        self.controller: GUICoreInterface = controller
         self.controller.title('Manual Input')
 
-        self.dirpath = os.path.dirname(os.path.realpath(__file__))
-        self.assets_path = os.path.join(self.dirpath, 'resources', 'Assets')
+        self.dirpath = get_lib_parent_dir()
 
+        
+        self.assets_path = os.path.join(self.dirpath, 'utils', 'resources', 'Assets')
+
+        self._data_in: DataInterface
         self._class_list = None
-        pixels = 550
-        path = os.path.join(self.dirpath, 'resources','image_classification',
-                            'training_images')
-        self.N = len(os.listdir(path))
+        self._config = config
+        self.save_path = ''
+        self.saved = True
+        
 
-        self.image_list = []
-        for f in os.listdir(path):
+    def _load_images_from_data(self):
+        self.image_list: List[Union[ImageTk.PhotoImage,Image.Image]] = []
+        pixels = 500
+        for f in self._data_in["X"].keys():
             self.image_list.append(
-                self.expand2square(
-                    Image.open(os.path.join(path, f)),
-                    (0, 0, 0)).resize((pixels, pixels)))  # (0, 0, 0) is the padding colour
+                ImageTk.PhotoImage(
+                    self.expand2square(self._data_in["X"][f], (0, 0, 0))
+                    .resize((pixels, pixels))))
 
-        # Frames
+        # Inital window
+        self.my_label = tk.Label(self, image=self.image_list[0],
+                                 bg=self.parent['bg'])
+        self.my_label.grid(column=0, row=0, rowspan=10, columnspan=3)
+        self.N = len(self._data_in["X"])
+
+        # Status bar in the lower part of the window
+        status = tk.Label(self, text='Image 1 of '+str(self.N), bd=1,
+                          relief=tk.SUNKEN, anchor=tk.E, fg='white',
+                          bg=self.parent['bg'])
+        status.grid(row=20, column=0, columnspan=4, pady=10,
+                    sticky=tk.W+tk.E)
+
         self.frame1 = tk.Frame(self, bg=self.parent['bg'])
         frame4 = tk.Frame(self, bg=self.parent['bg'])
         frame5 = tk.Frame(self, bg=self.parent['bg'])
@@ -74,15 +94,10 @@ class ManualInput(tk.Frame, UI):
             fg='white', bg=self.parent['bg'],
             height=3, width=20,
             command=self.check_quit).grid(column=4, row=19, sticky="news", pady=10)
-        self.config = config
-        self.save_path = ''
-        self.saved = True
 
-        # Inital image
-        img = ImageTk.PhotoImage(self.image_list[0])
+        img = self.image_list[0]
         self.my_img = tk.Label(self.frame1, image=img,
                                bg=self.parent['bg'])
-        self.my_img.image = img
         self.my_img.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=(10, 0))
         self.my_img.bind("<Configure>", self.resizing)
 
@@ -97,28 +112,6 @@ class ManualInput(tk.Frame, UI):
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(tuple(range(3)), weight=1)
         self.grid_columnconfigure(0, weight=2)
-
-    def _load_images_from_data(self):
-        self.image_list = []
-        pixels = 500
-        for f in self._data_in["X"].keys():
-            self.image_list.append(
-                ImageTk.PhotoImage(
-                    self.expand2square(self._data_in["X"][f], (0, 0, 0))
-                    .resize((pixels, pixels))))  # (0, 0, 0) is the padding colour
-
-        # Inital window
-        self.my_label = tk.Label(self, image=self.image_list[0],
-                                 bg=self.parent['bg'])
-        self.my_label.grid(column=0, row=0, rowspan=10, columnspan=3)
-        self.N = len(self._data_in["X"])
-
-        # Status bar in the lower part of the window
-        status = tk.Label(self, text='Image 1 of '+str(self.N), bd=1,
-                          relief=tk.SUNKEN, anchor=tk.E, fg='white',
-                          bg=self.parent['bg'])
-        status.grid(row=20, column=0, columnspan=4, pady=10,
-                    sticky=tk.W+tk.E)
 
     def set_data_in(self, data_in):
         req_check = [
@@ -222,7 +215,9 @@ class ManualInput(tk.Frame, UI):
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
 
-    def expand2square(self, pil_img, background_color):
+    def expand2square(self,
+                        pil_img :PngImagePlugin.PngImageFile,
+                        background_color :Tuple):
         " Adds padding to make the image a square."
         width, height = pil_img.size
         if width == height:
@@ -255,12 +250,14 @@ class ManualInput(tk.Frame, UI):
                 iw = iw*(mh/ih)
                 r = mw/iw if (iw/mw) > 1 else 1
                 iw, ih = iw*r, mh*r
+            
+            if type(self.image_list[n]) == ImageTk.PhotoImage:
+                _temp_img:Image = ImageTk.getimage(self.image_list[n])
+            else:
+                _temp_img:Image = self.image_list[n]
 
-            self.image_list[n] = self.image_list[n].resize(
-                (int(iw), int(ih)))
-        img = ImageTk.PhotoImage(self.image_list[n])
-        self.my_img.config(image=img)
-        self.my_img.image = img
+            self.image_list[n] = ImageTk.PhotoImage(_temp_img.resize((int(iw), int(ih))))
+        self.my_img.config(image=self.image_list[n])
 
     def check_quit(self):
 
