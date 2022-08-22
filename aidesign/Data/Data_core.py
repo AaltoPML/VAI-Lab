@@ -51,7 +51,7 @@ class Data:
         :param filename: str, filename of csv file to be loaded
         :param data_name: str, name of dict key in which data will be stored
         """
-        from PIL import Image
+        from PIL import Image # type: ignore
         self.data[data_name][filename] = Image.open(filename)
 
     def _import_dir(self: DataT,
