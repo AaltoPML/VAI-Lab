@@ -8,7 +8,7 @@ if not __package__:
 
 from aidesign._import_helper import get_lib_parent_dir
 
-from typing import Dict, Union, Optional
+from typing import Any, Dict, Union, Optional, List
 from os import path
 from ast import literal_eval
 import xml.etree.ElementTree as ET
@@ -29,7 +29,7 @@ class XML_handler:
         TODO: populate the modules in this list automatically
         TODO: Can extend the plugin_helpers.py script to automatically populate these things
         """
-        self._valid_tags = {
+        self._valid_tags: Dict[str, str] = {
             "pipeline": "declaration",
             "relationships": "relationships",
             "plugin": "plugin",
@@ -70,7 +70,7 @@ class XML_handler:
 
     def set_filename(self, filename: str):
         """Sets filename. Converts relative paths to absolute first."""
-        self.filename = self._check_filename_abs_rel(filename)
+        self.filename: str = self._check_filename_abs_rel(filename)
 
     def append_initialiser(self):
         self.append_pipeline_module("Initialiser",
@@ -82,7 +82,7 @@ class XML_handler:
                                     None,
                                     [0, 0, 0])
 
-    def new_config_file(self, filename: str = None):
+    def new_config_file(self, filename: str = None) -> None:
         """Constructs new XML file with minimal format"""
         if filename is not None:
             self.set_filename(filename)
@@ -90,7 +90,7 @@ class XML_handler:
         self.root = self.tree.getroot()
         self.append_initialiser()
 
-    def load_XML(self, filename: str):
+    def load_XML(self, filename: str) -> None:
         """Loads XML file into class. 
         """
         if filename != None:
@@ -98,11 +98,15 @@ class XML_handler:
         self.tree = ET.parse(self.filename)
         self._parse_XML()
 
-    def _parse_XML(self):
+    def _parse_XML(self) -> None:
         self.root = self.tree.getroot()
         self._parse_tags(self.root, self.loaded_modules)
 
-    def _parse_tags(self, element: ET.Element, parent: dict):
+    def _bullet_list(self, val_list: Union[List[Any], Dict[str, str]]) -> str:
+        sep = "\n\t\u2022"
+        return sep + " {}".format(("," + sep + " ").join([*val_list]))
+
+    def _parse_tags(self, element: ET.Element, parent: dict) -> None:
         """Detect tags and send them to correct method for parsing
         Uses getattr to call the correct method
 
@@ -115,19 +119,18 @@ class XML_handler:
                 getattr(self, "_load_{}".format(tag_type))(child, parent)
             except KeyError:
                 from sys import exit
-                print("\nError: Invalid XML Tag.")
-                print("XML tag \"{0}\" in \"{1}\" not found".format(
-                    child.tag, element.tag))
-                print("Valid tags are:")
-                print("\t\u2022 {}".format(
-                    ",\n\t\u2022 ".join([*self._valid_tags])))
+                print("\nError: Invalid XML Tag." +
+                      "\nXML tag \"{0}\"".format(child.tag) +
+                      "in \"{0}\" not found".format(element.tag) +
+                      "\nValid tags are:" +
+                      self._bullet_list(self._valid_tags))
                 exit(1)
             except AssertionError as Error:
                 from sys import exit
                 print(Error)
                 exit(1)
 
-    def _load_module(self, element: ET.Element, parent: dict):
+    def _load_module(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with modules and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -140,7 +143,7 @@ class XML_handler:
                                "module_type": module_type}
         self._parse_tags(element, parent[module_name])
 
-    def _load_plugin(self, element: ET.Element, parent: dict):
+    def _load_plugin(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with plugins and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -161,7 +164,7 @@ class XML_handler:
                     parent["plugin"]["options"][child.tag] = {
                         key: child.attrib[key]}
 
-    def _load_entry_point(self, element: ET.Element, parent: dict):
+    def _load_entry_point(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with initialiser and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -172,7 +175,7 @@ class XML_handler:
                                     "class": self._valid_tags[element.tag]}
         self._parse_tags(element, parent[initialiser_name])
 
-    def _load_data(self, element: ET.Element, parent: dict):
+    def _load_data(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with initial data files and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -184,18 +187,19 @@ class XML_handler:
                              "class": "data",
                              "to_load": {}}
         for child in element:
-            assert "file" in child.attrib \
-                or "folder" in child.attrib,\
+            assert "file" in child.attrib or "folder" in child.attrib,\
                 str("XML Parse Error \
-                    \n\tA path to data file must be specified. \
-                    \n\t{0} does not contain the \"file\" tag. \
-                    \n\tCorrect usage: {0} file = <path-to-file>".format(child.tag))
+                        \n\tA path to data file must be specified. \
+                        \n\t{0} does not contain the \"file\" tag. \
+                        \n\tCorrect usage: {0} file = <path-to-file>".format(child.tag))
+
             if "file" in child.attrib:
                 assert self._check_file_exists(child.attrib["file"]),\
                     str("Error: Data file not found. \
                         \n\tFile: {0} does not exist"
                         .format(self._check_filename_abs_rel(child.attrib["file"])))
                 parent[data_name]["to_load"][child.tag] = child.attrib["file"]
+
             if "folder" in child.attrib:
                 assert self._check_file_exists(child.attrib["folder"]),\
                     str("Error: Data folder not found. \
@@ -203,7 +207,7 @@ class XML_handler:
                         .format(self._check_filename_abs_rel(child.attrib["folder"])))
                 parent[data_name]["to_load"][child.tag] = child.attrib["folder"]
 
-    def _load_exit_point(self, element: ET.Element, parent: dict):
+    def _load_exit_point(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with output and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -213,7 +217,7 @@ class XML_handler:
                             "class": self._valid_tags[element.tag]}
         self._parse_tags(element, parent["output"])
 
-    def _load_loop(self, element: ET.Element, parent: dict):
+    def _load_loop(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with loops and appends to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -228,7 +232,7 @@ class XML_handler:
         }
         self._parse_tags(element, parent[loop_name])
 
-    def _load_relationships(self, element: ET.Element, parent: dict):
+    def _load_relationships(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with relationships and adds to parent dict
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -242,7 +246,7 @@ class XML_handler:
             elif rel.tag == "child":
                 parent["children"].append(rel.attrib["name"])
 
-    def _load_list(self, element: ET.Element, parent: dict):
+    def _load_list(self, element: ET.Element, parent: dict) -> None:
         """Parses elements consisting of lists, e.g. coordinates
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -253,7 +257,7 @@ class XML_handler:
             if len(parent[element.tag]) == 1:
                 parent[element.tag] = parent[element.tag][0]
 
-    def _parse_text_to_list(self, element: ET.Element) -> list:
+    def _parse_text_to_list(self, element: ET.Element) -> List:
         """Formats raw text data
 
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -262,7 +266,7 @@ class XML_handler:
         if element.text is not None:
             new = element.text.strip().replace(" ", "")
 
-        out = new.split("\n")
+        out: List[Any] = new.split("\n")
         raw_elem_text = str()
         for idx in range(0, len(out)):
             raw_elem_text = (raw_elem_text+"\n{}").format(out[idx])
@@ -319,8 +323,8 @@ class XML_handler:
     def _find_dict_with_key_val_pair(self,
                                      parent: dict,
                                      key: str,
-                                     val,
-                                     out=None):
+                                     val: Any,
+                                     out=None) -> List[Dict[str, str]]:
         """Seach nested dict for a given key-value pair
 
         :param parent: dict to be searched
@@ -345,13 +349,18 @@ class XML_handler:
         """Find a module name and return its parent tags"""
         if name == None:
             return self.root
+
         elems = self.root.findall(".//*[@name='{0}']".format(name))
+
         unique_elem = [e for e in elems if e.tag !=
                        "parent" and e.tag != "child"]
-        assert len(
-            unique_elem) < 2, "Error: More than one tag with same identifier"
-        assert len(
-            unique_elem) > 0, "Error: No element exists with name \"{0}\"".format(name)
+
+        assert len(unique_elem) < 2,\
+            "Error: More than one tag with same identifier"
+
+        assert len(unique_elem) > 0, \
+            "Error: No element exists with name \"{0}\"".format(name)
+
         return unique_elem[0]
 
     def _get_all_elements_with_tag(self, tag: str):
@@ -504,12 +513,12 @@ class XML_handler:
                                module_type: str,
                                module_name: str,
                                plugin_type: str,
-                               plugin_options: dict,
+                               plugin_options: Dict[str, Any],
                                parents: list,
                                children: list,
                                xml_parent_element_name: str,
                                coords: list = None
-                               ):
+                               ) -> None:
         """Append new pipeline module to existing XML elementTree to be written later
 
         :param module_type: string declare type of module (UserFeedback,data_processing etc)
@@ -550,7 +559,7 @@ class XML_handler:
                              children: list,
                              xml_parent_element_name: str = None,
                              coords: list = None
-                             ):
+                             ) -> None:
         """Append new pipeline module to existing XML file
 
         :param loop_type: string declare type of loop (for/while/manual etc)
@@ -578,20 +587,24 @@ class XML_handler:
 
         xml_parent_element.append(new_loop)
 
-    def _get_init_data_structure(self):
+    def _get_init_data_structure(self) -> Dict[str, Any]:
         data_struct = self._find_dict_with_key_val_pair(
-            self.loaded_modules, "class", "data")
+            self.loaded_modules,
+            "class", "data")
+
+        assert len(data_struct) < 2, \
+            "Multiple data with same ID, please check XML"
+
+        out: Dict[str, Any]
         if len(data_struct) == 1:
-            return data_struct[0]
-        elif len(data_struct) > 1:
-            print("Multiple data options specified, please check XML")
-            return data_struct
+            out = data_struct[0]
         else:
-            return data_struct
+            out = {"to_load": {}}
+        return out
 
     @property
-    def data_to_load(self):
-        return(self._get_init_data_structure()["to_load"])
+    def data_to_load(self) -> Dict[str, str]:
+        return (self._get_init_data_structure()["to_load"])
 
 
 # Use case examples:
@@ -611,6 +624,8 @@ if __name__ == "__main__":
     # s.update_module_coords("Initialiser",[1,1,1])
     # s.append_module_relationships("Initialiser",["test1","test2"],[])
     s._print_xml_config()
+    a = s.data_to_load
+    print(1)
 
     # s.write_to_XML()
     # s.append_pipeline_loop("for",
