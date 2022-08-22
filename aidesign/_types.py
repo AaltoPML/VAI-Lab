@@ -116,3 +116,6 @@ class GUICoreInterface(ModuleInterface,Protocol):
 
     def destroy(self) -> None:
         ...
+
+    def set_gui(self) -> None:
+        ...
