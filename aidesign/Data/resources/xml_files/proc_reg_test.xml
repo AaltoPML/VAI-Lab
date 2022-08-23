@@ -23,7 +23,7 @@
         </coordinates>
         <plugin type="MinMaxScaler">
             <Data>
-                 X
+                X
             </Data>
         </plugin>
     </DataProcessing>

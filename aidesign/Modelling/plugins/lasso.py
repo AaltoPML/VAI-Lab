@@ -81,7 +81,7 @@ class Lasso(object):
         elif _PLUGIN_MODULE_OPTIONS['Type'] == 'regression':
             print('Training R2 score: %.3f' %(self.score(self.X, self.Y)))
             if self.Y_tst is not None:
-                print('Training R2 score: %.3f' %(self.score(self.X_tst, self.Y_tst)))
+                print('Test R2 score: %.3f' %(self.score(self.X_tst, self.Y_tst)))
             if self.X_tst is not None:
                 data.append_data_column("Y_pred", self.predict(self.X_tst))
             return data
