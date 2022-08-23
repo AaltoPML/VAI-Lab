@@ -90,9 +90,16 @@ class Core(object):
         for c in condition:
             self._execute(specs)
 
+    def _runTracker(self):
+        self.gui_app = GUI()
+        self.gui_app.set_avail_plugins(self._avail_plugins)
+        self.gui_app.set_gui()
+        self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
+        self.gui_app.launch()
+
     def _execute(self, specs):
         """Run elements within a given dictionary.
-        Only interates over dict values that are dicts themselves.
+        Only iterates over dict values that are dicts themselves.
         Non-dict elements cannot contain modules or loops
 
         :param specs: dict of elements to be executed
@@ -100,6 +107,8 @@ class Core(object):
         for key in [key for key, val in specs.items() if type(val) == dict]:
             getattr(self, "_execute_{}".format(
                 specs[key]["class"]))(specs[key])
+            if specs[key]["class"] == 'module':
+                self._runTracker()
 
     def run(self):
         if not self.setup_complete:
@@ -108,5 +117,6 @@ class Core(object):
             self.launch()
         print("Running pipeline...")
         self._load_data()
+        
         self._execute(self._xml_handler.loaded_modules)
         print("Pipeline Complete")
