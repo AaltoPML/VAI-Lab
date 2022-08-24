@@ -1,6 +1,7 @@
 from aidesign._plugin_template import PluginTemplate
 from aidesign._types import DataInterface
 
+from typing import Type
 from abc import ABC, abstractmethod
 
 
@@ -37,7 +38,7 @@ class DataProcessingPluginTemplate(PluginTemplate, ABC):
         pass
 
     @abstractmethod
-    def transform(self):
+    def transform(self, data: DataInterface) -> DataInterface:
         pass
 
     def _test(self, data):
