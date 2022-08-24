@@ -1,5 +1,5 @@
-from typing import Protocol, KeysView, Dict, TypeVar
-from pandas.core.frame import DataFrame  # type: ignore
+from typing import Any, Protocol, KeysView, Dict, TypeVar
+from pandas.core.frame import DataFrame
 from tkinter.font import Font
 
 DataInterfaceT = TypeVar("DataInterfaceT", bound="DataInterface")
@@ -109,9 +109,8 @@ class ModuleInterface(Protocol):
     def get_result(self) -> DataInterface:
         ...
 
-
 class GUICoreInterface(ModuleInterface,Protocol):
-    title: Font
+    title: Any #mypy bug prevents proper typing
     pages_font: Font
 
     def destroy(self) -> None:
