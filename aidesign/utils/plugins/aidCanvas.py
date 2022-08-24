@@ -71,7 +71,7 @@ class aidCanvas(tk.Frame):
         
         #Initialiser module
         self.add_module('Initialiser', self.width/2, self.h, ini = True)
-        self.add_module('Output', self.width/2, self.height - self.h, out = True)
+        self.add_module('output', self.width/2, self.height - self.h, out = True)
         
         self.draw = False
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -855,7 +855,7 @@ class aidCanvas(tk.Frame):
             self.module_names = []
             
             self.add_module('Initialiser', self.width/2, self.h, ini = True)
-            self.add_module('Output', self.width/2, self.height - self.h, out = True)
+            self.add_module('output', self.width/2, self.height - self.h, out = True)
         
             self.draw = False
             self.loops = []

@@ -65,7 +65,6 @@ class progressTracker(tk.Frame):
             height = 3, width = 15, font = self.controller.pages_font, 
             command = self.check_quit).grid(column = 1, row = 26, sticky="news", pady=(0,10))
         
-        
         self.save_path = ''
         self.saved = True
         frame1.grid(column=0, row=0, sticky="nsew")
@@ -162,13 +161,22 @@ class progressTracker(tk.Frame):
         else: #Make initialisation and output unmoveable
             tag = ('n0',)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
+        # Check module status
+        if 'start' in self.controller.status[boxName]:
+            if 'finish' in self.controller.status[boxName]:
+                colour = '#46da63'
+            else:
+                colour = '#dbaa21'
+        else:
+            colour = self.bg
+        
         self.canvas.create_rectangle(
             x - text_w/2 , 
             y - self.h/2, 
             x + text_w/2, 
             y + self.h/2, 
             tags = tag + ('p'+str(self.modules),), 
-            fill = self.bg, 
+            fill = colour, 
             width = 3,
             # activefill = '#dbaa21'
             )
@@ -341,7 +349,7 @@ class progressTracker(tk.Frame):
         
         if hasattr(self, 'newWindow') and (self.newWindow!= None):
             self.newWindow.destroy()
-            
+        
         self.canvas.startxy = []
         self.out_data = pd.DataFrame()
         self.connections = {}
@@ -350,7 +358,7 @@ class progressTracker(tk.Frame):
         self.module_names = []
         
         self.add_module('Initialiser', self.width/2, self.h, ini = True)
-        self.add_module('Output', self.width/2, self.height - self.h, out = True)
+        self.add_module('output', self.width/2, self.height - self.h, out = True)
     
         self.draw = False
         self.loops = []
@@ -361,14 +369,12 @@ class progressTracker(tk.Frame):
         for widget in self.allWeHearIs:
                 widget.grid_remove()
         self.allWeHearIs = []
-        # self.my_label.config(text = '')
 
-            
     def check_quit(self):
         
         self.controller.destroy()
         
-        
+
 if __name__ == "__main__":
     app = progressTracker()
     app.mainloop()

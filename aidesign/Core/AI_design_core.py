@@ -3,7 +3,7 @@ from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
 from aidesign.Data.Data_core import Data
 from aidesign.utils.plugin_helpers import PluginSpecs
-
+import time
 
 class Core(object):
     def __init__(self) -> None:
@@ -12,6 +12,7 @@ class Core(object):
         self.data = Data()
         self.loop_level = 0
         self.setup_complete = False
+        self.status_logger = {}
 
     def launch(self):
         gui_app = GUI()
@@ -93,9 +94,16 @@ class Core(object):
     def _runTracker(self):
         self.gui_app = GUI()
         self.gui_app.set_avail_plugins(self._avail_plugins)
-        self.gui_app.set_gui()
+        self.gui_app.set_gui(self.status_logger)
         self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
         self.gui_app.launch()
+    
+    def _init_status(self, modules):
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            self.status_logger[modules[key]['name']] = {}
+
+    def _add_status(self, module, key, value):
+        self.status_logger[module['name']][key] = value
 
     def _execute(self, specs):
         """Run elements within a given dictionary.
@@ -105,8 +113,10 @@ class Core(object):
         :param specs: dict of elements to be executed
         """
         for key in [key for key, val in specs.items() if type(val) == dict]:
+            self._add_status(specs[key], 'start', time.strftime('%H:%M:%S', time.localtime()))
             getattr(self, "_execute_{}".format(
                 specs[key]["class"]))(specs[key])
+            self._add_status(specs[key], 'finish', time.strftime('%H:%M:%S', time.localtime()))
             if specs[key]["class"] == 'module':
                 self._runTracker()
 
@@ -118,5 +128,6 @@ class Core(object):
         print("Running pipeline...")
         self._load_data()
         
+        self._init_status(self._xml_handler.loaded_modules)
         self._execute(self._xml_handler.loaded_modules)
         print("Pipeline Complete")
