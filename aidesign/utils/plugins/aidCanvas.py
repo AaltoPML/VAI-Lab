@@ -4,12 +4,13 @@ from aidesign._types import DictT
 import os
 import numpy as np
 import pandas as pd
-from typing import List,Tuple
+from typing import List, Literal,Tuple
 
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox
 from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
+from aidesign._import_helper import get_lib_parent_dir
 
 
 _PLUGIN_READABLE_NAMES = {"aid_canvas": "default",
@@ -33,20 +34,23 @@ class aidCanvas(tk.Frame):
         self.bg = parent['bg']
         self.controller = controller
 
-        script_dir = os.path.dirname(__file__)
+        script_dir = get_lib_parent_dir()
         self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
             file=os.path.join(os.path.join(
                 script_dir,
+                'utils',
                 'resources',
                 'Assets',
                 'AIDIcon.ico'))))
         self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(
             script_dir,
+            'utils',
             'resources',
             'Assets',
             'AIDIcon_name.png')).resize((250, 200)))
 
-        self.grid_rowconfigure(tuple(range(2)), weight=1)
+        # self.grid_rowconfigure(tuple(range(2)), weight=1)
+        self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         frame1 = tk.Frame(self, bg=self.bg)
@@ -156,9 +160,6 @@ class aidCanvas(tk.Frame):
         frame2.grid(column=1, row=0, sticky="ne")
         frame3.grid(column=0, row=2, sticky="swe")
         frame4.grid(column=1, row=1, sticky="nse")
-
-        frame3.grid_columnconfigure(tuple(range(4)), weight=1)
-        frame4.grid_rowconfigure(tuple(range(6)), weight=1)
 
     def class_list(self, value):
         """ Temporary fix """

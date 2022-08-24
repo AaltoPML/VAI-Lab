@@ -1,8 +1,11 @@
+from aidesign._import_helper import get_lib_parent_dir
+
 import tkinter as tk
 import os
 from PIL import Image, ImageTk
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
+import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"start": "default",
                           "start page": "alias"}                    # type:ignore
@@ -21,11 +24,14 @@ class StartPage(tk.Frame):
         self.controller = controller
         self.controller.title('User interaction adaptation')
 
-        script_dir = os.path.dirname(__file__)
+        # script_dir = os.path.dirname(__file__)
+        self.out_data = pd.DataFrame()
+        script_dir = get_lib_parent_dir()
         self.my_img1 = ImageTk.PhotoImage(
             Image.open(
                 os.path.join(
                     script_dir,
+                    "utils",
                     'resources',
                     'Assets',
                     'UFAIcon_name.png')

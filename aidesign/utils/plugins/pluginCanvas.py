@@ -1,6 +1,7 @@
 from aidesign.Data.xml_handler import XML_handler
 from aidesign._plugin_helpers import PluginSpecs
 from aidesign._types import DictT
+from aidesign._import_helper import get_lib_parent_dir
 
 import os
 import numpy as np
@@ -32,10 +33,11 @@ class pluginCanvas(tk.Frame):
         self.controller = controller
         self.s = XML_handler()
 
-        script_dir = os.path.dirname(__file__)
+        script_dir = get_lib_parent_dir()
         self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
             file=os.path.join(os.path.join(
                 script_dir,
+                'utils',
                 'resources',
                 'Assets',
                 'AIDIcon.ico'))))
@@ -60,6 +62,7 @@ class pluginCanvas(tk.Frame):
         self.canvas.bind('<Button-1>', self.on_click)
         self.id_done = [0, 1]
         self.id_mod = [0, 1]
+        self.out_data = pd.DataFrame()
         self.plugin: DictT = {}
         self.dataType = {}
         self.allWeHearIs = []
@@ -76,11 +79,13 @@ class pluginCanvas(tk.Frame):
 
         self.back_img = ImageTk.PhotoImage(Image.open(
             os.path.join(script_dir,
+                         'utils',
                          'resources',
                          'Assets',
                          'back_arrow.png')).resize((140, 60)))
         self.forw_img = ImageTk.PhotoImage(Image.open(
             os.path.join(script_dir,
+                         'utils',
                          'resources',
                          'Assets',
                          'forw_arrow.png')).resize((140, 60)))

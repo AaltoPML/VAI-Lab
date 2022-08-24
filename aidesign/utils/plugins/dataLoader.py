@@ -3,8 +3,9 @@ import os
 from PIL import ImageTk
 from tkinter import ttk
 import numpy as np
+from aidesign._import_helper import get_lib_parent_dir
 # from ttkwidgets import CheckboxTreeview
-from sys import platform
+# from sys import platform
 
 class dataLoader():
     """ Creates a window 
@@ -16,11 +17,10 @@ class dataLoader():
         
         # Window options
         self.newWindow.title('Data Importer')
-        script_dir = os.path.dirname(__file__)
-
         self.newWindow.tk.call('wm','iconphoto', self.newWindow._w, ImageTk.PhotoImage(
             file = os.path.join(os.path.join(
-                script_dir, 
+                get_lib_parent_dir(), 
+                'utils', 
                 'resources', 
                 'Assets', 
                 'ADDIcon.ico'))))

@@ -38,7 +38,7 @@ class pipelineCanvas(tk.Frame):
                 'resources',
                 'Assets',
                 'AIDIcon.ico'))))
-        self.grid_rowconfigure(tuple(range(2)), weight=1)
+        # self.grid_rowconfigure(tuple(range(2)), weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         frame1 = tk.Frame(self, bg=self.bg)

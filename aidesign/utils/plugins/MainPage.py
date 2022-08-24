@@ -7,6 +7,7 @@ import pandas as pd
 
 from aidesign.Data.xml_handler import XML_handler
 from aidesign.utils.plugins.dataLoader import dataLoader
+from aidesign._import_helper import get_lib_parent_dir
 
 _PLUGIN_READABLE_NAMES = {"main": "default",
                           "main page": "alias",
@@ -28,20 +29,21 @@ class MainPage(tk.Frame):
         self.controller.title('AI Assisted Framework Design')
 
         self.controller.output_type = 'regression'
+        self.out_data = pd.DataFrame()
         self.bg = parent['bg']
 
-        script_dir = os.path.dirname(__file__)
+        self.script_dir = get_lib_parent_dir()
         self.my_img1 = ImageTk.PhotoImage(
             Image.open(
                 os.path.join(
-                    script_dir,
+                    self.script_dir,
+                    'utils',
                     'resources',
                     'Assets',
                     'AIFRED.png')
             ).resize((600, 300))
         )
 
-        self.grid_rowconfigure(tuple(range(3)), weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         frame1 = tk.Frame(self, bg=self.bg)
@@ -219,10 +221,10 @@ class MainPage(tk.Frame):
         self.newWindow = tk.Toplevel(self.controller)
         # Window options
         self.newWindow.title('Data upload')
-        script_dir = os.path.dirname(__file__)
         self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
             file=os.path.join(os.path.join(
-                script_dir,
+                self.script_dir,
+                'utils',
                 'resources',
                 'Assets',
                 'AIDIcon.ico'))))
