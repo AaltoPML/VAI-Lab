@@ -59,8 +59,8 @@ class pipelineCanvas(tk.Frame):
         TODO: Implement clicking on canvas actions
         """
         # self.canvas.bind('<Button-1>', self.on_click)
-        self.plugin = {}
-        self.allWeHearIs = []
+        # self.plugin = {}
+        # self.allWeHearIs = []
 
         self.upload()
 
@@ -71,8 +71,8 @@ class pipelineCanvas(tk.Frame):
         frame3.grid(column=0, row=1, sticky="swe")
         self.frame4.grid(column=1, row=1, sticky="sew")
 
-        frame3.grid_columnconfigure(tuple(range(2)), weight=1)
-        self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
+        frame3.grid_columnconfigure(1, weight=1)
+        self.frame4.grid_columnconfigure(1, weight=1)
 
     def class_list(self, value):
         """ Temporary fix """
@@ -127,190 +127,132 @@ class pipelineCanvas(tk.Frame):
                 for widget in self.allWeHearIs:
                     widget.grid_remove()
 
-            #     self.display_buttons()
-            #     module_number = self.id_mod.index(self.m)
-            #     if hasattr(self, 'button_forw'):
-            #         if module_number == len(self.id_mod)-1:
-            #             self.button_forw.config(text = 'Finish', bg = self.bg,
-            #                 font = self.controller.pages_font,
-            #                 fg = 'white', height = 3, width = 15,
-            #                 command = self.finnish, state = tk.NORMAL, image = '')
-            #         else:
-            #             pCoord = self.canvas.coords('p'+str(self.id_mod[module_number+1]))
-            #             self.button_forw.config(image = self.forw_img, bg = self.bg,
-            #                 command = lambda: self.select(
-            #                     pCoord[0], pCoord[1]), text = '', state = tk.NORMAL)
-            #         if module_number < 3:
-            #             self.button_back.config(image = self.back_img, bg = self.bg,
-            #                 state = tk.DISABLED, text = '')
-            #         else:
-            #             mCoord = self.canvas.coords('p'+str(self.id_mod[module_number-1]))
-            #             self.button_back.config(image = self.back_img, bg = self.bg,
-            #                 command = lambda: self.select(
-            #                     mCoord[0], mCoord[1]), text = '', state = tk.NORMAL)
-            #     else:
-            #         if module_number == len(self.id_mod)-1:
-            #             self.button_forw = tk.Button(
-            #                 self.frame4, text = 'Finish', bg = self.bg,
-            #                 font = self.controller.pages_font,
-            #                 fg = 'white', height = 3, width = 15,
-            #                 command = self.finnish, state = tk.NORMAL, image = '')
-            #         else:
-            #             pCoord = self.canvas.coords('p'+str(self.id_mod[module_number+1]))
-            #             self.button_forw = tk.Button(
-            #                 self.frame4, image = self.forw_img, bg = self.bg,
-            #                 command = lambda: self.select(
-            #                     pCoord[0], pCoord[1]), state = tk.NORMAL)
-            #         self.button_forw.grid(column = 1,row = 0, sticky="news", pady=(0,10), padx=(0,10))
-            #         if module_number < 3:
-            #             self.button_back = tk.Button(
-            #                 self.frame4, image = self.back_img, bg = self.bg,
-            #                 state = tk.DISABLED)
-            #         else:
-            #             mCoord = self.canvas.coords('p'+str(self.id_mod[module_number-1]))
-            #             self.button_back = tk.Button(
-            #                 self.frame4, image = self.back_img, bg = self.bg,
-            #                 command = lambda: self.select(
-            #                     mCoord[0], mCoord[1]), state = tk.NORMAL)
-            #         self.button_back.grid(column = 0,row = 0, sticky="news", pady=(0,10))
-            # else: # If user clicks on Initialiser or Output
-            #     # self.my_label.config(text = '')
-            #     for widget in self.allWeHearIs:
-            #         widget.grid_remove()
-            #     if hasattr(self, 'button_forw'):
-            #         self.button_back.config(image = self.back_img, bg = self.bg,
-            #                 state = tk.DISABLED, text = '')
-            #         pCoord = self.canvas.coords('p'+str(self.id_mod[2]))
-            #         self.button_forw.config(image = self.forw_img, bg = self.bg,
-            #                 command = lambda: self.select(
-            #                     pCoord[0], pCoord[1]), text = '', state = tk.NORMAL)
+    # def finnish(self):
+    #     """ Calls function check_quit.
+    #     Before that, it checks if the current module plugins have been changed 
+    #     and, if so, updates their information in the XML_handler class.
+    #     """
+    #     if (self.m in self.plugin.keys()) and\
+    #             (self.plugin[self.m].get() != 'None') and \
+    #             (self.m not in self.id_done):  # add
+    #         self.id_done.append(self.m)
+    #         self.s.append_plugin_to_module(self.plugin[self.m].get(),
+    #                                        {**self.req_settings, **
+    #                                            self.opt_settings},
+    #                                        np.array(self.module_names)[
+    #             self.m == np.array(self.id_mod)][0],
+    #             True)
+    #     self.check_quit()
 
-    def finnish(self):
-        """ Calls function check_quit.
-        Before that, it checks if the current module plugins have been changed 
-        and, if so, updates their information in the XML_handler class.
-        """
-        if (self.m in self.plugin.keys()) and\
-                (self.plugin[self.m].get() != 'None') and \
-                (self.m not in self.id_done):  # add
-            self.id_done.append(self.m)
-            self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                           {**self.req_settings, **
-                                               self.opt_settings},
-                                           np.array(self.module_names)[
-                self.m == np.array(self.id_mod)][0],
-                True)
-        self.check_quit()
+    # def display_buttons(self):
+    #     """ Updates the displayed radiobuttons and the description windows.
+    #     It loads the information corresponding to the selected module (self.m)
+    #     and shows the available plugins and their corresponding descriptions.
+    #     """
+    #     module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
+    #     name = self.canvas.itemcget('t'+str(self.m), 'text')
+    #     # self.my_label.config(text = 'Choose a plugin for the '+name+' module')
+    #     ps = PluginSpecs()
+    #     plugin_list = list(ps.class_names[module].values())
+    #     plugin_list.append('Custom')
+    #     descriptions = list(ps.class_descriptions[module].values())
+    #     descriptions.append('User specified plugin')
+    #     if self.m not in self.plugin:
+    #         self.plugin[self.m] = tk.StringVar()
+    #         self.plugin[self.m].set(None)
+    #     self.allWeHearIs = []
+    #     for p, plug in enumerate(plugin_list):
+    #         rb = tk.Radiobutton(self.frame2, text=plug, fg='white', bg=self.bg,
+    #                             height=3, width=20, var=self.plugin[self.m],
+    #                             selectcolor='black', value=plug,
+    #                             font=self.controller.pages_font, command=self.optionsWindow)
+    #         rb.grid(column=5 + (p % 2 != 0), row=int(p/2)+1)
+    #         self.CreateToolTip(rb, text=descriptions[p])
+    #         self.allWeHearIs.append(rb)
 
-    def display_buttons(self):
-        """ Updates the displayed radiobuttons and the description windows.
-        It loads the information corresponding to the selected module (self.m)
-        and shows the available plugins and their corresponding descriptions.
-        """
-        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
-        name = self.canvas.itemcget('t'+str(self.m), 'text')
-        # self.my_label.config(text = 'Choose a plugin for the '+name+' module')
-        ps = PluginSpecs()
-        plugin_list = list(ps.class_names[module].values())
-        plugin_list.append('Custom')
-        descriptions = list(ps.class_descriptions[module].values())
-        descriptions.append('User specified plugin')
-        if self.m not in self.plugin:
-            self.plugin[self.m] = tk.StringVar()
-            self.plugin[self.m].set(None)
-        self.allWeHearIs = []
-        for p, plug in enumerate(plugin_list):
-            rb = tk.Radiobutton(self.frame2, text=plug, fg='white', bg=self.bg,
-                                height=3, width=20, var=self.plugin[self.m],
-                                selectcolor='black', value=plug,
-                                font=self.controller.pages_font, command=self.optionsWindow)
-            rb.grid(column=5 + (p % 2 != 0), row=int(p/2)+1)
-            self.CreateToolTip(rb, text=descriptions[p])
-            self.allWeHearIs.append(rb)
+    # def optionsWindow(self):
+    #     """ Function to create a new window displaying the available options 
+    #     of the selected plugin."""
 
-    def optionsWindow(self):
-        """ Function to create a new window displaying the available options 
-        of the selected plugin."""
+    #     module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
+    #     ps = PluginSpecs()
+    #     self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get(
+    #     ).lower()+'.py']
+    #     self.req_settings = ps.required_settings[module][self.plugin[self.m].get(
+    #     ).lower()+'.py']
+    #     # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
+    #     # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
+    #     if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
+    #         if hasattr(self, 'newWindow') and (self.newWindow != None):
+    #             self.newWindow.destroy()
+    #         self.newWindow = tk.Toplevel(self.controller)
+    #         # Window options
+    #         self.newWindow.title(self.plugin[self.m].get()+' plugin options')
+    #         script_dir = os.path.dirname(__file__)
+    #         self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
+    #             file=os.path.join(os.path.join(
+    #                 script_dir,
+    #                 'resources',
+    #                 'Assets',
+    #                 'AIDIcon.ico'))))
+    #         self.newWindow.geometry("350x400")
 
-        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
-        ps = PluginSpecs()
-        self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get(
-        ).lower()+'.py']
-        self.req_settings = ps.required_settings[module][self.plugin[self.m].get(
-        ).lower()+'.py']
-        # req_settings = {'arg1': 'int', 'arg2': ['C', 'F']}
-        # opt_settings = {'arg3': 'int', 'arg4': ['C', 'F']}
-        if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
-            if hasattr(self, 'newWindow') and (self.newWindow != None):
-                self.newWindow.destroy()
-            self.newWindow = tk.Toplevel(self.controller)
-            # Window options
-            self.newWindow.title(self.plugin[self.m].get()+' plugin options')
-            script_dir = os.path.dirname(__file__)
-            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
-                file=os.path.join(os.path.join(
-                    script_dir,
-                    'resources',
-                    'Assets',
-                    'AIDIcon.ico'))))
-            self.newWindow.geometry("350x400")
+    #         frame1 = tk.Frame(self.newWindow)
+    #         frame4 = tk.Frame(self.newWindow)
 
-            frame1 = tk.Frame(self.newWindow)
-            frame4 = tk.Frame(self.newWindow)
+    #         # Print settings
+    #         tk.Label(frame1,
+    #                  text="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+    #         self.entry = []
+    #         # Required
+    #         r = 1
+    #         if len(self.req_settings) > 0:
+    #             frame2 = tk.Frame(self.newWindow)
+    #             tk.Label(frame2,
+    #                      text="Required settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
+    #             self.displaySettings(frame2, self.req_settings)
+    #             frame2.grid(column=0, row=r, sticky="nswe")
+    #             r += 1
+    #         # Optional
+    #         if len(self.opt_settings) > 0:
+    #             frame3 = tk.Frame(self.newWindow)
+    #             tk.Label(frame3,
+    #                      text="Optional settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
+    #             self.displaySettings(frame3, self.opt_settings)
+    #             frame3.grid(column=0, row=r, sticky="nswe")
+    #             r += 1
 
-            # Print settings
-            tk.Label(frame1,
-                     text="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
-            self.entry = []
-            # Required
-            r = 1
-            if len(self.req_settings) > 0:
-                frame2 = tk.Frame(self.newWindow)
-                tk.Label(frame2,
-                         text="Required settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
-                self.displaySettings(frame2, self.req_settings)
-                frame2.grid(column=0, row=r, sticky="nswe")
-                r += 1
-            # Optional
-            if len(self.opt_settings) > 0:
-                frame3 = tk.Frame(self.newWindow)
-                tk.Label(frame3,
-                         text="Optional settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
-                self.displaySettings(frame3, self.opt_settings)
-                frame3.grid(column=0, row=r, sticky="nswe")
-                r += 1
+    #         self.entry[0].focus()
+    #         self.finishButton = tk.Button(
+    #             frame4, text='Finish', command=self.removewindow)
+    #         self.finishButton.grid(
+    #             column=1, row=r+1, sticky="es", pady=(0, 10), padx=(0, 10))
+    #         self.finishButton.bind(
+    #             "<Return>", lambda event: self.removewindow())
+    #         self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
-            self.entry[0].focus()
-            self.finishButton = tk.Button(
-                frame4, text='Finish', command=self.removewindow)
-            self.finishButton.grid(
-                column=1, row=r+1, sticky="es", pady=(0, 10), padx=(0, 10))
-            self.finishButton.bind(
-                "<Return>", lambda event: self.removewindow())
-            self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
+    #         frame1.grid(column=0, row=0, sticky="new")
+    #         frame4.grid(column=0, row=r, sticky="se")
+    #         self.newWindow.grid_rowconfigure(0, weight=1)
+    #         self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=2)
+    #         self.newWindow.grid_columnconfigure(0, weight=1)
 
-            frame1.grid(column=0, row=0, sticky="new")
-            frame4.grid(column=0, row=r, sticky="se")
-            self.newWindow.grid_rowconfigure(0, weight=1)
-            self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=2)
-            self.newWindow.grid_columnconfigure(0, weight=1)
-
-    def displaySettings(self, frame, settings):
-        """ Adds an entry for each input setting. Displays it in the specified row.
-        :param frame: tkinter frame type of frame
-        :param settings: dict type of plugin setting options
-        """
-        r = 1
-        for arg, val in settings.items():
-            tk.Label(frame,
-                     text=arg).grid(row=r, column=0)
-            self.entry.append(EntryWithPlaceholder(frame, val))
-            self.entry[-1].grid(row=r, column=1)
-            self.entry[-1].bind("<Return>", lambda event,
-                                a=len(self.entry): self.on_return_entry(a))
-            r += 1
-        frame.grid_rowconfigure(tuple(range(r)), weight=1)
-        frame.grid_columnconfigure(tuple(range(2)), weight=1)
+    # def displaySettings(self, frame, settings):
+    #     """ Adds an entry for each input setting. Displays it in the specified row.
+    #     :param frame: tkinter frame type of frame
+    #     :param settings: dict type of plugin setting options
+    #     """
+    #     r = 1
+    #     for arg, val in settings.items():
+    #         tk.Label(frame,
+    #                  text=arg).grid(row=r, column=0)
+    #         self.entry.append(EntryWithPlaceholder(frame, val))
+    #         self.entry[-1].grid(row=r, column=1)
+    #         self.entry[-1].bind("<Return>", lambda event,
+    #                             a=len(self.entry): self.on_return_entry(a))
+    #         r += 1
+    #     frame.grid_rowconfigure(tuple(range(r)), weight=1)
+    #     frame.grid_columnconfigure(tuple(range(2)), weight=1)
 
     def removewindow(self):
         """ Stores settings options and closes window """
@@ -328,15 +270,15 @@ class pipelineCanvas(tk.Frame):
         self.newWindow = None
         self.focus()
 
-    def on_return_entry(self, r):
-        """ Changes focus to the next available entry. When no more, focuses 
-        on the finish button.
-        : param r: int type of entry id.
-        """
-        if r < len(self.entry):
-            self.entry[r].focus()
-        else:
-            self.finishButton.focus()
+    # def on_return_entry(self, r):
+    #     """ Changes focus to the next available entry. When no more, focuses 
+    #     on the finish button.
+    #     : param r: int type of entry id.
+    #     """
+    #     if r < len(self.entry):
+    #         self.entry[r].focus()
+    #     else:
+    #         self.finishButton.focus()
 
     def CreateToolTip(self, widget, text):
         """ Calls ToolTip to create a window with a widget description. """
