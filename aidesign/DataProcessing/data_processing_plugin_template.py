@@ -1,7 +1,6 @@
 from aidesign._plugin_template import PluginTemplate
 from aidesign._types import DataInterface
 
-from typing import Type
 from abc import ABC, abstractmethod
 
 
@@ -11,7 +10,7 @@ class DataProcessingPluginTemplate(PluginTemplate, ABC):
 
         param: plugin_globals:dict dictionary representing the global symbol table of the plugin script
         """
-        super(__class__, self).__init__(plugin_globals)
+        super().__init__(plugin_globals)
         self._options_to_ignore = ["Data"]
 
     def configure(self, config: dict):

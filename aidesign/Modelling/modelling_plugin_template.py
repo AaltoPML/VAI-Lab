@@ -9,7 +9,7 @@ class ModellingPluginTemplate(PluginTemplate,ABC):
 
         param: plugin_globals:dict dictionary representing the global symbol table of the plugin script
         """
-        super(__class__,self).__init__(plugin_globals)
+        super().__init__(plugin_globals)
 
     def configure(self, config: dict):
         """Implemented by parent: aidesign.utils.common_plugin_template.PluginTemplate"""
