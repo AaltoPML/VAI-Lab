@@ -54,7 +54,7 @@ class CanvasInput(tk.Frame, UI):
         self._data_in = data_in
         self._load_classes_from_data()
 
-    # Function overloads super function & causes static type error
+    # Causes static type error as it overloads the method in the parent class
     def configure(self, config: dict):          # type:ignore
         self._config = config
 
