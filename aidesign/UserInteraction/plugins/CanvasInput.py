@@ -1,4 +1,5 @@
 
+from typing import List
 from aidesign.UserInteraction.User_Interaction_template import UI
 
 import tkinter as tk
@@ -31,13 +32,13 @@ class CanvasInput(tk.Frame, UI):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, columnspan=7,
                            rowspan=12, pady=15)
-        self.frame = []
-        self.tree = []
-        self.canvas = []
-        self.draw = []
-        self.state = []
-        self.type = []
-        self.clock = []
+        self.frame: List[tk.Frame] = []
+        self.tree: List[ttk.Treeview] = []
+        self.canvas: List[tk.Canvas] = []
+        self.draw: List[tk.StringVar] = []
+        self.state: List[tk.StringVar] = []
+        self.type: List[str] = []
+        self.clock: List[tk.StringVar] = []
         self.save_path = ''
         self.saved = True
 
@@ -53,7 +54,8 @@ class CanvasInput(tk.Frame, UI):
         self._data_in = data_in
         self._load_classes_from_data()
 
-    def configure(self, config: dict):
+    # Function overloads super function & causes static type error
+    def configure(self, config: dict):          # type:ignore
         self._config = config
 
     def class_list(self):
