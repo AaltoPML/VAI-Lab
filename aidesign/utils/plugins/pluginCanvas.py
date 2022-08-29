@@ -1,12 +1,12 @@
 from aidesign.Data.xml_handler import XML_handler
 from aidesign._plugin_helpers import PluginSpecs
-from aidesign._types import DictT
 from aidesign._import_helper import get_lib_parent_dir
 
 import os
 import numpy as np
 import pandas as pd
 
+from typing import Dict, List
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox
@@ -41,7 +41,8 @@ class pluginCanvas(tk.Frame):
                 'resources',
                 'Assets',
                 'AIDIcon.ico'))))
-        self.grid_rowconfigure(tuple(range(5)), weight=1)
+        # self.grid_rowconfigure(tuple(range(5)), weight=1)
+        self.grid_rowconfigure(4, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         frame1 = tk.Frame(self, bg=self.bg)
@@ -63,9 +64,9 @@ class pluginCanvas(tk.Frame):
         self.id_done = [0, 1]
         self.id_mod = [0, 1]
         self.out_data = pd.DataFrame()
-        self.plugin: DictT = {}
-        self.dataType = {}
-        self.allWeHearIs = []
+        self.plugin: Dict[int, tk.StringVar] = {}
+        self.dataType: Dict[int, tk.StringVar] = {}
+        self.allWeHearIs: List[tk.Radiobutton] = []
 
         self.my_label = tk.Label(self.frame2,
                                  text='',
@@ -117,8 +118,10 @@ class pluginCanvas(tk.Frame):
         self.frame4.grid(column=1, row=5, sticky="sew")
 
         # self.frame2.grid_columnconfigure(tuple(range(2)), weight=1)
-        frame3.grid_columnconfigure(tuple(range(2)), weight=2)
-        self.frame4.grid_columnconfigure(tuple(range(2)), weight=2)
+        self.frame2.grid_columnconfigure(1, weight=1)
+        # frame3.grid_columnconfigure(tuple(range(2)), weight=2)
+        frame3.grid_columnconfigure(1, weight=2)
+        self.frame4.grid_columnconfigure(1, weight=2)
 
     def class_list(self, value):
         """ Temporary fix """
@@ -643,7 +646,7 @@ class pluginCanvas(tk.Frame):
                 self.canvas.create_rectangle(x0, y0,
                                              x1, y1,
                                              outline='#4ff07a',
-                                             tag='loop-'+str(l))
+                                             tag='loop-'+str(l))  # type: ignore
                 text_w = self.controller.pages_font.measure(
                     modules[key]['type']) + 20
                 self.canvas.create_text(
