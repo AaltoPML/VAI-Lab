@@ -38,7 +38,6 @@ class pipelineCanvas(tk.Frame):
                 'resources',
                 'Assets',
                 'AIDIcon.ico'))))
-        # self.grid_rowconfigure(tuple(range(2)), weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         frame1 = tk.Frame(self, bg=self.bg)
@@ -57,6 +56,7 @@ class pipelineCanvas(tk.Frame):
         self.cr = 4
         """
         TODO: Implement clicking on canvas actions
+        Commented out WIP code as it was complicating searching for bugs in plugincanvas
         """
         # self.canvas.bind('<Button-1>', self.on_click)
         # self.plugin = {}
@@ -78,54 +78,54 @@ class pipelineCanvas(tk.Frame):
         """ Temporary fix """
         return value
 
-    def on_click(self, event):
-        """ Passes the mouse click coordinates to the select function."""
-        self.select(event.x, event.y)
+    # def on_click(self, event):
+    #     """ Passes the mouse click coordinates to the select function."""
+    #     self.select(event.x, event.y)
 
-    def select(self, x: float, y: float):
-        """ 
-        Selects the module at the mouse location and updates the associated 
-        plugins as well as the colours. 
-        Blue means no plugin has been specified,
-        Orange means the module is selected.
-        Green means the plugin for this module is already set. 
-        :param x: float type of module x coordinate
-        :param y: float type of module y coordinate
-        """
-        self.selected = self.canvas.find_overlapping(
-            x-5, y-5, x+5, y+5)
-        if self.selected:
-            if len(self.selected) > 2:
-                self.canvas_selected = self.selected[-2]
-            else:
-                self.canvas_selected = self.selected[-1]
+    # def select(self, x: float, y: float):
+    #     """ 
+    #     Selects the module at the mouse location and updates the associated 
+    #     plugins as well as the colours. 
+    #     Blue means no plugin has been specified,
+    #     Orange means the module is selected.
+    #     Green means the plugin for this module is already set. 
+    #     :param x: float type of module x coordinate
+    #     :param y: float type of module y coordinate
+    #     """
+    #     self.selected = self.canvas.find_overlapping(
+    #         x-5, y-5, x+5, y+5)
+    #     if self.selected:
+    #         if len(self.selected) > 2:
+    #             self.canvas_selected = self.selected[-2]
+    #         else:
+    #             self.canvas_selected = self.selected[-1]
 
-        if (self.m in self.plugin.keys()) and\
-                (self.plugin[self.m].get() != 'None') and \
-                (self.m not in self.id_done):  # add
-            self.id_done.append(self.m)
-            print(np.array(self.module_names)[
-                  self.m == np.array(self.id_mod)][0])
-            self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                           {**self.req_settings, **
-                                               self.opt_settings},
-                                           np.array(self.module_names)[
-                self.m == np.array(self.id_mod)][0],
-                True)
-        if self.m in self.id_done and self.m > 1:
-            self.canvas.itemconfig('p'+str(self.m), fill='#46da63')
-        else:
-            self.canvas.itemconfig('p'+str(self.m), fill=self.bg)
+    #     if (self.m in self.plugin.keys()) and\
+    #             (self.plugin[self.m].get() != 'None') and \
+    #             (self.m not in self.id_done):  # add
+    #         self.id_done.append(self.m)
+    #         print(np.array(self.module_names)[
+    #               self.m == np.array(self.id_mod)][0])
+    #         self.s.append_plugin_to_module(self.plugin[self.m].get(),
+    #                                        {**self.req_settings, **
+    #                                            self.opt_settings},
+    #                                        np.array(self.module_names)[
+    #             self.m == np.array(self.id_mod)][0],
+    #             True)
+    #     if self.m in self.id_done and self.m > 1:
+    #         self.canvas.itemconfig('p'+str(self.m), fill='#46da63')
+    #     else:
+    #         self.canvas.itemconfig('p'+str(self.m), fill=self.bg)
 
-        if len(self.canvas.gettags(self.canvas_selected)) > 0:
-            if not (len(self.canvas.gettags(self.canvas_selected)[0].split('-')) > 1) and\
-                    not (self.canvas.gettags(self.canvas_selected)[0].split('-')[0] == 'loop'):
-                self.m = int(self.canvas.gettags(self.canvas_selected)[0][1:])
-            if self.m > 1:
-                if self.m not in self.id_done and self.m > 1:
-                    self.canvas.itemconfig('p'+str(self.m), fill='#dbaa21')
-                for widget in self.allWeHearIs:
-                    widget.grid_remove()
+    #     if len(self.canvas.gettags(self.canvas_selected)) > 0:
+    #         if not (len(self.canvas.gettags(self.canvas_selected)[0].split('-')) > 1) and\
+    #                 not (self.canvas.gettags(self.canvas_selected)[0].split('-')[0] == 'loop'):
+    #             self.m = int(self.canvas.gettags(self.canvas_selected)[0][1:])
+    #         if self.m > 1:
+    #             if self.m not in self.id_done and self.m > 1:
+    #                 self.canvas.itemconfig('p'+str(self.m), fill='#dbaa21')
+    #             for widget in self.allWeHearIs:
+    #                 widget.grid_remove()
 
     # def finnish(self):
     #     """ Calls function check_quit.
@@ -254,21 +254,21 @@ class pipelineCanvas(tk.Frame):
     #     frame.grid_rowconfigure(tuple(range(r)), weight=1)
     #     frame.grid_columnconfigure(tuple(range(2)), weight=1)
 
-    def removewindow(self):
-        """ Stores settings options and closes window """
-        for e, ent in enumerate(self.entry):
-            if e < len(self.req_settings):
-                self.req_settings[list(self.req_settings.keys())[
-                    e]] = ent.get()
-            else:
-                print(self.opt_settings)
-                print(list(self.opt_settings.keys()))
-                print(e-len(self.req_settings))
-                self.opt_settings[list(self.opt_settings.keys())[
-                    e-len(self.req_settings)]] = ent.get()
-        self.newWindow.destroy()
-        self.newWindow = None
-        self.focus()
+    # def removewindow(self):
+    #     """ Stores settings options and closes window """
+    #     for e, ent in enumerate(self.entry):
+    #         if e < len(self.req_settings):
+    #             self.req_settings[list(self.req_settings.keys())[
+    #                 e]] = ent.get()
+    #         else:
+    #             print(self.opt_settings)
+    #             print(list(self.opt_settings.keys()))
+    #             print(e-len(self.req_settings))
+    #             self.opt_settings[list(self.opt_settings.keys())[
+    #                 e-len(self.req_settings)]] = ent.get()
+    #     self.newWindow.destroy()
+    #     self.newWindow = None
+    #     self.focus()
 
     # def on_return_entry(self, r):
     #     """ Changes focus to the next available entry. When no more, focuses 
@@ -280,17 +280,17 @@ class pipelineCanvas(tk.Frame):
     #     else:
     #         self.finishButton.focus()
 
-    def CreateToolTip(self, widget, text):
-        """ Calls ToolTip to create a window with a widget description. """
-        toolTip = ToolTip(widget)
+    # def CreateToolTip(self, widget, text):
+    #     """ Calls ToolTip to create a window with a widget description. """
+    #     toolTip = ToolTip(widget)
 
-        def enter(event):
-            toolTip.showtip(text)
+    #     def enter(event):
+    #         toolTip.showtip(text)
 
-        def leave(event):
-            toolTip.hidetip()
-        widget.bind('<Enter>', enter)
-        widget.bind('<Leave>', leave)
+    #     def leave(event):
+    #         toolTip.hidetip()
+    #     widget.bind('<Enter>', enter)
+    #     widget.bind('<Leave>', leave)
 
     def module_out(self, name):
         """ Updates the output DataFrame.
@@ -450,7 +450,7 @@ class pipelineCanvas(tk.Frame):
                 self.canvas.create_rectangle(x0, y0,
                                              x1, y1,
                                              outline='#4ff07a',
-                                             tag='loop-'+str(l))
+                                             tag='loop-'+str(l)) # type:ignore
                 text_w = self.controller.pages_font.measure(
                     modules[key]['type']) + 20
                 self.canvas.create_text(
