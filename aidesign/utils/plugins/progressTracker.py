@@ -54,9 +54,8 @@ class progressTracker(tk.Frame):
         """
         TODO: Implement clicking on canvas actions
         """
-        # self.canvas.bind('<Button-1>', self.on_click)
-        self.plugin = {}
-        self.allWeHearIs = []
+        self.canvas.bind('<Button-1>', self.on_click)
+        self.dataType = {}
         
         self.upload()
         
@@ -79,50 +78,33 @@ class progressTracker(tk.Frame):
         """ Temporary fix """
         return value
 
-    # def on_click(self, event):
-    #     """ Passes the mouse click coordinates to the select function."""
-    #     self.select(event.x, event.y)
+    def on_click(self, event):
+        """ Passes the mouse click coordinates to the select function."""
+        self.select(event.x, event.y)
         
-    # def select(self, x: float, y:float):
-    #     """ 
-    #     Selects the module at the mouse location and updates the associated 
-    #     plugins as well as the colours. 
-    #     Blue means no plugin has been specified,
-    #     Orange means the module is selected.
-    #     Green means the plugin for this module is already set. 
-    #     :param x: float type of module x coordinate
-    #     :param y: float type of module y coordinate
-    #     """
-    #     self.selected = self.canvas.find_overlapping(
-    #         x-5, y-5, x+5, y+5)
-    #     if self.selected:
-    #         if len(self.selected) > 2:
-    #             self.canvas.selected = self.selected[-2]
-    #         else:
-    #             self.canvas.selected = self.selected[-1]
-        
-    #     if (self.m in self.plugin.keys()) and\
-    #             (self.plugin[self.m].get() != 'None') and \
-    #             (self.m not in self.id_done): # add
-    #             self.id_done.append(self.m)
-    #             self.s.append_plugin_to_module(self.plugin[self.m].get(),
-    #                                              {**self.req_settings, **self.opt_settings},
-    #                                              np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
-    #                                              True)
-    #     if self.m in self.id_done and self.m > 1:
-    #         self.canvas.itemconfig('p'+str(self.m), fill = '#46da63')
-    #     else:
-    #         self.canvas.itemconfig('p'+str(self.m), fill = self.bg)
-        
-    #     if len(self.canvas.gettags(self.canvas.selected)) > 0:
-    #         if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
-    #             not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
-    #             self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
-    #         if self.m > 1:
-    #             if self.m not in self.id_done and self.m > 1:
-    #                 self.canvas.itemconfig('p'+str(self.m), fill = '#dbaa21')
-    #             for widget in self.allWeHearIs:
-    #                 widget.grid_remove()
+    def select(self, x: float, y:float):
+        """ 
+        Selects the module at the mouse location and updates the associated 
+        plugins as well as the colours. 
+        Blue means no plugin has been specified,
+        Orange means the module is selected.
+        Green means the plugin for this module is already set. 
+        :param x: float type of module x coordinate
+        :param y: float type of module y coordinate
+        """
+        self.selected = self.canvas.find_overlapping(
+            x-5, y-5, x+5, y+5)
+        if self.selected:
+            if len(self.selected) > 2:
+                self.canvas.selected = self.selected[-2]
+            else:
+                self.canvas.selected = self.selected[-1]
+        if len(self.canvas.gettags(self.canvas.selected)) > 0:
+            if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
+                not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
+                self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
+            if self.m > 1:
+                self.optionsWindow()
 
     def module_out(self, name):
         """ Updates the output DataFrame.
@@ -244,18 +226,142 @@ class progressTracker(tk.Frame):
         self.connections[self.modules] = {}
         self.module_out(boxName)
         self.module_list.append(boxName)
+        print(self.module_list)
         self.modules += 1
         
-    # def CreateToolTip(self, widget, text):
-    #     """ Calls ToolTip to create a window with a widget description. """
-    #     toolTip = ToolTip(widget)
-    #     def enter(event):
-    #         toolTip.showtip(text)
-    #     def leave(event):
-    #         toolTip.hidetip()
-    #     widget.bind('<Enter>', enter)
-    #     widget.bind('<Leave>', leave)
+    def optionsWindow(self):
+        """ Function to create a new window displaying the available options 
+        of the selected plugin."""
         
+        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
+        plugin = self.s.loaded_modules[module]['plugin']['plugin_name']
+        module_type = self.s.loaded_modules[module]['module_type']
+        ps = PluginSpecs()
+        self.opt_settings = ps.optional_settings[module_type][plugin]
+        self.req_settings = ps.required_settings[module_type][plugin]
+        if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
+            if hasattr(self, 'newWindow') and (self.newWindow!= None):
+                self.newWindow.destroy()
+            self.newWindow = tk.Toplevel(self.controller)
+            # Window options
+            self.newWindow.title(plugin+' plugin options')
+            script_dir = os.path.dirname(__file__)
+            self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
+                file = os.path.join(os.path.join(
+                    script_dir, 
+                    'resources', 
+                    'Assets', 
+                    'AIDIcon.ico'))))
+            self.newWindow.geometry("350x400")
+
+            frame1 = tk.Frame(self.newWindow)
+            frame4 = tk.Frame(self.newWindow)
+            
+            # Print settings
+            tk.Label(frame1,
+                  text ="Please indicate your desired options for the "+plugin+" plugin.", anchor = tk.N, justify=tk.LEFT).pack(expand = True)
+            self.entry = []
+            # Required
+            r = 1
+            if len(self.req_settings) > 0:
+                frame2 = tk.Frame(self.newWindow)
+                tk.Label(frame2,
+                      text ="Required settings:", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0 , columnspan=2)
+                self.displaySettings(frame2, self.req_settings)
+                frame2.grid(column=0, row=r, sticky="nswe")
+                r += 1
+            # Optional
+            if len(self.opt_settings) > 0:
+                frame3 = tk.Frame(self.newWindow)
+                tk.Label(frame3,
+                      text ="Optional settings:", anchor = tk.W, justify=tk.LEFT).grid(row=0,column=0, columnspan=2)
+                self.displaySettings(frame3, self.opt_settings)
+                frame3.grid(column=0, row=r, sticky="nswe")
+                r += 1
+            if len(self.entry) > 0:
+                self.entry[0].focus()
+            self.finishButton = tk.Button(
+                frame4, text = 'Finish', command = self.removewindow)
+            self.finishButton.grid(column = 1, row = r+1, sticky="es", pady=(0,10), padx=(0,10))
+            self.finishButton.bind("<Return>", lambda event: self.removewindow())
+            self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
+
+            frame1.grid(column=0, row=0, sticky="new")
+            frame4.grid(column=0, row=r, sticky="se")
+            self.newWindow.grid_rowconfigure(0, weight=1)
+            self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=2)
+            self.newWindow.grid_columnconfigure(0, weight=1)
+
+    def displaySettings(self, frame, settings):
+        """ Adds an entry for each input setting. Displays it in the specified row.
+        :param frame: tkinter frame type of frame
+        :param settings: dict type of plugin setting options
+        """
+        r = 1
+        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
+        options = self.s.loaded_modules[module]['plugin']['options']
+        print(options)
+        for arg, val in settings.items():
+            tk.Label(frame,
+              text = arg).grid(row=r,column=0)
+            if arg == 'Data':
+                if self.m not in self.dataType:
+                    self.dataType[self.m] = tk.StringVar()
+                    self.dataType[self.m].set('X')
+                tk.Radiobutton(frame, text = 'Input (X)', fg = 'black', 
+                               var = self.dataType[self.m], value = 'X'
+                               ).grid(row=r, column=1)
+                if len(self.s._get_all_elements_with_tag("Y")) > 0 or \
+                    len(self.s._get_all_elements_with_tag("Y_test")) > 0:
+                    tk.Radiobutton(frame, text = 'Output (Y)', fg = 'black', 
+                                   var = self.dataType[self.m], value = 'Y'
+                                   ).grid(row=r, column=2)
+            else:
+                self.entry.append(tk.Entry(frame))
+                print(arg, options.keys())
+                value = options[arg] if arg in options else None
+                self.entry[-1].insert(0, str(value))
+                self.entry[-1].grid(row=r, column=1)
+                self.entry[-1].bind("<Return>", lambda event, a = len(self.entry): self.on_return_entry(a))
+            r += 1
+        frame.grid_rowconfigure(tuple(range(r)), weight=1)
+        frame.grid_columnconfigure(tuple(range(2)), weight=1)
+
+    def removewindow(self):
+        """ Stores settings options and closes window """
+        self.req_settings.pop("Data", None)
+        req_keys = list(self.req_settings.keys())
+        opt_keys = list(self.opt_settings.keys())
+        for e,ent in enumerate(self.entry):
+            if e < len(self.req_settings):
+                if len(ent.get()) == 0:
+                    self.req_settings.pop(req_keys[e], None)
+                else:
+                    self.req_settings[req_keys[e]] = ent.get()
+            else:
+                # print(self.opt_settings)
+                # print(list(self.opt_settings.keys()))
+                # print(e-len(self.req_settings))
+                if len(ent.get()) == 0:
+                    self.opt_settings.pop(opt_keys[e-len(req_keys)], None)
+                else:
+                    self.opt_settings[opt_keys[e-len(req_keys)]] = ent.get()
+        if self.m in self.dataType:
+            self.req_settings['Data'] = self.dataType[self.m].get()
+        self.newWindow.destroy()
+        self.newWindow = None
+        self.focus()
+
+    def on_return_entry(self, r):
+        """ Changes focus to the next available entry. When no more, focuses 
+        on the finish button.
+        : param r: int type of entry id.
+        """
+        if r < len(self.entry):
+            self.entry[r].focus()
+        else:
+            self.finishButton.focus()
+
     def upload(self):
         """ Opens the XML file that was previously uploaded and places the 
         modules, loops and connections in the canvas."""
@@ -338,7 +444,7 @@ class progressTracker(tk.Frame):
                 self.add_module(key,
                                 modules[key]['coordinates'][0][0],
                                 modules[key]['coordinates'][0][1])
-                self.module_list[-1] = modules[key]['module_type']
+                # self.module_list[-1] = modules[key]['module_type']
                 self.id_mod.append(modules[key]['coordinates'][1])
                 connect = list(modules[key]['coordinates'][2].keys())
                 
@@ -388,9 +494,6 @@ class progressTracker(tk.Frame):
         self.l = 0
         self.id_done = [0,1]
         self.plugin = {}
-        for widget in self.allWeHearIs:
-                widget.grid_remove()
-        self.allWeHearIs = []
 
     def check_quit(self):
         

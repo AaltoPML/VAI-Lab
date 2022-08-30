@@ -35,7 +35,11 @@
         <coordinates>
             [(300,328),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="Lasso" />
+        <plugin type="RidgeRegression">
+            <alpha>
+                 0.001
+            </alpha>
+        </plugin>
     </Modelling>
     <Output name="Output">
         <plugin type="" />
