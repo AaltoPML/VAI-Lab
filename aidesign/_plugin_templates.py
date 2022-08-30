@@ -113,10 +113,12 @@ class PluginTemplate:
             self._config["options"][key] = val
 
     def _test(self, data: DataInterface) -> DataInterface:
-        """Run debug tests on data operations"""
+        """Run debug tests on data operations
+        TODO: Investigate if all plugins need a score and predict method
+        """
         if self._PLUGIN_MODULE_OPTIONS['Type'] == 'classification':
             print('Training accuracy: %.2f%%' %
-                  (self.score(self.X, self.Y)*100))
+                  (self.score(self.X, self.Y)*100)) # type: ignore
             if self.Y_tst is not None:
                 print('Test accuracy: %.2f%%' %
                       (self.score(self.X_tst, self.Y_tst)*100))
@@ -124,7 +126,7 @@ class PluginTemplate:
                 data.append_data_column("Y_pred", self.predict(self.X_tst))
             return data
         elif self._PLUGIN_MODULE_OPTIONS['Type'] == 'regression':
-            print('Training R2 score: %.3f' % (self.score(self.X, self.Y)))
+            print('Training R2 score: %.3f' % (self.score(self.X, self.Y))) # type: ignore
             if self.Y_tst is not None:
                 print('Training R2 score: %.3f' %
                       (self.score(self.X_tst, self.Y_tst)))
@@ -147,14 +149,10 @@ class DataProcessingT(PluginTemplate, ABC):
         self._options_to_ignore = ["Data"]
 
     def configure(self, config: dict):
-        """Implemented by parent: aidesign.utils.common_plugin_template.PluginTemplate"""
+        """Extended from PluginTemplate.configure"""
         super().configure(config)
         if type(self.X) is None and type(self.Y) is None:
             print('Invalid Data name. Indicate whether to use `X` or `Y`')
-
-    def set_data_in(self, data_in: DataInterface):
-        """Implemented by parent: aidesign.utils.common_plugin_template.PluginTemplate"""
-        super().set_data_in(data_in)
 
     def _clean_solver_options(self):
         """XML tags that specify data to be processed should not be sent to solver
@@ -173,21 +171,11 @@ class DataProcessingT(PluginTemplate, ABC):
     def transform(self, data: DataInterface) -> DataInterface:
         pass
 
-    def _test(self, data: DataInterface) -> DataInterface:
-        return super()._test(data)
-
-
 
 
 class ModellingPluginT(PluginTemplate,ABC):
     def __init__(self, plugin_globals: dict) -> None:
         super().__init__(plugin_globals)
-
-    def configure(self, config: dict):
-        super().configure(config)
-
-    def set_data_in(self, data_in: DataInterface):
-        super().set_data_in(data_in)
 
     @abstractmethod
     def solve(self):
@@ -200,6 +188,3 @@ class ModellingPluginT(PluginTemplate,ABC):
     @abstractmethod
     def score(self):
         pass
-
-    def _test(self, data: DataInterface) -> DataInterface:
-        return super()._test(data)
