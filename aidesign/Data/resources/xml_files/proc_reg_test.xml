@@ -23,7 +23,7 @@
         </coordinates>
         <plugin type="StandardScaler">
             <Data>
-                 X
+                X
             </Data>
         </plugin>
     </DataProcessing>
@@ -37,7 +37,7 @@
         </coordinates>
         <plugin type="RidgeRegression">
             <alpha>
-                 0.001
+                0.0002
             </alpha>
         </plugin>
     </Modelling>

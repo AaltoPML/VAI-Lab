@@ -179,9 +179,9 @@ class progressTracker(tk.Frame):
             justify = tk.CENTER)
         
         CanvasTooltip(self.canvas, self.canvas.find_withtag('p'+str(self.modules))[0], 
-                           text = self.pretty_status(self.controller.status[boxName]))
+                           text = 'Model progress status:\n'+self.pretty_status(self.controller.status[boxName])) # Link box
         CanvasTooltip(self.canvas, self.canvas.find_withtag('t'+str(self.modules))[0], 
-                           text = self.pretty_status(self.controller.status[boxName]))
+                           text = 'Model progress status:\n'+self.pretty_status(self.controller.status[boxName])) # Link text
         
         if not out:
             self.canvas.create_oval(
@@ -233,18 +233,18 @@ class progressTracker(tk.Frame):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
         
-        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
-        plugin = self.s.loaded_modules[module]['plugin']['plugin_name']
-        module_type = self.s.loaded_modules[module]['module_type']
+        self.module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
+        self.plugin = self.s.loaded_modules[self.module]['plugin']['plugin_name']
+        module_type = self.s.loaded_modules[self.module]['module_type']
         ps = PluginSpecs()
-        self.opt_settings = ps.optional_settings[module_type][plugin]
-        self.req_settings = ps.required_settings[module_type][plugin]
+        self.opt_settings = ps.optional_settings[module_type][self.plugin]
+        self.req_settings = ps.required_settings[module_type][self.plugin]
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow!= None):
                 self.newWindow.destroy()
             self.newWindow = tk.Toplevel(self.controller)
             # Window options
-            self.newWindow.title(plugin+' plugin options')
+            self.newWindow.title(self.plugin+' plugin options')
             script_dir = os.path.dirname(__file__)
             self.tk.call('wm','iconphoto', self.newWindow, ImageTk.PhotoImage(
                 file = os.path.join(os.path.join(
@@ -259,7 +259,7 @@ class progressTracker(tk.Frame):
             
             # Print settings
             tk.Label(frame1,
-                  text ="Please indicate your desired options for the "+plugin+" plugin.", anchor = tk.N, justify=tk.LEFT).pack(expand = True)
+                  text ="Please indicate your desired options for the "+self.plugin+" plugin.", anchor = tk.N, justify=tk.LEFT).pack(expand = True)
             self.entry = []
             # Required
             r = 1
@@ -298,8 +298,7 @@ class progressTracker(tk.Frame):
         :param settings: dict type of plugin setting options
         """
         r = 1
-        module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
-        options = self.s.loaded_modules[module]['plugin']['options']
+        options = self.s.loaded_modules[self.module]['plugin']['options']
         print(options)
         for arg, val in settings.items():
             tk.Label(frame,
@@ -318,8 +317,7 @@ class progressTracker(tk.Frame):
                                    ).grid(row=r, column=2)
             else:
                 self.entry.append(tk.Entry(frame))
-                print(arg, options.keys())
-                value = options[arg] if arg in options else None
+                value = options[arg] if arg in options else 'default'
                 self.entry[-1].insert(0, str(value))
                 self.entry[-1].grid(row=r, column=1)
                 self.entry[-1].bind("<Return>", lambda event, a = len(self.entry): self.on_return_entry(a))
@@ -334,15 +332,12 @@ class progressTracker(tk.Frame):
         opt_keys = list(self.opt_settings.keys())
         for e,ent in enumerate(self.entry):
             if e < len(self.req_settings):
-                if len(ent.get()) == 0:
+                if len(ent.get()) == 0 or ent.get() == 'default':
                     self.req_settings.pop(req_keys[e], None)
                 else:
                     self.req_settings[req_keys[e]] = ent.get()
             else:
-                # print(self.opt_settings)
-                # print(list(self.opt_settings.keys()))
-                # print(e-len(self.req_settings))
-                if len(ent.get()) == 0:
+                if len(ent.get()) == 0 or ent.get() == 'default':
                     self.opt_settings.pop(opt_keys[e-len(req_keys)], None)
                 else:
                     self.opt_settings[opt_keys[e-len(req_keys)]] = ent.get()
@@ -350,6 +345,9 @@ class progressTracker(tk.Frame):
             self.req_settings['Data'] = self.dataType[self.m].get()
         self.newWindow.destroy()
         self.newWindow = None
+        self.s.update_plugin_options(self.module,
+                                       {**self.req_settings, **self.opt_settings},
+                                       True)
         self.focus()
 
     def on_return_entry(self, r):

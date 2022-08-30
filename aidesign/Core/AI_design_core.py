@@ -119,6 +119,7 @@ class Core(object):
             self._add_status(specs[key], 'finish', time.strftime('%H:%M:%S', time.localtime()))
             if specs[key]["class"] == 'module':
                 self._runTracker()
+                self.load_config_file(self._xml_handler.filename)
 
     def run(self):
         if not self.setup_complete:
