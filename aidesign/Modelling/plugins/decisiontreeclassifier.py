@@ -1,12 +1,14 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.tree import DecisionTreeClassifier as model
 
-_PLUGIN_READABLE_NAMES = {"DecissionTreeClassifier":"default","DTClassifier":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"max_depth": "int"} # model().get_params()
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"DecissionTreeClassifier": "default",
+                          "DTClassifier": "alias"}              # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}             # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                                  # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"max_depth": "int"}                # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                              # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                      # type:ignore
+
 
 class DecisionTreeClassifier(ModellingPluginTemplate):
     """

@@ -1,31 +1,32 @@
-from aidesign._types import Data
+from aidesign._types import DataInterface
+
 import numpy as np
 
+
 class PluginTemplate:
-    def __init__(self,plugin_globals: dict) -> None:
+    def __init__(self, plugin_globals: dict) -> None:
         self.X = None
         self.Y = None
         self.X_tst = None
         self.Y_tst = None
 
-        # self._PLUGIN_READABLE_NAMES : dict
-        # self._PLUGIN_MODULE_OPTIONS: dict
-        # self._PLUGIN_REQUIRED_SETTINGS: dict
-        # self._PLUGIN_OPTIONAL_SETTINGS: dict
-        # self._PLUGIN_REQUIRED_DATA: dict
-        # self._PLUGIN_OPTIONAL_DATA: dict
+        self._PLUGIN_READABLE_NAMES: dict
+        self._PLUGIN_MODULE_OPTIONS: dict
+        self._PLUGIN_REQUIRED_SETTINGS: dict
+        self._PLUGIN_OPTIONAL_SETTINGS: dict
+        self._PLUGIN_REQUIRED_DATA: dict
+        self._PLUGIN_OPTIONAL_DATA: dict
 
-        
         self._parse_plugin_requirements(plugin_globals)
 
-    def configure(self, config: dict):
+    def configure(self, config: dict) -> None:
         """Sets and parses plugin configurations options
         :param config: dict of internal tags set in the XML config file 
         """
         self._config = config
         self._parse_config()
 
-    def set_data_in(self, data_in: Data):
+    def set_data_in(self, data_in: DataInterface) -> None:
         """Sets and parses incoming data
         :param data_in: saves data as class variable
                         expected type: aidesign.Data.Data_core.Data
@@ -38,13 +39,6 @@ class PluginTemplate:
 
     def _parse_plugin_requirements(self, plugin_globals: dict):
         """Get all plugin options from child plugin.
-        Variables declared: 
-            self._PLUGIN_READABLE_NAMES
-            self._PLUGIN_MODULE_OPTIONS
-            self._PLUGIN_REQUIRED_SETTINGS
-            self._PLUGIN_OPTIONAL_SETTINGS
-            self._PLUGIN_REQUIRED_DATA
-            self._PLUGIN_OPTIONAL_DATA
         """
         for key in plugin_globals.keys():
             if key.startswith("_PLUG"):
@@ -74,12 +68,13 @@ class PluginTemplate:
         self.X = self._data_in["X"]
         self.Y = np.array(self._get_data_if_exist(self._data_in, "Y")).ravel()
         self.X_tst = self._get_data_if_exist(self._data_in, "X_test")
-        self.Y_tst = np.array(self._get_data_if_exist(self._data_in, "Y_test")).ravel()
+        self.Y_tst = np.array(self._get_data_if_exist(
+            self._data_in, "Y_test")).ravel()
         self._clean_options()
 
     def _get_data_if_exist(self, data_dict: dict, key: str, default=None):
         """Returns data from incoming data if exists, else returns None
-        
+
         :param data_dict:dict of all incoming data
         :param key:str: name of data being searched for
 
@@ -88,11 +83,18 @@ class PluginTemplate:
         return data_dict[key] if key in data_dict.keys() and data_dict[key] is not None else default
 
     def _reshape(self, data, shape):
+        """Reshapes data to shape. Primarily used for arrays with shape (n,)
+        
+        :param data: data to reshape
+        :param shape: shape to reshape to
+
+        :returns reshaped data: reshaped data
+        """
         return data.reshape(shape[0], shape[1])
 
     def _clean_options(self):
         """Parses incoming plugin options in self._config["options"] 
-                and modifies datatype in-place
+                and modifies DataInterface in-place
                 str options which only contain numeric data are converted to float OR int
         """
         for key, val in self._config["options"].items():

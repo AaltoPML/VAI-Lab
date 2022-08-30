@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from aidesign.GUI.GUI_core import GUI
 
 class AID(GUI):

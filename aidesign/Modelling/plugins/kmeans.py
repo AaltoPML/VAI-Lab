@@ -1,12 +1,14 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.cluster import KMeans as model
 
-_PLUGIN_READABLE_NAMES = {"KMeans":"default"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "clustering"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"n_clusters": "int", "n_init": "int"}
-_PLUGIN_REQUIRED_DATA = {"X"}
-_PLUGIN_OPTIONAL_DATA = {"Y", "X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"KMeans": "default"}      # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "clustering"}     # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                      # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"n_clusters": "int",
+                             "n_init": "int"}       # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X"}                       # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"Y", "X_tst", 'Y_tst'}     # type:ignore
+
 
 class KMeans(ModellingPluginTemplate):
     """

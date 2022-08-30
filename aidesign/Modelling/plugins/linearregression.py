@@ -1,12 +1,13 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.linear_model import LinearRegression as model
 
-_PLUGIN_READABLE_NAMES = {"LinearRegression": "default", "LR": "alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {}
-_PLUGIN_REQUIRED_DATA = {"X", "Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"LinearRegression": "default",
+                          "LR": "alias"}                    # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "regression"}             # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                              # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                              # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                          # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                  # type:ignore
 
 
 class LinearRegression(ModellingPluginTemplate):

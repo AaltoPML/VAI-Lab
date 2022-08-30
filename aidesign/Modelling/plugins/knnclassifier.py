@@ -1,12 +1,15 @@
 from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
 from sklearn.neighbors import KNeighborsClassifier as model
 
-_PLUGIN_READABLE_NAMES = {"KNNClassifier":"default","KNN-C":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}
-_PLUGIN_REQUIRED_SETTINGS = {}
-_PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors":"int", "weights": "str"}
-_PLUGIN_REQUIRED_DATA = {"X","Y"}
-_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}
+_PLUGIN_READABLE_NAMES = {"KNNClassifier": "default",
+                          "KNN-C": "alias"}             # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "classification"}     # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                          # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"n_neighbors": "int",
+                             "weights": "str"}          # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X", "Y"}                      # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}              # type:ignore
+
 
 class KNNclassifier(ModellingPluginTemplate):
     """
