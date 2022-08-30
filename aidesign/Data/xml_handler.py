@@ -403,10 +403,13 @@ class XML_handler(object):
 
     def update_module_coords(self,
                              module_name: str,
-                             coords: list = None):
+                             coords: list = None,
+                             save_changes: bool = False):
         elem = self._get_element_from_name(module_name)
         self._add_coords(elem, coords)
         self._parse_XML()
+        if save_changes:
+            self.write_to_XML()
 
     def _add_coords(self,
                     elem: ET.Element,
@@ -421,7 +424,8 @@ class XML_handler(object):
 
     def update_plugin_options(self,
                               xml_parent_name: ET.Element or str,
-                              options: dict):
+                              options: dict,
+                              save_changes: bool = False):
         """Update the options of a plugin
 
         :param plugin_name: str of plugin name
@@ -432,6 +436,8 @@ class XML_handler(object):
         plugin_elem = xml_parent_name.find("./plugin")
         self._add_plugin_options(plugin_elem, options)
         self._parse_XML()
+        if save_changes:
+            self.write_to_XML()
 
     def _add_plugin_options(self,
                             plugin_elem: ET.Element,
