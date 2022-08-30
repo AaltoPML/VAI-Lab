@@ -40,7 +40,7 @@ class DataProcessingPluginTemplate(PluginTemplate, ABC):
     def transform(self, data: DataInterface) -> DataInterface:
         pass
 
-    def _test(self, data):
+    def _test(self, data: DataInterface) -> DataInterface:
         if self._PLUGIN_MODULE_OPTIONS['Type'] == 'classification':
             print('Training accuracy: %.2f%%' %
                   (self.score(self.X, self.Y)*100))
@@ -62,4 +62,6 @@ class DataProcessingPluginTemplate(PluginTemplate, ABC):
             print('Clustering completed')
             if self.X_tst is not None:
                 data.append_data_column("Y_pred", self.predict(self.X_tst))
+            return data
+        else:
             return data
