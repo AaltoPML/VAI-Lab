@@ -226,7 +226,6 @@ class progressTracker(tk.Frame):
         self.connections[self.modules] = {}
         self.module_out(boxName)
         self.module_list.append(boxName)
-        print(self.module_list)
         self.modules += 1
         
     def optionsWindow(self):
@@ -299,7 +298,6 @@ class progressTracker(tk.Frame):
         """
         r = 1
         options = self.s.loaded_modules[self.module]['plugin']['options']
-        print(options)
         for arg, val in settings.items():
             tk.Label(frame,
               text = arg).grid(row=r,column=0)
