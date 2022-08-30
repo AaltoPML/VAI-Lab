@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.linear_model import BayesianRidge as model
 
 _PLUGIN_READABLE_NAMES = {"BayesianRidge": "default"}   # type:ignore
@@ -9,7 +9,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                      # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}              # type:ignore
 
 
-class BayesianRidge(ModellingPluginTemplate):
+class BayesianRidge(ModellingPluginT):
     """
     Bayesian ridge regression
     """

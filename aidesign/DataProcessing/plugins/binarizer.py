@@ -1,4 +1,4 @@
-from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
+from aidesign._plugin_templates import DataProcessingT
 
 import pandas as pd
 from sklearn.preprocessing import Binarizer as model
@@ -10,7 +10,7 @@ _PLUGIN_OPTIONAL_SETTINGS = {"threshold": "float"}                      # type:i
 _PLUGIN_REQUIRED_DATA = {}                                              # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}                      # type:ignore
 
-class Binarizer(DataProcessingPluginTemplate):
+class Binarizer(DataProcessingT):
     """
     Binarize data (set feature values to 0 or 1) according to a threshold
     """

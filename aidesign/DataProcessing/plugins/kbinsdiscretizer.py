@@ -1,4 +1,4 @@
-from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
+from aidesign._plugin_templates import DataProcessingT
 
 import pandas as pd
 from sklearn.preprocessing import KBinsDiscretizer as model
@@ -10,7 +10,7 @@ _PLUGIN_OPTIONAL_SETTINGS = {"n_bins": "int"}           # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                              # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}      # type:ignore
 
-class KBinsDiscretizer(DataProcessingPluginTemplate):
+class KBinsDiscretizer(DataProcessingT):
     """
     Bin continuous data into interval
     """

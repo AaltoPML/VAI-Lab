@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.svm import SVR as model
 
 _PLUGIN_READABLE_NAMES = {"SVR": "default",
@@ -13,7 +13,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                              # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                      # type:ignore
 
 
-class SVR(ModellingPluginTemplate):
+class SVR(ModellingPluginT):
     """
     Epsilon-Support Vector Regression
     """

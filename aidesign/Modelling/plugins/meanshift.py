@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.cluster import MeanShift as model
 
 _PLUGIN_READABLE_NAMES = {"MeanShift":"default"}        # type:ignore
@@ -8,7 +8,7 @@ _PLUGIN_OPTIONAL_SETTINGS = {"bandwidth": "float"}      # type:ignore
 _PLUGIN_REQUIRED_DATA = {"X"}                           # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"Y", "X_tst", 'Y_tst'}         # type:ignore
 
-class MeanShift(ModellingPluginTemplate):
+class MeanShift(ModellingPluginT):
     """
     Mean shift clustering using a flat kernel.
     """

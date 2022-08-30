@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.svm import SVC as model
 
 _PLUGIN_READABLE_NAMES = {"SVC": "default",
@@ -13,7 +13,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                                  # type:ignor
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                          # type:ignore
 
 
-class SVC(ModellingPluginTemplate):
+class SVC(ModellingPluginT):
     """
     C-Support Vector Classification
     """

@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.linear_model import Ridge as model
 
 _PLUGIN_READABLE_NAMES = {"Ridge": "default",
@@ -10,7 +10,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                          # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                  # type:ignore
 
 
-class RidgeRegression(ModellingPluginTemplate):
+class RidgeRegression(ModellingPluginT):
     """
     Linear least squares with l2 regularization
     """

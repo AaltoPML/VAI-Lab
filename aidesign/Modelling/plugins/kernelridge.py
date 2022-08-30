@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.kernel_ridge import KernelRidge as model
 
 _PLUGIN_READABLE_NAMES = {"KernelRidge": "default",
@@ -13,7 +13,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                      # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}              # type:ignore
 
 
-class KernelRidge(ModellingPluginTemplate):
+class KernelRidge(ModellingPluginT):
     """
     Kernel ridge regression.
     """

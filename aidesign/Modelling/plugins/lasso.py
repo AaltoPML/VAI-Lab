@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.linear_model import Lasso as model
 
 _PLUGIN_READABLE_NAMES = {"Lasso":"default"}        # type:ignore
@@ -8,7 +8,7 @@ _PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float"}      # type:ignore
 _PLUGIN_REQUIRED_DATA = {"X","Y"}                   # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}          # type:ignore
 
-class Lasso(ModellingPluginTemplate):
+class Lasso(ModellingPluginT):
     """
     Linear Model trained with L1 prior as regularizer
     """

@@ -1,5 +1,5 @@
 from sklearn.preprocessing import MaxAbsScaler as model
-from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
+from aidesign._plugin_templates import DataProcessingT
 import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"MaxAbsScaler":"default"}     # type:ignore
@@ -9,7 +9,7 @@ _PLUGIN_OPTIONAL_SETTINGS = {}                          # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                              # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}      # type:ignore
 
-class MaxAbsScaler(DataProcessingPluginTemplate):
+class MaxAbsScaler(DataProcessingT):
     """
     Scale each feature by its maximum absolute value
     """

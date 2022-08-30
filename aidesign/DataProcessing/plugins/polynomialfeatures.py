@@ -1,4 +1,4 @@
-from aidesign.DataProcessing.data_processing_plugin_template import DataProcessingPluginTemplate
+from aidesign._plugin_templates import DataProcessingT
 from sklearn.preprocessing import PolynomialFeatures as model
 import pandas as pd
 
@@ -14,7 +14,7 @@ _PLUGIN_REQUIRED_DATA = {}                                  # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X", "Y", "X_tst", 'Y_tst'}        # type:ignore
 
 
-class PolynomialFeatures(DataProcessingPluginTemplate):
+class PolynomialFeatures(DataProcessingT):
     """ 
     Generate polynomial and interaction features
     """

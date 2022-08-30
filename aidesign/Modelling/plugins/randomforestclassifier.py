@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.ensemble import RandomForestClassifier as model
 
 _PLUGIN_READABLE_NAMES = {"RandomForestClassifier": "default",
@@ -12,7 +12,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                              # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                      # type:ignore
 
 
-class RandomForestClassifier(ModellingPluginTemplate):
+class RandomForestClassifier(ModellingPluginT):
     """
     A random forest classifier
     """

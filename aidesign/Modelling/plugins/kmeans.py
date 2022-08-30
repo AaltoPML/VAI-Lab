@@ -1,4 +1,4 @@
-from aidesign.Modelling.modelling_plugin_template import ModellingPluginTemplate
+from aidesign._plugin_templates import ModellingPluginT
 from sklearn.cluster import KMeans as model
 
 _PLUGIN_READABLE_NAMES = {"KMeans": "default"}      # type:ignore
@@ -10,7 +10,7 @@ _PLUGIN_REQUIRED_DATA = {"X"}                       # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"Y", "X_tst", 'Y_tst'}     # type:ignore
 
 
-class KMeans(ModellingPluginTemplate):
+class KMeans(ModellingPluginT):
     """
     K-Means clustering
     """
