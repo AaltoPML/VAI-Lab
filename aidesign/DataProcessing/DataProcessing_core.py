@@ -1,9 +1,6 @@
 from aidesign._import_helper import import_plugin_absolute
 from aidesign._types import PluginSpecsInterface, DataInterface, DataProcessingPluginInterface
 
-from typing import List
-
-
 class DataProcessing(object):
     def __init__(self) -> None:
         self.output_data: DataInterface

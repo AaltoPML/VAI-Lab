@@ -118,3 +118,7 @@ class GUICoreInterface(ModuleInterface,Protocol):
 
     def set_gui(self) -> None:
         ...
+
+class InputDataCoreInterface(ModuleInterface,Protocol):
+    def load_data_from_file(self, filename:str, data_id:str) -> None:
+        ...

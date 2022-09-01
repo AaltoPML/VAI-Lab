@@ -29,7 +29,7 @@ class Core:
         self._xml_handler.load_XML(filename)
         self.setup_complete = True
 
-    def _load_data(self):
+    def _load_data(self) -> None:
         init_data_fn = self._xml_handler.data_to_load
         self.data.import_data_from_config(init_data_fn)
 
