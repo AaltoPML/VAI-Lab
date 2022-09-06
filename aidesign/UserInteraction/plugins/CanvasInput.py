@@ -1,6 +1,6 @@
 
 from typing import List
-from aidesign.UserInteraction.User_Interaction_template import UI
+from aidesign._plugin_templates import UI
 
 import tkinter as tk
 from tkinter import messagebox, ttk
