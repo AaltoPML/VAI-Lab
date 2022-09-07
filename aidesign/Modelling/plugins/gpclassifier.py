@@ -52,13 +52,13 @@ class GPClassifier(ModellingPluginT):
         """
         return self.clf.predict(data)
 
-    def score(self, X_tst, Y_tst, sample_weight=None):
+    def score(self, X, Y, sample_weight=None):
         """Return the coefficient of determination
-        :param  X_tst : array-like of shape (n_samples, n_features)
-        :param  Y_tst :  array-like of shape (n_samples,) or (n_samples, n_outputs)
+        :param  X : array-like of shape (n_samples, n_features)
+        :param  Y :  array-like of shape (n_samples,) or (n_samples, n_outputs)
         :param sample_weight : array-like of shape (n_samples,), default=None
                     Sample weights.
 
         :returns: score : float R^2` of ``self.predict(X)`` wrt. `y`.
         """
-        return self.clf.score(X_tst, Y_tst, sample_weight)
+        return self.clf.score(X, Y, sample_weight=None)
