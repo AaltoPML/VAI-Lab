@@ -67,8 +67,8 @@ class RidgeRegression(object):
     def predict(self,data):
         return self.clf.predict(data)
 
-    def score(self,X_tst, Y_tst):
-        return self.clf.score(X_tst, Y_tst)
+    def score(self,X, Y):
+        return self.clf.score(X, Y)
 
     def _test(self, data):
         if _PLUGIN_MODULE_OPTIONS['Type'] == 'classification':

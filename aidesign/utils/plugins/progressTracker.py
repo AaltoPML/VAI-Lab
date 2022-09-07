@@ -28,6 +28,8 @@ class progressTracker(tk.Frame):
         self.controller = controller
         self.s = XML_handler()
         
+        self.controller.title('Progress Tracker')
+        
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
             file = os.path.join(os.path.join(
