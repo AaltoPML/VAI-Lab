@@ -65,7 +65,7 @@
                 (322, 207)
             </coordinates>
         </InputData>
-        <UserFeedback name="User Feedback Adaptation">
+        <UserInteraction name="User Feedback Adaptation">
             <plugin type="" />
             <relationships>
                 <parent name="Decision making" />
@@ -75,7 +75,7 @@
             <coordinates>
                 (454, 325)
             </coordinates>
-        </UserFeedback>
+        </UserInteraction>
         <DecisionMaking name="Decision making">
             <plugin type="" />
             <relationships>
