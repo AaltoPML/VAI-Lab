@@ -1,4 +1,4 @@
-from aidesign.UserInteraction.User_Interaction_template import UI
+from aidesign._plugin_templates import UI
 
 class UserInterfaceClass(UI):
     """UserInterfaceClass directly duplicates:
