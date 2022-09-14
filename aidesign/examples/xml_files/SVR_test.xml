@@ -1,16 +1,19 @@
 <pipeline>
     <Initialiser name="Initialiser">
         <relationships>
-            <child name="User Interaction" />
+            <child name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./Data/resources/supervised_classification/X_tr.csv" />
+            <X file="./examples/supervised_regression/X_tr.csv" />
+            <Y file="./examples/supervised_regression/Y_tr.csv" />
+            <X_test file="./examples/supervised_regression/X_tst.csv" />
+            <Y_test file="./examples/supervised_regression/Y_tst.csv" />
         </inputdata>
     </Initialiser>
-    <UserInteraction name="User Interaction">
+    <Modelling name="Modelling">
         <relationships>
             <parent name="Initialiser" />
             <child name="Output" />
@@ -18,16 +21,22 @@
         <coordinates>
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="ManualInput">
-            <image_dir>
-                 ./aidesign/Data/resources/image_classification/training_images
-            </image_dir>
+        <plugin type="SVR">
+            <C>
+                 0.01
+            </C>
+            <kernel>
+                 rbf
+            </kernel>
+            <gamma>
+                 10
+            </gamma>
         </plugin>
-    </UserInteraction>
+    </Modelling>
     <Output name="Output">
         <plugin type="" />
         <relationships>
-            <parent name="User Interaction" />
+            <parent name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{2:'d2-u1'}]

@@ -1,10 +1,10 @@
 <pipeline>
     <Initialiser name="Init">
         <inputdata>
-            <X file="./Data/resources/supervised_regression/1/x_train.csv" />
-            <!-- <X_test file="./Data/resources/import_test.csv" /> -->
-            <Y file="./Data/resources/supervised_regression/1/y_train.csv" />
-            <!-- <Y_test file="./Data/resources/import_test.csv" /> -->
+            <X file="./examples/supervised_regression/1/x_train.csv" />
+            <!-- <X_test file="./examples/import_test.csv" /> -->
+            <Y file="./examples/supervised_regression/1/y_train.csv" />
+            <!-- <Y_test file="./examples/import_test.csv" /> -->
         </inputdata>
         <relationships>
             <child name="My First Modelling Module" />

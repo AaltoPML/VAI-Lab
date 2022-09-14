@@ -1,7 +1,7 @@
 <pipeline>
     <Initialiser name="Init">
         <inputdata>
-            <X file="./Data/resources/state-action/X_data.csv" />
+            <X file="./examples/state-action/X_data.csv" />
         </inputdata>
         <relationships>
             <child name="My First UserFeedback Module" />

@@ -1,8 +1,8 @@
 <pipeline>
     <Initialiser name="Init">
         <inputdata>
-            <X file="./Data/resources/image_classification/training_images/" />
-            <Y file="./Data/resources/image_classification/Y_data.csv" />
+            <X file="./examples/image_classification/training_images/" />
+            <Y file="./examples/image_classification/Y_data.csv" />
         </inputdata>
         <relationships>
             <child name="My First UserInteraction Module" />
@@ -11,16 +11,6 @@
     <loop type="for" condition="2" name="For Loop 1">
         <UserInteraction name="My First UserInteraction Module">
             <plugin type="manual">
-                <!-- <class_list>
-                    Atelectasis
-                    Cardiomelagy
-                    Effusion
-                    Infiltration
-                    Mass
-                    Nodule
-                    Pneumonia
-                    Pneumothorax
-                </class_list> -->
             </plugin>
             <relationships>
                 <parent name="Init" />
