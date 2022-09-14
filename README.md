@@ -2,13 +2,25 @@
 
 ![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/AID_banner_image.png)
 
-This framework aims to provide the means to easily build a fully operational Machine Learning pipeline across different domains. 
-This allows to adapt the machine learning algorithms to the task requirements and provide the output that best adapts to the problem needs.
-Furthermore, its modular nature provides a way to intuitively combine modules for specific problems.
+AID is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals. 
+
+> ⚠ **Warning**
+> This project is a work in progress and many features are currently being implemented. Example configurations are available and more are being added regularly, but full functionality is not ready just yet.
+
+# How to Contribute
+
+The aim of this framework is to be a community effort that will benefit the science, engineering and more. 
+
+We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
+
+ - If you have methods which can be added to the framework, [get in touch](#Get-in-Touch)!
+ - if you think this framework will be useful to your research, [get in touch](#Get-in-Touch)!
+ - If want to get invovled in development, [get in touch](#Get-in-Touch)!
+ - Noticed a bug or other issue? [get in touch](#Get-in-Touch)!
 
 # How it Works
 
-AID is 
+The AID framework uses a modular, plugin-based architecture. 
 
 ```mermaid
 stateDiagram-v2
@@ -26,31 +38,79 @@ stateDiagram-v2
     Module_n --> plugin_m.2
     Module_n --> plugin_m.n
 ```
-## Launching Core
 
-Simple launchers were added to `Core` for easy execution. To load and execute core using the Initialisation GUI, run the following:
+Each module represents a process (e.g. Modelling) and each plugin is a specific implementation of that process (e.g. linear regression).
+
+Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
+
+## Installation
+
+Clone this repository via HTTPS:
+```bash
+git clone https://github.com/AaltoPML/ai-assisted-framework-design.git
+```
+OR SSH:
+```bash
+git clone git@github.com:AaltoPML/ai-assisted-framework-design.git
+```
+Then, run:
+```bash
+python setup.py
+```
+to install the base pre-requisites.
+
+> **Note**
+> Due to the highly modular nature of the library, only the base requirements that are needed for basic operation are installed at the start, as there are many possible plugins, many of which may not be needed for a given user's usecase.
+
+## Launching and Examples
+
+Launching a pipeline is simple, just import the library, instantiate `Core`, then launch the GUI:
 
 ```python
 import aidesign as ai
 
 core = ai.Core()
-core.launch()
 core.run()
 ```
 
-or to execute the pipeline from an existing config file, use: 
+or to execute an existing config file: 
 
 ```python
 import aidesign as ai
 
 core = ai.Core()
-core.load_config_file("<path_to_config_file>)
+core.load_config_file("<path_to_config_file>")
 core.run()
 ```
 
-# Initialisation
+### Examples
 
-## Pipeline definition via canvas interaction
+Pre-made [examples](https://github.com/AaltoPML/ai-assisted-framework-design/tree/main/aidesign/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
+
+Some basic use-cases are provided among many others:
+[user_feedback_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
+[canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
+[regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
+
+#### Launching examples:
+
+To demonstrate the syntax for launching examples using `user_feedback_demo.xml`:
+
+```python
+import aidesign as ai
+
+core = ai.Core()
+core.load_config_file(("./examples","xml_files",'user_feedback_demo.xml'))
+core.run()
+```
+
+> Config file paths can be passed as path stings, a list or tuple of directory paths.
+
+Absolute paths, as well paths relative to the library's base directory can be used.
+For library-relative paths, starting a path definition with `"./"` defaults to the directory of `<path-to-this-repo>/ai-assisted-framework-design/aidesign/`
+
+
+# Defining Pipelines in GUI
 
 The AID module allows to define a pipeline and the relations within by drawing a flowchart on a canvas. This canvas always starts with an `initialiser` module and an `output` module and allows to define any number of modules between these two. To do so, the user needs to define the modules and the relations between them.
 
@@ -73,53 +133,23 @@ Each module object has a number of circles that can be used to join two modules.
 ### Loops
 If you click on the canvas and drag, you can draw a rectangle that defines which modules are inside the loop. Upon releasing the button you are requested to input what type of loop you want and what condition should be fulfilled to end the loop.
 
-### Editing
-You can edit the module's displayed name and the loop's conditions by double-clicking on them and making any desired changes.
-
-### Reset
-Upon clicking the reset button, all objects in the canvas are deleted except for the default modules (`initialiser` and `output`).
-
-
 ## Pipeline uploading via XML file
 
 The pipeline can also be defined uploading an existing XML file. The structure of the XML file is described in the Back-end section.
 
-## UFA
+# Plugin Examples
 
-The User Feedback Adaptation module provides the means to easily interact with the machine learning model to give feedback.
-It allows the user to provide feedback for different domains, adapting the user's input to the corresponding input required by the model. 
-At this stage there are 2 main feedback options.
-
-### `Manual input`
+### `manual_input`
 Requires the user to indicate to which class the specified data corresponds to. 
 In the current example, the model needs to classify images and the model requires expert knowledge for specific images.
 The user needs to indicate which classes correspond to the image and save the results to send them to the model.
 
-### `Interact with canvas`
+### `canvas_input`
 Requires the user to give feedback to state-action pairs.
 It opens a tab for each interactable object in the model and either requires adding new state-action samples or to modify the existing ones. 
 In the current example, the model has two interactable objects that require feedback in two forms: (1) an _angle_ for the state and for the action or (2) a tuple of _Cartesian coordinates_ for the state and for the action. It has been adapted to be able to give feedback to any number of objects. These, at the same time, can be either `sliding` or `rotating` objects. Specifically, `sliding` refers to objects that need Cartesian feedback in a two-dimensional space, while `rotating` refers to objects that require an angle. In order to give feedback, you can choose to either move the corresponding state-action pairs on the canvas or directly edit the tree view display. This last option results in an automatic update on the canvas of the state-action location.
 
-# Back-end
-
-## Filetree structure and modularisation
-To support modularisation and maintaining the modules as plugins, they need to be independent of the rest of the file structure. 
-Each module has:
-    - A root folder carrying its name (e.g. `GUI`)
-    - A core script which calls the plugins (e.g. `GUI_core.py`)
-    - An Abstract Class which enforces plugin structure (e.g. `UserInterfaceClass.py`)
-    - A folder containing all plugins relevant to that module
-
-## XML tags
-
-All tags must currently be nested inside the `Settings` tag (This may be removed later):
-```XML
-<Settings>
-    ...
-</Settings>
-```
-
-## Pipeline Definition
+## Defining a pipeline in XML
 
 The pipeline structure is defined between the `pipeline` tags:
 ```XML
@@ -134,20 +164,24 @@ The `Initialise` tag is the dedicated entry point to the pipeline. No other entr
 Current options:
  - `name`: attribute for user defined name
  - `initial_data`: element for declaring directory for initial data
- - `goal file`: element where the objective for the pipeline is declared (consider renaming)
  - `relationships`: User defined names of modules this one is connected to
+
+Example from [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml)
 ```XML
-<Initialise name="Init">
-        <initial_data file="../resources/intial_data_test.csv" />
-        <goal file="../resources/design_goals_test.csv" />&gt;
+<Initialiser name="Init">
+        <inputdata>
+            <X file="./examples/state-action/X_data.csv" />
+        </inputdata>
         <relationships>
-            <child name="My First GUI Module" />
+            <child name="My First UserFeedback Module" />
         </relationships>
-</Initialise>
+    </Initialiser>
 ```
 
 ### Loops
-Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.  See `example_config.xml` for full example.
+Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.  
+
+See [basic_operation.py](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/basic_operation.xml) for full example.
 Current options:
  - `type`: what variety of loop will this be: `for`, `while`, `manual`(user defined stopping condition on-the-fly)
  - `condition`: Termination condition for the loop. I'm not sure how to deal with the criteria for `while` loops
@@ -164,98 +198,43 @@ Modules are declared by tags matching their names, e.g. the GUI module is loaded
 Required:
  - `name`: Unique user defined name for module, so can be referenced later
  - `plugin`: The type of plugin to be loaded into the module, along with associated options.
- - `relationships`: User-defined names of the `parent` modules which this module receives data from and `child` modules that this module passes data to. Example:
+ - `relationships`: User-defined names of the `parent` modules which this module receives data from and `child` modules that this module passes data to. 
+  
+Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
 ```XML
-     <GUI name="My First GUI Module">
-         <plugin type="manual">
-             <class_list>
-                Atelectasis
-                Cardiomelagy
-                Effusion
-                Infiltration
-                Mass
-                Nodule
-                Pneumonia
-                Pneumothorax
-            </class_list>
-        </plugin>
+     <Modelling name="Modelling">
         <relationships>
-            <parent name="Init" />
-            <child name="Data Processing 1" />
+            <parent name="Initialiser" />
+            <child name="Output" />
         </relationships>
-    </GUI>
-```
-
-### Output 
-Dedicated exit point for the pipeline, where the save file is declared along with the data to be saved
-
-```XML
-<Output>
-    <out_data>
-        all
-    </out_data>
-    <save_to file="../resources/output_test.csv" />
-    <relationships>
-        <parent name="My Second GUI Module" />
-    </relationships>
-</Output>
+        <plugin type="RidgeRegression">
+            <alpha>
+                 0.02
+            </alpha>
+        </plugin>
+    </Modelling>
 ```
 
 ## Data Definition
-The structure of the data which will be passed through the pipeline. Currently, limited placeholder tags are declared until we have a better idea of what we want here. The structure of the data must be declared between the `datastructure` tags: 
+
+Data is loaded from existing files in either the `Initialiser` or `Input Data` modules and is specified using the `inputdata` tags. 
+
+Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
 
 ```XML
-<datastructure name="user_defined_name">
-    ...
-</datastructure>
-```
-
-```XML
-<datastructure name="datatest">
-        <data_fields>
-            State_0
-            State_1
-            Action
-            Reward
-            Termination
-            Goal
-        </data_fields>
-    </datastructure>
+<inputdata>
+    <X file="./examples/supervised_regression/X_tr.csv" />
+    <Y file="./examples/supervised_regression/Y_tr.csv" />
+    <X_test file="./examples/supervised_regression/X_tst.csv" />
+    <Y_test file="./examples/supervised_regression/Y_tst.csv" />
+</inputdata>
 ```
 
 ### Writing Data
 Two methods are given to add data to the XML file. One for modules (`append_pipeline_module_to_file`) and one for data structures (`append_data_structure_field_to_file`).
 
-## Plugin Option Loader
-
-In script `utils/plugin_helpers.py`, class `PluginSpecs` scrapes options inside plugin scripts to populate a dict of plugins for each module. Additionally, other plugin options are defined in-script with the form: `_PLUGIN_<name of option>`, for example:
-
-```python
-_PLUGIN_CLASS_NAME = "ManualInput"
-_PLUGIN_CLASS_DESCRIPTION = "Method of user feedback for binary or classification data"
-_PLUGIN_READABLE_NAMES = {"default":"manual","aliases":["binary,classification"]}
-_PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
-                            "required_children": None,}
-_PLUGIN_REQUIRED_SETTINGS = {"class_list":"list","image_dir":"str"}
-_PLUGIN_OPTIONAL_SETTINGS = {}
-```
-
-`PluginSpecs` defines some convenience methods for quickly grabbing all module options, including:
-
-```python
-def names(self):
-    return self.get_option_specs("_PLUGIN_READABLE_NAMES")
-
-def class_names(self):
-    return self.get_option_specs("_PLUGIN_CLASS_NAME")
-
-def class_descriptions(self):
-        return self.get_option_specs("_PLUGIN_CLASS_DESCRIPTION")
-
-def required_settings(self):
-    return self.get_option_specs("_PLUGIN_REQUIRED_SETTINGS")
-```
-
-# Contact
+# Get in Touch
 - Chris McGreavy, chris.mcgreavy@aalto.fi
 - Carlos Sevilla-Salcedo, carlos.sevillasalcedo@aalto.fi
+
+![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/FCAI_logo-PW.png)
