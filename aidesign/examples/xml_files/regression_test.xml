@@ -7,8 +7,8 @@
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./examples/supervised_regression/1/x_train.csv" />
-            <Y file="./examples/supervised_regression/1/y_train.csv" />
+            <X file="./examples/supervised_regression/data_1D_simple/x_train.csv" />
+            <Y file="./examples/supervised_regression/data_1D_simple/y_train.csv" />
         </inputdata>
     </Initialiser>
     <Modelling name="Modelling">
