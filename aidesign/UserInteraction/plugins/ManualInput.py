@@ -1,4 +1,4 @@
-from aidesign.UserInteraction.User_Interaction_template import UI
+from aidesign._plugin_templates import UI
 from aidesign._import_helper import get_lib_parent_dir
 from aidesign._types import DictT, DataInterface, GUICoreInterface
 
@@ -22,7 +22,7 @@ _PLUGIN_OPTIONAL_SETTINGS = {}                                  # type:ignore
 _PLUGIN_REQUIRED_DATA = {"X", "Y"}                              # type:ignore
 
 
-class ManualInput(tk.Frame, UI):
+class ManualInput(tk.Frame, UI):            # type:ignore
     """Method of user interaction for binary or classification data"""
 
     def __init__(self, parent, controller, config: DictT):
