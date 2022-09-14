@@ -1,11 +1,31 @@
-![AIFRED](https://user-images.githubusercontent.com/22427519/168077112-840bc213-3804-45de-9174-928a203df555.png)
+# AI Assisted Design Framework (AID)
+
+![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/AID_banner_image.png)
 
 This framework aims to provide the means to easily build a fully operational Machine Learning pipeline across different domains. 
 This allows to adapt the machine learning algorithms to the task requirements and provide the output that best adapts to the problem needs.
 Furthermore, its modular nature provides a way to intuitively combine modules for specific problems.
 
-The `Core` class in script `AI_design_core.py` inherits from the `Settings`class, loading the modules declared in the XML file, dynamically importing, instantiating and executing them. 
+# How it Works
 
+AID is 
+
+```mermaid
+stateDiagram-v2
+
+    AID --> Module1
+    AID --> Module2
+    AID --> Module_n
+    Module1 --> plugin_1.1
+    Module1 --> plugin_1.2
+    Module1 --> plugin_1.m
+    Module2 --> plugin_2.1
+    Module2 --> plugin_2.2
+    Module2 --> plugin_2.m
+    Module_n --> plugin_m.1
+    Module_n --> plugin_m.2
+    Module_n --> plugin_m.n
+```
 ## Launching Core
 
 Simple launchers were added to `Core` for easy execution. To load and execute core using the Initialisation GUI, run the following:
@@ -90,54 +110,6 @@ Each module has:
     - An Abstract Class which enforces plugin structure (e.g. `UserInterfaceClass.py`)
     - A folder containing all plugins relevant to that module
 
-```bash
-.
-├── aidesign
-│   ├── Core
-│   │   ├── AI_design_core.py
-│   │   └── __init__.py
-│   ├── GUI
-│   │   ├── plugins
-│   │   │   ├── __init__.py
-│   │   │   ├── resources
-│   │   ├── __init__.py
-│   │   ├── GUI_core.py
-│   ├── Modelling
-│   │   ├── plugins
-│   │   │   └── regression.py
-│   │   ├── __init__.py
-│   │   └── Modelling_core.py
-│   ├── Settings
-│   │   ├── resources
-│   │   │   ├── example_config.xml
-│   │   │   └── Hospital.xml
-│   │   ├── __init__.py
-│   │   └── Settings_core.py
-│   ├── UserFeedback
-│   │   ├── plugins
-│   │   │   ├── resources
-│   │   │   │   └── example_radiography_images
-│   │   │   ├── __init__.py
-│   │   │   ├── CanvasInput.py
-│   │   │   └── ManualInput.py
-│   │   ├── __init__.py
-│   │   ├── User_Feedback_core.py
-│   │   └── User_Feedback_template.py
-│   ├── utils
-│   │   ├── plugins
-│   │   │   ├── resources
-│   │   │   │   └── Hospital.xml
-│   │   │   ├── __init__.py
-│   │   │   └── aidCanvas.py
-│   │   ├── __init__.py
-│   │   ├── AID_core.py
-│   │   ├── import_helper.py
-│   │   └── UserInterfaceClass.py
-│   └── __init__.py
-├── README.md
-├── run_UI.py
-└── setup.py
-```
 ## XML tags
 
 All tags must currently be nested inside the `Settings` tag (This may be removed later):
