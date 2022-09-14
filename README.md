@@ -4,7 +4,7 @@
 
 AID is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals. 
 
-> ⚠ **Warning**
+> **Warning**
 > This project is a work in progress and many features are currently being implemented. Example configurations are available and more are being added regularly, but full functionality is not ready just yet.
 
 # How to Contribute
@@ -237,4 +237,10 @@ Two methods are given to add data to the XML file. One for modules (`append_pipe
 - Chris McGreavy, chris.mcgreavy@aalto.fi
 - Carlos Sevilla-Salcedo, carlos.sevillasalcedo@aalto.fi
 
-![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/FCAI_logo-PW.png)
+<p align="center">
+<img src="./aidesign/utils/resources/Assets/readme_images/FCAI_logo-PW.png" alt="drawing" width="200"/>
+</p>
+<p align="center">
+<img src="aidesign/utils/resources/Assets/readme_images/aalto_logo_grey_background.png" alt="drawing" width="200"/>
+<img src="aidesign/utils/resources/Assets/readme_images/helsinki_logo.png" alt="drawing" width="100"/>
+</p>
