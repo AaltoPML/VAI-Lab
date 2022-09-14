@@ -3,8 +3,10 @@ from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
 from aidesign.Data.Data_core import Data
 from aidesign._plugin_helpers import PluginSpecs
-from aidesign._types import PluginSpecsInterface, DataInterface, ModuleInterface
+from aidesign._types import PluginSpecsInterface, ModuleInterface
 
+from os.path import join
+from typing import Tuple, Union, List
 class Core:
     def __init__(self) -> None:
         self._xml_handler = XML_handler()
@@ -13,7 +15,7 @@ class Core:
         self.loop_level: int = 0
         self.setup_complete: bool = False
 
-    def launch(self):
+    def _launch(self):
         gui_app = GUI()
         gui_app.set_avail_plugins(self._avail_plugins)
         gui_app.set_gui_as_startpage()
@@ -25,8 +27,12 @@ class Core:
                 raise Exception("No XML File Selected. Cannot Run Pipeline")
             self._load_data()
 
-    def load_config_file(self, filename: str):
-        self._xml_handler.load_XML(filename)
+    def load_config_file(self, filename: Union[str,List,Tuple]):
+        if type(filename) == list or type(filename) == tuple:
+            filedir:str = join(*filename)
+        else:
+            filedir = str(filename)
+        self._xml_handler.load_XML(filedir)
         self.setup_complete = True
 
     def _load_data(self) -> None:
@@ -105,7 +111,7 @@ class Core:
         if not self.setup_complete:
             print("No pipeline specified. Running GUI.")
             print("To load existing config, run core.load_config_file(<path_to_file>)")
-            self.launch()
+            self._launch()
         print("Running pipeline...")
         self._load_data()
         self._execute(self._xml_handler.loaded_modules)
