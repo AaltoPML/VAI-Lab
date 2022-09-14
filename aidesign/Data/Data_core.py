@@ -131,8 +131,8 @@ class Data:
 
 if __name__ == "__main__":
     d = Data()
-    # d.load_data_settings("./Data/resources/data_passing_test.xml")
-    d.import_data("./Data/resources/supervised_regression/1/x_train.csv")
+    # d.load_data_settings("./examples/data_passing_test.xml")
+    d.import_data("./examples/supervised_regression/1/x_train.csv")
     # print(d.data["data"])
     print(d["data"]["input"].loc[0:3])
     dc = d.copy()

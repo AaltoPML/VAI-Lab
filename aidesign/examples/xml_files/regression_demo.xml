@@ -1,19 +1,17 @@
 <pipeline>
     <Initialiser name="Initialiser">
         <relationships>
-            <child name="Data Processing" />
+            <child name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./Data/resources/supervised_regression/X_tr.csv" />
-            <Y file="./Data/resources/supervised_regression/Y_tr.csv" />
-            <X_test file="./Data/resources/supervised_regression/X_tst.csv" />
-            <Y_test file="./Data/resources/supervised_regression/Y_tst.csv" />
+            <X file="./examples/supervised_regression/data_1D_simple/x_train.csv" />
+            <Y file="./examples/supervised_regression/data_1D_simple/y_train.csv" />
         </inputdata>
     </Initialiser>
-    <DataProcessing name="Data Processing">
+    <Modelling name="Modelling">
         <relationships>
             <parent name="Initialiser" />
             <child name="Output" />
@@ -21,12 +19,13 @@
         <coordinates>
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="StandardScaler" />
-    </DataProcessing>
+        <plugin type="LinearRegression">
+        </plugin>
+    </Modelling>
     <Output name="Output">
         <plugin type="" />
         <relationships>
-            <parent name="Data Processing" />
+            <parent name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{2:'d2-u1'}]

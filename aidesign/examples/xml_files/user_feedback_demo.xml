@@ -1,8 +1,8 @@
 <pipeline>
     <Initialiser name="Init">
         <inputdata>
-            <X folder="./Data/resources/image_classification/training_images/" />
-            <Y file="./Data/resources/image_classification/Y_data.csv" />
+            <X folder="./examples/image_classification/training_images/" />
+            <Y file="./examples/image_classification/Y_data.csv" />
         </inputdata>
         <relationships>
             <child name="My First UserInteraction Module" />
