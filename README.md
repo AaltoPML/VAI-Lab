@@ -64,7 +64,7 @@ to install the base pre-requisites.
 
 ## Launching and Examples
 
-Launching a pipeline is simple, just import the library, instantiate `Core`, then launch the GUI:
+To launch the framwork with the GUI:
 
 ```python
 import aidesign as ai
@@ -88,9 +88,9 @@ core.run()
 Pre-made [examples](https://github.com/AaltoPML/ai-assisted-framework-design/tree/main/aidesign/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
 
 Some basic use-cases are provided among many others:
-[user_feedback_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
-[canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
-[regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
+ - [user_feedback_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
+ - [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
+ - [regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
 
 #### Launching examples:
 
@@ -234,13 +234,7 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted
 Two methods are given to add data to the XML file. One for modules (`append_pipeline_module_to_file`) and one for data structures (`append_data_structure_field_to_file`).
 
 # Get in Touch
-- Chris McGreavy, chris.mcgreavy@aalto.fi
-- Carlos Sevilla-Salcedo, carlos.sevillasalcedo@aalto.fi
-
-<p align="center">
-<img src="./aidesign/utils/resources/Assets/readme_images/FCAI_logo-PW.png" alt="drawing" width="200"/>
-</p>
-<p align="center">
-<img src="aidesign/utils/resources/Assets/readme_images/aalto_logo_grey_background.png" alt="drawing" width="200"/>
-<img src="aidesign/utils/resources/Assets/readme_images/helsinki_logo.png" alt="drawing" width="100"/>
-</p>
+If you would like contribute, test, give feedback, or ask questions about this framework, we'd like to hear from you!
+Email us at:
+- Chris McGreavy, chris.mcgreavy [at] aalto.fi
+- Carlos Sevilla-Salcedo, carlos.sevillasalcedo [at] aalto.fi
