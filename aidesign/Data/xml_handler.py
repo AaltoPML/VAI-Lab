@@ -31,14 +31,14 @@ class XML_handler(object):
             "relationships": "relationships",
             "plugin": "plugin",
             "coordinates": "list",
-            "Initialiser": "entry_point",
+            "initialiser": "entry_point",
             "inputdata": "data",
-            "Output": "exit_point",
-            "UserInteraction": "module",
-            "DataProcessing": "module",
-            "Modelling": "module",
+            "output": "exit_point",
+            "userinteraction": "module",
+            "dataprocessing": "module",
+            "modelling": "module",
             "InputData": "module",
-            "DecisionMaking": "module",
+            "decisionmaking": "module",
             "loop": "loop"
         }
 
@@ -108,7 +108,7 @@ class XML_handler(object):
         """
         for child in element:
             try:
-                tag_type = self._valid_tags[child.tag]
+                tag_type = self._valid_tags[child.tag].lower()
                 getattr(self, "_load_{}".format(tag_type))(child, parent)
             except KeyError:
                 from sys import exit
