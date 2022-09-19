@@ -1,8 +1,8 @@
-# AI Assisted Design Framework (AID)
+# Virtual Artificially Intelligent Laboratories (VAI Labs)
 
 ![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/AID_banner_image.png)
 
-AID is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals. 
+VAIL is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals. 
 
 > **Warning**
 > This project is a work in progress and many features are currently being implemented. Example configurations are available and more are being added regularly, but full functionality is not ready just yet.
@@ -20,14 +20,14 @@ We are actively seeking contribution in the form of users, testers, developers, 
 
 # How it Works
 
-The AID framework uses a modular, plugin-based architecture. 
+The VAIL framework uses a modular, plugin-based architecture. 
 
 ```mermaid
 stateDiagram-v2
 
-    AID --> Module1
-    AID --> Module2
-    AID --> Module_n
+    VAIL --> Module1
+    VAIL --> Module2
+    VAIL --> Module_n
     Module1 --> plugin_1.1
     Module1 --> plugin_1.2
     Module1 --> plugin_1.m
@@ -41,7 +41,7 @@ stateDiagram-v2
 
 Each module represents a process (e.g. Modelling) and each plugin is a specific implementation of that process (e.g. linear regression).
 
-Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
+Modules can be chained, looped and modified in real-time to create a highly customisable framework for the **user**'s requirements.
 
 ## Installation
 
@@ -112,12 +112,12 @@ For library-relative paths, starting a path definition with `"./"` defaults to t
 
 # Defining Pipelines in GUI
 
-The AID module allows to define a pipeline and the relations within by drawing a flowchart on a canvas. This canvas always starts with an `initialiser` module and an `output` module and allows to define any number of modules between these two. To do so, the user needs to define the modules and the relations between them.
+The VAIL module allows to define a pipeline and the relations within by drawing a flowchart on a canvas. This canvas always starts with an `initialiser` module and an `output` module and allows to define any number of modules between these two. To do so, the user needs to define the modules and the relations between them.
 
 ![PipelineLoop](https://user-images.githubusercontent.com/22427519/168080733-4c88d004-9ca6-486e-bd8d-cc7050e93515.PNG)
 
 ### Modules
-At this moment, there are 7 possible modules for AID. `initialiser` and `output` are compulsory for the pipeline, the rest of them can be freely placed in the canvas. These are:
+At this moment, there are 7 possible modules for VAIL. `initialiser` and `output` are compulsory for the pipeline, the rest of them can be freely placed in the canvas. These are:
  - `Data processing`.
  - `Modelling`.
  - `Decision making`.
