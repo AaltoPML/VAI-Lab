@@ -51,7 +51,7 @@ class aidCanvas(tk.Frame):
         self.my_label.grid(column = 5, row = 0)
         
         # Create canvas
-        self.width, self.height = 600, 600
+        self.width, self.height = 700, 700
         self.canvas = tk.Canvas(frame1, width=self.width, 
             height=self.height, background="white")
         # self.canvas = ResizingCanvas(frame1, width=self.width, 
@@ -71,7 +71,7 @@ class aidCanvas(tk.Frame):
         
         #Initialiser module
         self.add_module('Initialiser', self.width/2, self.h, ini = True)
-        self.add_module('output', self.width/2, self.height - self.h, out = True)
+        self.add_module('Output', self.width/2, self.height - self.h, out = True)
         
         self.draw = False
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -119,11 +119,18 @@ class aidCanvas(tk.Frame):
             command = lambda: self.add_module('Input Data', 
                                               self.width/2, 
                                               self.height/2)
-            ).grid(column = 5, row = 5, padx=(0,10), sticky="news")
+            ).grid(column = 5, row = 5, padx=(0,10), sticky="news")        
+        tk.Button(
+            frame4, text = 'Data Storage', fg = 'white', bg = parent['bg'],
+            height = 3, width = 25, font = self.controller.pages_font,
+            command = lambda: self.add_module('Data Storage', 
+                                              self.width/2, 
+                                              self.height/2)
+            ).grid(column = 5, row = 6, padx=(0,10), sticky="news")
         tk.Button(
             frame4, text = 'Delete selection', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = self.delete_sel).grid(column = 5, row = 6, sticky="news"
+            command = self.delete_sel).grid(column = 5, row = 7, sticky="news"
                                             , padx=(0,10), pady=(0,10))
         
         tk.Button(
@@ -153,7 +160,7 @@ class aidCanvas(tk.Frame):
         frame4.grid(column=1, row=1, sticky="nse")
         
         frame3.grid_columnconfigure(tuple(range(4)), weight=1)
-        frame4.grid_rowconfigure(tuple(range(6)), weight=1)
+        frame4.grid_rowconfigure(tuple(range(7)), weight=1)
 
     def class_list(self,value):
         """ Temporary fix """
@@ -187,6 +194,7 @@ class aidCanvas(tk.Frame):
         self.canvas.tag_bind(key+'-'+str(self.l-1), 
                          "<Double-1>", self.OnDoubleClick)
         self.loopDisp = not self.loopDisp
+        print(self.loops)
     
     def on_button_release(self, event):
         """ Finishes drawing the rectangle for loop definition. 
@@ -208,10 +216,12 @@ class aidCanvas(tk.Frame):
                                    'coord': (self.start_x, self.start_y, 
                                              self.curX, self.curY)})
                 for mod in loopMod:
-                    aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
-                    if len(aux) == 2 and aux[0] == 't':
-                        self.loops[-1]['mod'].append(self.canvas.itemcget(
-                            mod, 'text'))
+                    aux = self.canvas.itemcget(mod, 'tags').split(' ')
+                    print(aux)
+                    if aux[0][:4] != 'loop':
+                        if len(aux) == 2 and len(aux[1]) == 2 and aux[1][0] == 't':
+                            self.loops[-1]['mod'].append(self.canvas.itemcget(
+                                mod, 'text'))
                 
                 # Ask for loop definition and condition and display               
                 self.entry1 = tk.Entry(self.canvas, justify='center', 
@@ -266,7 +276,7 @@ class aidCanvas(tk.Frame):
                 if len(aux) == 2 and aux[0] == 't':
                     self.loops[l]['mod'].append(self.canvas.itemcget(
                         mod, 'text'))
-        print('Updated loop info:', self.loops)
+        # print('Updated loop info:', self.loops)
         
     def select(self, event):
         """ Selects the module at the mouse location. """
@@ -614,8 +624,8 @@ class aidCanvas(tk.Frame):
                             self.canvas.linestartxy[1] + self.cr, 
                             self.canvas.coords(tag2)[0] + self.cr, 
                             self.canvas.coords(tag2)[1] + self.cr,
-                            fill = "red", 
-                            arrow = tk.LAST, 
+                            fill = "red",  width = 2,
+                            arrow = tk.LAST, arrowshape = (12,10,5), 
                             tags = ('o'+str(int(self.tag[1:])), 
                                   'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
                 self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
@@ -735,15 +745,16 @@ class aidCanvas(tk.Frame):
 
             s = XML_handler()
             s.load_XML(filename)
-            s._print_pretty(s.loaded_modules)
+            # s._print_pretty(s.loaded_modules)
             modules = s.loaded_modules
-            modout = modules['output']
-            del modules['Initialiser'], modules['output'] # They are generated when resetting
-            disp_mod = ['Initialiser', 'output']
+            modout = modules['Output']
+            del modules['Initialiser'], modules['Output'] # They are generated when resetting
+            disp_mod = ['Initialiser', 'Output']
             id_mod = [0, 1]
             
             # Place the modules
-            disp_mod, id_mod = self.place_modules(modules, id_mod, disp_mod)
+            id_mod, disp_mod = self.place_modules(modules, id_mod, disp_mod)
+            self.draw_connection(modules, id_mod, disp_mod)
             connect = list(modout['coordinates'][2].keys())
             for p, parent in enumerate(modout['parents']):
                     parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
@@ -755,8 +766,8 @@ class aidCanvas(tk.Frame):
                                 yout + self.cr, 
                                 xins + self.cr, 
                                 yins + self.cr,
-                                fill = "red", 
-                                arrow = tk.LAST, 
+                                fill = "red",  width = 2,
+                                arrow = tk.LAST, arrowshape = (12,10,5), 
                                 tags = ('o'+str(parent_id), 
                                       'o'+str(1), modout['coordinates'][2][connect[p]]))
                     self.out_data.iloc[int(parent_id)][1] = 1
@@ -768,6 +779,7 @@ class aidCanvas(tk.Frame):
         # Place the modules
         for key in [key for key, val in modules.items() if type(val) == dict]:
             if modules[key]['class'] == 'loop':
+                self.l += 1
                 # Extracts numbers from string
                 l = int(''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
                 x0, y0, x1, y1 = modules[key]['coordinates']
@@ -796,39 +808,50 @@ class aidCanvas(tk.Frame):
                                    'mod': [], 
                                    'coord': (x0, y0, 
                                              x1, y1)})
-                disp_mod, id_mod = self.place_modules(modules[key], id_mod, disp_mod)
-            else:
+                id_mod, disp_mod = self.place_modules(modules[key], id_mod, disp_mod)
+            elif key not in disp_mod:
                 # Display module
                 self.add_module(key,
                                 modules[key]['coordinates'][0][0],
                                 modules[key]['coordinates'][0][1])
                 self.module_list[-1] = modules[key]['module_type']
                 id_mod.append(modules[key]['coordinates'][1])
-                connect = list(modules[key]['coordinates'][2].keys())
-                
+                disp_mod.append(key)
+        return id_mod, disp_mod
+
+    def draw_connection(self, modules, id_mod, disp_mod):
+        print(disp_mod)
+        print(id_mod)
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            print(key)
+            if modules[key]['class'] == 'loop':
+                self.draw_connection(modules[key], id_mod, disp_mod)
+            else:
                 # Connect modules
+                connect = list(modules[key]['coordinates'][2].keys())
                 for p, parent in enumerate(modules[key]['parents']):
                     if not (parent[:4] == 'loop'):
+                        # parent_id = modules[parent]['coordinates'][1]
                         parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
                         out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
-                        xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
-                        xins, yins, _, _ =self.canvas.coords(ins[0]+str(id_mod[-1]))
+                        print(parent, parent_id, ins, out)
+                        xout, yout, _ , _ = self.canvas.coords(out)
+                        xins, yins, _, _ =self.canvas.coords(ins)
                         self.canvas.create_line(
                                     xout + self.cr, 
                                     yout + self.cr, 
                                     xins + self.cr, 
                                     yins + self.cr,
-                                    fill = "red", 
-                                    arrow = tk.LAST, 
+                                    fill = "red", width = 2,
+                                    arrow = tk.LAST, arrowshape = (12,10,5), 
                                     tags = ('o'+str(parent_id), 
                                           'o'+str(id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
-                        self.out_data.iloc[int(parent_id)][int(id_mod[-1])] = 1
-                        self.connections[int(id_mod[-1])][
-                            int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(id_mod[-1])
+                        self.out_data.iloc[int(parent_id)][int(ins[1:])] = 1
+                        self.connections[int(ins[1:])][
+                            int(parent_id)] = out[0]+str(out[1:]) + '-' + ins[0]+str(ins[1:])
                     else:
                         self.loops[-1]['mod'].append(key)
-                disp_mod.append(key)
-        return disp_mod, id_mod
+        # return disp_mod, id_mod
     
     def reset(self):
         
@@ -855,7 +878,7 @@ class aidCanvas(tk.Frame):
             self.module_names = []
             
             self.add_module('Initialiser', self.width/2, self.h, ini = True)
-            self.add_module('output', self.width/2, self.height - self.h, out = True)
+            self.add_module('Output', self.width/2, self.height - self.h, out = True)
         
             self.draw = False
             self.loops = []

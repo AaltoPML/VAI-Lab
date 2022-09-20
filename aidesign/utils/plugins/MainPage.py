@@ -99,7 +99,6 @@ class MainPage(tk.Frame):
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
-                    state = tk.DISABLED, 
                     command = lambda: self.canvas("aidCanvas")
                     )
         self.interactButton.grid(column = 0, row = 13)
@@ -111,7 +110,6 @@ class MainPage(tk.Frame):
                     bg = parent['bg'],
                     height = 3,
                     width = 20, 
-                    state = tk.DISABLED, 
                     command = self.upload_xml,
                     )
         self. uploadButton.grid(column = 1, row = 13)
