@@ -315,7 +315,12 @@ class aidCanvas(tk.Frame):
                 self.m = [int(el.split('-')[-1]) for el in self.canvas.gettags("current") if 'loop' in el][0]
             else:
                 self.isLoop = False
-                self.m = [int(el[1:]) for el in self.canvas.gettags("current") if el[0] == 't'][0]
+                self.canvas.gettags("current")
+                #Preference to objects with text
+                if any(el[0] == 't' for el in self.canvas.gettags("current")):
+                    self.m = [int(el[1:]) for el in self.canvas.gettags("current") if el[0] == 't'][0]
+                else:
+                    self.m = [int(el[1:]) for el in self.canvas.gettags("current") if el[1:].isdigit()][0]
 
     def on_drag(self, event):
         """ Uses the mouse location to move the module and its text. 
