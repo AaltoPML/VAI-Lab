@@ -217,9 +217,7 @@ class aidCanvas(tk.Frame):
                 for mod in loopMod:
                     aux = self.canvas.itemcget(mod, 'tags').split(' ')
                     if aux[0][:4] != 'loop':
-                        print(aux)
                         if len(aux) == 2 and len(aux[1]) > 1 and aux[1][0] == 't':
-                            print('Hello')
                             self.loops[-1]['mod'].append(self.canvas.itemcget(
                                 mod, 'text'))
                 
@@ -346,8 +344,6 @@ class aidCanvas(tk.Frame):
             sel_obj = [int(el[1:]) for el in self.canvas.gettags("current") if el[0] == 't']
             if len(sel_obj) > 0:
                 self.m = sel_obj[0]
-                print(self.m)
-                print(self.module_list)
                 
                 dx = event.x - self.canvas.startxy[self.m][0]
                 dy = event.y - self.canvas.startxy[self.m][1]
@@ -550,8 +546,6 @@ class aidCanvas(tk.Frame):
             event.x-5, event.y-5, event.x+5, event.y+5)
         
         # If not loop text
-        print(self.canvas.itemcget(
-                self.selected[0], 'tags'))
         if len(self.canvas.itemcget(
                 self.selected[0], 'tags').split(' ')[-2].split('-')) < 2:
             
@@ -578,7 +572,6 @@ class aidCanvas(tk.Frame):
                               anchor = tk.W, width = x1 - x0)
         # If loop text
         else:
-            print('Hi')
             x0, y0 = self.canvas.coords(self.selected[0])
             if hasattr(self, 'entry'):
                 self.entry.destroy()
@@ -799,6 +792,10 @@ class aidCanvas(tk.Frame):
                     text = modules[key]['condition'], 
                     tags = ('loop-'+str(l), 'condition'+'-'+str(l)), 
                     justify = tk.CENTER)
+                self.canvas.tag_bind('condition-'+str(l), 
+                                 "<Double-1>", self.OnDoubleClick)
+                self.canvas.tag_bind('type-'+str(l), 
+                                 "<Double-1>", self.OnDoubleClick)
                 self.loops.append({'type': modules[key]['type'],
                                    'condition': modules[key]['condition'],
                                    'mod': [], 
@@ -814,16 +811,12 @@ class aidCanvas(tk.Frame):
                 self.module_list[-1] = modules[key]['module_type']
                 id_mod.append(modules[key]['coordinates'][1])
                 disp_mod.append(key)
-                print(key, modules[key]['coordinates'], id_mod)
         self.module_list = [x for _, x in sorted(zip(id_mod, self.module_list))]
         self.canvas.startxy = [x for _, x in sorted(zip(id_mod, self.canvas.startxy))]
         return id_mod, disp_mod
 
     def draw_connection(self, modules, id_mod, disp_mod):
-        print(disp_mod)
-        print(id_mod)
         for key in [key for key, val in modules.items() if type(val) == dict]:
-            print(key)
             if modules[key]['class'] == 'loop':
                 self.draw_connection(modules[key], id_mod, disp_mod)
             else:
@@ -834,7 +827,6 @@ class aidCanvas(tk.Frame):
                         # parent_id = modules[parent]['coordinates'][1]
                         parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
                         out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
-                        print(parent, parent_id, ins, out)
                         xout, yout, _ , _ = self.canvas.coords(out)
                         xins, yins, _, _ = self.canvas.coords(ins)
                         self.canvas.create_line(
