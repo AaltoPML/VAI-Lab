@@ -194,7 +194,6 @@ class aidCanvas(tk.Frame):
         self.canvas.tag_bind(key+'-'+str(self.l-1), 
                          "<Double-1>", self.OnDoubleClick)
         self.loopDisp = not self.loopDisp
-        print(self.loops)
     
     def on_button_release(self, event):
         """ Finishes drawing the rectangle for loop definition. 
@@ -217,9 +216,10 @@ class aidCanvas(tk.Frame):
                                              self.curX, self.curY)})
                 for mod in loopMod:
                     aux = self.canvas.itemcget(mod, 'tags').split(' ')
-                    print(aux)
                     if aux[0][:4] != 'loop':
-                        if len(aux) == 2 and len(aux[1]) == 2 and aux[1][0] == 't':
+                        print(aux)
+                        if len(aux) == 2 and len(aux[1]) > 1 and aux[1][0] == 't':
+                            print('Hello')
                             self.loops[-1]['mod'].append(self.canvas.itemcget(
                                 mod, 'text'))
                 
@@ -272,7 +272,7 @@ class aidCanvas(tk.Frame):
                                                 coord[2], coord[3])
             self.loops[l]['mod'] = []
             for mod in loopMod:
-                aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
+                aux = self.canvas.itemcget(mod, 'tags').split(' ')[-1]
                 if len(aux) == 2 and aux[0] == 't':
                     self.loops[l]['mod'].append(self.canvas.itemcget(
                         mod, 'text'))
@@ -312,14 +312,13 @@ class aidCanvas(tk.Frame):
                     self.canvas.tag_raise('loop-'+str(self.l), 'loop-'+str(self.l-1))
         
         if len(self.canvas.gettags("current")) > 0:
-            if(len(self.canvas.gettags("current")[0].split('-')) > 1) and (
-                self.canvas.gettags("current")[0].split('-')[0] == 'loop'):
+            if any('loop' in value for value in self.canvas.gettags("current")):
                 self.isLoop = True
-                self.m = int(self.canvas.gettags("current")[0].split('-')[1])
+                self.m = [int(el.split('-')[-1]) for el in self.canvas.gettags("current") if 'loop' in el][0]
             else:
                 self.isLoop = False
-                self.m = int(self.canvas.gettags("current")[0][1:])
-    
+                self.m = [int(el[1:]) for el in self.canvas.gettags("current") if el[0] == 't'][0]
+
     def on_drag(self, event):
         """ Uses the mouse location to move the module and its text. 
         At the same time, it looks up if there are any connection to this
@@ -344,47 +343,51 @@ class aidCanvas(tk.Frame):
                                self.start_y, self.curX, self.curY)
         else:
             self.select(event)
-            
-            self.m = int(self.canvas.gettags("current")[0][1:])
-            dx = event.x - self.canvas.startxy[self.m][0]
-            dy = event.y - self.canvas.startxy[self.m][1]
-            # if self.isLoop:
-                # self.canvas.move('loop-'+str(self.m), dx, dy) 
-            # else:
-            # module
-            self.canvas.move('o'+str(self.m), dx, dy)
-            # self.updateLoops()
-            # Connections
-            if any(self.out_data.iloc[self.m].values) or any(
-                    self.out_data[self.out_data.columns[self.m]].values):
-                out = np.arange(self.out_data.values.shape[0])[
-                    self.out_data.values[self.m, :]==1]
-                for o in out:
-                    xycoord_i = self.canvas.coords(
-                        self.connections[o][self.m].split('-')[0])
-                    xycoord_o = self.canvas.coords(
-                        self.connections[o][self.m].split('-')[1])
-                    self.canvas.coords(self.connections[o][self.m], 
-                            (xycoord_i[0] + self.cr, 
-                             xycoord_i[1] + self.cr, 
-                             xycoord_o[0] + self.cr, 
-                             xycoord_o[1] + self.cr))
-                inp = np.arange(self.out_data.values.shape[0])[
-                    self.out_data.values[:, self.m]==1]
-                for i in inp:
-                    xycoord_i = self.canvas.coords(
-                        self.connections[self.m][i].split('-')[0])
-                    xycoord_o = self.canvas.coords(
-                        self.connections[self.m][i].split('-')[1])
-                    self.canvas.coords(self.connections[self.m][i], 
-                            (xycoord_i[0] + self.cr, 
-                             xycoord_i[1] + self.cr, 
-                             xycoord_o[0] + self.cr, 
-                             xycoord_o[1] + self.cr))
-            # Update module location
-            self.canvas.startxy[self.m] = (event.x, event.y)
+            sel_obj = [int(el[1:]) for el in self.canvas.gettags("current") if el[0] == 't']
+            if len(sel_obj) > 0:
+                self.m = sel_obj[0]
+                print(self.m)
+                print(self.module_list)
+                
+                dx = event.x - self.canvas.startxy[self.m][0]
+                dy = event.y - self.canvas.startxy[self.m][1]
+                # if self.isLoop:
+                    # self.canvas.move('loop-'+str(self.m), dx, dy) 
+                # else:
+                # module
+                self.canvas.move('o'+str(self.m), dx, dy)
+                # self.updateLoops()
+                # Connections
+                if any(self.out_data.iloc[self.m].values) or any(
+                        self.out_data[self.out_data.columns[self.m]].values):
+                    out = np.arange(self.out_data.values.shape[0])[
+                        self.out_data.values[self.m, :]==1]
+                    for o in out:
+                        xycoord_i = self.canvas.coords(
+                            self.connections[o][self.m].split('-')[0])
+                        xycoord_o = self.canvas.coords(
+                            self.connections[o][self.m].split('-')[1])
+                        self.canvas.coords(self.connections[o][self.m], 
+                                (xycoord_i[0] + self.cr, 
+                                 xycoord_i[1] + self.cr, 
+                                 xycoord_o[0] + self.cr, 
+                                 xycoord_o[1] + self.cr))
+                    inp = np.arange(self.out_data.values.shape[0])[
+                        self.out_data.values[:, self.m]==1]
+                    for i in inp:
+                        xycoord_i = self.canvas.coords(
+                            self.connections[self.m][i].split('-')[0])
+                        xycoord_o = self.canvas.coords(
+                            self.connections[self.m][i].split('-')[1])
+                        self.canvas.coords(self.connections[self.m][i], 
+                                (xycoord_i[0] + self.cr, 
+                                 xycoord_i[1] + self.cr, 
+                                 xycoord_o[0] + self.cr, 
+                                 xycoord_o[1] + self.cr))
+                # Update module location
+                self.canvas.startxy[self.m] = (event.x, event.y)
     
-    def module_out(self, name):
+    def module_out(self, name, iid):
         """ Updates the output DataFrame.
         
         :param name: name of the model
@@ -396,7 +399,7 @@ class aidCanvas(tk.Frame):
             name_list.append(name + '-' + str(len(m_num)))
         else:
             name_list.append(name)
-        self.canvas.itemconfig('t'+str(self.modules), text = name_list[-1])
+        self.canvas.itemconfig('t'+str(iid), text = name_list[-1])
         values = self.out_data.values
         values = np.vstack((
                     np.hstack((values, np.zeros((values.shape[0],1)))),
@@ -406,14 +409,15 @@ class aidCanvas(tk.Frame):
                                      index = name_list)
         self.module_names.append(name_list[-1])
 
-    def add_module(self, boxName, x, y, ini = False, out = False):
+    def add_module(self, boxName, x, y, ini = False, out = False, iid = None):
         """ Creates a rectangular module with the corresponding text inside.
         
         :param boxName: name of the model
         :type boxName: str
         """
+        iid = self.modules if iid is None else iid
         if not ini and not out:
-            tag = ('o'+str(self.modules),)
+            tag = ('o'+str(iid),)
         else: #Make initialisation and output unmoveable
             tag = ('n0',)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
@@ -422,7 +426,7 @@ class aidCanvas(tk.Frame):
             y - self.h/2, 
             x + text_w/2, 
             y + self.h/2, 
-            tags = tag + ('p'+str(self.modules),), 
+            tags = tag + ('p'+str(iid),), 
             fill = self.bg, width = 3,
             activefill = '#dbaa21')
         self.canvas.create_text(
@@ -430,10 +434,10 @@ class aidCanvas(tk.Frame):
             y, 
             font = self.controller.pages_font, 
             text = boxName, 
-            tags = tag + ('t'+str(self.modules),), 
+            tags = tag + ('t'+str(iid),), 
             fill = '#d0d4d9', 
             justify = tk.CENTER)
-        self.canvas.tag_bind('t'+str(self.modules), 
+        self.canvas.tag_bind('t'+str(iid), 
                              "<Double-1>", self.OnDoubleClick)
         if not out:
             self.canvas.create_oval(
@@ -443,8 +447,8 @@ class aidCanvas(tk.Frame):
                 y + self.h/2 + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('d'+str(self.modules),))
-            self.canvas.tag_bind('d'+str(self.modules), 
+                tags = tag + ('d'+str(iid),))
+            self.canvas.tag_bind('d'+str(iid), 
                                  "<Button-1>", self.join_modules)
             
         if not ini:
@@ -455,8 +459,8 @@ class aidCanvas(tk.Frame):
                 y - self.h/2 + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('u'+str(self.modules),))
-            self.canvas.tag_bind('u'+str(self.modules), 
+                tags = tag + ('u'+str(iid),))
+            self.canvas.tag_bind('u'+str(iid), 
                                  "<Button-1>", self.join_modules)
         
         if not out and not ini:
@@ -467,8 +471,8 @@ class aidCanvas(tk.Frame):
                 y + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('l'+str(self.modules),))
-            self.canvas.tag_bind('l'+str(self.modules), 
+                tags = tag + ('l'+str(iid),))
+            self.canvas.tag_bind('l'+str(iid), 
                                  "<Button-1>", self.join_modules)
         
             self.canvas.create_oval(
@@ -478,17 +482,17 @@ class aidCanvas(tk.Frame):
                 y + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('r'+str(self.modules),))
-            self.canvas.tag_bind('r'+str(self.modules), 
+                tags = tag + ('r'+str(iid),))
+            self.canvas.tag_bind('r'+str(iid), 
                                  "<Button-1>", self.join_modules)
         self.canvas.startxy.append((x, 
                                     y))
-        self.connections[self.modules] = {}
-        self.module_out(boxName)
+        self.connections[iid] = {}
+        self.module_out(boxName, iid)
         self.module_list.append(boxName)
         self.modules += 1
         self.saved = False
-    
+
     def on_return_rename(self, event):
         """ This function renames a module to the input specified through 
         an entry widget. It then updates the corresponding rows and columns in
@@ -546,6 +550,8 @@ class aidCanvas(tk.Frame):
             event.x-5, event.y-5, event.x+5, event.y+5)
         
         # If not loop text
+        print(self.canvas.itemcget(
+                self.selected[0], 'tags'))
         if len(self.canvas.itemcget(
                 self.selected[0], 'tags').split(' ')[-2].split('-')) < 2:
             
@@ -572,6 +578,7 @@ class aidCanvas(tk.Frame):
                               anchor = tk.W, width = x1 - x0)
         # If loop text
         else:
+            print('Hi')
             x0, y0 = self.canvas.coords(self.selected[0])
             if hasattr(self, 'entry'):
                 self.entry.destroy()
@@ -585,7 +592,7 @@ class aidCanvas(tk.Frame):
             self.entry.insert(0, entryText)
             # self.entry1['selectbackground'] = '#d0d4d9'
             self.entry['exportselection'] = False
-    
+            
             self.entry.focus()
             self.entry.bind("<Return>", self.on_return_editLoop)
             self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
@@ -677,21 +684,10 @@ class aidCanvas(tk.Frame):
 
             # to avoid numpy bug during elementwise comparison of lists 
             loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
-
-            # self.s = XML_handler()
-            # self.controller.s.new_config_file(self.save_path.name)
             
             self.controller.s.update_module_coords(self.module_list[0],[self.canvas.startxy[0], 0, self.connections[0]])
             self.controller.s.append_module_relationships(self.module_list[0],list(mn[values[:,0]]),list(mn[values[0,:]]))
             self.controller.s.filename = self.save_path.name
-            # self.controller.s.append_pipeline_module(self.module_list[0], # Initialiser
-            #                       mn[0],
-            #                       "",
-            #                       {},
-            #                       ,
-            #                       ,
-            #                       None,
-            #                       )
             for i, mnn in enumerate(mn_id):
                 if (i > 1) and mnn:
                     xml_parent = None
@@ -813,10 +809,12 @@ class aidCanvas(tk.Frame):
                 # Display module
                 self.add_module(key,
                                 modules[key]['coordinates'][0][0],
-                                modules[key]['coordinates'][0][1])
+                                modules[key]['coordinates'][0][1], 
+                                iid = modules[key]['coordinates'][1])
                 self.module_list[-1] = modules[key]['module_type']
                 id_mod.append(modules[key]['coordinates'][1])
                 disp_mod.append(key)
+                print(key, modules[key]['coordinates'], id_mod)
         return id_mod, disp_mod
 
     def draw_connection(self, modules, id_mod, disp_mod):
@@ -836,23 +834,23 @@ class aidCanvas(tk.Frame):
                         out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
                         print(parent, parent_id, ins, out)
                         xout, yout, _ , _ = self.canvas.coords(out)
-                        xins, yins, _, _ =self.canvas.coords(ins)
+                        xins, yins, _, _ = self.canvas.coords(ins)
                         self.canvas.create_line(
-                                    xout + self.cr, 
-                                    yout + self.cr, 
-                                    xins + self.cr, 
+                                    xout + self.cr,
+                                    yout + self.cr,
+                                    xins + self.cr,
                                     yins + self.cr,
                                     fill = "red", width = 2,
-                                    arrow = tk.LAST, arrowshape = (12,10,5), 
-                                    tags = ('o'+str(parent_id), 
-                                          'o'+str(id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
+                                    arrow = tk.LAST, arrowshape = (12,10,5),
+                                    tags = ('o'+str(parent_id),
+                                          # 'o'+str(id_mod[-1]), 
+                                          modules[key]['coordinates'][2][connect[p]]))
                         self.out_data.iloc[int(parent_id)][int(ins[1:])] = 1
                         self.connections[int(ins[1:])][
                             int(parent_id)] = out[0]+str(out[1:]) + '-' + ins[0]+str(ins[1:])
                     else:
                         self.loops[-1]['mod'].append(key)
-        # return disp_mod, id_mod
-    
+
     def reset(self):
         
         if not self.saved:
