@@ -815,6 +815,8 @@ class aidCanvas(tk.Frame):
                 id_mod.append(modules[key]['coordinates'][1])
                 disp_mod.append(key)
                 print(key, modules[key]['coordinates'], id_mod)
+        self.module_list = [x for _, x in sorted(zip(id_mod, self.module_list))]
+        self.canvas.startxy = [x for _, x in sorted(zip(id_mod, self.canvas.startxy))]
         return id_mod, disp_mod
 
     def draw_connection(self, modules, id_mod, disp_mod):
