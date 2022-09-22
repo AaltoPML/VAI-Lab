@@ -45,7 +45,7 @@ class pluginCanvas(tk.Frame):
         self.frame4 = tk.Frame(self, bg = self.bg)
         
         # Create canvas
-        self.width, self.height = 600, 600
+        self.width, self.height = 700, 700
         self.canvas = tk.Canvas(frame1, width=self.width, 
             height=self.height, background="white")
         self.canvas.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=10)
