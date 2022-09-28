@@ -351,7 +351,7 @@ class pluginCanvas(tk.Frame):
                     script_dir,
                     'resources',
                     'Assets',
-                    'AIDIcon.ico'))))
+                    'VAILabsIcon.ico'))))
             self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)

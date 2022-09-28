@@ -227,7 +227,7 @@ class MainPage(tk.Frame):
                 'utils',
                 'resources',
                 'Assets',
-                'AIDIcon.ico'))))
+                'VAILabsIcon.ico'))))
         # self.newWindow.geometry("600x200")
 
         frame1 = tk.Frame(self.newWindow)
