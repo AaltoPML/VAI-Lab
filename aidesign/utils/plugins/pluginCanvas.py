@@ -120,8 +120,8 @@ class pluginCanvas(tk.Frame):
         # self.frame2.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame2.grid_columnconfigure(1, weight=1)
         # frame3.grid_columnconfigure(tuple(range(2)), weight=2)
-        frame3.grid_columnconfigure(1, weight=2)
-        self.frame4.grid_columnconfigure(1, weight=2)
+        frame3.grid_columnconfigure(tuple(range(2)), weight=2)
+        self.frame4.grid_columnconfigure(tuple(range(2)), weight=2)
 
     def class_list(self, value):
         """ Temporary fix """
