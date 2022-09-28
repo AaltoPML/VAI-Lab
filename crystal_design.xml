@@ -14,7 +14,7 @@
             <child name="loop1" />
         </relationships>
         <coordinates>
-            (42.0, 122.0, 457.0, 210.0)
+            (42.0,122.0,457.0,210.0)
         </coordinates>
         <loop type="while" condition="not stop" name="loop1">
             <relationships>
@@ -28,7 +28,7 @@
                 <child name="Decision Making" />
             </relationships>
             <coordinates>
-                (15.0, 90.0, 671.0, 505.0)
+                (15.0,90.0,671.0,505.0)
             </coordinates>
             <InputData name="Input Data">
                 <plugin type="" />
@@ -39,7 +39,7 @@
                     <child name="Data Processing_img" />
                 </relationships>
                 <coordinates>
-                    [(114, 174), 2, {0: 'd0-u2', 10: 'u10-d2'}]
+                    [(114,174),2,{0:'d0-u2',10:'u10-d2'}]
                 </coordinates>
             </InputData>
             <DataProcessing name="Data Processing_img">
@@ -50,7 +50,7 @@
                     <child name="Data Processing_Ic" />
                 </relationships>
                 <coordinates>
-                    [(341, 175), 3, {2: 'r2-l3'}]
+                    [(341,175),3,{2:'r2-l3'}]
                 </coordinates>
             </DataProcessing>
             <DataProcessing name="Data Processing_Ic">
@@ -61,7 +61,7 @@
                     <child name="Data Storage_Ic" />
                 </relationships>
                 <coordinates>
-                    [(569, 175), 4, {3: 'r3-l4'}]
+                    [(569,175),4,{3:'r3-l4'}]
                 </coordinates>
             </DataProcessing>
             <DataStorage name="Data Storage_Ic">
@@ -72,7 +72,7 @@
                     <child name="Modelling" />
                 </relationships>
                 <coordinates>
-                    [(569, 296), 5, {4: 'd4-u5'}]
+                    [(569,296),5,{4:'d4-u5'}]
                 </coordinates>
             </DataStorage>
             <Modelling name="Modelling">
@@ -83,7 +83,7 @@
                     <child name="User Interaction" />
                 </relationships>
                 <coordinates>
-                    [(568, 400), 6, {5: 'd5-u6'}]
+                    [(568,400),6,{5:'d5-u6'}]
                 </coordinates>
             </Modelling>
             <UserInteraction name="User Interaction">
@@ -95,7 +95,7 @@
                     <child name="Decision Making" />
                 </relationships>
                 <coordinates>
-                    [(348, 465), 7, {6: 'l6-r7'}]
+                    [(348,465),7,{6:'l6-r7'}]
                 </coordinates>
             </UserInteraction>
             <DecisionMaking name="Decision Making">
@@ -106,7 +106,7 @@
                     <child name="Data Storage_X" />
                 </relationships>
                 <coordinates>
-                    [(133, 403), 9, {7: 'l7-d9'}]
+                    [(133,403),9,{7:'l7-d9'}]
                 </coordinates>
             </DecisionMaking>
         </loop>
@@ -118,7 +118,7 @@
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(349, 557), 8, {7: 'd7-u8'}]
+            [(349,557),8,{7:'d7-u8'}]
         </coordinates>
     </DataProcessing>
     <DataStorage name="Data Storage_X">
@@ -128,7 +128,7 @@
             <child name="Input Data" />
         </relationships>
         <coordinates>
-            [(115, 286), 10, {9: 'u9-d10'}]
+            [(115,286),10,{9:'u9-d10'}]
         </coordinates>
     </DataStorage>
     <Output name="Output">
@@ -137,7 +137,7 @@
             <parent name="Data Processing_optimum" />
         </relationships>
         <coordinates>
-            [(350.0, 650), 1, {8: 'd8-u1'}]
+            [(350.0,650),1,{8:'d8-u1'}]
         </coordinates>
     </Output>
 </pipeline>

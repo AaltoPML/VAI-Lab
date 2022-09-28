@@ -770,7 +770,9 @@ class aidCanvas(tk.Frame):
             self.controller._append_to_output("xml_filename",filename)
 
     def place_modules(self, modules, id_mod, disp_mod):
-        # Place the modules
+        """Places the modules in the dictionary in the canvas.
+        :param modules: dict type of modules in the pipeline.
+        """
         for key in [key for key, val in modules.items() if type(val) == dict]:
             if modules[key]['class'] == 'loop':
                 self.l += 1

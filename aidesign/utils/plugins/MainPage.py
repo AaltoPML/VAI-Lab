@@ -169,6 +169,7 @@ class MainPage(tk.Frame):
         """
         if self.controller.XML.get():
             self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+            # if self.controller.Data.get():
             self.PluginButton.config(state = 'normal')
             if self.controller.Plugin.get():
                 self.RunButton.config(state = 'normal')
@@ -180,6 +181,8 @@ class MainPage(tk.Frame):
             self.controller.Datalabel.config(text = 'Done!', fg = 'green')
             self.interactButton.config(state = 'normal')
             self.uploadButton.config(state = 'normal')
+            if self.controller.XML.get():
+                self.PluginButton.config(state = 'normal')
 
     def trace_Plugin(self,*args):
         """ Checks if Plugin variable has been updated
