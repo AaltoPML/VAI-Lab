@@ -23,7 +23,7 @@ class dataLoader():
                 'utils', 
                 'resources', 
                 'Assets', 
-                'ADDIcon.ico'))))
+                'VAILabsIcon.ico'))))
         
         self.newWindow.geometry("700x400")
         self.newWindow.grid_rowconfigure(2, weight=1)
