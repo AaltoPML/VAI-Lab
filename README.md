@@ -41,7 +41,7 @@ stateDiagram-v2
 
 Each module represents a process (e.g. Modelling) and each plugin is a specific implementation of that process (e.g. linear regression).
 
-Modules can be chained, looped and modified in real-time to create a highly customisable framework for the **user**'s requirements.
+Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
 
 ## Installation
 
@@ -70,7 +70,7 @@ To launch the framwork with the GUI:
 import aidesign as ai
 
 core = ai.Core()
-core.run()
+core.run()****
 ```
 
 or to execute an existing config file: 
