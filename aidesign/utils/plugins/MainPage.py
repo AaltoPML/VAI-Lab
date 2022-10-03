@@ -26,7 +26,7 @@ class MainPage(tk.Frame):
         " This leads to the different methods to provide feedback."
         super().__init__(parent, bg=parent['bg'])
         self.controller = controller
-        self.controller.title('AI Assisted Framework Design')
+        self.controller.title('AI Assisted Virtual Laboratories')
 
         self.controller.output_type = 'regression'
         self.out_data = pd.DataFrame()
@@ -40,8 +40,8 @@ class MainPage(tk.Frame):
                     'utils',
                     'resources',
                     'Assets',
-                    'AIFRED.png')
-            ).resize((600, 300))
+                    'VAILabs.png')
+            ).resize((350, 350))
         )
 
         self.grid_columnconfigure(0, weight=1)
@@ -227,7 +227,7 @@ class MainPage(tk.Frame):
                 'utils',
                 'resources',
                 'Assets',
-                'AIDIcon.ico'))))
+                'VAILabsIcon.ico'))))
         # self.newWindow.geometry("600x200")
 
         frame1 = tk.Frame(self.newWindow)

@@ -40,7 +40,7 @@ class pluginCanvas(tk.Frame):
                 'utils',
                 'resources',
                 'Assets',
-                'AIDIcon.ico'))))
+                'VAILabsIcon.ico'))))
         # self.grid_rowconfigure(tuple(range(5)), weight=1)
         self.grid_rowconfigure(4, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -94,12 +94,12 @@ class pluginCanvas(tk.Frame):
         tk.Button(
             frame3, text='Load Pipeline', fg='white', bg=parent['bg'],
             height=3, width=15, font=self.controller.pages_font,
-            command=self.upload).grid(column=0, row=26, sticky="news",
+            command=self.upload).grid(column=0, row=0, sticky="news",
                                       padx=(10, 0), pady=(0, 10))
         tk.Button(
             frame3, text='Back to main', fg='white', bg=parent['bg'],
             height=3, width=15, font=self.controller.pages_font,
-            command=self.check_quit).grid(column=1, row=26, sticky="news", pady=(0, 10))
+            command=self.check_quit).grid(column=1, row=0, sticky="news", pady=(0, 10))
 
         self.frame_canvas = tk.Canvas(
             self.framex, bg=self.bg, bd=0, highlightthickness=0)
@@ -114,14 +114,14 @@ class pluginCanvas(tk.Frame):
         self.saved = True
         frame1.grid(column=0, row=0, rowspan=5, sticky="nsew")
         self.frame2.grid(column=1, row=0, sticky="new")
-        frame3.grid(column=0, row=5, sticky="swe")
+        frame3.grid(column=0, row=5, sticky="nswe")
         self.frame4.grid(column=1, row=5, sticky="sew")
 
         # self.frame2.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame2.grid_columnconfigure(1, weight=1)
         # frame3.grid_columnconfigure(tuple(range(2)), weight=2)
-        frame3.grid_columnconfigure(1, weight=2)
-        self.frame4.grid_columnconfigure(1, weight=2)
+        frame3.grid_columnconfigure(tuple(range(2)), weight=2)
+        self.frame4.grid_columnconfigure(tuple(range(2)), weight=2)
 
     def class_list(self, value):
         """ Temporary fix """
@@ -282,17 +282,24 @@ class pluginCanvas(tk.Frame):
             self.plugin[self.m].set(None)
         self.allWeHearIs = []
 
-        framexx = []
+        try:
+            for frame in self.framexx:
+                frame.grid_forget()
+                frame.destroy()
+            self.framexx = []
+        except AttributeError:
+            self.framexx = []
         framexx_name = np.array([])
         framexx_i = []
         values = np.append(np.unique(type_list[type_list != None]), 'other') if not any(
             type_list == 'other') else np.unique(type_list[type_list != None])
         for i, t in enumerate(values):
-            framexx.append(tk.Frame(self.framep, bg=self.bg))
+            self.framexx.append(tk.Frame(self.framep, bg=self.bg))
             framexx_name = np.append(
                 framexx_name, t if t is not None else 'other')
+            print(framexx_name)
             framexx_i.append(0)
-            label = tk.Label(framexx[-1],
+            label = tk.Label(self.framexx[-1],
                              text=framexx_name[-1].capitalize(),
                              pady=10,
                              font=self.controller.title_font,
@@ -300,7 +307,7 @@ class pluginCanvas(tk.Frame):
                              fg='white')
             label.grid(column=0,
                        row=0, padx=(10, 0), sticky='nw')
-            framexx[-1].grid(column=0, row=i, sticky="nsew")
+            self.framexx[-1].grid(column=0, row=i, sticky="nsew")
         unsupervised = ['clustering', 'RL']
         for p, plug in enumerate(plugin_list):
             if module.lower() == 'modelling' and p < len(plugin_list)-1:
@@ -310,7 +317,7 @@ class pluginCanvas(tk.Frame):
                 colour = 'white'
             frame_idx = np.where(framexx_name == type_list[p])[
                 0][0] if type_list[p] in framexx_name else np.where(framexx_name == 'other')[0][0]
-            rb = tk.Radiobutton(framexx[frame_idx], text=plug, fg=colour, bg=self.bg,
+            rb = tk.Radiobutton(self.framexx[frame_idx], text=plug, fg=colour, bg=self.bg,
                                 height=3, var=self.plugin[self.m],
                                 selectcolor='black', value=plug, justify=tk.LEFT,
                                 font=self.controller.pages_font, command=self.optionsWindow)
@@ -344,7 +351,7 @@ class pluginCanvas(tk.Frame):
                     script_dir,
                     'resources',
                     'Assets',
-                    'AIDIcon.ico'))))
+                    'VAILabsIcon.ico'))))
             self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)

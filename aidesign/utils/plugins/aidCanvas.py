@@ -41,13 +41,13 @@ class aidCanvas(tk.Frame):
                 'utils',
                 'resources',
                 'Assets',
-                'AIDIcon.ico'))))
+                'VAILabsIcon.ico'))))
         self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(
             script_dir,
             'utils',
             'resources',
             'Assets',
-            'AIDIcon_name.png')).resize((250, 200)))
+            'VAILabs.png')).resize((200, 200)))
 
         # self.grid_rowconfigure(tuple(range(2)), weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -58,8 +58,8 @@ class aidCanvas(tk.Frame):
         frame3 = tk.Frame(self, bg=self.bg)
         frame4 = tk.Frame(self, bg=self.bg)
 
-        self.my_label = tk.Label(frame2, image=self.my_img1, bg=parent['bg'])
-        self.my_label.grid(column=5, row=0)
+        self.my_label = tk.Label(frame2, image=self.my_img1, bg=parent['bg'], anchor = 'center')
+        self.my_label.grid(column=5, row=0, padx=(10, 10), pady=(10, 10), sticky="nwse")
 
         # Create canvas
         self.width, self.height = 600, 600
@@ -101,39 +101,39 @@ class aidCanvas(tk.Frame):
             command=lambda: self.add_module('Data Processing',
                                             self.width/2,
                                             self.height/2)
-        ).grid(column=5, row=1, padx=(0, 10), sticky="news")
+        ).grid(column=5, row=1, padx=(10, 10), sticky="news")
         tk.Button(
             frame4, text='Modelling', fg='white', bg=parent['bg'],
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('Modelling',
                                             self.width/2,
                                             self.height/2)
-        ).grid(column=5, row=2, padx=(0, 10), sticky="news")
+        ).grid(column=5, row=2, padx=(10, 10), sticky="news")
         tk.Button(
             frame4, text='Decision making', fg='white', bg=parent['bg'],
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('Decision Making',
                                             self.width/2,
                                             self.height/2)
-        ).grid(column=5, row=3, padx=(0, 10), sticky="news")
+        ).grid(column=5, row=3, padx=(10, 10), sticky="news")
         tk.Button(
             frame4, text='User Interaction', fg='white', bg=parent['bg'],
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('User Interaction',
                                             self.width/2,
                                             self.height/2)
-        ).grid(column=5, row=4, padx=(0, 10), sticky="news")
+        ).grid(column=5, row=4, padx=(10, 10), sticky="news")
         tk.Button(
             frame4, text='Input data', fg='white', bg=parent['bg'],
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('Input Data',
                                             self.width/2,
                                             self.height/2)
-        ).grid(column=5, row=5, padx=(0, 10), sticky="news")
+        ).grid(column=5, row=5, padx=(10, 10), sticky="news")
         tk.Button(
             frame4, text='Delete selection', fg='white', bg=parent['bg'],
             height=3, width=25, font=self.controller.pages_font,
-            command=self.delete_sel).grid(column=5, row=6, sticky="news", padx=(0, 10), pady=(0, 10))
+            command=self.delete_sel).grid(column=5, row=6, sticky="news", padx=(10, 10), pady=(0, 10))
 
         tk.Button(
             frame3, text='Upload', fg='white', bg=parent['bg'],
@@ -157,7 +157,7 @@ class aidCanvas(tk.Frame):
         self.saved = True
 
         frame1.grid(column=0, row=0, rowspan=2, sticky="nsew")
-        frame2.grid(column=1, row=0, sticky="ne")
+        frame2.grid(column=1, row=0, sticky="nwse")
         frame3.grid(column=0, row=2, sticky="swe")
         frame4.grid(column=1, row=1, sticky="nse")
 
