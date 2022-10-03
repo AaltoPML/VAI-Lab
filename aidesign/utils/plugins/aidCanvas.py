@@ -51,7 +51,7 @@ class aidCanvas(tk.Frame):
         self.my_label.grid(column = 5, row = 0)
         
         # Create canvas
-        self.width, self.height = 600, 600
+        self.width, self.height = 700, 700
         self.canvas = tk.Canvas(frame1, width=self.width, 
             height=self.height, background="white")
         # self.canvas = ResizingCanvas(frame1, width=self.width, 
@@ -71,7 +71,7 @@ class aidCanvas(tk.Frame):
         
         #Initialiser module
         self.add_module('Initialiser', self.width/2, self.h, ini = True)
-        self.add_module('output', self.width/2, self.height - self.h, out = True)
+        self.add_module('Output', self.width/2, self.height - self.h, out = True)
         
         self.draw = False
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -119,11 +119,18 @@ class aidCanvas(tk.Frame):
             command = lambda: self.add_module('Input Data', 
                                               self.width/2, 
                                               self.height/2)
-            ).grid(column = 5, row = 5, padx=(0,10), sticky="news")
+            ).grid(column = 5, row = 5, padx=(0,10), sticky="news")        
+        tk.Button(
+            frame4, text = 'Data Storage', fg = 'white', bg = parent['bg'],
+            height = 3, width = 25, font = self.controller.pages_font,
+            command = lambda: self.add_module('Data Storage', 
+                                              self.width/2, 
+                                              self.height/2)
+            ).grid(column = 5, row = 6, padx=(0,10), sticky="news")
         tk.Button(
             frame4, text = 'Delete selection', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
-            command = self.delete_sel).grid(column = 5, row = 6, sticky="news"
+            command = self.delete_sel).grid(column = 5, row = 7, sticky="news"
                                             , padx=(0,10), pady=(0,10))
         
         tk.Button(
@@ -153,7 +160,7 @@ class aidCanvas(tk.Frame):
         frame4.grid(column=1, row=1, sticky="nse")
         
         frame3.grid_columnconfigure(tuple(range(4)), weight=1)
-        frame4.grid_rowconfigure(tuple(range(6)), weight=1)
+        frame4.grid_rowconfigure(tuple(range(7)), weight=1)
 
     def class_list(self,value):
         """ Temporary fix """
@@ -208,10 +215,11 @@ class aidCanvas(tk.Frame):
                                    'coord': (self.start_x, self.start_y, 
                                              self.curX, self.curY)})
                 for mod in loopMod:
-                    aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
-                    if len(aux) == 2 and aux[0] == 't':
-                        self.loops[-1]['mod'].append(self.canvas.itemcget(
-                            mod, 'text'))
+                    aux = self.canvas.itemcget(mod, 'tags').split(' ')
+                    if aux[0][:4] != 'loop':
+                        if len(aux) == 2 and len(aux[1]) > 1 and aux[1][0] == 't':
+                            self.loops[-1]['mod'].append(self.canvas.itemcget(
+                                mod, 'text'))
                 
                 # Ask for loop definition and condition and display               
                 self.entry1 = tk.Entry(self.canvas, justify='center', 
@@ -262,11 +270,11 @@ class aidCanvas(tk.Frame):
                                                 coord[2], coord[3])
             self.loops[l]['mod'] = []
             for mod in loopMod:
-                aux = self.canvas.itemcget(mod, 'tags').split(' ')[1]
+                aux = self.canvas.itemcget(mod, 'tags').split(' ')[-1]
                 if len(aux) == 2 and aux[0] == 't':
                     self.loops[l]['mod'].append(self.canvas.itemcget(
                         mod, 'text'))
-        print('Updated loop info:', self.loops)
+        # print('Updated loop info:', self.loops)
         
     def select(self, event):
         """ Selects the module at the mouse location. """
@@ -302,14 +310,18 @@ class aidCanvas(tk.Frame):
                     self.canvas.tag_raise('loop-'+str(self.l), 'loop-'+str(self.l-1))
         
         if len(self.canvas.gettags("current")) > 0:
-            if(len(self.canvas.gettags("current")[0].split('-')) > 1) and (
-                self.canvas.gettags("current")[0].split('-')[0] == 'loop'):
+            if any('loop' in value for value in self.canvas.gettags("current")):
                 self.isLoop = True
-                self.m = int(self.canvas.gettags("current")[0].split('-')[1])
+                self.m = [int(el.split('-')[-1]) for el in self.canvas.gettags("current") if 'loop' in el][0]
             else:
                 self.isLoop = False
-                self.m = int(self.canvas.gettags("current")[0][1:])
-    
+                self.canvas.gettags("current")
+                #Preference to objects with text
+                if any(el[0] == 't' for el in self.canvas.gettags("current")):
+                    self.m = [int(el[1:]) for el in self.canvas.gettags("current") if el[0] == 't'][0]
+                else:
+                    self.m = [int(el[1:]) for el in self.canvas.gettags("current") if el[1:].isdigit()][0]
+
     def on_drag(self, event):
         """ Uses the mouse location to move the module and its text. 
         At the same time, it looks up if there are any connection to this
@@ -334,47 +346,49 @@ class aidCanvas(tk.Frame):
                                self.start_y, self.curX, self.curY)
         else:
             self.select(event)
-            
-            self.m = int(self.canvas.gettags("current")[0][1:])
-            dx = event.x - self.canvas.startxy[self.m][0]
-            dy = event.y - self.canvas.startxy[self.m][1]
-            # if self.isLoop:
-                # self.canvas.move('loop-'+str(self.m), dx, dy) 
-            # else:
-            # module
-            self.canvas.move('o'+str(self.m), dx, dy)
-            # self.updateLoops()
-            # Connections
-            if any(self.out_data.iloc[self.m].values) or any(
-                    self.out_data[self.out_data.columns[self.m]].values):
-                out = np.arange(self.out_data.values.shape[0])[
-                    self.out_data.values[self.m, :]==1]
-                for o in out:
-                    xycoord_i = self.canvas.coords(
-                        self.connections[o][self.m].split('-')[0])
-                    xycoord_o = self.canvas.coords(
-                        self.connections[o][self.m].split('-')[1])
-                    self.canvas.coords(self.connections[o][self.m], 
-                            (xycoord_i[0] + self.cr, 
-                             xycoord_i[1] + self.cr, 
-                             xycoord_o[0] + self.cr, 
-                             xycoord_o[1] + self.cr))
-                inp = np.arange(self.out_data.values.shape[0])[
-                    self.out_data.values[:, self.m]==1]
-                for i in inp:
-                    xycoord_i = self.canvas.coords(
-                        self.connections[self.m][i].split('-')[0])
-                    xycoord_o = self.canvas.coords(
-                        self.connections[self.m][i].split('-')[1])
-                    self.canvas.coords(self.connections[self.m][i], 
-                            (xycoord_i[0] + self.cr, 
-                             xycoord_i[1] + self.cr, 
-                             xycoord_o[0] + self.cr, 
-                             xycoord_o[1] + self.cr))
-            # Update module location
-            self.canvas.startxy[self.m] = (event.x, event.y)
+            sel_obj = [int(el[1:]) for el in self.canvas.gettags("current") if el[0] == 't']
+            if len(sel_obj) > 0:
+                self.m = sel_obj[0]
+                
+                dx = event.x - self.canvas.startxy[self.m][0]
+                dy = event.y - self.canvas.startxy[self.m][1]
+                # if self.isLoop:
+                    # self.canvas.move('loop-'+str(self.m), dx, dy) 
+                # else:
+                # module
+                self.canvas.move('o'+str(self.m), dx, dy)
+                # self.updateLoops()
+                # Connections
+                if any(self.out_data.iloc[self.m].values) or any(
+                        self.out_data[self.out_data.columns[self.m]].values):
+                    out = np.arange(self.out_data.values.shape[0])[
+                        self.out_data.values[self.m, :]==1]
+                    for o in out:
+                        xycoord_i = self.canvas.coords(
+                            self.connections[o][self.m].split('-')[0])
+                        xycoord_o = self.canvas.coords(
+                            self.connections[o][self.m].split('-')[1])
+                        self.canvas.coords(self.connections[o][self.m], 
+                                (xycoord_i[0] + self.cr, 
+                                 xycoord_i[1] + self.cr, 
+                                 xycoord_o[0] + self.cr, 
+                                 xycoord_o[1] + self.cr))
+                    inp = np.arange(self.out_data.values.shape[0])[
+                        self.out_data.values[:, self.m]==1]
+                    for i in inp:
+                        xycoord_i = self.canvas.coords(
+                            self.connections[self.m][i].split('-')[0])
+                        xycoord_o = self.canvas.coords(
+                            self.connections[self.m][i].split('-')[1])
+                        self.canvas.coords(self.connections[self.m][i], 
+                                (xycoord_i[0] + self.cr, 
+                                 xycoord_i[1] + self.cr, 
+                                 xycoord_o[0] + self.cr, 
+                                 xycoord_o[1] + self.cr))
+                # Update module location
+                self.canvas.startxy[self.m] = (event.x, event.y)
     
-    def module_out(self, name):
+    def module_out(self, name, iid):
         """ Updates the output DataFrame.
         
         :param name: name of the model
@@ -386,7 +400,7 @@ class aidCanvas(tk.Frame):
             name_list.append(name + '-' + str(len(m_num)))
         else:
             name_list.append(name)
-        self.canvas.itemconfig('t'+str(self.modules), text = name_list[-1])
+        self.canvas.itemconfig('t'+str(iid), text = name_list[-1])
         values = self.out_data.values
         values = np.vstack((
                     np.hstack((values, np.zeros((values.shape[0],1)))),
@@ -396,14 +410,15 @@ class aidCanvas(tk.Frame):
                                      index = name_list)
         self.module_names.append(name_list[-1])
 
-    def add_module(self, boxName, x, y, ini = False, out = False):
+    def add_module(self, boxName, x, y, ini = False, out = False, iid = None):
         """ Creates a rectangular module with the corresponding text inside.
         
         :param boxName: name of the model
         :type boxName: str
         """
+        iid = self.modules if iid is None else iid
         if not ini and not out:
-            tag = ('o'+str(self.modules),)
+            tag = ('o'+str(iid),)
         else: #Make initialisation and output unmoveable
             tag = ('n0',)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
@@ -412,7 +427,7 @@ class aidCanvas(tk.Frame):
             y - self.h/2, 
             x + text_w/2, 
             y + self.h/2, 
-            tags = tag + ('p'+str(self.modules),), 
+            tags = tag + ('p'+str(iid),), 
             fill = self.bg, width = 3,
             activefill = '#dbaa21')
         self.canvas.create_text(
@@ -420,10 +435,10 @@ class aidCanvas(tk.Frame):
             y, 
             font = self.controller.pages_font, 
             text = boxName, 
-            tags = tag + ('t'+str(self.modules),), 
+            tags = tag + ('t'+str(iid),), 
             fill = '#d0d4d9', 
             justify = tk.CENTER)
-        self.canvas.tag_bind('t'+str(self.modules), 
+        self.canvas.tag_bind('t'+str(iid), 
                              "<Double-1>", self.OnDoubleClick)
         if not out:
             self.canvas.create_oval(
@@ -433,8 +448,8 @@ class aidCanvas(tk.Frame):
                 y + self.h/2 + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('d'+str(self.modules),))
-            self.canvas.tag_bind('d'+str(self.modules), 
+                tags = tag + ('d'+str(iid),))
+            self.canvas.tag_bind('d'+str(iid), 
                                  "<Button-1>", self.join_modules)
             
         if not ini:
@@ -445,8 +460,8 @@ class aidCanvas(tk.Frame):
                 y - self.h/2 + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('u'+str(self.modules),))
-            self.canvas.tag_bind('u'+str(self.modules), 
+                tags = tag + ('u'+str(iid),))
+            self.canvas.tag_bind('u'+str(iid), 
                                  "<Button-1>", self.join_modules)
         
         if not out and not ini:
@@ -457,8 +472,8 @@ class aidCanvas(tk.Frame):
                 y + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('l'+str(self.modules),))
-            self.canvas.tag_bind('l'+str(self.modules), 
+                tags = tag + ('l'+str(iid),))
+            self.canvas.tag_bind('l'+str(iid), 
                                  "<Button-1>", self.join_modules)
         
             self.canvas.create_oval(
@@ -468,17 +483,17 @@ class aidCanvas(tk.Frame):
                 y + self.cr, 
                 width = 2, 
                 fill = 'black', 
-                tags = tag + ('r'+str(self.modules),))
-            self.canvas.tag_bind('r'+str(self.modules), 
+                tags = tag + ('r'+str(iid),))
+            self.canvas.tag_bind('r'+str(iid), 
                                  "<Button-1>", self.join_modules)
         self.canvas.startxy.append((x, 
                                     y))
-        self.connections[self.modules] = {}
-        self.module_out(boxName)
+        self.connections[iid] = {}
+        self.module_out(boxName, iid)
         self.module_list.append(boxName)
         self.modules += 1
         self.saved = False
-    
+
     def on_return_rename(self, event):
         """ This function renames a module to the input specified through 
         an entry widget. It then updates the corresponding rows and columns in
@@ -575,7 +590,7 @@ class aidCanvas(tk.Frame):
             self.entry.insert(0, entryText)
             # self.entry1['selectbackground'] = '#d0d4d9'
             self.entry['exportselection'] = False
-    
+            
             self.entry.focus()
             self.entry.bind("<Return>", self.on_return_editLoop)
             self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
@@ -614,8 +629,8 @@ class aidCanvas(tk.Frame):
                             self.canvas.linestartxy[1] + self.cr, 
                             self.canvas.coords(tag2)[0] + self.cr, 
                             self.canvas.coords(tag2)[1] + self.cr,
-                            fill = "red", 
-                            arrow = tk.LAST, 
+                            fill = "red",  width = 2,
+                            arrow = tk.LAST, arrowshape = (12,10,5), 
                             tags = ('o'+str(int(self.tag[1:])), 
                                   'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
                 self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
@@ -667,21 +682,10 @@ class aidCanvas(tk.Frame):
 
             # to avoid numpy bug during elementwise comparison of lists 
             loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
-
-            # self.s = XML_handler()
-            # self.controller.s.new_config_file(self.save_path.name)
             
             self.controller.s.update_module_coords(self.module_list[0],[self.canvas.startxy[0], 0, self.connections[0]])
             self.controller.s.append_module_relationships(self.module_list[0],list(mn[values[:,0]]),list(mn[values[0,:]]))
             self.controller.s.filename = self.save_path.name
-            # self.controller.s.append_pipeline_module(self.module_list[0], # Initialiser
-            #                       mn[0],
-            #                       "",
-            #                       {},
-            #                       ,
-            #                       ,
-            #                       None,
-            #                       )
             for i, mnn in enumerate(mn_id):
                 if (i > 1) and mnn:
                     xml_parent = None
@@ -735,15 +739,16 @@ class aidCanvas(tk.Frame):
 
             s = XML_handler()
             s.load_XML(filename)
-            s._print_pretty(s.loaded_modules)
+            # s._print_pretty(s.loaded_modules)
             modules = s.loaded_modules
-            modout = modules['output']
-            del modules['Initialiser'], modules['output'] # They are generated when resetting
-            disp_mod = ['Initialiser', 'output']
+            modout = modules['Output']
+            del modules['Initialiser'], modules['Output'] # They are generated when resetting
+            disp_mod = ['Initialiser', 'Output']
             id_mod = [0, 1]
             
             # Place the modules
-            disp_mod, id_mod = self.place_modules(modules, id_mod, disp_mod)
+            id_mod, disp_mod = self.place_modules(modules, id_mod, disp_mod)
+            self.draw_connection(modules, id_mod, disp_mod)
             connect = list(modout['coordinates'][2].keys())
             for p, parent in enumerate(modout['parents']):
                     parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
@@ -755,8 +760,8 @@ class aidCanvas(tk.Frame):
                                 yout + self.cr, 
                                 xins + self.cr, 
                                 yins + self.cr,
-                                fill = "red", 
-                                arrow = tk.LAST, 
+                                fill = "red",  width = 2,
+                                arrow = tk.LAST, arrowshape = (12,10,5), 
                                 tags = ('o'+str(parent_id), 
                                       'o'+str(1), modout['coordinates'][2][connect[p]]))
                     self.out_data.iloc[int(parent_id)][1] = 1
@@ -765,9 +770,12 @@ class aidCanvas(tk.Frame):
             self.controller._append_to_output("xml_filename",filename)
 
     def place_modules(self, modules, id_mod, disp_mod):
-        # Place the modules
+        """Places the modules in the dictionary in the canvas.
+        :param modules: dict type of modules in the pipeline.
+        """
         for key in [key for key, val in modules.items() if type(val) == dict]:
             if modules[key]['class'] == 'loop':
+                self.l += 1
                 # Extracts numbers from string
                 l = int(''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
                 x0, y0, x1, y1 = modules[key]['coordinates']
@@ -791,45 +799,59 @@ class aidCanvas(tk.Frame):
                     text = modules[key]['condition'], 
                     tags = ('loop-'+str(l), 'condition'+'-'+str(l)), 
                     justify = tk.CENTER)
+                self.canvas.tag_bind('condition-'+str(l), 
+                                 "<Double-1>", self.OnDoubleClick)
+                self.canvas.tag_bind('type-'+str(l), 
+                                 "<Double-1>", self.OnDoubleClick)
                 self.loops.append({'type': modules[key]['type'],
                                    'condition': modules[key]['condition'],
                                    'mod': [], 
                                    'coord': (x0, y0, 
                                              x1, y1)})
-                disp_mod, id_mod = self.place_modules(modules[key], id_mod, disp_mod)
-            else:
+                id_mod, disp_mod = self.place_modules(modules[key], id_mod, disp_mod)
+            elif key not in disp_mod:
                 # Display module
                 self.add_module(key,
                                 modules[key]['coordinates'][0][0],
-                                modules[key]['coordinates'][0][1])
+                                modules[key]['coordinates'][0][1], 
+                                iid = modules[key]['coordinates'][1])
                 self.module_list[-1] = modules[key]['module_type']
                 id_mod.append(modules[key]['coordinates'][1])
-                connect = list(modules[key]['coordinates'][2].keys())
-                
+                disp_mod.append(key)
+        self.module_list = [x for _, x in sorted(zip(id_mod, self.module_list))]
+        self.canvas.startxy = [x for _, x in sorted(zip(id_mod, self.canvas.startxy))]
+        return id_mod, disp_mod
+
+    def draw_connection(self, modules, id_mod, disp_mod):
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            if modules[key]['class'] == 'loop':
+                self.draw_connection(modules[key], id_mod, disp_mod)
+            else:
                 # Connect modules
+                connect = list(modules[key]['coordinates'][2].keys())
                 for p, parent in enumerate(modules[key]['parents']):
                     if not (parent[:4] == 'loop'):
+                        # parent_id = modules[parent]['coordinates'][1]
                         parent_id = id_mod[np.where(np.array(disp_mod) == parent)[0][0]]
                         out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
-                        xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
-                        xins, yins, _, _ =self.canvas.coords(ins[0]+str(id_mod[-1]))
+                        xout, yout, _ , _ = self.canvas.coords(out)
+                        xins, yins, _, _ = self.canvas.coords(ins)
                         self.canvas.create_line(
-                                    xout + self.cr, 
-                                    yout + self.cr, 
-                                    xins + self.cr, 
+                                    xout + self.cr,
+                                    yout + self.cr,
+                                    xins + self.cr,
                                     yins + self.cr,
-                                    fill = "red", 
-                                    arrow = tk.LAST, 
-                                    tags = ('o'+str(parent_id), 
-                                          'o'+str(id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
-                        self.out_data.iloc[int(parent_id)][int(id_mod[-1])] = 1
-                        self.connections[int(id_mod[-1])][
-                            int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(id_mod[-1])
+                                    fill = "red", width = 2,
+                                    arrow = tk.LAST, arrowshape = (12,10,5),
+                                    tags = ('o'+str(parent_id),
+                                          # 'o'+str(id_mod[-1]), 
+                                          modules[key]['coordinates'][2][connect[p]]))
+                        self.out_data.iloc[int(parent_id)][int(ins[1:])] = 1
+                        self.connections[int(ins[1:])][
+                            int(parent_id)] = out[0]+str(out[1:]) + '-' + ins[0]+str(ins[1:])
                     else:
                         self.loops[-1]['mod'].append(key)
-                disp_mod.append(key)
-        return disp_mod, id_mod
-    
+
     def reset(self):
         
         if not self.saved:
@@ -855,7 +877,7 @@ class aidCanvas(tk.Frame):
             self.module_names = []
             
             self.add_module('Initialiser', self.width/2, self.h, ini = True)
-            self.add_module('output', self.width/2, self.height - self.h, out = True)
+            self.add_module('Output', self.width/2, self.height - self.h, out = True)
         
             self.draw = False
             self.loops = []

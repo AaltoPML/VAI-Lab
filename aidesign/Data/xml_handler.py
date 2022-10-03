@@ -31,14 +31,15 @@ class XML_handler(object):
             "relationships": "relationships",
             "plugin": "plugin",
             "coordinates": "list",
-            "initialiser": "entry_point",
+            "Initialiser": "entry_point",
             "inputdata": "data",
-            "output": "exit_point",
-            "userinteraction": "module",
-            "dataprocessing": "module",
-            "modelling": "module",
+            "Output": "exit_point",
+            "UserInteraction": "module",
+            "DataProcessing": "module",
+            "Modelling": "module",
             "InputData": "module",
-            "decisionmaking": "module",
+            "DecisionMaking": "module",
+            "DataStorage": "module",
             "loop": "loop"
         }
 
@@ -108,7 +109,7 @@ class XML_handler(object):
         """
         for child in element:
             try:
-                tag_type = self._valid_tags[child.tag].lower()
+                tag_type = self._valid_tags[child.tag]
                 getattr(self, "_load_{}".format(tag_type))(child, parent)
             except KeyError:
                 from sys import exit
@@ -206,9 +207,9 @@ class XML_handler(object):
         :param elem: xml.etree.ElementTree.Element to be parsed
         :param parent: dict or dict fragment parsed tags will be appened to
         """
-        parent["output"] = {"name": "output",
+        parent["Output"] = {"name": "Output",
                             "class": self._valid_tags[element.tag]}
-        self._parse_tags(element, parent["output"])
+        self._parse_tags(element, parent["Output"])
 
     def _load_loop(self, element: ET.Element, parent: dict):
         """Parses tags associated with loops and appends to parent dict
