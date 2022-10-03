@@ -70,7 +70,7 @@ To launch the framwork with the GUI:
 import aidesign as ai
 
 core = ai.Core()
-core.run()****
+core.run()
 ```
 
 or to execute an existing config file: 
