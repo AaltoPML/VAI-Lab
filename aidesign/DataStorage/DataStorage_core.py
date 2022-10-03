@@ -1,4 +1,4 @@
-class DataProcessing(object):
+class DataStorage(object):
     def __init__(self):
         self.node_name = None
         self.plugin_name = None
