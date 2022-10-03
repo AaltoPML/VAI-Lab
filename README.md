@@ -1,6 +1,6 @@
 # Virtual Artificially Intelligent Laboratories (VAI Labs)
 
-![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/AID_banner_image.png)
+![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/VAIL_banner_image.png)
 
 VAIL is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals. 
 
@@ -114,7 +114,7 @@ For library-relative paths, starting a path definition with `"./"` defaults to t
 
 The VAIL module allows to define a pipeline and the relations within by drawing a flowchart on a canvas. This canvas always starts with an `initialiser` module and an `output` module and allows to define any number of modules between these two. To do so, the user needs to define the modules and the relations between them.
 
-![PipelineLoop](https://user-images.githubusercontent.com/22427519/168080733-4c88d004-9ca6-486e-bd8d-cc7050e93515.PNG)
+![PipelineLoop](./aidesign/utils/resources/Assets/readme_images/VAIL_GUI_screenshot.png)
 
 ### Modules
 At this moment, there are 7 possible modules for VAIL. `initialiser` and `output` are compulsory for the pipeline, the rest of them can be freely placed in the canvas. These are:
