@@ -37,7 +37,7 @@ class pipelineCanvas(tk.Frame):
                 script_dir,
                 'resources',
                 'Assets',
-                'AIDIcon.ico'))))
+                'VAILabsIcon.ico'))))
         self.grid_columnconfigure(0, weight=1)
 
         frame1 = tk.Frame(self, bg=self.bg)
