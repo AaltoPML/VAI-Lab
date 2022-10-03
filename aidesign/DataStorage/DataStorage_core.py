@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-class Modelling(object):
+class DataProcessing(object):
     def __init__(self):
         self.node_name = None
         self.plugin_name = None
