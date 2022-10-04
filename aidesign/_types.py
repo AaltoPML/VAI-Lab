@@ -53,6 +53,27 @@ class DataProcessingPluginInterface(PluginInterface, Protocol):
     def transform(self, data: DataInterfaceT) -> DataInterface:
         ...
 
+class EnvironmentPluginInterface(PluginInterface, Protocol):
+    def load_model(self, model_path: str) -> None:
+        ...
+
+    def connect(self):
+        ...
+
+    def reset(self):
+        ...
+
+    def step(self, action):
+        ...
+
+    def disconnect(self):
+        ...
+
+    def get_state(self):
+        ...
+
+    def get_reward(self):
+        ...
 
 class PluginSpecsInterface(Protocol):
     @property

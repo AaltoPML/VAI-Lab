@@ -207,3 +207,26 @@ class UI(PluginTemplate, ABC):
     @abstractmethod
     def save_file_as(self):
         pass
+
+
+class EnvironmentPluginT(PluginTemplate, ABC):
+    def load_model(self, model_path: str) -> None:
+        pass
+
+    def connect(self):
+        pass
+
+    def reset(self):
+        pass
+
+    def step(self, action):
+        pass
+
+    def disconnect(self):
+        pass
+
+    def get_state(self):
+        pass
+
+    def get_reward(self):
+        pass
