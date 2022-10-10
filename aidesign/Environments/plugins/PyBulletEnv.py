@@ -28,17 +28,12 @@ class PyBulletEnv():
         return resetSimulation()
 
     def load_model(self,model_path) -> None:
-        self.model_ids[model_path] = p.loadURDF(model_path)
-
-    def step(self, action):
-        return step(action)
+        self.model_ids[model_path] = loadURDF(model_path)
 
     def get_lib_args(self):
         for i in dir(p):
             print (i)
-
         
 if __name__ == "__main__":
     pb = PyBulletEnv()
     pb.connect()
-    # pb.get_lib_args()
