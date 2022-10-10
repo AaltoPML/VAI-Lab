@@ -1,3 +1,6 @@
+# Adapted from temporary pybullet stubs at:
+# https://github.com/rohit-kumar-j/temporary_pybullet_stub/blob/main/pybullet.pyi
+
 
 ACTIVATION_STATE_DISABLE_SLEEPING = 2
 ACTIVATION_STATE_DISABLE_WAKEUP = 32
