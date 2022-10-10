@@ -345,13 +345,15 @@ class pluginCanvas(tk.Frame):
             self.newWindow = tk.Toplevel(self.controller)
             # Window options
             self.newWindow.title(self.plugin[self.m].get()+' plugin options')
-            script_dir = os.path.dirname(__file__)
-            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
+            script_dir = get_lib_parent_dir()
+            self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
                 file=os.path.join(os.path.join(
                     script_dir,
+                    'utils',
                     'resources',
                     'Assets',
                     'VAILabsIcon.ico'))))
+            # C:\Users\sevillc1\Documentos\Github\ai-assisted-design-framework\aidesign\utils\resources\Assets
             self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)
