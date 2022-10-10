@@ -5,6 +5,6 @@ core = ai.Core()
 # core.load_config_file(
 #     ("./examples",
 #     "xml_files",
-#     'SVR_demo.xml'))
+#     'crystalDesign_v0.xml'))
     
 core.run()
