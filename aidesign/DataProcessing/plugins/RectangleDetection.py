@@ -8,6 +8,7 @@ from sklearn.base import BaseEstimator
 from aidesign._import_helper import get_lib_parent_dir
 from sklearn.metrics import mean_squared_error as mse
 import cv2
+import matplotlib.pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"RectangleDetection":"default",
                           "RectDet": "alias", "rectangledetection": "alias"}        # type:ignore
@@ -51,25 +52,29 @@ class RectangleDetection(DataProcessingT):
             'crystalDesign')
         #iterating over dst_image to get the images as arrays
         # for image in sorted(os.listdir(dst_img)):
-        arr = np.array(Image.open(os.path.join(dst_img, '00001.png')))
-        mask = (arr[:,:,0] > 120) * (arr[:,:,1] < 80) * (arr[:,:,2] < 80)
-        import matplotlib.pyplot as plt
-        plt.axis("off")
-        plt.imshow(mask.astype(int))
-        plt.show()
+        arr = np.array(Image.open(os.path.join(dst_img, '00007.png')))
         self.proc.fit(arr)
         """"""
         # self.proc.fit(self.X)
 
     def transform(self, data: DataInterface) -> DataInterface:
-        data.append_data_column("X", pd.DataFrame(self.proc.transform(data)))
+        """
+        TODO: Temporary solution until input data module is cofigured."""
+        dst_img = os.path.join(
+            get_lib_parent_dir(),
+            'examples',
+            'crystalDesign')
+        arr = np.array(Image.open(os.path.join(dst_img, '00007.png')))
+        self.proc.transform(arr)
+        """"""
+        # data.append_data_column("X", pd.DataFrame(self.proc.transform(data)))
         return data
 
 class model(BaseEstimator):
     def __init__(self, optional=False):
         self.optional = optional
     
-    def fit(self, X, r=7, c=4, h=35, w=79):
+    def fit(self, X, r=7, c=4, h=35, w=79, hs=34, vs=23, buffer=5):
         """Defines the number of samples in the design, their placement
         and their size.
         
@@ -86,40 +91,35 @@ class model(BaseEstimator):
             Sample height.
         w : int
             Sample width.
-        
+        hs : float
+            Horizontal spacing.
+        vs : int
+            Vertical spacing.
+        buffer : int
+            Pixel buffer. Inidcates the margin for the inner rectangle.
         Returns
         -------
         self : object
             Fitted model.
         """
+        self.r = r
+        self.c = c
         self.h = h
         self.w = w
+        self.hs = hs
+        self.vs = vs
+        self.buffer = buffer
         mask = (X[:,:,0] > 120) * (X[:,:,1] < 80) * (X[:,:,2] < 80)
-        sample_idx = [None] *r*c
-        a,b = np.unravel_index(mask.argmax(), mask.shape)
-        mSize = 9
-        upEdge = np.ones((mSize,mSize))
-        upEdge[1:,1:] = 0
-        lowEdge = np.ones((mSize,mSize))
-        lowEdge[:-1,:-1] = 0
-
-        ii = int(mSize/2)
-        si_up = 0
-        # si_low = 0
-        
-        for i in np.arange(ii,mask.shape[0]-ii):
-            for j in np.arange(ii,mask.shape[1]-ii):
-                if mse(mask[i-ii:i+ii+1, j-ii:j+ii+1], upEdge) < 0.05:
-                    sample_idx[si_up] = (i-ii+1,j-ii+1)
-                    si_up += 1
-                    
-                # elif mse(mask[i-ii:i+ii+1, j-ii:j+ii+1], lowEdge) < 0.05:
-                #     sample_idx[si_low]['finnish'] = (i+ii-1,j+ii-1)
-                #     si_low += 1
-        return self
+        self.ii_ini, self.jj_ini = np.unravel_index(mask.argmax(), mask.shape)
+        # return self
 
     def transform(self, X):
         # [h, w] = np.shape(X)[0:2]#calculating height and width for each image
-        arr_mean = np.mean(X, axis=(0,1))
-        print(f'[R={arr_mean[0]:.1f},  G={arr_mean[1]:.1f}, B={arr_mean[2]:.1f}]')
-        return arr_mean
+        X_dict = {}
+        fig, axs = plt.subplots(self.r, self.c)
+        for i in np.arange(self.r):
+            for j in np.arange(self.c):
+                X_dict[i,j] = X[self.ii_ini+self.h*i+self.vs*i+self.buffer*(1+i):self.ii_ini+self.h*(i+1)+self.vs*i-self.buffer*(1-i), 
+                                self.jj_ini+self.w*j+self.hs*j+self.buffer*(1+j):self.jj_ini+self.w*(j+1)+self.hs*j-self.buffer*(1-j),:]
+                axs[i, j].imshow(X_dict[i,j])
+        return X_dict
