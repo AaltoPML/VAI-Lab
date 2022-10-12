@@ -6,9 +6,6 @@
         <coordinates>
             [(300.0,50),0,{}]
         </coordinates>
-        <inputdata>
-            <X file="./examples/state-action/X_data.csv" />
-        </inputdata>
     </Initialiser>
     <Environment name="MyEnv">
         <relationships>
