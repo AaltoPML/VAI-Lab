@@ -235,5 +235,3 @@ class EnvironmentPluginT(PluginTemplate, ABC):
         """Extended from PluginTemplate.configure"""
         super().configure(config)
         self.set_gui(self._config["options"]["headless"])
-        self.TIMESTEP = self._config["options"]["timestep"]
-        self.MAX_STEPS = self._config["options"]["max_steps"]

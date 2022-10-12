@@ -21,7 +21,7 @@
         <plugin type="PyBullet">
             <model_dir>
                  plane.urdf
-                 ./Environment/resources/models/half_cheetah.xml
+                 ./Environment/resources/models/half_cheetah_with_mass.xml
             </model_dir>
             <headless>
                  False
@@ -32,6 +32,11 @@
             <max_steps>
                     1000
             </max_steps>
+            <gravity>
+                    0.0
+                    0.0
+                    -9.81
+            </gravity>
         </plugin>
     </Environment>
     <Output name="Output">

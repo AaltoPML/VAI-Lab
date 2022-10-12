@@ -19,8 +19,6 @@ class PyBulletEnv(EnvironmentPluginT):
     """
     def __init__(self) -> None:
         super().__init__(globals())
-        self.TIMESTEP: float
-        self.MAX_STEPS: int
         self.connection_mode = GUI
         self.model_ids:Dict = {}
         
@@ -40,7 +38,7 @@ class PyBulletEnv(EnvironmentPluginT):
         return resetSimulation()
 
     def load_pb_data(self):
-        import pybullet_data
+        import pybullet_data                                        # type:ignore
         setAdditionalSearchPath(pybullet_data.getDataPath())
 
     def _load_model_by_type(self,model):
@@ -65,10 +63,21 @@ class PyBulletEnv(EnvironmentPluginT):
                 self._load_model_by_type(model)
             
 
+    def _set_options(self):
+        if "gravity" in self._config["options"]:
+            g = self._config["options"]["gravity"]
+            setGravity(float(g[0]),float(g[1]),float(g[2]))
+        elif "timestep" in self._config["options"]:
+            setPhysicsEngineParameter(fixedTimeStep=self._config["options"]["timestep"])
+        elif "max_steps" in self._config["options"]:
+            setPhysicsEngineParameter(numSolverIterations=self._config["options"]["max_steps"])
+
     def run_simulation(self):
-        for step in range(1,self.MAX_STEPS):
+        self._set_options()
+        for step in range(1,self._config["options"]["max_steps"]):
             stepSimulation()
-            sleep(self.TIMESTEP)
+            sleep(self._config["options"]["timestep"])
+        self.disconnect()
 
 if __name__ == "__main__":
     pb = PyBulletEnv()
