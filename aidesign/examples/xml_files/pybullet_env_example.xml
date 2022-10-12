@@ -20,11 +20,18 @@
         </coordinates>
         <plugin type="PyBullet">
             <model_dir>
-                 /home/chris/github/pybullet_walking_sim/Agent/models/coman/model_org_roscoe2.urdf
+                 plane.urdf
+                 ./Environment/resources/models/half_cheetah.xml
             </model_dir>
             <headless>
                  False
             </headless>
+            <timestep>
+                    0.01
+            </timestep>
+            <max_steps>
+                    1000
+            </max_steps>
         </plugin>
     </Environment>
     <Output name="Output">

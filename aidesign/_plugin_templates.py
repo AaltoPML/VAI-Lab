@@ -210,23 +210,30 @@ class UI(PluginTemplate, ABC):
 
 
 class EnvironmentPluginT(PluginTemplate, ABC):
+    
+    @abstractmethod
     def load_model(self) -> None:
         pass
 
+    @abstractmethod
     def connect(self):
         pass
 
+    @abstractmethod
     def reset(self):
         pass
 
-    def step(self, action):
-        pass
-
+    @abstractmethod
     def disconnect(self):
         pass
 
-    def get_state(self):
+    @abstractmethod
+    def set_gui(self,use_gui:bool=True) -> None:
         pass
 
-    def get_reward(self):
-        pass
+    def configure(self, config: dict):
+        """Extended from PluginTemplate.configure"""
+        super().configure(config)
+        self.set_gui(self._config["options"]["headless"])
+        self.TIMESTEP = self._config["options"]["timestep"]
+        self.MAX_STEPS = self._config["options"]["max_steps"]

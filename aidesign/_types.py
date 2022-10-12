@@ -63,17 +63,12 @@ class EnvironmentPluginInterface(PluginInterface, Protocol):
     def reset(self):
         ...
 
-    def step(self, action):
-        ...
-
     def disconnect(self):
         ...
 
-    def get_state(self):
+    def run_simulation(self):
         ...
 
-    def get_reward(self):
-        ...
 
 class PluginSpecsInterface(Protocol):
     @property

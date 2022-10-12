@@ -33,8 +33,8 @@ class Environment(object):
         self._plugin.configure(self._module_config["plugin"])
         self._plugin.connect()
         self._plugin.load_model()
-        from time import sleep
-        sleep(10)
+        self._plugin.run_simulation()
+        
 
     def get_result(self) -> DataInterface:
         # return self.output_data
