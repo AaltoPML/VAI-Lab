@@ -70,7 +70,7 @@ class PluginTemplate:
 
     def _parse_config(self):
         """Parse incoming data and args, sets them as class variables"""
-        self.X = self._data_in["X"]
+        self.X = np.array(self._get_data_if_exist(self._data_in, "X"))
         self.Y = np.array(self._get_data_if_exist(self._data_in, "Y")).ravel()
         self.X_tst = self._get_data_if_exist(self._data_in, "X_test")
         self.Y_tst = np.array(self._get_data_if_exist(
