@@ -1,0 +1,39 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="MyEnv" />
+        </relationships>
+        <coordinates>
+            [(300.0,50),0,{}]
+        </coordinates>
+        <inputdata>
+            <X file="./examples/state-action/X_data.csv" />
+        </inputdata>
+    </Initialiser>
+    <Environment name="MyEnv">
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(300.0,300.0),2,{0:'d0-u2'}]
+        </coordinates>
+        <plugin type="PyBullet">
+            <model_dir>
+                 /home/chris/github/pybullet_walking_sim/Agent/models/coman/model_org_roscoe2.urdf
+            </model_dir>
+            <headless>
+                 False
+            </headless>
+        </plugin>
+    </Environment>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(300.0,550),1,{2:'d2-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>
