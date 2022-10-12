@@ -210,7 +210,7 @@ class UI(PluginTemplate, ABC):
 
 
 class EnvironmentPluginT(PluginTemplate, ABC):
-    def load_model(self, model_path: str) -> None:
+    def load_model(self) -> None:
         pass
 
     def connect(self):

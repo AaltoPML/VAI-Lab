@@ -54,7 +54,7 @@ class DataProcessingPluginInterface(PluginInterface, Protocol):
         ...
 
 class EnvironmentPluginInterface(PluginInterface, Protocol):
-    def load_model(self, model_path: str) -> None:
+    def load_model(self) -> None:
         ...
 
     def connect(self):
