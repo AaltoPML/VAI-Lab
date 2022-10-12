@@ -42,6 +42,7 @@ class XML_handler:
             "Modelling": "module",
             "InputData": "module",
             "DecisionMaking": "module",
+            "Environment": "module",
             "loop": "loop"
         }
 
