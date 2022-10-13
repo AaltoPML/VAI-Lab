@@ -58,6 +58,8 @@ class Data:
                     folder_dir: str,
                     data_name: str = "data") -> None:
         from glob import glob
+        if folder_dir[-1] != path.sep:
+            folder_dir += path.sep
         files = np.sort(glob(folder_dir + "*"))
         self.data[data_name] = {}
         for f in files:
@@ -132,13 +134,13 @@ class Data:
 if __name__ == "__main__":
     d = Data()
     # d.load_data_settings("./examples/data_passing_test.xml")
-    d.import_data("./examples/supervised_regression/1/x_train.csv")
-    # print(d.data["data"])
-    print(d["data"]["input"].loc[0:3])
-    dc = d.copy()
-    d["data"]["input"].loc[0:3] = 9
-    print(d["data"]["input"].loc[0:3])
-    print(dc["data"]["input"].loc[0:3])
-    dc.keys()
+    d.import_data("./examples/crystalDesign")
+    print(d.data["data"])
+    # print(d["data"]["input"].loc[0:3])
+    # dc = d.copy()
+    # d["data"]["input"].loc[0:3] = 9
+    # print(d["data"]["input"].loc[0:3])
+    # print(dc["data"]["input"].loc[0:3])
+    # dc.keys()
     # print(dc["input"])
     # d.data_names
