@@ -52,14 +52,23 @@ class Data:
         :param data_name: str, name of dict key in which data will be stored
         """
         import cv2 # type: ignore
-        self.data[data_name][filename] = cv2.imread(filename)
+        key = filename.split(path.sep)[-1].split(".")[0]
+        self.data[data_name][key] = cv2.imread(filename)
 
     def _import_dir(self: DataT,
                     folder_dir: str,
-                    data_name: str = "data") -> None:
+                    data_name: str) -> None:
+        """Explores folder, and imports all data items recursively
+        
+        :param folder_dir: str, directory to be explored
+        :param data_name: str, name of dict key in which data will be stored
+                data_name is "data" overwritten by folder name due to recursion
+                This will probably change for user-defined names
+        """
         from glob import glob
         if folder_dir[-1] != path.sep:
             folder_dir += path.sep
+        data_name = folder_dir.split(path.sep)[-2]
         files = np.sort(glob(folder_dir + "*"))
         self.data[data_name] = {}
         for f in files:
@@ -135,7 +144,7 @@ if __name__ == "__main__":
     d = Data()
     # d.load_data_settings("./examples/data_passing_test.xml")
     d.import_data("./examples/crystalDesign")
-    print(d.data["data"])
+    print(d["crystalDesign"])
     # print(d["data"]["input"].loc[0:3])
     # dc = d.copy()
     # d["data"]["input"].loc[0:3] = 9
