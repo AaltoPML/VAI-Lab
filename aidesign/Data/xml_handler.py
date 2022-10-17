@@ -55,7 +55,7 @@ class XML_handler:
         """
         if filename[0] == ".":
             return path.join(self.lib_base_path, filename)
-        elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
+        elif filename[0] in ["/","\\"] or (filename[0].isalpha() and filename[0].isupper()):
             return filename
 
     def _check_file_exists(self, filename: str):
