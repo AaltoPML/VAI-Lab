@@ -72,25 +72,25 @@ class MainPage(tk.Frame):
                       columnspan=4)
 
         tk.Button(frame3,
-                  text='Data file',
-                  fg='white',
-                  font=controller.title_font,
-                  bg=parent['bg'],
-                  height=3,
-                  width=20,
-                  command=self.upload_data_file,
-                  ).grid(column=0, row=12)
-        tk.Button(frame3,
-                  text='Data folder',
+                  text='Upload data matrix',
                   fg='white',
                   font=controller.title_font,
                   bg=parent['bg'],
                   height=3,
                   width=20,
                   command=self.upload_data_folder,
+                  ).grid(column=0, row=12)
+        tk.Button(frame3,
+                  text='Upload data path',
+                  fg='white',
+                  font=controller.title_font,
+                  bg=parent['bg'],
+                  height=3,
+                  width=20,
+                  command=self.upload_data_path,
                   ).grid(column=1, row=12)
         self.controller.Datalabel = tk.Label(frame3,
-                                             text='Incomplete',
+                                             text='Optional',
                                              pady=10,
                                              padx=10,
                                              font=controller.title_font,
@@ -106,7 +106,7 @@ class MainPage(tk.Frame):
                                         bg=parent['bg'],
                                         height=3,
                                         width=20,
-                                        state=tk.DISABLED,
+                                        # state=tk.DISABLED,
                                         command=lambda: self.canvas(
                                             "aidCanvas")
                                         )
@@ -119,7 +119,7 @@ class MainPage(tk.Frame):
                                        bg=parent['bg'],
                                        height=3,
                                        width=20,
-                                       state=tk.DISABLED,
+                                    #    state=tk.DISABLED,
                                        command=self.upload_xml,
                                        )
         self. uploadButton.grid(column=1, row=13)
@@ -165,7 +165,7 @@ class MainPage(tk.Frame):
         self.controller.Plugin.set(False)
 
         self.controller.XML.trace('w', self.trace_XML)
-        self.controller.Data.trace('w', self.trace_Data)
+        # self.controller.Data.trace('w', self.trace_Data)
         self.controller.Plugin.trace('w', self.trace_Plugin)
 
         frame1.grid(column=0, row=0, sticky="n")
@@ -184,13 +184,13 @@ class MainPage(tk.Frame):
             if self.controller.Plugin.get():
                 self.RunButton.config(state='normal')
 
-    def trace_Data(self, *args):
-        """ Checks if Data variable has been updated
-        """
-        if self.controller.Data.get():
-            self.controller.Datalabel.config(text='Done!', fg='green')
-            self.interactButton.config(state='normal')
-            self.uploadButton.config(state='normal')
+    # def trace_Data(self, *args):
+    #     """ Checks if Data variable has been updated
+    #     """
+    #     if self.controller.Data.get():
+    #         self.controller.Datalabel.config(text='Done!', fg='green')
+    #         self.interactButton.config(state='normal')
+    #         self.uploadButton.config(state='normal')
 
     def trace_Plugin(self, *args):
         """ Checks if Plugin variable has been updated
@@ -331,6 +331,14 @@ class MainPage(tk.Frame):
         else:
             tk.messagebox.showwarning(title='Error - X not specified',
                                       message='You need to specify X before proceeding.')
+
+    def upload_data_path(self):
+        """ Stores the directory containing the data that will be later loaded 
+        """
+        folder = askdirectory(initialdir=os.getcwd(),
+                              title='Select a folder',
+                              mustexist=True)
+        self.controller.s.append_input_data('X', folder)
 
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
