@@ -68,7 +68,7 @@ class Data:
         from glob import glob
         if folder_dir[-1] != path.sep:
             folder_dir += path.sep
-        data_name = folder_dir.split(path.sep)[-2]
+        # data_name = folder_dir.split(path.sep)[-2]
         files = np.sort(glob(folder_dir + "*"))
         self.data[data_name] = {}
         for f in files:
