@@ -1,0 +1,128 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Input Data" />
+        </relationships>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
+        <inputdata>
+            <X file="C:/Users/sevillc1/Documentos/GitHub/ai-assisted-design-framework/aidesign/examples/supervised_regression/X_tr.csv" />
+            <Y file="C:/Users/sevillc1/Documentos/GitHub/ai-assisted-design-framework/aidesign/examples/supervised_regression/Y_tr.csv" />
+            <X_test file="C:/Users/sevillc1/Documentos/GitHub/ai-assisted-design-framework/aidesign/examples/supervised_regression/X_tst.csv" />
+            <Y_test file="C:/Users/sevillc1/Documentos/GitHub/ai-assisted-design-framework/aidesign/examples/supervised_regression/Y_tst.csv" />
+        </inputdata>
+    </Initialiser>
+    <loop type="for" condition="6000" name="loop0">
+        <relationships>
+            <child name="Input Data" />
+            <child name="Data Processing_img" />
+        </relationships>
+        <coordinates>
+            (42.0, 122.0, 457.0, 210.0)
+        </coordinates>
+        <InputData name="Input Data">
+            <plugin type="" />
+            <relationships>
+                <parent name="Initialiser" />
+                <parent name="Data Storage_X" />
+                <parent name="loop0" />
+                <child name="Data Processing_img" />
+            </relationships>
+            <coordinates>
+                [(114, 174), 2, {0: 'd0-u2', 10: 'u10-d2'}]
+            </coordinates>
+        </InputData>
+        <DataProcessing name="Data Processing_img">
+            <plugin type="" />
+            <relationships>
+                <parent name="Input Data" />
+                <parent name="loop0" />
+                <child name="Data Processing_Ic" />
+            </relationships>
+            <coordinates>
+                [(341, 175), 3, {2: 'r2-l3'}]
+            </coordinates>
+        </DataProcessing>
+    </loop>
+    <DataProcessing name="Data Processing_Ic">
+        <plugin type="" />
+        <relationships>
+            <parent name="Data Processing_img" />
+            <child name="Data Storage_Ic" />
+        </relationships>
+        <coordinates>
+            [(569, 175), 4, {3: 'r3-l4'}]
+        </coordinates>
+    </DataProcessing>
+    <DataStorage name="Data Storage_Ic">
+        <plugin type="" />
+        <relationships>
+            <parent name="Data Processing_Ic" />
+            <child name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(569, 296), 5, {4: 'd4-u5'}]
+        </coordinates>
+    </DataStorage>
+    <Modelling name="Modelling">
+        <plugin type="" />
+        <relationships>
+            <parent name="Data Storage_Ic" />
+            <child name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(568, 400), 6, {5: 'd5-u6'}]
+        </coordinates>
+    </Modelling>
+    <UserInteraction name="User Interaction">
+        <plugin type="" />
+        <relationships>
+            <parent name="Modelling" />
+            <child name="Data Processing_optimum" />
+            <child name="Decision Making" />
+        </relationships>
+        <coordinates>
+            [(348, 465), 7, {6: 'l6-r7'}]
+        </coordinates>
+    </UserInteraction>
+    <DataProcessing name="Data Processing_optimum">
+        <plugin type="" />
+        <relationships>
+            <parent name="User Interaction" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(349, 557), 8, {7: 'd7-u8'}]
+        </coordinates>
+    </DataProcessing>
+    <DecisionMaking name="Decision Making">
+        <plugin type="" />
+        <relationships>
+            <parent name="User Interaction" />
+            <child name="Data Storage_X" />
+        </relationships>
+        <coordinates>
+            [(133, 403), 9, {7: 'l7-d9'}]
+        </coordinates>
+    </DecisionMaking>
+    <DataStorage name="Data Storage_X">
+        <plugin type="" />
+        <relationships>
+            <parent name="Decision Making" />
+            <child name="Input Data" />
+        </relationships>
+        <coordinates>
+            [(115, 286), 10, {9: 'u9-d10'}]
+        </coordinates>
+    </DataStorage>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Data Processing_optimum" />
+        </relationships>
+        <coordinates>
+            [(350.0, 650), 1, {8: 'd8-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>

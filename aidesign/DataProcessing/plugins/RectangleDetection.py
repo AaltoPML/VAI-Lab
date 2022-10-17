@@ -112,7 +112,7 @@ class model(BaseEstimator):
         mask = (X[:,:,0] > 120) * (X[:,:,1] < 80) * (X[:,:,2] < 80)
         self.ii_ini, self.jj_ini = np.unravel_index(mask.argmax(), mask.shape)
         # return self
-
+    
     def transform(self, X):
         # [h, w] = np.shape(X)[0:2]#calculating height and width for each image
         X_dict = {}

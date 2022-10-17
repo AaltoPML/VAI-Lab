@@ -55,7 +55,7 @@ class model(BaseEstimator):
         self.optional = optional
     
     def fit(self, X):
-        X = X
+        return self
 
     def transform(self, X):
         # [h, w] = np.shape(X)[0:2]#calculating height and width for each image

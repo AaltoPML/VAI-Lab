@@ -7,10 +7,7 @@
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./examples/supervised_classification/X_tr.csv" />
-            <Y file="./examples/supervised_classification/Y_tr.csv" />
-            <X_test file="./examples/supervised_classification/X_tst.csv" />
-            <Y_test file="./examples/supervised_classification/Y_tst.csv" />
+            <X file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/examples/crystalDesign" />
         </inputdata>
     </Initialiser>
     <DataProcessing name="Data Processing">
