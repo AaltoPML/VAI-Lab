@@ -1,11 +1,10 @@
 # Import the required libraries
 import tkinter as tk
-from PIL import Image, ImageTk
+from PIL import ImageTk
 import os
 import numpy as np
 import pandas as pd
-from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
-from tkinter import messagebox
+import time
 
 from aidesign.Data.xml_handler import XML_handler
 from aidesign.utils.plugin_helpers import PluginSpecs
@@ -60,7 +59,19 @@ class progressTracker(tk.Frame):
         self.dataType = {}
         
         self.upload()
-        
+
+        sec = 5
+        self.click = False
+        self.my_label = tk.Label(self.frame2, 
+                    text = 
+                    'This window will get\nclosed after '+str(sec)+' seconds\nunless you click on the canvas.',
+                    pady= 10,
+                    font = self.controller.title_font,
+                    bg = self.bg,
+                    fg = 'white',
+                    anchor = tk.CENTER)
+        self.my_label.grid(column = 0,
+                            row = 0, columnspan = 2, padx=10)
         tk.Button(
             self.frame4, text = 'Next step', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
@@ -69,20 +80,28 @@ class progressTracker(tk.Frame):
         self.save_path = ''
         self.saved = True
         frame1.grid(column=0, row=0, sticky="nsew")
-        self.frame2.grid(column=1, row=0, sticky="ne")
+        self.frame2.grid(column=1, row=0, sticky="new")
         frame3.grid(column=0, row=1, sticky="swe")
         self.frame4.grid(column=1, row=1, sticky="sew")
         
         frame3.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
-        
+
+        self.controller.after(sec*1000,lambda:self.check_click())
+
     def class_list(self,value):
         """ Temporary fix """
         return value
 
     def on_click(self, event):
         """ Passes the mouse click coordinates to the select function."""
+        self.click = True
         self.select(event.x, event.y)
+    
+    def check_click(self):
+        """ Passes the mouse click coordinates to the select function."""
+        if not self.click:
+            self.check_quit()
         
     def select(self, x: float, y:float):
         """ 
@@ -372,9 +391,9 @@ class progressTracker(tk.Frame):
         self.s.load_XML(filename)
         # self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
-        modout = modules['output']
-        del modules['Initialiser'], modules['output'] # They are generated when resetting
-        self.disp_mod = ['Initialiser', 'output']
+        modout = modules['Output']
+        del modules['Initialiser'], modules['Output'] # They are generated when resetting
+        self.disp_mod = ['Initialiser', 'Output']
         self.id_mod = [0, 1]
         
         # Place the modules
@@ -484,7 +503,7 @@ class progressTracker(tk.Frame):
         self.module_names = []
         
         self.add_module('Initialiser', self.width/2, self.h, ini = True)
-        self.add_module('output', self.width/2, self.height - self.h, out = True)
+        self.add_module('Output', self.width/2, self.height - self.h, out = True)
     
         self.draw = False
         self.loops = []
