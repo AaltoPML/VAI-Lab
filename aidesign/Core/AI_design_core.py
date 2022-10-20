@@ -4,6 +4,7 @@ from aidesign.GUI.GUI_core import GUI
 from aidesign.Data.Data_core import Data
 from aidesign.utils.plugin_helpers import PluginSpecs
 import time
+from sys import exit
 
 class Core(object):
     def __init__(self) -> None:
@@ -96,7 +97,7 @@ class Core(object):
         self.gui_app.set_avail_plugins(self._avail_plugins)
         self.gui_app.set_gui(self.status_logger)
         self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
-        self.gui_app.launch()
+        return self.gui_app.launch()
     
     def _init_status(self, modules):
         for key in [key for key, val in modules.items() if type(val) == dict]:
@@ -118,7 +119,10 @@ class Core(object):
                 specs[key]["class"]))(specs[key])
             self._add_status(specs[key], 'finish', time.strftime('%H:%M:%S', time.localtime()))
             if specs[key]["class"] == 'module':
-                self._runTracker()
+                term = self._runTracker()
+                if term['close']:
+                    print('Pipeline terminated')
+                    exit()
                 self.load_config_file(self._xml_handler.filename)
 
     def run(self):

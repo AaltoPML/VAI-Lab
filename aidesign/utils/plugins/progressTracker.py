@@ -76,7 +76,12 @@ class progressTracker(tk.Frame):
             self.frame4, text = 'Next step', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
             command = self.check_quit).grid(column = 1, row = 26, sticky="news", pady=(0,10))
+        tk.Button(
+            self.frame4, text = 'Stop pipeline', fg = 'white', bg = parent['bg'], 
+            height = 3, width = 15, font = self.controller.pages_font, 
+            command = self.terminate).grid(column = 0, row = 26, sticky="news", pady=(0,10))
         
+        self.controller._append_to_output('close', False)
         self.save_path = ''
         self.saved = True
         frame1.grid(column=0, row=0, sticky="nsew")
@@ -99,9 +104,14 @@ class progressTracker(tk.Frame):
         self.select(event.x, event.y)
     
     def check_click(self):
-        """ Passes the mouse click coordinates to the select function."""
+        """ If not clicked on canvas, closes the window."""
         if not self.click:
             self.check_quit()
+
+    def terminate(self):
+        """ Terminates window and pipeline. """
+        self.controller._append_to_output('close', True)
+        self.check_quit()
         
     def select(self, x: float, y:float):
         """ 
@@ -120,12 +130,12 @@ class progressTracker(tk.Frame):
                 self.canvas.selected = self.selected[-2]
             else:
                 self.canvas.selected = self.selected[-1]
-        if len(self.canvas.gettags(self.canvas.selected)) > 0:
-            if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
-                not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
-                self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
-            if self.m > 1:
-                self.optionsWindow()
+            if len(self.canvas.gettags(self.canvas.selected)) > 0:
+                if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
+                    not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
+                    self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
+                if self.m > 1:
+                    self.optionsWindow()
 
     def module_out(self, name):
         """ Updates the output DataFrame.
@@ -513,7 +523,6 @@ class progressTracker(tk.Frame):
         self.plugin = {}
 
     def check_quit(self):
-        
         self.controller.destroy()
         
 class CanvasTooltip:
