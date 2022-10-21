@@ -169,8 +169,8 @@ class aidCanvas(tk.Frame):
         frame3.grid(column=0, row=2, sticky="swe")
         frame4.grid(column=1, row=1, sticky="nse")
         
-        frame3.grid_columnconfigure(tuple(range(4)), weight=1)
-        frame4.grid_rowconfigure(tuple(range(7)), weight=1)
+        frame3.grid_columnconfigure(4, weight=1)
+        frame4.grid_rowconfigure(7, weight=1)
 
     def class_list(self, value):
         """ Temporary fix """
