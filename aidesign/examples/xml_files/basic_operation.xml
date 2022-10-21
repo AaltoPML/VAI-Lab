@@ -1,34 +1,24 @@
 <pipeline>
     <Initialiser name="Init">
-        <plugin type="">
-            <initial_data file="../resources/intial_data_test.csv" />
-            <goal file="../resources/design_goals_test.csv" />
-        </plugin>
+        <inputdata>
+            <X file="./examples/image_classification/training_images/" />
+            <Y file="./examples/image_classification/Y_data.csv" />
+        </inputdata>
         <relationships>
-            <child name="My First UserFeedback Module" />
+            <child name="My First UserInteraction Module" />
         </relationships>
     </Initialiser>
     <loop type="for" condition="2" name="For Loop 1">
-        <UserFeedback name="My First UserFeedback Module">
+        <UserInteraction name="My First UserInteraction Module">
             <plugin type="manual">
-                <class_list>
-                    Atelectasis
-                    Cardiomelagy
-                    Effusion
-                    Infiltration
-                    Mass
-                    Nodule
-                    Pneumonia
-                    Pneumothorax
-                </class_list>
             </plugin>
             <relationships>
                 <parent name="Init" />
                 <child name="Data Processing 1" />
             </relationships>
-        </UserFeedback>
+        </UserInteraction>
         <loop type="for" condition="1" name="For Loop 2">
-            <UserFeedback name="My Second UserFeedback Module">
+            <UserInteraction name="My Second UserInteraction Module">
                 <plugin type="canvas">
                     <class_list>
                         ['State_a','Action_a']
@@ -41,7 +31,7 @@
                     <child name="Data Processing 1" />
                     <child name="Output" />
                 </relationships>
-            </UserFeedback>
+            </UserInteraction>
         </loop>
     </loop>
     <Output>
@@ -52,7 +42,7 @@
             <save_to file="../resources/output_test.csv" />
         </plugin>
         <relationships>
-            <parent name="My Second UserFeedback Module" />
+            <parent name="My Second UserInteraction Module" />
         </relationships>
     </Output>
 </pipeline>

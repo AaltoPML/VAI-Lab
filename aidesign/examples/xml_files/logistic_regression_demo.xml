@@ -1,19 +1,19 @@
 <pipeline>
     <Initialiser name="Initialiser">
         <relationships>
-            <child name="Data Processing" />
+            <child name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./Data/resources/supervised_regression/X_tr.csv" />
-            <Y file="./Data/resources/supervised_regression/Y_tr.csv" />
-            <X_test file="./Data/resources/supervised_regression/X_tst.csv" />
-            <Y_test file="./Data/resources/supervised_regression/Y_tst.csv" />
+            <X file="./examples/supervised_classification/X_tr.csv" />
+            <Y file="./examples/supervised_classification/Y_tr.csv" />
+            <X_test file="./examples/supervised_classification/X_tst.csv" />
+            <Y_test file="./examples/supervised_classification/Y_tst.csv" />
         </inputdata>
     </Initialiser>
-    <DataProcessing name="Data Processing">
+    <Modelling name="Modelling">
         <relationships>
             <parent name="Initialiser" />
             <child name="Output" />
@@ -21,12 +21,19 @@
         <coordinates>
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="StandardScaler" />
-    </DataProcessing>
+        <plugin type="LogisticRegression">
+            <penalty>
+                 l2
+            </penalty>
+            <C>
+                 0.01
+            </C>
+        </plugin>
+    </Modelling>
     <Output name="Output">
         <plugin type="" />
         <relationships>
-            <parent name="Data Processing" />
+            <parent name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{2:'d2-u1'}]

@@ -7,8 +7,10 @@
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./Data/resources/supervised_regression/X_tr.csv" />
-            <X_test file="./Data/resources/supervised_regression/X_tst.csv" />
+            <X file="./examples/supervised_regression/X_tr.csv" />
+            <Y file="./examples/supervised_regression/Y_tr.csv" />
+            <X_test file="./examples/supervised_regression/X_tst.csv" />
+            <Y_test file="./examples/supervised_regression/Y_tst.csv" />
         </inputdata>
     </Initialiser>
     <DataProcessing name="Data Processing">
@@ -17,7 +19,7 @@
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(301,201),2,{0:'d0-u2'}]
+            [(296,183),2,{0:'d0-u2'}]
         </coordinates>
         <plugin type="StandardScaler">
             <Data>
@@ -31,9 +33,13 @@
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300.0,300.0),3,{2:'d2-u3'}]
+            [(300,328),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="KMeans" />
+        <plugin type="RidgeRegression">
+            <alpha>
+                0.0002
+            </alpha>
+        </plugin>
     </Modelling>
     <Output name="Output">
         <plugin type="" />

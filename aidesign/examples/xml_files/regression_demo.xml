@@ -7,10 +7,8 @@
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./Data/resources/supervised_regression/X_tr.csv" />
-            <Y file="./Data/resources/supervised_regression/Y_tr.csv" />
-            <X_test file="./Data/resources/supervised_regression/X_tst.csv" />
-            <Y_test file="./Data/resources/supervised_regression/Y_tst.csv" />
+            <X file="./examples/supervised_regression/data_1D_simple/x_train.csv" />
+            <Y file="./examples/supervised_regression/data_1D_simple/y_train.csv" />
         </inputdata>
     </Initialiser>
     <Modelling name="Modelling">
@@ -21,16 +19,7 @@
         <coordinates>
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="SVR">
-            <C>
-                 0.01
-            </C>
-            <kernel>
-                 rbf
-            </kernel>
-            <gamma>
-                 10
-            </gamma>
+        <plugin type="LinearRegression">
         </plugin>
     </Modelling>
     <Output name="Output">

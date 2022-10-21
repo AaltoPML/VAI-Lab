@@ -1,21 +1,24 @@
-from aidesign.utils.import_helper import import_module
+from aidesign._import_helper import import_module
 from aidesign.Data.xml_handler import XML_handler
 from aidesign.GUI.GUI_core import GUI
 from aidesign.Data.Data_core import Data
-from aidesign.utils.plugin_helpers import PluginSpecs
+from aidesign._plugin_helpers import PluginSpecs
+from aidesign._types import PluginSpecsInterface, ModuleInterface
 import time
 from sys import exit
 
-class Core(object):
+from os.path import join
+from typing import Dict, Tuple, Union, List
+class Core:
     def __init__(self) -> None:
         self._xml_handler = XML_handler()
-        self._avail_plugins = PluginSpecs()
+        self._avail_plugins: PluginSpecsInterface = PluginSpecs()
         self.data = Data()
-        self.loop_level = 0
-        self.setup_complete = False
-        self.status_logger = {}
+        self.loop_level: int = 0
+        self.setup_complete: bool = False
+        self.status_logger:Dict = {}
 
-    def launch(self):
+    def _launch(self):
         gui_app = GUI()
         gui_app.set_avail_plugins(self._avail_plugins)
         gui_app.set_gui_as_startpage()
@@ -27,11 +30,15 @@ class Core(object):
                 raise Exception("No XML File Selected. Cannot Run Pipeline")
             self._load_data()
 
-    def load_config_file(self, filename: str):
-        self._xml_handler.load_XML(filename)
+    def load_config_file(self, filename: Union[str,List,Tuple]):
+        if type(filename) == list or type(filename) == tuple:
+            filedir:str = join(*filename)
+        else:
+            filedir = str(filename)
+        self._xml_handler.load_XML(filedir)
         self.setup_complete = True
 
-    def _load_data(self):
+    def _load_data(self) -> None:
         init_data_fn = self._xml_handler.data_to_load
         self.data.import_data_from_config(init_data_fn)
 
@@ -41,7 +48,7 @@ class Core(object):
 
         :param specs: dict of module to be executed
         """
-        mod = import_module(globals(), specs["module_type"]).__call__()
+        mod: ModuleInterface = import_module(globals(), specs["module_type"]).__call__()
         mod.set_avail_plugins(self._avail_plugins)
         mod.set_data_in(self.data)
         mod.set_options(specs)
@@ -106,6 +113,17 @@ class Core(object):
     def _add_status(self, module, key, value):
         self.status_logger[module['name']][key] = value
 
+    def _progress_start(self, module):
+        self._add_status(module, 'start', self._t)
+
+    def _progress_finish(self, module):
+        self._add_status(module, 'finish', self._t)
+
+
+    @property
+    def _t(self):
+        return time.strftime('%H:%M:%S', time.localtime())
+
     def _execute(self, specs):
         """Run elements within a given dictionary.
         Only iterates over dict values that are dicts themselves.
@@ -114,22 +132,24 @@ class Core(object):
         :param specs: dict of elements to be executed
         """
         for key in [key for key, val in specs.items() if type(val) == dict]:
-            self._add_status(specs[key], 'start', time.strftime('%H:%M:%S', time.localtime()))
-            getattr(self, "_execute_{}".format(
-                specs[key]["class"]))(specs[key])
-            self._add_status(specs[key], 'finish', time.strftime('%H:%M:%S', time.localtime()))
+            
+            self._progress_start(specs[key])
+            getattr(self, "_execute_{}".format(specs[key]["class"]))(specs[key])
+            self._progress_finish(specs[key])
+
             if specs[key]["class"] == 'module':
                 term = self._runTracker()
-                if term['close']:
+                if not term['close']:
+                    self.load_config_file(self._xml_handler.filename)
+                else:
                     print('Pipeline terminated')
                     exit()
-                self.load_config_file(self._xml_handler.filename)
 
     def run(self):
         if not self.setup_complete:
             print("No pipeline specified. Running GUI.")
             print("To load existing config, run core.load_config_file(<path_to_file>)")
-            self.launch()
+            self._launch()
         print("Running pipeline...")
         self._load_data()
         

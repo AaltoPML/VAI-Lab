@@ -1,59 +1,61 @@
 # Import the required libraries
-import tkinter as tk
-from PIL import ImageTk
 import os
+import tkinter as tk
+from tkinter import messagebox
+
 import numpy as np
 import pandas as pd
-import time
-
+from aidesign._plugin_helpers import PluginSpecs
 from aidesign.Data.xml_handler import XML_handler
-from aidesign.utils.plugin_helpers import PluginSpecs
+from PIL import Image, ImageTk
 
-_PLUGIN_READABLE_NAMES = {"progress_tracker":"default","progressTracker":"alias","progress tracker":"alias"}
-_PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
-                            "required_children": None}
-_PLUGIN_REQUIRED_SETTINGS = {"id_done"}
-_PLUGIN_OPTIONAL_SETTINGS = {}
+_PLUGIN_READABLE_NAMES = {"progress_tracker":"default",
+                            "progressTracker":"alias",
+                            "progress tracker":"alias"}     # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,              # type:ignore
+                          "required_children": None}        # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {"id_done"}                     # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                              # type:ignore
+
 
 class progressTracker(tk.Frame):
     """Canvas for the visualisation of the pipeline state."""
-    
-    def __init__(self, parent, controller, config:dict):
-        
+
+    def __init__(self, parent, controller, config: dict):
         """ Here we define the frame displayed for the plugin specification."""
-        
-        super().__init__(parent, bg = parent['bg'])
+
+        super().__init__(parent, bg=parent['bg'])
         self.bg = parent['bg']
         self.controller = controller
         self.s = XML_handler()
-        
         self.controller.title('Progress Tracker')
         
         script_dir = os.path.dirname(__file__)
-        self.tk.call('wm','iconphoto', self.controller._w, ImageTk.PhotoImage(
-            file = os.path.join(os.path.join(
-                script_dir, 
-                'resources', 
-                'Assets', 
-                'AIDIcon.ico'))))
-        self.grid_rowconfigure(tuple(range(2)), weight=1)
+        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
+            file=os.path.join(os.path.join(
+                script_dir,
+                'resources',
+                'Assets',
+                'VAILabsIcon.ico'))))
         self.grid_columnconfigure(0, weight=1)
-        
-        frame1 = tk.Frame(self, bg = self.bg)
-        self.frame2 = tk.Frame(self, bg = self.bg)
-        frame3 = tk.Frame(self, bg = self.bg)
-        self.frame4 = tk.Frame(self, bg = self.bg)
-        
+
+        frame1 = tk.Frame(self, bg=self.bg)
+        self.frame2 = tk.Frame(self, bg=self.bg)
+        frame3 = tk.Frame(self, bg=self.bg)
+        self.frame4 = tk.Frame(self, bg=self.bg)
+
         # Create canvas
         self.width, self.height = 600, 600
-        self.canvas = tk.Canvas(frame1, width=self.width, 
-            height=self.height, background="white")
-        self.canvas.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=10)
-        
+        self.canvas = tk.Canvas(frame1, width=self.width,
+                                height=self.height, background="white")
+        self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
+
+        self.m: int
         self.w, self.h = 100, 50
         self.cr = 4
         """
         TODO: Implement clicking on canvas actions
+        Commented out WIP code as it was complicating searching for bugs in plugincanvas
         """
         self.canvas.bind('<Button-1>', self.on_click)
         self.dataType = {}
@@ -139,7 +141,7 @@ class progressTracker(tk.Frame):
 
     def module_out(self, name):
         """ Updates the output DataFrame.
-        
+
         :param name: name of the model
         :type name: str
         """
@@ -149,14 +151,14 @@ class progressTracker(tk.Frame):
             name_list.append(name + '-' + str(len(m_num)))
         else:
             name_list.append(name)
-        self.canvas.itemconfig('t'+str(self.modules), text = name_list[-1])
+        self.canvas.itemconfig('t'+str(self.modules), text=name_list[-1])
         values = self.out_data.values
         values = np.vstack((
-                    np.hstack((values, np.zeros((values.shape[0],1)))),
-                    np.zeros((1, values.shape[0]+1))))
-        self.out_data = pd.DataFrame(values, 
-                                     columns = name_list, 
-                                     index = name_list)
+            np.hstack((values, np.zeros((values.shape[0], 1)))),
+            np.zeros((1, values.shape[0]+1))))
+        self.out_data = pd.DataFrame(values,
+                                     columns=name_list,
+                                     index=name_list)
         self.module_names.append(name_list[-1])
 
     def pretty_status(self,status: dict):
@@ -167,7 +169,7 @@ class progressTracker(tk.Frame):
 
     def add_module(self,boxName: str,x: float,y:float,ini = False,out = False):
         """ Creates a rectangular module with the corresponding text inside.
-        
+
         :param boxName: name of the model
         :type boxName: str
         :param x: float type of module x coordinate
@@ -177,7 +179,7 @@ class progressTracker(tk.Frame):
         """
         if not ini and not out:
             tag = ('o'+str(self.modules),)
-        else: #Make initialisation and output unmoveable
+        else:  # Make initialisation and output unmoveable
             tag = ('n0',)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
         # Check module status
@@ -216,44 +218,44 @@ class progressTracker(tk.Frame):
         
         if not out:
             self.canvas.create_oval(
-                x - self.cr, 
-                y + self.h/2 - self.cr, 
-                x + self.cr, 
-                y + self.h/2 + self.cr, 
-                width = 2, 
-                fill = 'black', 
-                tags = tag + ('d'+str(self.modules),))
-            
+                x - self.cr,
+                y + self.h/2 - self.cr,
+                x + self.cr,
+                y + self.h/2 + self.cr,
+                width=2,
+                fill='black',
+                tags=tag + ('d'+str(self.modules),))
+
         if not ini:
             self.canvas.create_oval(
-                x - self.cr, 
-                y - self.h/2 - self.cr, 
-                x + self.cr, 
-                y - self.h/2 + self.cr, 
-                width = 2, 
-                fill = 'black', 
-                tags = tag + ('u'+str(self.modules),))
-        
+                x - self.cr,
+                y - self.h/2 - self.cr,
+                x + self.cr,
+                y - self.h/2 + self.cr,
+                width=2,
+                fill='black',
+                tags=tag + ('u'+str(self.modules),))
+
         if not out and not ini:
             self.canvas.create_oval(
-                x - text_w/2 - self.cr, 
-                y - self.cr, 
-                x - text_w/2 + self.cr, 
-                y + self.cr, 
-                width = 2, 
-                fill = 'black', 
-                tags = tag + ('l'+str(self.modules),))
-        
+                x - text_w/2 - self.cr,
+                y - self.cr,
+                x - text_w/2 + self.cr,
+                y + self.cr,
+                width=2,
+                fill='black',
+                tags=tag + ('l'+str(self.modules),))
+
             self.canvas.create_oval(
-                x + text_w/2 - self.cr, 
-                y - self.cr, 
-                x + text_w/2 + self.cr, 
-                y + self.cr, 
-                width = 2, 
-                fill = 'black', 
-                tags = tag + ('r'+str(self.modules),))
-            
-        self.canvas.startxy.append((x, y))
+                x + text_w/2 - self.cr,
+                y - self.cr,
+                x + text_w/2 + self.cr,
+                y + self.cr,
+                width=2,
+                fill='black',
+                tags=tag + ('r'+str(self.modules),))
+
+        self.canvas_startxy.append((x, y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
         self.module_list.append(boxName)
@@ -392,9 +394,9 @@ class progressTracker(tk.Frame):
     def upload(self):
         """ Opens the XML file that was previously uploaded and places the 
         modules, loops and connections in the canvas."""
-        
+
         filename = self.controller.output["xml_filename"]
-        
+
         self.reset()
 
         self.s = XML_handler()
@@ -405,65 +407,69 @@ class progressTracker(tk.Frame):
         del modules['Initialiser'], modules['Output'] # They are generated when resetting
         self.disp_mod = ['Initialiser', 'Output']
         self.id_mod = [0, 1]
-        
+
         # Place the modules
         self.place_modules(modules)
         connect = list(modout['coordinates'][2].keys())
         for p, parent in enumerate(modout['parents']):
-                parent_id = self.id_mod[np.where(np.array(self.disp_mod) == parent)[0][0]]
-                out, ins = modout['coordinates'][2][connect[p]].split('-')
-                xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
-                xins, yins, _, _ =self.canvas.coords(ins[0]+str(1))
-                self.canvas.create_line(
-                            xout + self.cr, 
-                            yout + self.cr, 
-                            xins + self.cr, 
-                            yins + self.cr,
-                            fill = "red", 
-                            arrow = tk.LAST, 
-                            tags = ('o'+str(parent_id), 
-                                  'o'+str(1), modout['coordinates'][2][connect[p]]))
-                self.out_data.iloc[int(parent_id)][1] = 1
-                self.connections[1][
-                    int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
+            parent_id = self.id_mod[np.where(
+                np.array(self.disp_mod) == parent)[0][0]]
+            out, ins = modout['coordinates'][2][connect[p]].split('-')
+            xout, yout, _, _ = self.canvas.coords(out[0]+str(parent_id))
+            xins, yins, _, _ = self.canvas.coords(ins[0]+str(1))
+            self.canvas.create_line(
+                xout + self.cr,
+                yout + self.cr,
+                xins + self.cr,
+                yins + self.cr,
+                fill="red",
+                arrow=tk.LAST,
+                tags=('o'+str(parent_id),
+                      'o'+str(1), modout['coordinates'][2][connect[p]]))
+            self.out_data.iloc[int(parent_id)][1] = 1
+            self.connections[1][
+                int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
         self.m = self.id_mod[2]
         x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
         # self.select(x0, y0)
 
-    def place_modules(self,modules: dict):
+    def place_modules(self, modules: dict):
         """Places the modules in the dictionary in the canvas.
         :param modules: dict type of modules in the pipeline.
         """
-        
+
         for key in [key for key, val in modules.items() if type(val) == dict]:
             if modules[key]['class'] == 'loop':
                 # Extracts numbers from string
-                l = int(''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
+                l = int(
+                    ''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
                 x0, y0, x1, y1 = modules[key]['coordinates']
-                self.canvas.create_rectangle(x0, y0, 
-                                             x1, y1, 
-                                             outline = '#4ff07a',
-                                             tag = 'loop-'+str(l))
-                text_w = self.controller.pages_font.measure(modules[key]['type']) + 20
+                self.canvas.create_rectangle(x0, y0,
+                                             x1, y1,
+                                             outline='#4ff07a',
+                                             tag='loop-'+str(l)) # type:ignore
+                text_w = self.controller.pages_font.measure(
+                    modules[key]['type']) + 20
                 self.canvas.create_text(
-                    x0 + text_w/2, 
-                    y0 + 20, 
-                    font = self.controller.pages_font, 
-                    text = modules[key]['type'], 
-                    tags = ('loop-'+str(l), 'type'+'-'+str(l)), 
-                    justify = tk.CENTER)
-                text_w = self.controller.pages_font.measure(modules[key]['condition']) + 20
+                    x0 + text_w/2,
+                    y0 + 20,
+                    font=self.controller.pages_font,
+                    text=modules[key]['type'],
+                    tags=('loop-'+str(l), 'type'+'-'+str(l)),
+                    justify=tk.CENTER)
+                text_w = self.controller.pages_font.measure(
+                    modules[key]['condition']) + 20
                 self.canvas.create_text(
-                    x1 - text_w/2, 
-                    y0 + 20, 
-                    font = self.controller.pages_font, 
-                    text = modules[key]['condition'], 
-                    tags = ('loop-'+str(l), 'condition'+'-'+str(l)), 
-                    justify = tk.CENTER)
+                    x1 - text_w/2,
+                    y0 + 20,
+                    font=self.controller.pages_font,
+                    text=modules[key]['condition'],
+                    tags=('loop-'+str(l), 'condition'+'-'+str(l)),
+                    justify=tk.CENTER)
                 self.loops.append({'type': modules[key]['type'],
                                    'condition': modules[key]['condition'],
-                                   'mod': [], 
-                                   'coord': (x0, y0, 
+                                   'mod': [],
+                                   'coord': (x0, y0,
                                              x1, y1)})
                 self.place_modules(modules[key])
             else:
@@ -474,24 +480,29 @@ class progressTracker(tk.Frame):
                 # self.module_list[-1] = modules[key]['module_type']
                 self.id_mod.append(modules[key]['coordinates'][1])
                 connect = list(modules[key]['coordinates'][2].keys())
-                
+
                 # Connect modules
                 for p, parent in enumerate(modules[key]['parents']):
                     if not (parent[:4] == 'loop'):
-                        parent_id = self.id_mod[np.where(np.array(self.disp_mod) == parent)[0][0]]
-                        out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
-                        xout, yout, _ , _ = self.canvas.coords(out[0]+str(parent_id))
-                        xins, yins, _, _ =self.canvas.coords(ins[0]+str(self.id_mod[-1]))
+                        parent_id = self.id_mod[np.where(
+                            np.array(self.disp_mod) == parent)[0][0]]
+                        out, ins = modules[key]['coordinates'][2][connect[p]].split(
+                            '-')
+                        xout, yout, _, _ = self.canvas.coords(
+                            out[0]+str(parent_id))
+                        xins, yins, _, _ = self.canvas.coords(
+                            ins[0]+str(self.id_mod[-1]))
                         self.canvas.create_line(
-                                    xout + self.cr, 
-                                    yout + self.cr, 
-                                    xins + self.cr, 
-                                    yins + self.cr,
-                                    fill = "red", 
-                                    arrow = tk.LAST, 
-                                    tags = ('o'+str(parent_id), 
-                                          'o'+str(self.id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
-                        self.out_data.iloc[int(parent_id)][int(self.id_mod[-1])] = 1
+                            xout + self.cr,
+                            yout + self.cr,
+                            xins + self.cr,
+                            yins + self.cr,
+                            fill="red",
+                            arrow=tk.LAST,
+                            tags=('o'+str(parent_id),
+                                  'o'+str(self.id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
+                        self.out_data.iloc[int(parent_id)][int(
+                            self.id_mod[-1])] = 1
                         self.connections[int(self.id_mod[-1])][
                             int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(self.id_mod[-1])
                     else:
@@ -500,9 +511,9 @@ class progressTracker(tk.Frame):
 
     def reset(self):
         """ Resets the canvas and the stored information."""
-        self.canvas.delete(tk.ALL) # Reset canvas
-        
-        if hasattr(self, 'newWindow') and (self.newWindow!= None):
+        self.canvas.delete(tk.ALL)  # Reset canvas
+
+        if hasattr(self, 'newWindow') and (self.newWindow != None):
             self.newWindow.destroy()
         
         self.canvas.startxy = []
@@ -511,15 +522,15 @@ class progressTracker(tk.Frame):
         self.modules = 0
         self.module_list = []
         self.module_names = []
-        
-        self.add_module('Initialiser', self.width/2, self.h, ini = True)
-        self.add_module('Output', self.width/2, self.height - self.h, out = True)
-    
+
+        self.add_module('Initialiser', self.width/2, self.h, ini=True)
+        self.add_module('Output', self.width/2, self.height - self.h, out=True)
+
         self.draw = False
         self.loops = []
         self.drawLoop = False
         self.l = 0
-        self.id_done = [0,1]
+        self.id_done = [0, 1]
         self.plugin = {}
 
     def check_quit(self):
