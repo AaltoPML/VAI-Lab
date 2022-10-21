@@ -61,7 +61,7 @@ class pluginCanvas(tk.Frame):
         self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
         self.id_done = [0, 1]
-        self.id_mod = [0, 1]
+        self.id_mod:List[int] = [0, 1]
         self.out_data = pd.DataFrame()
         self.plugin: Dict[int, tk.StringVar] = {}
         self.dataType: Dict[int, tk.StringVar] = {}
@@ -612,7 +612,7 @@ class pluginCanvas(tk.Frame):
             self.out_data.iloc[int(parent_id)][1] = 1
             self.connections[1][
                 int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
-        self.m = self.id_mod[2]
+        self.m: int = self.id_mod[2]
         x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
 
         # Configure frame for scrollbar
