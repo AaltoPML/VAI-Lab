@@ -566,7 +566,7 @@ class pluginCanvas(tk.Frame):
                 fill = 'black', 
                 tags = tag + ('r'+str(iid),))
             
-        self.canvas.startxy.append((x, y))
+        self.canvas_startxy.append((x, y))
         self.connections[iid] = {}
         self.module_out(boxName, iid)
         self.module_list.append(boxName)
@@ -687,7 +687,7 @@ class pluginCanvas(tk.Frame):
                 self.id_mod.append(modules[key]['coordinates'][1])
                 self.disp_mod.append(key)
         self.module_list = [x for _, x in sorted(zip(self.id_mod, self.module_list))]
-        self.canvas.startxy = [x for _, x in sorted(zip(self.id_mod, self.canvas.startxy))]
+        self.canvas_startxy = [x for _, x in sorted(zip(self.id_mod, self.canvas_startxy))]
 
     def draw_connection(self, modules):
         for key in [key for key, val in modules.items() if type(val) == dict]:

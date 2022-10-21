@@ -363,8 +363,8 @@ class aidCanvas(tk.Frame):
             if len(sel_obj) > 0:
                 self.m = sel_obj[0]
                 
-                dx = event.x - self.canvas.startxy[self.m][0]
-                dy = event.y - self.canvas.startxy[self.m][1]
+                dx = event.x - self.canvas_startxy[self.m][0]
+                dy = event.y - self.canvas_startxy[self.m][1]
                 # if self.isLoop:
                     # self.canvas.move('loop-'+str(self.m), dx, dy) 
                 # else:
@@ -399,7 +399,7 @@ class aidCanvas(tk.Frame):
                                  xycoord_o[0] + self.cr, 
                                  xycoord_o[1] + self.cr))
                 # Update module location
-                self.canvas.startxy[self.m] = (event.x, event.y)
+                self.canvas_startxy[self.m] = (event.x, event.y)
     
     def module_out(self, name, iid):
         """ Updates the output DataFrame.
@@ -697,7 +697,7 @@ class aidCanvas(tk.Frame):
             # to avoid numpy bug during elementwise comparison of lists 
             loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
             
-            self.controller.s.update_module_coords(self.module_list[0],[self.canvas.startxy[0], 0, self.connections[0]])
+            self.controller.s.update_module_coords(self.module_list[0],[self.canvas_startxy[0], 0, self.connections[0]])
             self.controller.s.append_module_relationships(self.module_list[0],list(mn[values[:,0]]),list(mn[values[0,:]]))
             self.controller.s.filename = self.save_path.name
             for i, mnn in enumerate(mn_id):
@@ -842,7 +842,7 @@ class aidCanvas(tk.Frame):
                 id_mod.append(modules[key]['coordinates'][1])
                 disp_mod.append(key)
         self.module_list = [x for _, x in sorted(zip(id_mod, self.module_list))]
-        self.canvas.startxy = [x for _, x in sorted(zip(id_mod, self.canvas.startxy))]
+        self.canvas_startxy = [x for _, x in sorted(zip(id_mod, self.canvas_startxy))]
         return id_mod, disp_mod
 
     def draw_connection(self, modules, id_mod, disp_mod):
