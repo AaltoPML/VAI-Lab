@@ -129,13 +129,13 @@ class progressTracker(tk.Frame):
             x-5, y-5, x+5, y+5)
         if self.selected:
             if len(self.selected) > 2:
-                self.canvas.selected = self.selected[-2]
+                self.canvas_selected = self.selected[-2]
             else:
-                self.canvas.selected = self.selected[-1]
-            if len(self.canvas.gettags(self.canvas.selected)) > 0:
-                if not (len(self.canvas.gettags(self.canvas.selected)[0].split('-')) > 1) and\
-                    not (self.canvas.gettags(self.canvas.selected)[0].split('-')[0] == 'loop'):
-                    self.m = int(self.canvas.gettags(self.canvas.selected)[0][1:])
+                self.canvas_selected = self.selected[-1]
+            if len(self.canvas.gettags(self.canvas_selected)) > 0:
+                if not (len(self.canvas.gettags(self.canvas_selected)[0].split('-')) > 1) and\
+                    not (self.canvas.gettags(self.canvas_selected)[0].split('-')[0] == 'loop'):
+                    self.m = int(self.canvas.gettags(self.canvas_selected)[0][1:])
                 if self.m > 1:
                     self.optionsWindow()
 
