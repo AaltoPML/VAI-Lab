@@ -6,12 +6,12 @@ if not __package__:
     sys.path.append(root_mod)
 
 
-from aidesign._import_helper import get_lib_parent_dir
-
-from typing import Any, Dict, Union, Optional, List
-from os import path
-from ast import literal_eval
 import xml.etree.ElementTree as ET
+from ast import literal_eval
+from os import path
+from typing import Any, Dict, List, Optional, Union
+
+from aidesign._import_helper import get_lib_parent_dir
 
 
 class XML_handler:
@@ -633,21 +633,9 @@ class XML_handler:
 
 # Use case examples:
 if __name__ == "__main__":
-    # s = XML_handler("./resources/Hospital.xml")
-    # s = XML_handler("./examples/data_passing_test.xml")
     s = XML_handler()
-    # s.new_config_file("./resources/example_config.xml")
-    # s._get_all_elements_with_tag("loop")
     s.load_XML("./examples/xml_files/regerssion_test.xml")
-    # s.append_plugin_to_module("Input Data Plugin",{"option":{"test":4}},"Input data",1)
-    # s.new_config_file()
-    # s.append_input_data("X","./examples/supervised_regression/1/y_train.csv")
-    # s.append_input_data("Y","./examples/supervised_regression/1/y_train.csv")
-    # print(s.root)
-    # print(s.data_to_load)
-    # s.update_module_coords("Initialiser",[1,1,1])
     s.update_plugin_options("Modelling-1",{"alpha":4})
-    # s.append_module_relationships("Initialiser",["test1","test2"],[])
     s._print_xml_config()
     a = s.data_to_load
     print(1)
