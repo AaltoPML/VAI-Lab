@@ -52,17 +52,16 @@ class pluginCanvas(tk.Frame):
         self.frame4 = tk.Frame(self, bg=self.bg)
 
         # Create canvas
-        self.width, self.height = 600, 600
-        self.canvas = tk.Canvas(frame1, width=self.width,
-                                height=self.height, background="white")
-        self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
-
-        self.m: int
+        self.width, self.height = 700, 700
+        self.canvas = tk.Canvas(frame1, width=self.width, 
+            height=self.height, background="white")
+        self.canvas.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=10)
+        
         self.w, self.h = 100, 50
         self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
         self.id_done = [0, 1]
-        self.id_mod = [0, 1]
+        self.id_mod:List[int] = [0, 1]
         self.out_data = pd.DataFrame()
         self.plugin: Dict[int, tk.StringVar] = {}
         self.dataType: Dict[int, tk.StringVar] = {}
@@ -470,8 +469,8 @@ class pluginCanvas(tk.Frame):
             toolTip.hidetip()
         widget.bind('<Enter>', enter)
         widget.bind('<Leave>', leave)
-
-    def module_out(self, name):
+        
+    def module_out(self, name, iid):
         """ Updates the output DataFrame.
 
         :param name: name of the model
@@ -483,7 +482,7 @@ class pluginCanvas(tk.Frame):
             name_list.append(name + '-' + str(len(m_num)))
         else:
             name_list.append(name)
-        self.canvas.itemconfig('t'+str(self.modules), text=name_list[-1])
+        self.canvas.itemconfig('t'+str(iid), text = name_list[-1])
         values = self.out_data.values
         values = np.vstack((
             np.hstack((values, np.zeros((values.shape[0], 1)))),
@@ -493,7 +492,7 @@ class pluginCanvas(tk.Frame):
                                      index=name_list)
         self.module_names.append(name_list[-1])
 
-    def add_module(self, boxName: str, x: float, y: float, ini=False, out=False):
+    def add_module(self,boxName: str,x: float,y:float,ini = False,out = False, iid = None):
         """ Creates a rectangular module with the corresponding text inside.
 
         :param boxName: name of the model
@@ -503,72 +502,73 @@ class pluginCanvas(tk.Frame):
         :param ini: bool type of whether the module corresponds to initialiser.
         :param out: bool type of whether the module corresponds to output.
         """
+        iid = self.modules if iid is None else iid
         if not ini and not out:
-            tag = ('o'+str(self.modules),)
-        else:  # Make initialisation and output unmoveable
+            tag = ('o'+str(iid),)
+        else: #Make initialisation and output unmoveable
             tag = ('n0',)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
         self.canvas.create_rectangle(
-            x - text_w/2,
-            y - self.h/2,
-            x + text_w/2,
-            y + self.h/2,
-            tags=tag + ('p'+str(self.modules),),
-            fill=self.bg,
-            width=3,
+            x - text_w/2 , 
+            y - self.h/2, 
+            x + text_w/2, 
+            y + self.h/2, 
+            tags = tag + ('p'+str(iid),), 
+            fill = self.bg, 
+            width = 3,
             # activefill = '#dbaa21'
         )
         self.canvas.create_text(
-            x,
-            y,
-            font=self.controller.pages_font,
-            text=boxName,
-            tags=tag + ('t'+str(self.modules),),
-            fill='#d0d4d9',
-            justify=tk.CENTER)
-
+            x, 
+            y, 
+            font = self.controller.pages_font, 
+            text = boxName, 
+            tags = tag + ('t'+str(iid),), 
+            fill = '#d0d4d9', 
+            justify = tk.CENTER)
+        
         if not out:
             self.canvas.create_oval(
-                x - self.cr,
-                y + self.h/2 - self.cr,
-                x + self.cr,
-                y + self.h/2 + self.cr,
-                width=2,
-                fill='black',
-                tags=tag + ('d'+str(self.modules),))
-
+                x - self.cr, 
+                y + self.h/2 - self.cr, 
+                x + self.cr, 
+                y + self.h/2 + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('d'+str(iid),))
+            
         if not ini:
             self.canvas.create_oval(
-                x - self.cr,
-                y - self.h/2 - self.cr,
-                x + self.cr,
-                y - self.h/2 + self.cr,
-                width=2,
-                fill='black',
-                tags=tag + ('u'+str(self.modules),))
-
+                x - self.cr, 
+                y - self.h/2 - self.cr, 
+                x + self.cr, 
+                y - self.h/2 + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('u'+str(iid),))
+        
         if not out and not ini:
             self.canvas.create_oval(
-                x - text_w/2 - self.cr,
-                y - self.cr,
-                x - text_w/2 + self.cr,
-                y + self.cr,
-                width=2,
-                fill='black',
-                tags=tag + ('l'+str(self.modules),))
-
+                x - text_w/2 - self.cr, 
+                y - self.cr, 
+                x - text_w/2 + self.cr, 
+                y + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('l'+str(iid),))
+        
             self.canvas.create_oval(
-                x + text_w/2 - self.cr,
-                y - self.cr,
-                x + text_w/2 + self.cr,
-                y + self.cr,
-                width=2,
-                fill='black',
-                tags=tag + ('r'+str(self.modules),))
-
+                x + text_w/2 - self.cr, 
+                y - self.cr, 
+                x + text_w/2 + self.cr, 
+                y + self.cr, 
+                width = 2, 
+                fill = 'black', 
+                tags = tag + ('r'+str(iid),))
+            
         self.canvas_startxy.append((x, y))
-        self.connections[self.modules] = {}
-        self.module_out(boxName)
+        self.connections[iid] = {}
+        self.module_out(boxName, iid)
         self.module_list.append(boxName)
         self.modules += 1
 
@@ -584,14 +584,15 @@ class pluginCanvas(tk.Frame):
         self.s.load_XML(filename)
         # self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
-        modout = modules['output']
-        # They are generated when resetting
-        del modules['Initialiser'], modules['output']
-        self.disp_mod = ['Initialiser', 'output']
+        print(modules)
+        modout = modules['Output']
+        del modules['Initialiser'], modules['Output'] # They are generated when resetting
+        self.disp_mod = ['Initialiser', 'Output']
         self.id_mod = [0, 1]
 
         # Place the modules
         self.place_modules(modules)
+        self.draw_connection(modules)
         connect = list(modout['coordinates'][2].keys())
         for p, parent in enumerate(modout['parents']):
             parent_id = self.id_mod[np.where(
@@ -611,7 +612,7 @@ class pluginCanvas(tk.Frame):
             self.out_data.iloc[int(parent_id)][1] = 1
             self.connections[1][
                 int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
-        self.m = self.id_mod[2]
+        self.m: int = self.id_mod[2]
         x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
 
         # Configure frame for scrollbar
@@ -638,14 +639,12 @@ class pluginCanvas(tk.Frame):
         widget.bind("<Enter>", lambda _: widget.bind_all(
             '<MouseWheel>', command))
         widget.bind("<Leave>", lambda _: widget.unbind_all('<MouseWheel>'))
-
-    def place_modules(self, modules: dict):
-        """Places the modules in the dictionary in the canvas.
-        :param modules: dict type of modules in the pipeline.
-        """
-
+            
+    def place_modules(self, modules):
+        # Place the modules
         for key in [key for key, val in modules.items() if type(val) == dict]:
             if modules[key]['class'] == 'loop':
+                self.l += 1
                 # Extracts numbers from string
                 l = int(
                     ''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
@@ -678,42 +677,47 @@ class pluginCanvas(tk.Frame):
                                    'coord': (x0, y0,
                                              x1, y1)})
                 self.place_modules(modules[key])
-            else:
+            elif key not in self.disp_mod:
                 # Display module
                 self.add_module(key,
                                 modules[key]['coordinates'][0][0],
-                                modules[key]['coordinates'][0][1])
+                                modules[key]['coordinates'][0][1], 
+                                iid = modules[key]['coordinates'][1])
                 self.module_list[-1] = modules[key]['module_type']
                 self.id_mod.append(modules[key]['coordinates'][1])
-                connect = list(modules[key]['coordinates'][2].keys())
+                self.disp_mod.append(key)
+        self.module_list = [x for _, x in sorted(zip(self.id_mod, self.module_list))]
+        self.canvas_startxy = [x for _, x in sorted(zip(self.id_mod, self.canvas_startxy))]
 
+    def draw_connection(self, modules):
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            if modules[key]['class'] == 'loop':
+                self.draw_connection(modules[key])
+            else:
                 # Connect modules
+                connect = list(modules[key]['coordinates'][2].keys())
                 for p, parent in enumerate(modules[key]['parents']):
                     if not (parent[:4] == 'loop'):
-                        parent_id = self.id_mod[np.where(
-                            np.array(self.disp_mod) == parent)[0][0]]
-                        out, ins = modules[key]['coordinates'][2][connect[p]].split(
-                            '-')
-                        xout, yout, _, _ = self.canvas.coords(
-                            out[0]+str(parent_id))
-                        xins, yins, _, _ = self.canvas.coords(
-                            ins[0]+str(self.id_mod[-1]))
+                        # parent_id = modules[parent]['coordinates'][1]
+                        parent_id = self.id_mod[np.where(np.array(self.disp_mod) == parent)[0][0]]
+                        out, ins = modules[key]['coordinates'][2][connect[p]].split('-')
+                        xout, yout, _ , _ = self.canvas.coords(out)
+                        xins, yins, _, _ = self.canvas.coords(ins)
                         self.canvas.create_line(
-                            xout + self.cr,
-                            yout + self.cr,
-                            xins + self.cr,
-                            yins + self.cr,
-                            fill="red",
-                            arrow=tk.LAST,
-                            tags=('o'+str(parent_id),
-                                  'o'+str(self.id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
-                        self.out_data.iloc[int(parent_id)][int(
-                            self.id_mod[-1])] = 1
-                        self.connections[int(self.id_mod[-1])][
-                            int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(self.id_mod[-1])
+                                    xout + self.cr,
+                                    yout + self.cr,
+                                    xins + self.cr,
+                                    yins + self.cr,
+                                    fill = "red", width = 2,
+                                    arrow = tk.LAST, arrowshape = (12,10,5),
+                                    tags = ('o'+str(parent_id),
+                                          # 'o'+str(self.id_mod[-1]), 
+                                          modules[key]['coordinates'][2][connect[p]]))
+                        self.out_data.iloc[int(parent_id)][int(ins[1:])] = 1
+                        self.connections[int(ins[1:])][
+                            int(parent_id)] = out[0]+str(out[1:]) + '-' + ins[0]+str(ins[1:])
                     else:
                         self.loops[-1]['mod'].append(key)
-                self.disp_mod.append(key)
 
     def reset(self):
         """ Resets the canvas and the stored information."""

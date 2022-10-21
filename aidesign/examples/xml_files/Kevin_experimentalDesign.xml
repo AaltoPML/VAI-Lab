@@ -1,0 +1,149 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Input Data" />
+        </relationships>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
+    </Initialiser>
+    <InputData name="Input Data">
+        <plugin type="" />
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Data Processing" />
+        </relationships>
+        <coordinates>
+            [(173,184),2,{0:'d0-u2'}]
+        </coordinates>
+    </InputData>
+    <DataProcessing name="Data Processing">
+        <plugin type="" />
+        <relationships>
+            <parent name="Input Data" />
+            <child name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(173,294),3,{2:'d2-u3'}]
+        </coordinates>
+    </DataProcessing>
+    <Modelling name="Modelling">
+        <plugin type="" />
+        <relationships>
+            <parent name="Data Processing" />
+            <parent name="User Interaction" />
+            <child name="Decision Making" />
+        </relationships>
+        <coordinates>
+            [(175,409),4,{3:'d3-u4',5:'l5-r4'}]
+        </coordinates>
+    </Modelling>
+    <UserInteraction name="User Interaction">
+        <plugin type="" />
+        <relationships>
+            <parent name="Decision Making" />
+            <child name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(543,414),5,{6:'r6-d5'}]
+        </coordinates>
+    </UserInteraction>
+    <DecisionMaking name="Decision Making">
+        <plugin type="" />
+        <relationships>
+            <parent name="Modelling" />
+            <child name="Output" />
+            <child name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(351,522),6,{4:'d4-l6'}]
+        </coordinates>
+    </DecisionMaking>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Decision Making" />
+        </relationships>
+        <coordinates>
+            [(350.0,650),1,{6:'d6-u1'}]
+        </coordinates>
+    </Output>
+    <loop type="for" condition="number of experiments" name="loop0">
+        <relationships>
+            <child name="Input Data" />
+            <child name="Data Processing" />
+            <child name="Modelling" />
+            <child name="User Interaction" />
+            <child name="Decision Making" />
+        </relationships>
+        <coordinates>
+            (48.0, 110.0, 651.0, 572.0)
+        </coordinates>
+        <InputData name="Input Data">
+            <plugin type="" />
+            <relationships>
+                <parent name="Initialiser" />
+                <parent name="loop0" />
+                <child name="Data Processing" />
+            </relationships>
+            <coordinates>
+                [(173, 184), 2, {0: 'd0-u2'}]
+            </coordinates>
+        </InputData>
+        <DataProcessing name="Data Processing">
+            <plugin type="" />
+            <relationships>
+                <parent name="Input Data" />
+                <parent name="loop0" />
+                <child name="Modelling" />
+            </relationships>
+            <coordinates>
+                [(173, 294), 3, {2: 'd2-u3'}]
+            </coordinates>
+        </DataProcessing>
+        <Modelling name="Modelling">
+            <plugin type="" />
+            <relationships>
+                <parent name="Data Processing" />
+                <parent name="User Interaction" />
+                <parent name="loop0" />
+                <child name="Decision Making" />
+            </relationships>
+            <coordinates>
+                [(173, 404), 4, {3: 'd3-u4', 5: 'l5-r4'}]
+            </coordinates>
+        </Modelling>
+        <UserInteraction name="User Interaction">
+            <plugin type="" />
+            <relationships>
+                <parent name="Decision Making" />
+                <parent name="loop0" />
+                <child name="Modelling" />
+            </relationships>
+            <coordinates>
+                [(536, 410), 5, {6: 'r6-d5'}]
+            </coordinates>
+        </UserInteraction>
+        <DecisionMaking name="Decision Making">
+            <plugin type="" />
+            <relationships>
+                <parent name="Modelling" />
+                <parent name="loop0" />
+                <child name="Output" />
+                <child name="User Interaction" />
+            </relationships>
+            <coordinates>
+                [(351, 522), 6, {4: 'd4-l6'}]
+            </coordinates>
+        </DecisionMaking>
+    </loop>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Decision Making" />
+        </relationships>
+        <coordinates>
+            [(350.0, 650), 1, {6: 'd6-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>

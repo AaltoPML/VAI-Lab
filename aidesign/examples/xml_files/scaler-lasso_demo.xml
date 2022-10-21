@@ -19,9 +19,9 @@
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(304,203),2,{0:'d0-u2'}]
+            [(296,183),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="MinMaxScaler">
+        <plugin type="StandardScaler">
             <Data>
                 X
             </Data>
@@ -33,9 +33,13 @@
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300.0,300.0),3,{2:'d2-u3'}]
+            [(300,328),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="Lasso" />
+        <plugin type="RidgeRegression">
+            <alpha>
+                0.0002
+            </alpha>
+        </plugin>
     </Modelling>
     <Output name="Output">
         <plugin type="" />

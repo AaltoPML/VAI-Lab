@@ -100,39 +100,36 @@ class MainPage(tk.Frame):
                                        row=12)
 
         self.interactButton = tk.Button(frame3,
-                                        text='Interact with canvas',
-                                        fg='white',
-                                        font=controller.title_font,
-                                        bg=parent['bg'],
-                                        height=3,
-                                        width=20,
-                                        state=tk.DISABLED,
-                                        command=lambda: self.canvas(
-                                            "aidCanvas")
-                                        )
-        self.interactButton.grid(column=0, row=13)
+                    text = 'Interact with canvas',
+                    fg = 'white',
+                    font = controller.title_font,
+                    bg = parent['bg'],
+                    height = 3,
+                    width = 20, 
+                    command = lambda: self.canvas("aidCanvas")
+                    )
+        self.interactButton.grid(column = 0, row = 13)
 
         self. uploadButton = tk.Button(frame3,
-                                       text='Upload XML file',
-                                       fg='white',
-                                       font=controller.title_font,
-                                       bg=parent['bg'],
-                                       height=3,
-                                       width=20,
-                                       state=tk.DISABLED,
-                                       command=self.upload_xml,
-                                       )
-        self. uploadButton.grid(column=1, row=13)
-
-        self.controller.XMLlabel = tk.Label(frame3,
-                                            text='Incomplete',
-                                            pady=10,
-                                            padx=10,
-                                            font=controller.title_font,
-                                            bg=parent['bg'],
-                                            fg='white')
-        self.controller.XMLlabel.grid(column=2,
-                                      row=13)
+                    text = 'Upload XML file',
+                    fg = 'white',
+                    font = controller.title_font, 
+                    bg = parent['bg'],
+                    height = 3,
+                    width = 20, 
+                    command = self.upload_xml,
+                    )
+        self. uploadButton.grid(column = 1, row = 13)
+        
+        self.controller.XMLlabel = tk.Label(frame3, 
+                                text = 'Incomplete',
+                                pady= 10,
+                                padx= 10,
+                                font = controller.title_font,
+                                bg = parent['bg'],
+                                fg = 'white')
+        self.controller.XMLlabel.grid(column = 2,
+                            row = 13)
         self.PluginButton = tk.Button(frame3,
                                       text='Modules plugins',
                                       fg='white',
@@ -179,8 +176,9 @@ class MainPage(tk.Frame):
         """ Checks if XML variable has been updated
         """
         if self.controller.XML.get():
-            self.controller.XMLlabel.config(text='Done!', fg='green')
-            self.PluginButton.config(state='normal')
+            self.controller.XMLlabel.config(text = 'Done!', fg = 'green')
+            # if self.controller.Data.get():
+            self.PluginButton.config(state = 'normal')
             if self.controller.Plugin.get():
                 self.RunButton.config(state='normal')
 
@@ -188,9 +186,11 @@ class MainPage(tk.Frame):
         """ Checks if Data variable has been updated
         """
         if self.controller.Data.get():
-            self.controller.Datalabel.config(text='Done!', fg='green')
-            self.interactButton.config(state='normal')
-            self.uploadButton.config(state='normal')
+            self.controller.Datalabel.config(text = 'Done!', fg = 'green')
+            self.interactButton.config(state = 'normal')
+            self.uploadButton.config(state = 'normal')
+            if self.controller.XML.get():
+                self.PluginButton.config(state = 'normal')
 
     def trace_Plugin(self, *args):
         """ Checks if Plugin variable has been updated
