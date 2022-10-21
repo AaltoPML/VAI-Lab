@@ -438,7 +438,7 @@ class XML_handler:
         return elem
 
     def update_plugin_options(self,
-                              xml_parent_name: ET.Element or str,
+                              xml_parent_name: Union[ET.Element,str],
                               options: dict,
                               save_changes: bool = False):
         """Update the options of a plugin
@@ -446,9 +446,12 @@ class XML_handler:
         :param plugin_name: str of plugin name
         :param options: dict of options to be updated
         """
+        xml_parent: ET.Element
         if isinstance(xml_parent_name, str):
-            xml_parent_name = self._get_element_from_name(xml_parent_name)
-        plugin_elem = xml_parent_name.find("./plugin")
+            xml_parent = self._get_element_from_name(xml_parent_name)
+        else:
+            xml_parent = xml_parent_name
+        plugin_elem: ET.Element = xml_parent.find("./plugin")
         self._add_plugin_options(plugin_elem, options)
         self._parse_XML()
         if save_changes:
