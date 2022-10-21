@@ -1,13 +1,12 @@
-# Import the required libraries
 import os
 import tkinter as tk
-from tkinter import messagebox
+from typing import Dict
 
 import numpy as np
 import pandas as pd
+from PIL import Image, ImageTk
 from aidesign._plugin_helpers import PluginSpecs
 from aidesign.Data.xml_handler import XML_handler
-from PIL import Image, ImageTk
 
 _PLUGIN_READABLE_NAMES = {"progress_tracker":"default",
                             "progressTracker":"alias",
@@ -58,7 +57,7 @@ class progressTracker(tk.Frame):
         Commented out WIP code as it was complicating searching for bugs in plugincanvas
         """
         self.canvas.bind('<Button-1>', self.on_click)
-        self.dataType = {}
+        self.dataType: Dict = {}
         
         self.upload()
 
@@ -516,7 +515,7 @@ class progressTracker(tk.Frame):
         if hasattr(self, 'newWindow') and (self.newWindow != None):
             self.newWindow.destroy()
         
-        self.canvas.startxy = []
+        self.canvas_startxy = []
         self.out_data = pd.DataFrame()
         self.connections = {}
         self.modules = 0
