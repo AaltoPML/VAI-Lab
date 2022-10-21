@@ -7,6 +7,7 @@ import pandas as pd
 from PIL import Image, ImageTk
 from aidesign._plugin_helpers import PluginSpecs
 from aidesign.Data.xml_handler import XML_handler
+from aidesign._import_helper import get_lib_parent_dir
 
 _PLUGIN_READABLE_NAMES = {"progress_tracker":"default",
                             "progressTracker":"alias",
@@ -32,7 +33,8 @@ class progressTracker(tk.Frame):
         script_dir = os.path.dirname(__file__)
         self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
             file=os.path.join(os.path.join(
-                script_dir,
+                get_lib_parent_dir(),
+                'utils',
                 'resources',
                 'Assets',
                 'VAILabsIcon.ico'))))
