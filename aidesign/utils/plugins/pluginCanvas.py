@@ -344,10 +344,11 @@ class pluginCanvas(tk.Frame):
             self.newWindow = tk.Toplevel(self.controller)
             # Window options
             self.newWindow.title(self.plugin[self.m].get()+' plugin options')
-            script_dir = os.path.dirname(__file__)
+            script_dir = get_lib_parent_dir()
             self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
                 file=os.path.join(os.path.join(
                     script_dir,
+                    'utils',
                     'resources',
                     'Assets',
                     'VAILabsIcon.ico'))))
