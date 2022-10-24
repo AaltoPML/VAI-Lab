@@ -316,7 +316,7 @@ class MainPage(tk.Frame):
                         # Infers by default, should it be None?
                         data[variable] = pd.read_csv(filename)
                         isVar[i] = 1
-                        self.controller.s.append_input_data(variable, filename)
+                        self.controller.s.append_input_data(variable, self.rel_path(filename))
                         if i == 0:
                             self.controller.Data.set(True)
                         if any(isVar[1::2]) and (
@@ -332,14 +332,30 @@ class MainPage(tk.Frame):
             tk.messagebox.showwarning(title='Error - X not specified',
                                       message='You need to specify X before proceeding.')
 
+    def rel_path(self, path):
+        """ Returns relative path if available. """
+        if path[0].lower() == os.getcwd()[0].lower():
+            #Same drive
+            _folder = os.path.relpath(path, os.getcwd())
+            if _folder[:2] == '..':
+                # Absolute path
+                return path
+            else:
+                # Relative path
+                return os.path.join('.',_folder)
+        else: 
+            #Different drive -> Absolute path
+            return path
+
     def upload_data_path(self):
         """ Stores the directory containing the data that will be later loaded 
         """
         folder = askdirectory(initialdir=os.getcwd(),
                               title='Select a folder',
                               mustexist=True)
-        self.controller.s.append_input_data('X', folder)
-
+        if folder is not None and len(folder) > 0:
+            self.controller.s.append_input_data('X', self.rel_path(folder))
+        
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
         """
