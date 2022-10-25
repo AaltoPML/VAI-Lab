@@ -7,7 +7,7 @@
             [(300.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="C:/Users/sevillc1/Documentos/Github/ai-assisted-design-framework/aidesign/examples/crystalDesign" />
+            <X file="./examples/crystalDesign" />
         </inputdata>
     </Initialiser>
     <DataProcessing name="ImgProc">
