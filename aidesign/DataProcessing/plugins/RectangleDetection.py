@@ -44,30 +44,30 @@ class RectangleDetection(DataProcessingT):
         cleaned_options = self._clean_solver_options()
         self.proc.set_params(**cleaned_options)
         """
-        TODO: Temporary solution until input data module is cofigured."""
+        # TODO: Temporary solution until input data module is cofigured."""
         
-        dst_img = os.path.join(
-            get_lib_parent_dir(),
-            'examples',
-            'crystalDesign')
-        #iterating over dst_image to get the images as arrays
-        # for image in sorted(os.listdir(dst_img)):
-        arr = np.array(Image.open(os.path.join(dst_img, '00007.png')))
-        self.proc.fit(arr)
+        # dst_img = os.path.join(
+        #     get_lib_parent_dir(),
+        #     'examples',
+        #     'crystalDesign')
+        # #iterating over dst_image to get the images as arrays
+        # # for image in sorted(os.listdir(dst_img)):
+        # arr = np.array(Image.open(os.path.join(dst_img, '00007.png')))
+        # self.proc.fit(arr)
         """"""
-        # self.proc.fit(self.X)
+        self.proc.fit(self.X)
 
     def transform(self, data: DataInterface) -> DataInterface:
         """
-        TODO: Temporary solution until input data module is cofigured."""
-        dst_img = os.path.join(
-            get_lib_parent_dir(),
-            'examples',
-            'crystalDesign')
-        arr = np.array(Image.open(os.path.join(dst_img, '00007.png')))
-        self.proc.transform(arr)
+        # TODO: Temporary solution until input data module is cofigured."""
+        # dst_img = os.path.join(
+        #     get_lib_parent_dir(),
+        #     'examples',
+        #     'crystalDesign')
+        # arr = np.array(Image.open(os.path.join(dst_img, '00007.png')))
+        # self.proc.transform(arr)
         """"""
-        # data.append_data_column("X", pd.DataFrame(self.proc.transform(data)))
+        data.append_data_column("X", pd.DataFrame(self.proc.transform(data)))
         return data
 
 class model(BaseEstimator):
@@ -80,7 +80,7 @@ class model(BaseEstimator):
         
         Parameters
         ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+        X : {array-like, sparse matrix} of shape (pixels, pixels, RGB)
             The image data with the samples with RGB information.
             Samples are expected to be marked with a red rectangle.
         r : int
@@ -114,7 +114,6 @@ class model(BaseEstimator):
         # return self
     
     def transform(self, X):
-        # [h, w] = np.shape(X)[0:2]#calculating height and width for each image
         X_dict = {}
         fig, axs = plt.subplots(self.r, self.c)
         for i in np.arange(self.r):

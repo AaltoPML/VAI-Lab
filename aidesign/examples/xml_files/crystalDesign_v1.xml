@@ -1,7 +1,7 @@
 <pipeline>
     <Initialiser name="Initialiser">
         <relationships>
-            <child name="ImgProc" />
+            <child name="RectDetect" />
         </relationships>
         <coordinates>
             [(300.0,50),0,{}]
@@ -10,23 +10,9 @@
             <X file="./examples/crystalDesign" />
         </inputdata>
     </Initialiser>
-    <DataProcessing name="ImgProc">
-        <relationships>
-            <parent name="Initialiser" />
-            <child name="RectDetect" />
-        </relationships>
-        <coordinates>
-            [(151,185),2,{0:'d0-u2'}]
-        </coordinates>
-        <plugin type="ImgToFeatVect">
-            <Data>
-                 X
-            </Data>
-        </plugin>
-    </DataProcessing>
     <DataProcessing name="RectDetect">
         <relationships>
-            <parent name="ImgProc" />
+            <parent name="Initialiser" />
             <child name="RGBvalue" />
         </relationships>
         <coordinates>

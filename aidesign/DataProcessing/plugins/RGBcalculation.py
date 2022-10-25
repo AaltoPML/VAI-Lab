@@ -42,7 +42,6 @@ class RGBcalculation(DataProcessingT):
         self.proc.set_params(**cleaned_options)
         self.proc.fit(self.X)
 
-
     def transform(self, data: DataInterface) -> DataInterface:
         data.append_data_column("X", pd.DataFrame(self.proc.transform(data)))
         # if self.X_tst is not None:
@@ -51,14 +50,23 @@ class RGBcalculation(DataProcessingT):
         return data
 
 class model(BaseEstimator):
-    def __init__(self, optional=False):
-        self.optional = optional
+    def __init__(self):
+        return
     
     def fit(self, X):
         return self
 
     def transform(self, X):
-        # [h, w] = np.shape(X)[0:2]#calculating height and width for each image
-        arr_mean = np.mean(X, axis=(0,1))
-        print(f'[R={arr_mean[0]:.1f},  G={arr_mean[1]:.1f}, B={arr_mean[2]:.1f}]')
-        return np.mean(arr_mean)
+        """ Calculates the mean RGB value of an image.
+        
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (pixels, pixels, RGB)
+            The image data with the  RGB information.
+        Returns
+        -------
+        mean_RGB : {int, float}
+            Mean RGB value of the input image.
+        """
+        mean_RGB = np.mean(X)
+        return mean_RGB
