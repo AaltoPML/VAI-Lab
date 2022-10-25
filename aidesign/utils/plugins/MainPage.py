@@ -72,25 +72,25 @@ class MainPage(tk.Frame):
                       columnspan=4)
 
         tk.Button(frame3,
-                  text='Data file',
-                  fg='white',
-                  font=controller.title_font,
-                  bg=parent['bg'],
-                  height=3,
-                  width=20,
-                  command=self.upload_data_file,
-                  ).grid(column=0, row=12)
-        tk.Button(frame3,
-                  text='Data folder',
+                  text='Upload data matrix',
                   fg='white',
                   font=controller.title_font,
                   bg=parent['bg'],
                   height=3,
                   width=20,
                   command=self.upload_data_folder,
+                  ).grid(column=0, row=12)
+        tk.Button(frame3,
+                  text='Upload data path',
+                  fg='white',
+                  font=controller.title_font,
+                  bg=parent['bg'],
+                  height=3,
+                  width=20,
+                  command=self.upload_data_path,
                   ).grid(column=1, row=12)
         self.controller.Datalabel = tk.Label(frame3,
-                                             text='Incomplete',
+                                             text='Optional',
                                              pady=10,
                                              padx=10,
                                              font=controller.title_font,
@@ -100,36 +100,39 @@ class MainPage(tk.Frame):
                                        row=12)
 
         self.interactButton = tk.Button(frame3,
-                    text = 'Interact with canvas',
-                    fg = 'white',
-                    font = controller.title_font,
-                    bg = parent['bg'],
-                    height = 3,
-                    width = 20, 
-                    command = lambda: self.canvas("aidCanvas")
-                    )
-        self.interactButton.grid(column = 0, row = 13)
+                                        text='Interact with canvas',
+                                        fg='white',
+                                        font=controller.title_font,
+                                        bg=parent['bg'],
+                                        height=3,
+                                        width=20,
+                                        # state=tk.DISABLED,
+                                        command=lambda: self.canvas(
+                                            "aidCanvas")
+                                        )
+        self.interactButton.grid(column=0, row=13)
 
         self. uploadButton = tk.Button(frame3,
-                    text = 'Upload XML file',
-                    fg = 'white',
-                    font = controller.title_font, 
-                    bg = parent['bg'],
-                    height = 3,
-                    width = 20, 
-                    command = self.upload_xml,
-                    )
-        self. uploadButton.grid(column = 1, row = 13)
-        
-        self.controller.XMLlabel = tk.Label(frame3, 
-                                text = 'Incomplete',
-                                pady= 10,
-                                padx= 10,
-                                font = controller.title_font,
-                                bg = parent['bg'],
-                                fg = 'white')
-        self.controller.XMLlabel.grid(column = 2,
-                            row = 13)
+                                       text='Upload XML file',
+                                       fg='white',
+                                       font=controller.title_font,
+                                       bg=parent['bg'],
+                                       height=3,
+                                       width=20,
+                                    #    state=tk.DISABLED,
+                                       command=self.upload_xml,
+                                       )
+        self. uploadButton.grid(column=1, row=13)
+
+        self.controller.XMLlabel = tk.Label(frame3,
+                                            text='Incomplete',
+                                            pady=10,
+                                            padx=10,
+                                            font=controller.title_font,
+                                            bg=parent['bg'],
+                                            fg='white')
+        self.controller.XMLlabel.grid(column=2,
+                                      row=13)
         self.PluginButton = tk.Button(frame3,
                                       text='Modules plugins',
                                       fg='white',
@@ -162,7 +165,7 @@ class MainPage(tk.Frame):
         self.controller.Plugin.set(False)
 
         self.controller.XML.trace('w', self.trace_XML)
-        self.controller.Data.trace('w', self.trace_Data)
+        # self.controller.Data.trace('w', self.trace_Data)
         self.controller.Plugin.trace('w', self.trace_Plugin)
 
         frame1.grid(column=0, row=0, sticky="n")
@@ -182,15 +185,13 @@ class MainPage(tk.Frame):
             if self.controller.Plugin.get():
                 self.RunButton.config(state='normal')
 
-    def trace_Data(self, *args):
-        """ Checks if Data variable has been updated
-        """
-        if self.controller.Data.get():
-            self.controller.Datalabel.config(text = 'Done!', fg = 'green')
-            self.interactButton.config(state = 'normal')
-            self.uploadButton.config(state = 'normal')
-            if self.controller.XML.get():
-                self.PluginButton.config(state = 'normal')
+    # def trace_Data(self, *args):
+    #     """ Checks if Data variable has been updated
+    #     """
+    #     if self.controller.Data.get():
+    #         self.controller.Datalabel.config(text='Done!', fg='green')
+    #         self.interactButton.config(state='normal')
+    #         self.uploadButton.config(state='normal')
 
     def trace_Plugin(self, *args):
         """ Checks if Plugin variable has been updated
@@ -316,7 +317,7 @@ class MainPage(tk.Frame):
                         # Infers by default, should it be None?
                         data[variable] = pd.read_csv(filename)
                         isVar[i] = 1
-                        self.controller.s.append_input_data(variable, filename)
+                        self.controller.s.append_input_data(variable, self.rel_path(filename))
                         if i == 0:
                             self.controller.Data.set(True)
                         if any(isVar[1::2]) and (
@@ -332,6 +333,30 @@ class MainPage(tk.Frame):
             tk.messagebox.showwarning(title='Error - X not specified',
                                       message='You need to specify X before proceeding.')
 
+    def rel_path(self, path):
+        """ Returns relative path if available. """
+        if path[0].lower() == os.getcwd()[0].lower():
+            #Same drive
+            _folder = os.path.relpath(path, os.getcwd())
+            if _folder[:2] == '..':
+                # Absolute path
+                return path
+            else:
+                # Relative path
+                return os.path.join('.',_folder)
+        else: 
+            #Different drive -> Absolute path
+            return path
+
+    def upload_data_path(self):
+        """ Stores the directory containing the data that will be later loaded 
+        """
+        folder = askdirectory(initialdir=os.getcwd(),
+                              title='Select a folder',
+                              mustexist=True)
+        if folder is not None and len(folder) > 0:
+            self.controller.s.append_input_data('X', self.rel_path(folder))
+        
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
         """

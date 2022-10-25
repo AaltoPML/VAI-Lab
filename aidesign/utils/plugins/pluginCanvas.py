@@ -53,10 +53,11 @@ class pluginCanvas(tk.Frame):
 
         # Create canvas
         self.width, self.height = 700, 700
-        self.canvas = tk.Canvas(frame1, width=self.width, 
-            height=self.height, background="white")
-        self.canvas.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=10)
-        
+        self.canvas = tk.Canvas(frame1, width=self.width,
+                                height=self.height, background="white")
+        self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
+
+        self.m: int
         self.w, self.h = 100, 50
         self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
@@ -345,13 +346,14 @@ class pluginCanvas(tk.Frame):
             # Window options
             self.newWindow.title(self.plugin[self.m].get()+' plugin options')
             script_dir = get_lib_parent_dir()
-            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
+            self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
                 file=os.path.join(os.path.join(
                     script_dir,
                     'utils',
                     'resources',
                     'Assets',
                     'VAILabsIcon.ico'))))
+            # C:\Users\sevillc1\Documentos\Github\ai-assisted-design-framework\aidesign\utils\resources\Assets
             self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)

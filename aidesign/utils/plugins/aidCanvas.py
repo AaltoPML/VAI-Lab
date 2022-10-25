@@ -62,7 +62,7 @@ class aidCanvas(tk.Frame):
         self.my_label.grid(column=5, row=0, padx=(10, 10), pady=(10, 10), sticky="nwse")
 
         # Create canvas
-        self.width, self.height = 600, 600
+        self.width, self.height = 700, 700
         self.canvas = tk.Canvas(frame1, width=self.width,
                                 height=self.height, background="white")
         # self.canvas = ResizingCanvas(frame1, width=self.width,
@@ -754,7 +754,7 @@ class aidCanvas(tk.Frame):
                                    defaultextension='.xml',
                                    filetypes=[('XML file', '.xml'),
                                               ('All Files', '*.*')])
-        if filename is not None:
+        if filename is not None and len(filename) > 0:
             self.reset()
 
             s = XML_handler()
