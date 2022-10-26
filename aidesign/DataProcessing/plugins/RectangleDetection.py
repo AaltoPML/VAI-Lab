@@ -1,14 +1,11 @@
-from PIL import Image
 import numpy as np
-import os
-from aidesign._plugin_templates import DataProcessingT
-from aidesign._types import DataInterface
 import pandas as pd
 from sklearn.base import BaseEstimator
+import matplotlib.pyplot as plt # type:ignore
+
+from aidesign._plugin_templates import DataProcessingT
 from aidesign._import_helper import get_lib_parent_dir
-from sklearn.metrics import mean_squared_error as mse
-import cv2
-import matplotlib.pyplot as plt
+from aidesign._types import DataInterface
 
 _PLUGIN_READABLE_NAMES = {"RectangleDetection":"default",
                           "RectDet": "alias", "rectangledetection": "alias"}        # type:ignore

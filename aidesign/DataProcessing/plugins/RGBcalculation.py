@@ -1,12 +1,12 @@
-from PIL import Image
 import numpy as np
-import os
-from aidesign._plugin_templates import DataProcessingT
-from aidesign._types import DataInterface
 import pandas as pd
+from PIL import Image
 from sklearn.base import BaseEstimator
-from aidesign._import_helper import get_lib_parent_dir
 from sklearn.metrics import mean_squared_error as mse
+
+from aidesign._types import DataInterface
+from aidesign._plugin_templates import DataProcessingT
+from aidesign._import_helper import get_lib_parent_dir
 
 _PLUGIN_READABLE_NAMES = {"RGBcalculation":"default"}  # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "Custom"}            # type:ignore
