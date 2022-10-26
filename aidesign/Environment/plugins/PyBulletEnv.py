@@ -1,3 +1,4 @@
+from attr import attr
 from aidesign._plugin_templates import EnvironmentPluginT
 from aidesign._import_helper import rel_to_abs
 from typing import Any, Dict, TYPE_CHECKING
@@ -65,6 +66,8 @@ class PyBulletEnv(EnvironmentPluginT):
                 self._load_model_by_type(model)
 
     def _set_options(self):
+        for key, value in self._config["options"].items():
+            getattr(p,key)(value)
         if "gravity" in self._config["options"]:
             g = self._config["options"]["gravity"]
             self.setGravity(float(g[0]), float(g[1]), float(g[2]))
