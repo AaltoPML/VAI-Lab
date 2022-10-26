@@ -9,7 +9,7 @@ import pandas as pd
 from typing import Dict, List
 from PIL import Image, ImageTk
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas": "default",
@@ -353,8 +353,7 @@ class pluginCanvas(tk.Frame):
                     'resources',
                     'Assets',
                     'VAILabsIcon.ico'))))
-            # C:\Users\sevillc1\Documentos\Github\ai-assisted-design-framework\aidesign\utils\resources\Assets
-            self.newWindow.geometry("350x400")
+            # self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
@@ -363,13 +362,25 @@ class pluginCanvas(tk.Frame):
             tk.Label(frame1,
                      text="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
             self.entry = []
+            self.tree = {}
+
+            style = ttk.Style()
+            style.configure(
+                "Treeview", background='white', foreground='white',
+                rowheight=25, fieldbackground='white',
+                font=self.controller.pages_font)
+            style.configure("Treeview.Heading", font=self.controller.pages_font)
+            style.map('Treeview', background=[('selected', 'grey')])
             # Required
             r = 1
             if len(self.req_settings) > 0:
                 frame2 = tk.Frame(self.newWindow)
                 tk.Label(frame2,
                          text="Required settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
-                self.displaySettings(frame2, self.req_settings)
+                # Tree defintion. 
+                self.create_treeView(frame2, 'req')
+                # Output display
+                # self.displaySettings(frame2, self.req_settings)
                 frame2.grid(column=0, row=r, sticky="nswe")
                 r += 1
             # Optional
@@ -377,7 +388,10 @@ class pluginCanvas(tk.Frame):
                 frame3 = tk.Frame(self.newWindow)
                 tk.Label(frame3,
                          text="Optional settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
-                self.displaySettings(frame3, self.opt_settings)
+                # Tree defintion. 
+                self.create_treeView(frame3, 'opt')
+                # Output display
+                # self.displaySettings(frame3, self.opt_settings)
                 frame3.grid(column=0, row=r, sticky="nswe")
                 r += 1
             if len(self.entry) > 0:
@@ -396,6 +410,71 @@ class pluginCanvas(tk.Frame):
             self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
+    def create_treeView(self, frame, key):
+        """ Function to create a new tree view in the given frame
+
+        Parameters
+        ----------
+        frame : tk.Frame
+                frame where the tree view will be included
+        key : str
+              key for the tree dictionary
+        """
+        tree_frame = tk.Frame(frame)
+        tree_frame.grid(row=0, column=2, sticky="nsew", pady=10, padx=10)
+
+        tree_scrollx = tk.Scrollbar(tree_frame, orient='horizontal')
+        tree_scrollx.pack(side=tk.BOTTOM, fill=tk.X)
+        tree_scrolly = tk.Scrollbar(tree_frame)
+        tree_scrolly.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.tree[key] = ttk.Treeview(tree_frame,
+                                yscrollcommand=tree_scrolly.set,
+                                xscrollcommand=tree_scrollx.set)
+        self.tree[key].pack(fill='both', expand=True)
+
+        tree_scrollx.config(command=self.tree[key].xview)
+        tree_scrolly.config(command=self.tree[key].yview)
+
+        columns_names = ['Name', 'Value']
+        self.tree[key]['columns'] = columns_names
+
+        # Format columns
+        self.tree[key].column("#0", width=80,
+                        minwidth=50)
+        for n, cl in enumerate(columns_names):
+            self.tree[key].column(
+                cl, width=int(self.controller.pages_font.measure(str(cl)))+20,
+                minwidth=50, anchor=tk.CENTER)
+        # Headings
+        self.tree[key].heading("#0", text="", anchor=tk.CENTER)
+        for cl in columns_names:
+            self.tree[key].heading(cl, text=cl, anchor=tk.CENTER)
+        self.tree[key].tag_configure('odd', foreground='black',
+                                background='#E8E8E8')
+        self.tree[key].tag_configure('even', foreground='black',
+                                background='#DFDFDF')
+        # Add data
+        # for n, sample in enumerate(self.out_data):
+        #     if n % 2 == 0:
+        #         self.tree[key].insert(parent='', index='end', iid=n, text=n+1,
+        #                         values=tuple(sample.astype(int)), tags=('even',))
+        #     else:
+        #         self.tree[key].insert(parent='', index='end', iid=n, text=n+1,
+        #                         values=tuple(sample.astype(int)), tags=('odd',))
+
+        # Select the current row
+        # self.tree[key].selection_set(str(int(0)))
+
+        # Define double-click on row action
+        self.tree[key].bind("<Double-1>", lambda event, k = key: self.OnDoubleClick(key = k))
+
+    def OnDoubleClick(self, key):
+        "Moves to the image corresponding to the row clicked on the tree."
+
+        item = self.tree[key].selection()[0]
+        self.forward_back(self.tree[key].item(item, "text"))
+        
     def displaySettings(self, frame, settings):
         """ Adds an entry for each input setting. Displays it in the specified row.
         :param frame: tkinter frame type of frame
