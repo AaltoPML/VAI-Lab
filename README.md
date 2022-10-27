@@ -11,7 +11,7 @@ VAIL is a modular,easy-to-use framework for Virtual Laboraties for science and d
 > 
 > Consult the development and release schedule for the intended timeline for this project.
 > 
-> Any contributions, forks, or pull requests are very welcome, and feel free to get in touch
+> Any contributions, forks, or pull requests are very welcome. Feel free to get in touch
 
 # How to Contribute
 
