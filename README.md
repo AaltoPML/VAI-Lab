@@ -5,7 +5,13 @@
 VAIL is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals. 
 
 > **Warning**
-> This project is a work in progress and many features are currently being implemented. Example configurations are available and more are being added regularly, but full functionality is not ready just yet.
+> This project is currently a work in progress and is intended for wider use when a full release is made.
+> 
+> Users are welcome to use the software in its current state, but should expect to heavily alter source code until full testing has been done.
+> 
+> Consult the development and release schedule for the intended timeline for this project.
+> 
+> Any contributions, forks, or pull requests are very welcome. Feel free to get in touch
 
 # How to Contribute
 
@@ -232,6 +238,13 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted
 
 ### Writing Data
 Two methods are given to add data to the XML file. One for modules (`append_pipeline_module_to_file`) and one for data structures (`append_data_structure_field_to_file`).
+
+# Feature and Release Schedule :calendar:
+
+- [ ] October/ November 2022: Public repo, API fixing, Testing
+- [ ] January 2023: Representative use case release
+- [ ] Spring 2023: Initial full release of manual pipeline
+- [ ] Fall 2023: Initial release of preliminary AI-Assistance
 
 # Get in Touch
 If you would like contribute, test, give feedback, or ask questions about this framework, we'd like to hear from you!
