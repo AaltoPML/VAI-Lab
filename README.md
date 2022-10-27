@@ -2,7 +2,7 @@
 
 ![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/VAIL_banner_image.png)
 
-VAIL is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
+VAIL is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
 
 > **Warning**
 > This project is currently a work in progress and is intended for wider use when a full release is made.
@@ -20,7 +20,7 @@ The aim of this framework is to be a community effort that will benefit the scie
 We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
 
  - If you have methods which can be added to the framework, [get in touch](#Get-in-Touch)!
- - if you think this framework will be useful to your research, [get in touch](#Get-in-Touch)!
+ - If you think this framework will be useful to your research, [get in touch](#Get-in-Touch)!
  - If want to get invovled in development, [get in touch](#Get-in-Touch)!
  - Noticed a bug or other issue? [get in touch](#Get-in-Touch)!
 
