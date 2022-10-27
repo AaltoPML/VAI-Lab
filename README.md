@@ -2,20 +2,20 @@
 
 ![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/VAIL_banner_image.png)
 
-VAIL is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals. 
+VAIL is a modular,easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
 
 > **Warning**
 > This project is currently a work in progress and is intended for wider use when a full release is made.
-> 
+>
 > Users are welcome to use the software in its current state, but should expect to heavily alter source code until full testing has been done.
-> 
+>
 > Consult the development and release schedule for the intended timeline for this project.
-> 
+>
 > Any contributions, forks, or pull requests are very welcome. Feel free to get in touch
 
 # How to Contribute
 
-The aim of this framework is to be a community effort that will benefit the science, engineering and more. 
+The aim of this framework is to be a community effort that will benefit the science, engineering and more.
 
 We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
 
@@ -26,7 +26,7 @@ We are actively seeking contribution in the form of users, testers, developers, 
 
 # How it Works
 
-The VAIL framework uses a modular, plugin-based architecture. 
+The VAIL framework uses a modular, plugin-based architecture.
 
 ```mermaid
 stateDiagram-v2
@@ -53,11 +53,11 @@ Modules can be chained, looped and modified in real-time to create a highly cust
 
 Clone this repository via HTTPS:
 ```bash
-git clone https://github.com/AaltoPML/ai-assisted-framework-design.git
+git clone https://github.com/AaltoPML/VAI-labs.git
 ```
 OR SSH:
 ```bash
-git clone git@github.com:AaltoPML/ai-assisted-framework-design.git
+git clone git@github.com:AaltoPML/VAI-labs.git
 ```
 Then, run:
 ```bash
@@ -79,7 +79,7 @@ core = ai.Core()
 core.run()
 ```
 
-or to execute an existing config file: 
+or to execute an existing config file:
 
 ```python
 import aidesign as ai
@@ -146,13 +146,13 @@ The pipeline can also be defined uploading an existing XML file. The structure o
 # Plugin Examples
 
 ### `manual_input`
-Requires the user to indicate to which class the specified data corresponds to. 
+Requires the user to indicate to which class the specified data corresponds to.
 In the current example, the model needs to classify images and the model requires expert knowledge for specific images.
 The user needs to indicate which classes correspond to the image and save the results to send them to the model.
 
 ### `canvas_input`
 Requires the user to give feedback to state-action pairs.
-It opens a tab for each interactable object in the model and either requires adding new state-action samples or to modify the existing ones. 
+It opens a tab for each interactable object in the model and either requires adding new state-action samples or to modify the existing ones.
 In the current example, the model has two interactable objects that require feedback in two forms: (1) an _angle_ for the state and for the action or (2) a tuple of _Cartesian coordinates_ for the state and for the action. It has been adapted to be able to give feedback to any number of objects. These, at the same time, can be either `sliding` or `rotating` objects. Specifically, `sliding` refers to objects that need Cartesian feedback in a two-dimensional space, while `rotating` refers to objects that require an angle. In order to give feedback, you can choose to either move the corresponding state-action pairs on the canvas or directly edit the tree view display. This last option results in an automatic update on the canvas of the state-action location.
 
 ## Defining a pipeline in XML
@@ -165,7 +165,7 @@ The pipeline structure is defined between the `pipeline` tags:
 ```
 
 ### Initialise
-The `Initialise` tag is the dedicated entry point to the pipeline. No other entry points can be declared. 
+The `Initialise` tag is the dedicated entry point to the pipeline. No other entry points can be declared.
 
 Current options:
  - `name`: attribute for user defined name
@@ -191,7 +191,7 @@ See [basic_operation.py](https://github.com/AaltoPML/ai-assisted-framework-desig
 Current options:
  - `type`: what variety of loop will this be: `for`, `while`, `manual`(user defined stopping condition on-the-fly)
  - `condition`: Termination condition for the loop. I'm not sure how to deal with the criteria for `while` loops
- - `name`: User defined name for loop 
+ - `name`: User defined name for loop
 ```XML
 <loop type="for" condition="10" name="For Loop 1">
     ...
@@ -204,8 +204,8 @@ Modules are declared by tags matching their names, e.g. the GUI module is loaded
 Required:
  - `name`: Unique user defined name for module, so can be referenced later
  - `plugin`: The type of plugin to be loaded into the module, along with associated options.
- - `relationships`: User-defined names of the `parent` modules which this module receives data from and `child` modules that this module passes data to. 
-  
+ - `relationships`: User-defined names of the `parent` modules which this module receives data from and `child` modules that this module passes data to.
+
 Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
 ```XML
      <Modelling name="Modelling">
@@ -223,7 +223,7 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted
 
 ## Data Definition
 
-Data is loaded from existing files in either the `Initialiser` or `Input Data` modules and is specified using the `inputdata` tags. 
+Data is loaded from existing files in either the `Initialiser` or `Input Data` modules and is specified using the `inputdata` tags.
 
 Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
 
