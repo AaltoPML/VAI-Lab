@@ -243,7 +243,7 @@ Two methods are given to add data to the XML file. One for modules (`append_pipe
 
 - [ ] October/ November 2022: Public repo, API fixing, Testing
 - [ ] January 2023: Representative use case release
-- [ ] April 2023: Initial full release of manual pipeline
+- [ ] Spring 2023: Initial full release of manual pipeline
 - [ ] Fall 2023: Initial release of preliminary AI-Assistance
 
 # Get in Touch
