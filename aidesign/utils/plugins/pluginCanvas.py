@@ -373,7 +373,7 @@ class pluginCanvas(tk.Frame):
             frame2 = tk.Frame(self.newWindow, bg='green')
             self.create_treeView(frame2)
             self.fill_treeview(frame2, self.req_settings, self.opt_settings)
-            frame2.grid(column=0, row=1, sticky="nswe")
+            frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
 
             # if len(self.entry) > 0:
             #     self.entry[0].focus()
@@ -477,7 +477,7 @@ class pluginCanvas(tk.Frame):
 
         if int(self.treecol[1:]) > 0:
             value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
-            value = str(value) if str(value) != 'default' else ''
+            value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
             self.entry.insert(0, value)
             # self.entry['selectbackground'] = '#123456'
             self.entry['exportselection'] = False
