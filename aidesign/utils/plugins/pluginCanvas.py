@@ -389,10 +389,10 @@ class pluginCanvas(tk.Frame):
                 "<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
-            frame1.grid(column=0, row=0, sticky="new")
+            frame1.grid(column=0, row=0, sticky="ew")
             frame4.grid(column=0, row=2, sticky="se")
-            self.newWindow.grid_rowconfigure(0, weight=1)
-            self.newWindow.grid_rowconfigure(tuple(range(2)), weight=2)
+            # self.newWindow.grid_rowconfigure(0, weight=1)
+            self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
     def create_treeView(self, frame):
@@ -426,8 +426,8 @@ class pluginCanvas(tk.Frame):
 
         # Format columns
         # self.tree['show'] = 'headings'
-        self.tree.column("#0", width=0,
-                        minwidth=0)
+        self.tree.column("#0", width=20,
+                        minwidth=0, stretch=tk.NO)
         for n, cl in enumerate(columns_names):
             self.tree.column(
                 cl, width=int(self.controller.pages_font.measure(str(cl)))+20,
@@ -729,8 +729,8 @@ class pluginCanvas(tk.Frame):
                 yout + self.cr,
                 xins + self.cr,
                 yins + self.cr,
-                fill="red",
-                arrow=tk.LAST,
+                fill="red", width = 2,
+                arrow = tk.LAST, arrowshape = (12,10,5),
                 tags=('o'+str(parent_id),
                       'o'+str(1), modout['coordinates'][2][connect[p]]))
             self.out_data.iloc[int(parent_id)][1] = 1
