@@ -150,17 +150,8 @@ class pluginCanvas(tk.Frame):
             else:
                 self.canvas_selected = self.selected[-1]
 
-        if (self.m in self.plugin.keys()) and\
-                (self.plugin[self.m].get() != 'None') and \
-                (self.m not in self.id_done):  # add
-            self.id_done.append(self.m)
-            # print(np.array(self.module_names)[self.m == np.array(self.id_mod)][0])
-            self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                           {**self.req_settings, **
-                                               self.opt_settings},
-                                           np.array(self.module_names)[
-                self.m == np.array(self.id_mod)][0],
-                True)
+        self.check_updated()
+
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill='#46da63')
         else:
@@ -184,7 +175,7 @@ class pluginCanvas(tk.Frame):
                             self.frame4, text='Finish', bg=self.bg,
                             font=self.controller.pages_font,
                             fg='white', height=3, width=15,
-                            command=self.finnish, state=tk.NORMAL, image='')
+                            command=self.finish, state=tk.NORMAL, image='')
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
@@ -212,7 +203,7 @@ class pluginCanvas(tk.Frame):
                         self.button_forw.config(text='Finish', bg=self.bg,
                                                 font=self.controller.pages_font,
                                                 fg='white', height=3, width=15,
-                                                command=self.finnish, state=tk.NORMAL, image='')
+                                                command=self.finish, state=tk.NORMAL, image='')
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
@@ -240,14 +231,20 @@ class pluginCanvas(tk.Frame):
                                             command=lambda: self.select(
                                                 pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
 
-    def finnish(self):
+    def finish(self):
         """ Calls function check_quit.
         Before that, it checks if the current module plugins have been changed 
         and, if so, updates their information in the XML_handler class.
         """
+        self.check_updated()
+        self.check_quit()
+
+    def check_updated(self):
+        """ Checks if the current plugin exists and 
+        stores/updates the plugin options
+        """
         if (self.m in self.plugin.keys()) and\
-                (self.plugin[self.m].get() != 'None') and \
-                (self.m not in self.id_done):  # add
+                (self.plugin[self.m].get() != 'None'):  # add
             self.id_done.append(self.m)
             self.s.append_plugin_to_module(self.plugin[self.m].get(),
                                            {**self.req_settings, **
@@ -255,7 +252,6 @@ class pluginCanvas(tk.Frame):
                                            np.array(self.module_names)[
                 self.m == np.array(self.id_mod)][0],
                 True)
-        self.check_quit()
 
     def display_buttons(self):
         """ Updates the displayed radiobuttons and the description windows.
@@ -547,25 +543,38 @@ class pluginCanvas(tk.Frame):
         self.req_settings.pop("Data", None)
         req_keys = list(self.req_settings.keys())
         opt_keys = list(self.opt_settings.keys())
-        # for e, ent in enumerate(self.entry):
-        #     if e < len(self.req_settings):
-        #         if ent.get() == self.entry[e].placeholder or len(ent.get()) == 0:
-        #             self.req_settings.pop(req_keys[e], None)
-        #         else:
-        #             self.req_settings[req_keys[e]] = ent.get()
-        #     else:
-        #         # print(self.opt_settings)
-        #         # print(list(self.opt_settings.keys()))
-        #         # print(e-len(self.req_settings))
-        #         if ent.get() == self.entry[e].placeholder or len(ent.get()) == 0:
-        #             self.opt_settings.pop(opt_keys[e-len(req_keys)], None)
-        #         else:
-        #             self.opt_settings[opt_keys[e-len(req_keys)]] = ent.get()
-        # if self.m in self.dataType:
-        #     self.req_settings['Data'] = self.dataType[self.m].get()
+        for c, child in enumerate(self.tree.get_children()):
+            val = self.tree.item(child)["values"]
+            tag = self.tree.item(child)["tags"][0]
+            if val[0] == 'Data':
+                if val[2] == 'Choose X or Y' or len(val[2]) == 0:
+                    self.updateSettings(tag, val[0], 'X')
+                else:
+                    self.updateSettings(tag, val[0], val[2])
+            else:
+                if val[2] == 'default' or len(str(val[2])) == 0:
+                    self.updateSettings(tag, val[0])
+                else:
+                    self.updateSettings(tag, val[0], val[2])
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
+
+    def updateSettings(self, tag, key, value = None):
+        """ Return the selected settings 
+
+        Parameters
+        ----------
+        tag : str
+              tag for the settings
+        """
+        if tag == 'req':
+            self.req_settings[key] = value
+        elif tag == 'opt':
+            if value is not None or self.opt_settings[key] != value:
+                self.opt_settings[key] = value
+            else:
+                self.opt_settings.pop(key, None)
 
     def on_return_entry(self, r):
         """ Changes focus to the next available entry. When no more, focuses 
