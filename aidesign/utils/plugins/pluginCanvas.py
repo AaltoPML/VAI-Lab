@@ -371,9 +371,13 @@ class pluginCanvas(tk.Frame):
             style.map('Treeview', background=[('selected', 'grey')])
 
             frame2 = tk.Frame(self.newWindow, bg='green')
+            self.r = 1
             self.create_treeView(frame2)
             self.fill_treeview(frame2, self.req_settings, self.opt_settings)
             frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+    
+            frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
+            frame2.grid_columnconfigure(tuple(range(2)), weight=1)
 
             # if len(self.entry) > 0:
             #     self.entry[0].focus()
@@ -421,7 +425,7 @@ class pluginCanvas(tk.Frame):
         self.tree['columns'] = columns_names
 
         # Format columns
-        self.tree['show'] = 'headings'
+        # self.tree['show'] = 'headings'
         self.tree.column("#0", width=0,
                         minwidth=0)
         for n, cl in enumerate(columns_names):
@@ -436,9 +440,9 @@ class pluginCanvas(tk.Frame):
         self.tree.tag_configure('opt', foreground='black',
                                 background='#cfe2f3')
         self.tree.tag_configure('type', foreground='black',
-                                background='#cfe2f3')
+                                background='#E8E8E8')
         self.tree.tag_configure('func', foreground='black',
-                                background='#9fc5e8')
+                                background='#DFDFDF')
 
         # Add data
         # for n, sample in enumerate(self.out_data):
@@ -460,35 +464,36 @@ class pluginCanvas(tk.Frame):
         Opens an entry box to edit a cell. """
 
         # ii = self.notebook.index(self.notebook.select())
-        self.treerow = int(self.tree.identify_row(event.y))
+        self.treerow = self.tree.identify_row(event.y)
         self.treecol = self.tree.identify_column(event.x)
+        tags = self.tree.item(self.treerow)["tags"]
+        if len(tags) > 0 and tags[0] in ['opt', 'req']:
+            # get column position info
+            x, y, width, height = self.tree.bbox(self.treerow, self.treecol)
 
-        # get column position info
-        x, y, width, height = self.tree.bbox(self.treerow, self.treecol)
+            # y-axis offset
+            pady = height // 2
+            # pady = 0
 
-        # y-axis offset
-        pady = height // 2
-        # pady = 0
+            if hasattr(self, 'entry'):
+                self.entry.destroy()
 
-        if hasattr(self, 'entry'):
-            self.entry.destroy()
+            self.entry = tk.Entry(self.tree, justify='center')
 
-        self.entry = tk.Entry(self.tree, justify='center')
+            if int(self.treecol[1:]) > 0:
+                value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
+                value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
+                self.entry.insert(0, value)
+                # self.entry['selectbackground'] = '#123456'
+                self.entry['exportselection'] = False
 
-        if int(self.treecol[1:]) > 0:
-            value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
-            value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
-            self.entry.insert(0, value)
-            # self.entry['selectbackground'] = '#123456'
-            self.entry['exportselection'] = False
+                self.entry.focus_force()
+                self.entry.bind("<Return>", self.on_return)
+                self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
 
-            self.entry.focus_force()
-            self.entry.bind("<Return>", self.on_return)
-            self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
-
-            self.entry.place(x=x,
-                             y=y + pady,
-                             anchor=tk.W, width=width)
+                self.entry.place(x=x,
+                                y=y + pady,
+                                anchor=tk.W, width=width)
     
     def on_return(self, event):
         """ Executed when the entry is edited and pressed enter.
@@ -510,33 +515,24 @@ class pluginCanvas(tk.Frame):
         :param frame: tkinter frame type of frame
         :param settings: dict type of plugin setting options
         """
-        r = 1
+        self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
+            values=tuple(['Required settings', '', '']), tags=('type',))
+        self.r+=1
         for arg, val in req_settings.items():
             if arg == 'Data':
-                # if self.m not in self.dataType:
-                #     self.dataType[self.m] = tk.StringVar()
-                #     self.dataType[self.m].set('X')
-                # tk.Radiobutton(frame, text='Input (X)', fg='black',
-                #                var=self.dataType[self.m], value='X'
-                #                ).grid(row=r, column=1)
-                # if len(self.s._get_all_elements_with_tag("Y")) > 0 or \
-                #         len(self.s._get_all_elements_with_tag("Y_test")) > 0:
-                #     tk.Radiobutton(frame, text='Output (Y)', fg='black',
-                #                    var=self.dataType[self.m], value='Y'
-                #                    ).grid(row=r, column=2)
-                self.tree.insert(parent=parent, index='end', iid=r, text='',
+                self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
                     values=tuple([arg, val, 'Choose X or Y']), tags=('req',))
             else:
-                self.tree.insert(parent=parent, index='end', iid=r, text='',
+                self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val, '']), tags=('req',))
-            r+=1
-
+            self.r+=1
+        self.tree.insert(parent=parent, index='end', iid=parent+'_opt', text='',
+            values=tuple(['Optional settings', '', '']), tags=('type',))
+        self.r+=1
         for arg, val in opt_settings.items():
-            self.tree.insert(parent=parent, index='end', iid=r, text='',
+            self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
                                  values=tuple([arg, val, 'default']), tags=('opt',))
-            r+=1
-        frame.grid_rowconfigure(tuple(range(r)), weight=1)
-        frame.grid_columnconfigure(tuple(range(2)), weight=1)
+            self.r+=1
 
     def removewindow(self):
         """ Stores settings options and closes window """
