@@ -9,7 +9,7 @@ from aidesign._import_helper import get_lib_parent_dir
 from sklearn.metrics import mean_squared_error as mse
 
 _PLUGIN_READABLE_NAMES = {"RGBcalculation":"default"}  # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "Custom"}            # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "Other"}            # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}            # type:ignore
 _PLUGIN_OPTIONAL_SETTINGS = {}                         # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                             # type:ignore

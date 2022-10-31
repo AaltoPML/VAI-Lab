@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 _PLUGIN_READABLE_NAMES = {"RectangleDetection":"default",
                           "RectDet": "alias", "rectangledetection": "alias"}        # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "Custom"}                                         # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "Other"}                                         # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}                                         # type:ignore
 _PLUGIN_OPTIONAL_SETTINGS = {"r": "int", "c": "int", "h":"float", "w": "float"}     # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                                                          # type:ignore

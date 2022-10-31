@@ -11,6 +11,7 @@ class SetupPrequisties(object):
             'pandas', 
             'sklearn',
             'ttkwidgets',
+            'matplotlib',
             }
         self.python_version = sys.executable
 

@@ -7,10 +7,10 @@
             [(350.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="./aidesign/Data/resources/supervised_regression/X_tr.csv" />
-            <Y file="./aidesign/Data/resources/supervised_regression/Y_tr.csv" />
-            <X_test file="./aidesign/Data/resources/supervised_regression/X_tst.csv" />
-            <Y_test file="./aidesign/Data/resources/supervised_regression/Y_tst.csv" />
+            <X file="./examples/supervised_regression/X_tr.csv" />
+            <Y file="./examples/supervised_regression/Y_tr.csv" />
+            <X_test file="./examples/supervised_regression/X_tst.csv" />
+            <Y_test file="./examples/supervised_regression/Y_tst.csv" />
         </inputdata>
     </Initialiser>
     <loop type="for" condition="6000" name="loop0">
