@@ -59,18 +59,32 @@ OR SSH:
 ```bash
 git clone git@github.com:AaltoPML/VAI-labs.git
 ```
-Then, run:
+Change directory
 ```bash
-python setup.py
+cd VAI-labs
 ```
-to install the base pre-requisites.
+Create a virtual environment and activate it using venv
+```bash
+python3 -m venv venv && source venv/bin/activate
+```
+or using conda
+```bash
+conda create --name aidesign python=3.8 && conda activate aidesign
+```
+Upgrade pip and install flit
+```bash
+python3 -m pip install -U pip flit
+```
+Install the package
+```bash
+flit install
+```
 
-> **Note**
-> Due to the highly modular nature of the library, only the base requirements that are needed for basic operation are installed at the start, as there are many possible plugins, many of which may not be needed for a given user's usecase.
+
 
 ## Launching and Examples
 
-To launch the framwork with the GUI:
+To launch the framework with the GUI:
 
 ```python
 import aidesign as ai
