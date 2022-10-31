@@ -1,10 +1,10 @@
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
 [project]
-name = "vailabs"
+name = "aidesign"
 authors = [
     {name = "Chris McGreavy", email = "chris.mcgreavy@aalto.fi"},
     {name = "Carlos Sevilla Salcedo", email = "carlos.sevillasalcedo@aalto.fi"}
