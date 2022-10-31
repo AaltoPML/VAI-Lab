@@ -279,10 +279,10 @@ class progressTracker(tk.Frame):
             self.newWindow = tk.Toplevel(self.controller)
             # Window options
             self.newWindow.title(self.plugin+' plugin options')
-            script_dir = os.path.dirname(__file__)
-            self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
+            script_dir = get_lib_parent_dir()
+            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
                 file=os.path.join(os.path.join(
-                    get_lib_parent_dir(),
+                    script_dir,
                     'utils',
                     'resources',
                     'Assets',
