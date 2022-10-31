@@ -1,7 +1,7 @@
 from attr import attr
 from aidesign._plugin_templates import EnvironmentPluginT
 from aidesign._import_helper import rel_to_abs
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, Dict
 import pybullet as p
 from time import sleep
 
@@ -66,17 +66,19 @@ class PyBulletEnv(EnvironmentPluginT):
                 self._load_model_by_type(model)
 
     def _set_options(self):
+        api_list = dir(p)
         for key, value in self._config["options"].items():
-            getattr(p,key)(value)
+            if key in api_list:
+                getattr(p,key)(value)
         if "gravity" in self._config["options"]:
             g = self._config["options"]["gravity"]
             self.setGravity(float(g[0]), float(g[1]), float(g[2]))
-        elif "timestep" in self._config["options"]:
-            p.setPhysicsEngineParameter(
-                fixedTimeStep=self._config["options"]["timestep"])
-        elif "max_steps" in self._config["options"]:
-            p.setPhysicsEngineParameter(
-                numSolverIterations=self._config["options"]["max_steps"])
+        # elif "timestep" in self._config["options"]:
+        #     p.setPhysicsEngineParameter(
+        #         fixedTimeStep=self._config["options"]["timestep"])
+        # elif "max_steps" in self._config["options"]:
+        #     p.setPhysicsEngineParameter(
+        #         numSolverIterations=self._config["options"]["max_steps"])
 
     def run_simulation(self):
         self._set_options()

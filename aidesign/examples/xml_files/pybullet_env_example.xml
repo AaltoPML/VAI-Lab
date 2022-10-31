@@ -16,24 +16,30 @@
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
         <plugin type="PyBullet">
-            <model_dir>
+            <!-- <model_dir>
                  plane.urdf
                  ./Environment/resources/models/half_cheetah_with_mass.xml
             </model_dir>
             <headless>
                  False
-            </headless>
-            <timestep>
-                    0.01
-            </timestep>
-            <max_steps>
-                    1000
-            </max_steps>
-            <gravity>
+            </headless> -->
+            <setGravity>
                     0.0
                     0.0
                     -9.81
-            </gravity>
+            </setGravity>
+            <setGravit3y>
+                    [0.0,0.0,-9.81]
+            </setGravit3y>
+            <!-- <setPhysicsEngineParameter>
+                <fixedTimeStep>
+                    0.01
+                </fixedTimeStep>
+                <numSolverIterations>
+                    1000
+                </numSolverIterations>
+            </setPhysicsEngineParameter> -->
+            
         </plugin>
     </Environment>
     <Output name="Output">

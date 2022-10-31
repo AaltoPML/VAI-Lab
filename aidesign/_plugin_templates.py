@@ -1,3 +1,4 @@
+from typing import Dict
 from aidesign._types import DataInterface
 from abc import ABC, abstractmethod
 
@@ -97,20 +98,26 @@ class PluginTemplate:
         """
         return data.reshape(shape[0], shape[1])
 
+    def _parse_options_dict(self,options_dict:Dict):
+        for key, val in options_dict.items():
+            if type(val) == str and val.replace('.', '').replace(',', '').isnumeric():
+                cleaned_opts = []
+                for el in val.split(","):
+                    val = float(el)
+                    if val.is_integer():
+                        val = int(val)
+                    cleaned_opts.append(val)
+                options_dict[key] = cleaned_opts
+            elif type(val) == list:
+                self._parse_options_dict(options_dict[key])
+        return options_dict
+
     def _clean_options(self):
         """Parses incoming plugin options in self._config["options"] 
                 and modifies DataInterface in-place
                 str options which only contain numeric data are converted to float OR int
         """
-        for key, val in self._config["options"].items():
-            """ 
-            TODO: Maybe, if list -> cv
-            """
-            if type(val) == str and val.replace('.', '').replace(',', '').isnumeric():
-                val = float(val)
-                if val.is_integer():
-                    val = int(val)
-            self._config["options"][key] = val
+        self._parse_options_dict(self._config["options"])
 
     def _test(self, data: DataInterface) -> DataInterface:
         """Run debug tests on data operations
