@@ -1,0 +1,30 @@
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vailabs"
+authors = [
+    {name = "Chris McGreavy", email = "chris.mcgreavy@aalto.fi"},
+    {name = "Carlos Sevilla Salcedo", email = "carlos.sevillasalcedo@aalto.fi"}
+]
+readme = "README.md"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
+requires-python = ">=3.8"
+version = "1.0"
+description = "AI assisted Virtual Laboratory framework."
+
+dependencies = [
+    "numpy",
+    "tk", # package name of tkinter
+    "pillow", # package name of PIL
+    "pandas",
+    "sklearn",
+    "ttkwidgets"
+]
+
+[project.urls]
+Source = "https://github.com/AaltoPML/VAI-labs"

@@ -59,14 +59,28 @@ OR SSH:
 ```bash
 git clone git@github.com:AaltoPML/VAI-labs.git
 ```
-Then, run:
+Change directory
 ```bash
-python setup.py
+cd VAI-labs
 ```
-to install the base pre-requisites.
+Create a virtual environment and activate it using venv
+```bash
+python3 -m venv venv && source venv/bin/activate
+```
+or using conda
+```bash
+conda create --name vailabs python=3.8 && conda activate vailabs
+```
+Upgrade pip
+```bash
+python3 -m pip install -U pip
+```
+Install the package
+```bash
+python3 -m pip install .
+```
 
-> **Note**
-> Due to the highly modular nature of the library, only the base requirements that are needed for basic operation are installed at the start, as there are many possible plugins, many of which may not be needed for a given user's usecase.
+
 
 ## Launching and Examples
 
