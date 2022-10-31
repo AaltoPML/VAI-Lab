@@ -9,7 +9,7 @@ import pandas as pd
 from typing import Dict, List
 from PIL import Image, ImageTk
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas": "default",
@@ -53,10 +53,11 @@ class pluginCanvas(tk.Frame):
 
         # Create canvas
         self.width, self.height = 700, 700
-        self.canvas = tk.Canvas(frame1, width=self.width, 
-            height=self.height, background="white")
-        self.canvas.pack(fill = tk.BOTH, expand = True, padx=(10,0), pady=10)
-        
+        self.canvas = tk.Canvas(frame1, width=self.width,
+                                height=self.height, background="white")
+        self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
+
+        self.m: int
         self.w, self.h = 100, 50
         self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
@@ -149,17 +150,8 @@ class pluginCanvas(tk.Frame):
             else:
                 self.canvas_selected = self.selected[-1]
 
-        if (self.m in self.plugin.keys()) and\
-                (self.plugin[self.m].get() != 'None') and \
-                (self.m not in self.id_done):  # add
-            self.id_done.append(self.m)
-            # print(np.array(self.module_names)[self.m == np.array(self.id_mod)][0])
-            self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                           {**self.req_settings, **
-                                               self.opt_settings},
-                                           np.array(self.module_names)[
-                self.m == np.array(self.id_mod)][0],
-                True)
+        self.check_updated()
+
         if self.m in self.id_done and self.m > 1:
             self.canvas.itemconfig('p'+str(self.m), fill='#46da63')
         else:
@@ -183,7 +175,7 @@ class pluginCanvas(tk.Frame):
                             self.frame4, text='Finish', bg=self.bg,
                             font=self.controller.pages_font,
                             fg='white', height=3, width=15,
-                            command=self.finnish, state=tk.NORMAL, image='')
+                            command=self.finish, state=tk.NORMAL, image='')
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
@@ -211,7 +203,7 @@ class pluginCanvas(tk.Frame):
                         self.button_forw.config(text='Finish', bg=self.bg,
                                                 font=self.controller.pages_font,
                                                 fg='white', height=3, width=15,
-                                                command=self.finnish, state=tk.NORMAL, image='')
+                                                command=self.finish, state=tk.NORMAL, image='')
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
@@ -239,14 +231,20 @@ class pluginCanvas(tk.Frame):
                                             command=lambda: self.select(
                                                 pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
 
-    def finnish(self):
+    def finish(self):
         """ Calls function check_quit.
         Before that, it checks if the current module plugins have been changed 
         and, if so, updates their information in the XML_handler class.
         """
+        self.check_updated()
+        self.check_quit()
+
+    def check_updated(self):
+        """ Checks if the current plugin exists and 
+        stores/updates the plugin options
+        """
         if (self.m in self.plugin.keys()) and\
-                (self.plugin[self.m].get() != 'None') and \
-                (self.m not in self.id_done):  # add
+                (self.plugin[self.m].get() != 'None'):  # add
             self.id_done.append(self.m)
             self.s.append_plugin_to_module(self.plugin[self.m].get(),
                                            {**self.req_settings, **
@@ -254,7 +252,6 @@ class pluginCanvas(tk.Frame):
                                            np.array(self.module_names)[
                 self.m == np.array(self.id_mod)][0],
                 True)
-        self.check_quit()
 
     def display_buttons(self):
         """ Updates the displayed radiobuttons and the description windows.
@@ -352,7 +349,7 @@ class pluginCanvas(tk.Frame):
                     'resources',
                     'Assets',
                     'VAILabsIcon.ico'))))
-            self.newWindow.geometry("350x400")
+            # self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
@@ -360,94 +357,220 @@ class pluginCanvas(tk.Frame):
             # Print settings
             tk.Label(frame1,
                      text="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
-            self.entry = []
-            # Required
-            r = 1
-            if len(self.req_settings) > 0:
-                frame2 = tk.Frame(self.newWindow)
-                tk.Label(frame2,
-                         text="Required settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
-                self.displaySettings(frame2, self.req_settings)
-                frame2.grid(column=0, row=r, sticky="nswe")
-                r += 1
-            # Optional
-            if len(self.opt_settings) > 0:
-                frame3 = tk.Frame(self.newWindow)
-                tk.Label(frame3,
-                         text="Optional settings:", anchor=tk.W, justify=tk.LEFT).grid(row=0, column=0, columnspan=2)
-                self.displaySettings(frame3, self.opt_settings)
-                frame3.grid(column=0, row=r, sticky="nswe")
-                r += 1
-            if len(self.entry) > 0:
-                self.entry[0].focus()
+            # self.entry = []
+
+            style = ttk.Style()
+            style.configure(
+                "Treeview", background='white', foreground='white',
+                rowheight=25, fieldbackground='white',
+                # font=self.controller.pages_font
+                )
+            style.configure("Treeview.Heading", 
+            # font=self.controller.pages_font
+            )
+            style.map('Treeview', background=[('selected', 'grey')])
+
+            frame2 = tk.Frame(self.newWindow, bg='green')
+            self.r = 1
+            self.create_treeView(frame2)
+            self.fill_treeview(frame2, self.req_settings, self.opt_settings)
+            frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+    
+            frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
+            frame2.grid_columnconfigure(tuple(range(2)), weight=1)
+
+            # if len(self.entry) > 0:
+            #     self.entry[0].focus()
             self.finishButton = tk.Button(
                 frame4, text='Finish', command=self.removewindow)
             self.finishButton.grid(
-                column=1, row=r+1, sticky="es", pady=(0, 10), padx=(0, 10))
+                column=1, row=0, sticky="es", pady=(0, 10), padx=(0, 10))
             self.finishButton.bind(
                 "<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
-            frame1.grid(column=0, row=0, sticky="new")
-            frame4.grid(column=0, row=r, sticky="se")
-            self.newWindow.grid_rowconfigure(0, weight=1)
-            self.newWindow.grid_rowconfigure(tuple(range(r+1)), weight=2)
+            frame1.grid(column=0, row=0, sticky="ew")
+            frame4.grid(column=0, row=2, sticky="se")
+            # self.newWindow.grid_rowconfigure(0, weight=1)
+            self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
-    def displaySettings(self, frame, settings):
-        """ Adds an entry for each input setting. Displays it in the specified row.
+    def create_treeView(self, frame):
+        """ Function to create a new tree view in the given frame
+
+        Parameters
+        ----------
+        frame : tk.Frame
+                frame where the tree view will be included
+        key : str
+              key for the tree dictionary
+        """
+        tree_frame = frame #tk.Frame(frame)
+        # tree_frame.grid(row=0, column=0, sticky="nsew", pady=10, padx=10)
+
+        tree_scrollx = tk.Scrollbar(tree_frame, orient='horizontal')
+        tree_scrollx.pack(side=tk.BOTTOM, fill=tk.X)
+        tree_scrolly = tk.Scrollbar(tree_frame)
+        tree_scrolly.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.tree = ttk.Treeview(tree_frame,
+                                yscrollcommand=tree_scrolly.set,
+                                xscrollcommand=tree_scrollx.set)
+        self.tree.pack(fill='both', expand=True)
+
+        tree_scrollx.config(command=self.tree.xview)
+        tree_scrolly.config(command=self.tree.yview)
+
+        columns_names = ['Name', 'Type', 'Value']
+        self.tree['columns'] = columns_names
+
+        # Format columns
+        # self.tree['show'] = 'headings'
+        self.tree.column("#0", width=20,
+                        minwidth=0, stretch=tk.NO)
+        for n, cl in enumerate(columns_names):
+            self.tree.column(
+                cl, width=int(self.controller.pages_font.measure(str(cl)))+20,
+                minwidth=50, anchor=tk.CENTER)
+        # Headings
+        for cl in columns_names:
+            self.tree.heading(cl, text=cl, anchor=tk.CENTER)
+        self.tree.tag_configure('req', foreground='black',
+                                background='#9fc5e8')
+        self.tree.tag_configure('opt', foreground='black',
+                                background='#cfe2f3')
+        self.tree.tag_configure('type', foreground='black',
+                                background='#E8E8E8')
+        self.tree.tag_configure('func', foreground='black',
+                                background='#DFDFDF')
+
+        # Add data
+        # for n, sample in enumerate(self.out_data):
+        #     if n % 2 == 0:
+        #         self.tree.insert(parent='', index='end', iid=n, text=n+1,
+        #                         values=tuple(sample.astype(int)), tags=('even',))
+        #     else:
+        #         self.tree.insert(parent='', index='end', iid=n, text=n+1,
+        #                         values=tuple(sample.astype(int)), tags=('odd',))
+
+        # Select the current row
+        # self.tree.selection_set(str(int(0)))
+
+        # Define double-click on row action
+        self.tree.bind("<Double-1>", self.OnDoubleClick)
+
+    def OnDoubleClick(self, event):
+        """ Executed when a row of the treeview is double clicked.
+        Opens an entry box to edit a cell. """
+
+        # ii = self.notebook.index(self.notebook.select())
+        self.treerow = self.tree.identify_row(event.y)
+        self.treecol = self.tree.identify_column(event.x)
+        tags = self.tree.item(self.treerow)["tags"]
+        if len(tags) > 0 and tags[0] in ['opt', 'req']:
+            # get column position info
+            x, y, width, height = self.tree.bbox(self.treerow, self.treecol)
+
+            # y-axis offset
+            pady = height // 2
+            # pady = 0
+
+            if hasattr(self, 'entry'):
+                self.entry.destroy()
+
+            self.entry = tk.Entry(self.tree, justify='center')
+
+            if int(self.treecol[1:]) > 0:
+                value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
+                value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
+                self.entry.insert(0, value)
+                # self.entry['selectbackground'] = '#123456'
+                self.entry['exportselection'] = False
+
+                self.entry.focus_force()
+                self.entry.bind("<Return>", self.on_return)
+                self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+
+                self.entry.place(x=x,
+                                y=y + pady,
+                                anchor=tk.W, width=width)
+    
+    def on_return(self, event):
+        """ Executed when the entry is edited and pressed enter.
+        Saves the edited value"""
+
+        val = self.tree.item(self.treerow)['values']
+        val[int(self.treecol[1:])-1] = self.entry.get()
+        if self.entry.get() != '':
+            self.tree.item(self.treerow, values=tuple([val[0], val[1], self.entry.get()]))
+        elif val[2] == '':
+            self.tree.item(self.treerow, values=tuple([val[0], val[1], 'default']))
+        else:
+            self.tree.item(self.treerow, values=val)
+        self.entry.destroy()
+        self.saved = False
+
+    def fill_treeview(self, frame, req_settings, opt_settings, parent = ''):
+        """ Adds an entry for each setting. Displays it in the specified row.
         :param frame: tkinter frame type of frame
         :param settings: dict type of plugin setting options
         """
-        r = 1
-        for arg, val in settings.items():
-            tk.Label(frame,
-                     text=arg).grid(row=r, column=0)
+        self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
+            values=tuple(['Required settings', '', '']), tags=('type',))
+        self.r+=1
+        for arg, val in req_settings.items():
             if arg == 'Data':
-                if self.m not in self.dataType:
-                    self.dataType[self.m] = tk.StringVar()
-                    self.dataType[self.m].set('X')
-                tk.Radiobutton(frame, text='Input (X)', fg='black',
-                               var=self.dataType[self.m], value='X'
-                               ).grid(row=r, column=1)
-                if len(self.s._get_all_elements_with_tag("Y")) > 0 or \
-                        len(self.s._get_all_elements_with_tag("Y_test")) > 0:
-                    tk.Radiobutton(frame, text='Output (Y)', fg='black',
-                                   var=self.dataType[self.m], value='Y'
-                                   ).grid(row=r, column=2)
+                self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
+                    values=tuple([arg, val, 'Choose X or Y']), tags=('req',))
             else:
-                self.entry.append(EntryWithPlaceholder(frame, val))
-                self.entry[-1].grid(row=r, column=1)
-                self.entry[-1].bind("<Return>", lambda event,
-                                    a=len(self.entry): self.on_return_entry(a))
-            r += 1
-        frame.grid_rowconfigure(tuple(range(r)), weight=1)
-        frame.grid_columnconfigure(tuple(range(2)), weight=1)
+                self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
+                                    values=tuple([arg, val, '']), tags=('req',))
+            self.r+=1
+        self.tree.insert(parent=parent, index='end', iid=parent+'_opt', text='',
+            values=tuple(['Optional settings', '', '']), tags=('type',))
+        self.r+=1
+        for arg, val in opt_settings.items():
+            self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
+                                 values=tuple([arg, val, 'default']), tags=('opt',))
+            self.r+=1
 
     def removewindow(self):
         """ Stores settings options and closes window """
         self.req_settings.pop("Data", None)
         req_keys = list(self.req_settings.keys())
         opt_keys = list(self.opt_settings.keys())
-        for e, ent in enumerate(self.entry):
-            if e < len(self.req_settings):
-                if ent.get() == self.entry[e].placeholder or len(ent.get()) == 0:
-                    self.req_settings.pop(req_keys[e], None)
+        for c, child in enumerate(self.tree.get_children()):
+            val = self.tree.item(child)["values"]
+            tag = self.tree.item(child)["tags"][0]
+            if val[0] == 'Data':
+                if val[2] == 'Choose X or Y' or len(val[2]) == 0:
+                    self.updateSettings(tag, val[0], 'X')
                 else:
-                    self.req_settings[req_keys[e]] = ent.get()
+                    self.updateSettings(tag, val[0], val[2])
             else:
-                # print(self.opt_settings)
-                # print(list(self.opt_settings.keys()))
-                # print(e-len(self.req_settings))
-                if ent.get() == self.entry[e].placeholder or len(ent.get()) == 0:
-                    self.opt_settings.pop(opt_keys[e-len(req_keys)], None)
+                if val[2] == 'default' or len(str(val[2])) == 0:
+                    self.updateSettings(tag, val[0])
                 else:
-                    self.opt_settings[opt_keys[e-len(req_keys)]] = ent.get()
-        if self.m in self.dataType:
-            self.req_settings['Data'] = self.dataType[self.m].get()
+                    self.updateSettings(tag, val[0], val[2])
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
+
+    def updateSettings(self, tag, key, value = None):
+        """ Return the selected settings 
+
+        Parameters
+        ----------
+        tag : str
+              tag for the settings
+        """
+        if tag == 'req':
+            self.req_settings[key] = value
+        elif tag == 'opt':
+            if value is not None or self.opt_settings[key] != value:
+                self.opt_settings[key] = value
+            else:
+                self.opt_settings.pop(key, None)
 
     def on_return_entry(self, r):
         """ Changes focus to the next available entry. When no more, focuses 
@@ -585,9 +708,9 @@ class pluginCanvas(tk.Frame):
         self.s.load_XML(filename)
         # self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
-        print(modules)
         modout = modules['Output']
-        del modules['Initialiser'], modules['Output'] # They are generated when resetting
+        # They are generated when resetting
+        del modules['Initialiser'], modules['Output']
         self.disp_mod = ['Initialiser', 'Output']
         self.id_mod = [0, 1]
 
@@ -606,8 +729,8 @@ class pluginCanvas(tk.Frame):
                 yout + self.cr,
                 xins + self.cr,
                 yins + self.cr,
-                fill="red",
-                arrow=tk.LAST,
+                fill="red", width = 2,
+                arrow = tk.LAST, arrowshape = (12,10,5),
                 tags=('o'+str(parent_id),
                       'o'+str(1), modout['coordinates'][2][connect[p]]))
             self.out_data.iloc[int(parent_id)][1] = 1
