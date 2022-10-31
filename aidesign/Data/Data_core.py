@@ -29,7 +29,6 @@ class Data:
                     data_name: str,
                     strip_whitespace: bool = True) -> None:
         """import data directly into DataFrame
-
         :param filename: str, filename of csv file to be loaded
         :param data_name: str, name of dict key in which data will be stored
         :param strip_whitespace: bool, remove spaces from before & after header names
@@ -47,7 +46,6 @@ class Data:
                     data_name: str) -> None:
         """Loads png into PIL.Image class. Adds instance to self.data
         The image is stored as a function (not a matrix - can be added if needed)
-
         :param filename: str, filename of csv file to be loaded
         :param data_name: str, name of dict key in which data will be stored
         """
@@ -87,9 +85,7 @@ class Data:
 
     def _get_ext(self: DataT, path_dir: str) -> str:
         """Extracts extension from path_dir, or check if is dir
-
         :param path_dir: str, path_dir to be checked
-
         :returns ext: str, path_dir extension or "dir" if path_dir is directory
         """
         if path.isdir(path_dir):
@@ -101,11 +97,8 @@ class Data:
                     filename: str,
                     data_name: str = "data") -> None:
         """Import file directly into DataFrame
-
         Translates relative files to absolute before parsing - not ideal
-
         Filename to parsing method based on extension name.
-
         :param filename: str, filename of file to be loaded
         :param data_name: str, name of class variable data will be loaded to
         """

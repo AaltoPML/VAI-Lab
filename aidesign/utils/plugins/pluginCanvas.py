@@ -708,9 +708,9 @@ class pluginCanvas(tk.Frame):
         self.s.load_XML(filename)
         # self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
-        print(modules)
         modout = modules['Output']
-        del modules['Initialiser'], modules['Output'] # They are generated when resetting
+        # They are generated when resetting
+        del modules['Initialiser'], modules['Output']
         self.disp_mod = ['Initialiser', 'Output']
         self.id_mod = [0, 1]
 
