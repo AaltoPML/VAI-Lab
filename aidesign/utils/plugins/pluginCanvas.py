@@ -357,7 +357,6 @@ class pluginCanvas(tk.Frame):
             # Print settings
             tk.Label(frame1,
                      text="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
-            # self.entry = []
 
             style = ttk.Style()
             style.configure(
@@ -373,14 +372,12 @@ class pluginCanvas(tk.Frame):
             frame2 = tk.Frame(self.newWindow, bg='green')
             self.r = 1
             self.create_treeView(frame2)
-            self.fill_treeview(frame2, self.req_settings, self.opt_settings)
+            self.fill_treeview(self.req_settings, self.opt_settings)
             frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
     
             frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
             frame2.grid_columnconfigure(tuple(range(2)), weight=1)
 
-            # if len(self.entry) > 0:
-            #     self.entry[0].focus()
             self.finishButton = tk.Button(
                 frame4, text='Finish', command=self.removewindow)
             self.finishButton.grid(
@@ -391,22 +388,19 @@ class pluginCanvas(tk.Frame):
 
             frame1.grid(column=0, row=0, sticky="ew")
             frame4.grid(column=0, row=2, sticky="se")
-            # self.newWindow.grid_rowconfigure(0, weight=1)
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
-    def create_treeView(self, frame):
+    def create_treeView(self, tree_frame):
         """ Function to create a new tree view in the given frame
 
         Parameters
         ----------
-        frame : tk.Frame
-                frame where the tree view will be included
+        tree_frame : tk.Frame
+                    frame where the tree view will be included
         key : str
               key for the tree dictionary
         """
-        tree_frame = frame #tk.Frame(frame)
-        # tree_frame.grid(row=0, column=0, sticky="nsew", pady=10, padx=10)
 
         tree_scrollx = tk.Scrollbar(tree_frame, orient='horizontal')
         tree_scrollx.pack(side=tk.BOTTOM, fill=tk.X)
@@ -425,7 +419,6 @@ class pluginCanvas(tk.Frame):
         self.tree['columns'] = columns_names
 
         # Format columns
-        # self.tree['show'] = 'headings'
         self.tree.column("#0", width=20,
                         minwidth=0, stretch=tk.NO)
         for n, cl in enumerate(columns_names):
@@ -443,19 +436,6 @@ class pluginCanvas(tk.Frame):
                                 background='#E8E8E8')
         self.tree.tag_configure('func', foreground='black',
                                 background='#DFDFDF')
-
-        # Add data
-        # for n, sample in enumerate(self.out_data):
-        #     if n % 2 == 0:
-        #         self.tree.insert(parent='', index='end', iid=n, text=n+1,
-        #                         values=tuple(sample.astype(int)), tags=('even',))
-        #     else:
-        #         self.tree.insert(parent='', index='end', iid=n, text=n+1,
-        #                         values=tuple(sample.astype(int)), tags=('odd',))
-
-        # Select the current row
-        # self.tree.selection_set(str(int(0)))
-
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
 
@@ -510,10 +490,11 @@ class pluginCanvas(tk.Frame):
         self.entry.destroy()
         self.saved = False
 
-    def fill_treeview(self, frame, req_settings, opt_settings, parent = ''):
+    def fill_treeview(self, req_settings, opt_settings, parent = ''):
         """ Adds an entry for each setting. Displays it in the specified row.
-        :param frame: tkinter frame type of frame
-        :param settings: dict type of plugin setting options
+        :param req_settings: dict type of plugin required setting options
+        :param opt_settings: dict type of plugin optional setting options
+        :param parent: string type of parent name
         """
         self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
             values=tuple(['Required settings', '', '']), tags=('type',))
@@ -537,24 +518,35 @@ class pluginCanvas(tk.Frame):
     def removewindow(self):
         """ Stores settings options and closes window """
         self.req_settings.pop("Data", None)
-        req_keys = list(self.req_settings.keys())
-        opt_keys = list(self.opt_settings.keys())
-        for c, child in enumerate(self.tree.get_children()):
-            val = self.tree.item(child)["values"]
-            tag = self.tree.item(child)["tags"][0]
-            if val[0] == 'Data':
-                if val[2] == 'Choose X or Y' or len(val[2]) == 0:
-                    self.updateSettings(tag, val[0], 'X')
-                else:
-                    self.updateSettings(tag, val[0], val[2])
-            else:
-                if val[2] == 'default' or len(str(val[2])) == 0:
-                    self.updateSettings(tag, val[0])
-                else:
-                    self.updateSettings(tag, val[0], val[2])
+        children = self.get_all_children()
+        for child in children:
+            tag = self.tree.item(child)["tags"][0]            
+            if tag in ['req', 'opt']:
+                val = self.tree.item(child)["values"]
+                self.settingOptions(tag, val) 
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
+    
+    def get_all_children(self, item=""):
+        """ Iterates over the treeview to get all childer """
+        children = self.tree.get_children(item)
+        for child in children:
+            children += self.get_all_children(child)
+        return children
+
+    def settingOptions(self, tag, val):
+        """ Identifies how the data should be stored """
+        if val[0] == 'Data':
+            if val[2] == 'Choose X or Y' or len(val[2]) == 0:
+                self.updateSettings(tag, val[0], 'X')
+            else:
+                self.updateSettings(tag, val[0], val[2])
+        else:
+            if val[2] == 'default' or len(str(val[2])) == 0:
+                self.updateSettings(tag, val[0])
+            else:
+                self.updateSettings(tag, val[0], val[2])
 
     def updateSettings(self, tag, key, value = None):
         """ Return the selected settings 
@@ -565,7 +557,10 @@ class pluginCanvas(tk.Frame):
               tag for the settings
         """
         if tag == 'req':
-            self.req_settings[key] = value
+            if value is not None or self.req_settings[key] != value:
+                self.req_settings[key] = value
+            else:
+                self.req_settings.pop(key, None)
         elif tag == 'opt':
             if value is not None or self.opt_settings[key] != value:
                 self.opt_settings[key] = value
