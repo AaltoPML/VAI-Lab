@@ -108,8 +108,8 @@ class PluginTemplate:
                         val = int(val)
                     cleaned_opts.append(val)
                 options_dict[key] = cleaned_opts
-            elif type(val) == list:
-                self._parse_options_dict(options_dict[key])
+            # elif type(val) == list:
+                # self._parse_options_dict(options_dict[key])
         return options_dict
 
     def _clean_options(self):
