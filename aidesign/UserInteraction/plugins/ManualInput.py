@@ -49,7 +49,7 @@ class ManualInput(tk.Frame, UI):            # type:ignore
         for f in self._data_in["X"].keys():
             self.image_list.append(
                 ImageTk.PhotoImage(
-                    self.expand2square(self._data_in["X"][f], (0, 0, 0))
+                    self.expand2square(Image.fromarray(self._data_in["X"][f]), (0, 0, 0))
                     .resize((pixels, pixels))))
 
         # Inital window

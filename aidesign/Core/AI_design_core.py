@@ -4,9 +4,11 @@ from aidesign.GUI.GUI_core import GUI
 from aidesign.Data.Data_core import Data
 from aidesign._plugin_helpers import PluginSpecs
 from aidesign._types import PluginSpecsInterface, ModuleInterface
+import time
+from sys import exit
 
 from os.path import join
-from typing import Tuple, Union, List
+from typing import Dict, Tuple, Union, List
 class Core:
     def __init__(self) -> None:
         self._xml_handler = XML_handler()
@@ -14,6 +16,7 @@ class Core:
         self.data = Data()
         self.loop_level: int = 0
         self.setup_complete: bool = False
+        self.status_logger:Dict = {}
 
     def _launch(self):
         gui_app = GUI()
@@ -96,16 +99,51 @@ class Core:
         for c in condition:
             self._execute(specs)
 
+    def _runTracker(self):
+        self.gui_app = GUI()
+        self.gui_app.set_avail_plugins(self._avail_plugins)
+        self.gui_app.set_gui(self.status_logger)
+        self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
+        return self.gui_app.launch()
+    
+    def _init_status(self, modules):
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            self.status_logger[modules[key]['name']] = {}
+
+    def _add_status(self, module, key, value):
+        self.status_logger[module['name']][key] = value
+
+    def _progress_start(self, module):
+        self._add_status(module, 'start', self._t)
+
+    def _progress_finish(self, module):
+        self._add_status(module, 'finish', self._t)
+
+
+    @property
+    def _t(self):
+        return time.strftime('%H:%M:%S', time.localtime())
+
     def _execute(self, specs):
         """Run elements within a given dictionary.
-        Only interates over dict values that are dicts themselves.
+        Only iterates over dict values that are dicts themselves.
         Non-dict elements cannot contain modules or loops
 
         :param specs: dict of elements to be executed
         """
         for key in [key for key, val in specs.items() if type(val) == dict]:
-            getattr(self, "_execute_{}".format(
-                specs[key]["class"]))(specs[key])
+            
+            self._progress_start(specs[key])
+            getattr(self, "_execute_{}".format(specs[key]["class"]))(specs[key])
+            self._progress_finish(specs[key])
+
+            if specs[key]["class"] == 'module':
+                term = self._runTracker()
+                if not term['close']:
+                    self.load_config_file(self._xml_handler.filename)
+                else:
+                    print('Pipeline terminated')
+                    exit()
 
     def run(self):
         if not self.setup_complete:
@@ -114,5 +152,7 @@ class Core:
             self._launch()
         print("Running pipeline...")
         self._load_data()
+        
+        self._init_status(self._xml_handler.loaded_modules)
         self._execute(self._xml_handler.loaded_modules)
         print("Pipeline Complete")

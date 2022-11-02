@@ -5,7 +5,7 @@ import pandas as pd
 _PLUGIN_READABLE_NAMES = {"PolynomialFeatures": "default",
                           "polyfeat": "alias",
                           "polynomialfeatures": "alias"}    # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "other"}                  # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "Other"}                  # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}                 # type:ignore
 _PLUGIN_OPTIONAL_SETTINGS = {"degree": "int",
                              "interaction_only": "bool",
