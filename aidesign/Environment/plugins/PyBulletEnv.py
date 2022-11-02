@@ -69,16 +69,13 @@ class PyBulletEnv(EnvironmentPluginT):
         api_list = dir(p)
         for key, value in self._config["options"].items():
             if key in api_list:
-                getattr(p,key)(value)
-        if "gravity" in self._config["options"]:
-            g = self._config["options"]["gravity"]
-            self.setGravity(float(g[0]), float(g[1]), float(g[2]))
-        # elif "timestep" in self._config["options"]:
-        #     p.setPhysicsEngineParameter(
-        #         fixedTimeStep=self._config["options"]["timestep"])
-        # elif "max_steps" in self._config["options"]:
-        #     p.setPhysicsEngineParameter(
-        #         numSolverIterations=self._config["options"]["max_steps"])
+                getattr(p,key)(*value)
+        if "timestep" in self._config["options"]:
+            p.setPhysicsEngineParameter(
+                fixedTimeStep=self._config["options"]["timestep"])
+        elif "max_steps" in self._config["options"]:
+            p.setPhysicsEngineParameter(
+                numSolverIterations=self._config["options"]["max_steps"])
 
     def run_simulation(self):
         self._set_options()

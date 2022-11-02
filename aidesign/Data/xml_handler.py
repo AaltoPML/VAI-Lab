@@ -1,5 +1,7 @@
 from os import path
 
+from traitlets import Float, Int
+
 if not __package__:
     import sys
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
@@ -10,7 +12,7 @@ from aidesign._import_helper import get_lib_parent_dir
 
 from typing import Any, Dict, Union, Optional, List
 from os import path
-from ast import literal_eval
+from ast import Str, literal_eval
 import xml.etree.ElementTree as ET
 
 
@@ -258,6 +260,23 @@ class XML_handler:
             if len(parent[element.tag]) == 1:
                 parent[element.tag] = parent[element.tag][0]
 
+    def _str_to_num(self, string:str) -> Union[str, int, float]:
+        """Converts a string containing only numeric data to float or int
+            Otherwise returns string
+
+        :param string: The string to be converted if possible
+        :returns out: either a string, float or int
+        """
+        try:
+            return int(string)
+        except ValueError:
+            pass
+
+        try:
+            return float(string)
+        except ValueError:
+            return string
+
     def _parse_text_to_list(self, element: ET.Element) -> List:
         """Formats raw text data
 
@@ -275,6 +294,8 @@ class XML_handler:
                 out[idx] = literal_eval(out[idx])
             if "(" in out[idx] and ")" in out[idx]:
                 out[idx] = list(literal_eval(out[idx]))
+            if type(out[idx]) == str:
+                out[idx] = self._str_to_num(out[idx])
         element.text = raw_elem_text
         return out
 

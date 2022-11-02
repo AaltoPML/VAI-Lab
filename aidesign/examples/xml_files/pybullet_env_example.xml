@@ -28,18 +28,12 @@
                     0.0
                     -9.81
             </setGravity>
-            <setGravit3y>
-                    [0.0,0.0,-9.81]
-            </setGravit3y>
-            <setPhysicsEngineParameter>
-                <fixedTimeStep>
+            <timestep>
                     0.01
-                </fixedTimeStep>
-                <numSolverIterations>
+            </timestep>
+            <max_steps>
                     1000
-                </numSolverIterations>
-            </setPhysicsEngineParameter>
-            
+            </max_steps>            
         </plugin>
     </Environment>
     <Output name="Output">
