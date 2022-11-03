@@ -1,16 +1,13 @@
 from os import path
+from ast import literal_eval
+from typing import Any, Dict, List, Optional, Union
+import xml.etree.ElementTree as ET
 
-from traitlets import Float, Int
-
+# Allows standalone testing 
 if not __package__:
     import sys
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
-
-import xml.etree.ElementTree as ET
-from ast import literal_eval
-from os import path
-from typing import Any, Dict, List, Optional, Union
 
 from aidesign._import_helper import get_lib_parent_dir
 
