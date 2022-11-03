@@ -12,6 +12,7 @@ from typing import Dict, KeysView, TypeVar
 
 from aidesign._import_helper import get_lib_parent_dir
 from aidesign.Data.xml_handler import XML_handler
+from aidesign._import_helper import rel_to_abs
 
 import pandas as pd # type: ignore
 import numpy as np
@@ -72,17 +73,6 @@ class Data:
         for f in files:
             self.import_data(f, data_name)
 
-    def _rel_to_abs(self: DataT, filename: str) -> str:
-        """Checks if path is relative or absolute
-        If absolute, returns original path 
-        If relative, converts path to absolute by appending to base directory
-        """
-        if filename[0] == ".":
-            filename = path.join(self._lib_base_path, filename)
-        elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
-            filename = filename
-        return filename
-
     def _get_ext(self: DataT, path_dir: str) -> str:
         """Extracts extension from path_dir, or check if is dir
         :param path_dir: str, path_dir to be checked
@@ -102,7 +92,7 @@ class Data:
         :param filename: str, filename of file to be loaded
         :param data_name: str, name of class variable data will be loaded to
         """
-        filename = self._rel_to_abs(filename).replace(
+        filename = rel_to_abs(filename).replace(
             "\\", "/").replace("/", path.sep)
         ext = self._get_ext(filename)
         getattr(self, "_import_{0}".format(ext))(filename, data_name)

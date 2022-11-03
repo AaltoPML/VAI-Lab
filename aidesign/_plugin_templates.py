@@ -1,3 +1,4 @@
+from typing import Dict
 from aidesign._types import DataInterface
 from abc import ABC, abstractmethod
 
@@ -70,7 +71,7 @@ class PluginTemplate:
 
     def _parse_config(self):
         """Parse incoming data and args, sets them as class variables"""
-        self.X = self._data_in["X"]
+        self.X = np.array(self._get_data_if_exist(self._data_in, "X"))
         self.Y = np.array(self._get_data_if_exist(self._data_in, "Y")).ravel()
         self.X_tst = self._get_data_if_exist(self._data_in, "X_test")
         self.Y_tst = np.array(self._get_data_if_exist(
@@ -97,20 +98,24 @@ class PluginTemplate:
         """
         return data.reshape(shape[0], shape[1])
 
+    def _parse_options_dict(self,options_dict:Dict):
+        for key, val in options_dict.items():
+            if type(val) == str and val.replace('.', '').replace(',', '').isnumeric():
+                cleaned_opts = []
+                for el in val.split(","):
+                    val = float(el)
+                    if val.is_integer():
+                        val = int(val)
+                    cleaned_opts.append(val)
+                options_dict[key] = cleaned_opts
+        return options_dict
+
     def _clean_options(self):
         """Parses incoming plugin options in self._config["options"] 
                 and modifies DataInterface in-place
                 str options which only contain numeric data are converted to float OR int
         """
-        for key, val in self._config["options"].items():
-            """ 
-            TODO: Maybe, if list -> cv
-            """
-            if type(val) == str and val.replace('.', '').replace(',', '').isnumeric():
-                val = float(val)
-                if val.is_integer():
-                    val = int(val)
-            self._config["options"][key] = val
+        self._parse_options_dict(self._config["options"])
 
     def _test(self, data: DataInterface) -> DataInterface:
         """Run debug tests on data operations
@@ -207,3 +212,31 @@ class UI(PluginTemplate, ABC):
     @abstractmethod
     def save_file_as(self):
         pass
+
+
+class EnvironmentPluginT(PluginTemplate, ABC):
+    
+    @abstractmethod
+    def load_model(self) -> None:
+        pass
+
+    @abstractmethod
+    def connect(self):
+        pass
+
+    @abstractmethod
+    def reset(self):
+        pass
+
+    @abstractmethod
+    def disconnect(self):
+        pass
+
+    @abstractmethod
+    def set_gui(self,use_gui:bool=True) -> None:
+        pass
+
+    def configure(self, config: dict):
+        """Extended from PluginTemplate.configure"""
+        super().configure(config)
+        self.set_gui(self._config["options"]["headless"])

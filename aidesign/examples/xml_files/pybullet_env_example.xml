@@ -1,0 +1,48 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="MyEnv" />
+        </relationships>
+        <coordinates>
+            [(300.0,50),0,{}]
+        </coordinates>
+    </Initialiser>
+    <Environment name="MyEnv">
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(300.0,300.0),2,{0:'d0-u2'}]
+        </coordinates>
+        <plugin type="PyBullet">
+            <model_dir>
+                 plane.urdf
+                 ./Environment/resources/models/half_cheetah_with_mass.xml
+            </model_dir>
+            <headless>
+                 False
+            </headless>
+            <setGravity>
+                    0.0
+                    0.0
+                    -9.81
+            </setGravity>
+            <timestep>
+                    0.01
+            </timestep>
+            <max_steps>
+                    1000
+            </max_steps>            
+        </plugin>
+    </Environment>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(300.0,550),1,{2:'d2-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>

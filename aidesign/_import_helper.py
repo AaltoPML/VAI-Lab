@@ -33,3 +33,14 @@ def get_lib_parent_dir():
                 for i,_ in enumerate(__file__)\
                 if __file__[:i].\
                 endswith("{0}aidesign{0}".format(path.sep))][-1]
+
+def rel_to_abs(filename: str) -> str:
+        """Checks if path is relative or absolute
+        If absolute, returns original path 
+        If relative, converts path to absolute by appending to base directory
+        """
+        if filename[0] == ".":
+            filename = path.join(get_lib_parent_dir(), filename)
+        elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
+            filename = filename
+        return filename
