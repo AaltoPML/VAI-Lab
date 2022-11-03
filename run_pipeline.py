@@ -1,4 +1,4 @@
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 
