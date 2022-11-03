@@ -23,7 +23,8 @@ dependencies = [
     "pillow", # package name of PIL
     "pandas",
     "sklearn",
-    "ttkwidgets"
+    "ttkwidgets",
+    "matplotlib",
 ]
 
 [project.urls]
