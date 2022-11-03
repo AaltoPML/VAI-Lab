@@ -32,7 +32,7 @@ def get_lib_parent_dir():
     return [__file__[:i] \
                 for i,_ in enumerate(__file__)\
                 if __file__[:i].\
-                endswith("{0}aidesign{0}".format(path.sep))][-1]
+                endswith("{0}vai_lab{0}".format(path.sep))][-1]
 
 def rel_to_abs(filename: str) -> str:
         """Checks if path is relative or absolute
