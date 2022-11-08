@@ -17,7 +17,7 @@ def import_plugin_absolute(script_config,plugin_package,plugin_name):
     return plugin_class
 
 def import_module(script_config, module_name):
-    module_list = __import__('aidesign.' + module_name + "." + module_name + "_core",
+    module_list = __import__('vai_lab.' + module_name + "." + module_name + "_core",
                              script_config,
                              {},
                              [module_name])
