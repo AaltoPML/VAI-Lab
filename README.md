@@ -51,7 +51,7 @@ Modules can be chained, looped and modified in real-time to create a highly cust
 
 ## Installation
 
-### installing from package
+### Installing from package
 
 To install the latest pip release:
 
@@ -59,7 +59,7 @@ To install the latest pip release:
 pip install vai-lab
 ```
 
-### installing from source 
+### Installing from source 
 
 Clone this repository via HTTPS:
 ```bash
