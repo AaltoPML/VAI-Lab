@@ -1,8 +1,8 @@
-# Virtual Artificially Intelligent Laboratories (VAI Labs)
+# Virtual Artificially Intelligent Laboratories (VAI-Lab)
 
 ![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/VAIL_banner_image.png)
 
-VAIL is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
+VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
 
 > **Warning**
 > This project is currently a work in progress and is intended for wider use when a full release is made.
@@ -26,14 +26,14 @@ We are actively seeking contribution in the form of users, testers, developers, 
 
 # How it Works
 
-The VAIL framework uses a modular, plugin-based architecture.
+The VAI-Lab framework uses a modular, plugin-based architecture.
 
 ```mermaid
 stateDiagram-v2
 
-    VAIL --> Module1
-    VAIL --> Module2
-    VAIL --> Module_n
+    VAI_Lab --> Module1
+    VAI_Lab --> Module2
+    VAI_Lab --> Module_n
     Module1 --> plugin_1.1
     Module1 --> plugin_1.2
     Module1 --> plugin_1.m
