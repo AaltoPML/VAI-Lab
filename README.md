@@ -55,7 +55,7 @@ Clone this repository via HTTPS:
 ```bash
 git clone https://github.com/AaltoPML/VAI-labs.git
 ```
-OR SSH:
+or via SSH:
 ```bash
 git clone git@github.com:AaltoPML/VAI-labs.git
 ```
@@ -78,6 +78,13 @@ python3 -m pip install -U pip flit
 Install the package
 ```bash
 flit install
+```
+
+## Running Unit Tests
+
+Unit tests are run with pytest with
+```bash
+pytest
 ```
 
 
