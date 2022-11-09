@@ -28,3 +28,6 @@ dependencies = [
 
 [project.urls]
 Source = "https://github.com/AaltoPML/VAI-labs"
+
+[project.scripts]
+flit = "flit:main"
