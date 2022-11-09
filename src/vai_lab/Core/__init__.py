@@ -4,5 +4,5 @@
 
 Let's look for a more automatic way of doing this when we have more modules
 """
-from .AI_design_core import Core
+from .vai_lab_core import Core
 # from .. import *

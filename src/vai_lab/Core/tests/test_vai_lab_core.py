@@ -1,5 +1,5 @@
 """
-Tests for vai_lab.Core.AI_design_core.py
+Tests for vai_lab.Core.vai_lab_core.py
 """
 
 from vai_lab.Core import vai_lab_core
