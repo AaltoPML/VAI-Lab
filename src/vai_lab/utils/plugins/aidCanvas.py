@@ -143,8 +143,7 @@ class aidCanvas(tk.Frame):
             command = self.delete_sel).grid(column = 5, row = 7, sticky="news"
                                             , padx=(10,10), pady=(0,10))
         
-        self.canvas.update()
-        ww = int(self.width/36) #For some reason it is not 40
+        ww = int(self.width/40)
         tk.Button(
             frame3, text='Upload', fg='white', bg=parent['bg'],
             height=3, width=ww, font=self.controller.pages_font,
@@ -171,7 +170,7 @@ class aidCanvas(tk.Frame):
         frame3.grid(column=0, row=2, sticky="swe")
         frame4.grid(column=1, row=1, sticky="nse")
         
-        frame3.grid_columnconfigure(4, weight=1)
+        frame3.grid_columnconfigure(tuple(range(4)), weight=1)
         frame4.grid_rowconfigure(7, weight=1)
 
     def class_list(self, value):
