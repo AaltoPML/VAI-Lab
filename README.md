@@ -137,7 +137,7 @@ core.run()
 
 ### Examples
 
-Pre-made [examples](https://github.com/AaltoPML/ai-assisted-framework-design/tree/main/aidesign/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
+Pre-made [examples](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
 
 Some basic use-cases are provided among many others:
  - [user_feedback_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
