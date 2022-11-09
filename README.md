@@ -65,7 +65,7 @@ Clone this repository via HTTPS:
 ```bash
 git clone https://github.com/AaltoPML/VAI-labs.git
 ```
-or via SSH:
+OR SSH:
 ```bash
 git clone git@github.com:AaltoPML/VAI-labs.git
 ```
@@ -103,14 +103,12 @@ pytest
 
 ### From Command Line
 
-To launch the framework with the GUI
-
+To launch the framework with the GUI:
 ```bash
 aidesign
 ```
 
-or to execute an existing config file
-
+To launch the framework with an existing config file
 ```bash
 aidesign --file <path_to_config_file>
 ```
@@ -118,7 +116,7 @@ aidesign --file <path_to_config_file>
 
 ### From Code
 
-To launch the framework with the GUI
+To launch the framework with the GUI:
 
 ```python
 import aidesign as ai
@@ -127,7 +125,7 @@ core = ai.Core()
 core.run()
 ```
 
-or to execute an existing config file
+or to execute an existing config file:
 
 ```python
 import aidesign as ai
@@ -136,7 +134,6 @@ core = ai.Core()
 core.load_config_file("<path_to_config_file>")
 core.run()
 ```
-
 
 ### Examples
 
