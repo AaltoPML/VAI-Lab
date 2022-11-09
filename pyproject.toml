@@ -35,5 +35,6 @@ Source = "https://github.com/AaltoPML/VAI-labs"
 minversion = "6.0"
 addopts = "-ra -q"
 
+
 [project.scripts]
-flit = "flit:main"
+aidesign = "aidesign.run_pipeline:main"
