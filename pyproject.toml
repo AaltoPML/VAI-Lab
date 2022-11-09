@@ -23,11 +23,17 @@ dependencies = [
     "pillow", # package name of PIL
     "pandas",
     "sklearn",
-    "ttkwidgets"
+    "ttkwidgets",
+    "pytest"
 ]
 
 [project.urls]
 Source = "https://github.com/AaltoPML/VAI-labs"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
 
 [project.scripts]
 flit = "flit:main"
