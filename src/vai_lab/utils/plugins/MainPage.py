@@ -7,7 +7,7 @@ import pandas as pd
 
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab.utils.plugins.dataLoader import dataLoader
-from vai_lab._import_helper import get_lib_parent_dir
+from vai_lab._import_helper import get_lib_parent_dir, rel_to_abs
 
 _PLUGIN_READABLE_NAMES = {"main": "default",
                           "main page": "alias",
@@ -333,21 +333,6 @@ class MainPage(tk.Frame):
             tk.messagebox.showwarning(title='Error - X not specified',
                                       message='You need to specify X before proceeding.')
 
-    def rel_path(self, path):
-        """ Returns relative path if available. """
-        if path[0].lower() == os.getcwd()[0].lower():
-            #Same drive
-            _folder = os.path.relpath(path, os.getcwd())
-            if _folder[:2] == '..':
-                # Absolute path
-                return path
-            else:
-                # Relative path
-                return os.path.join('.',_folder)
-        else: 
-            #Different drive -> Absolute path
-            return path
-
     def upload_data_path(self):
         """ Stores the directory containing the data that will be later loaded 
         """
@@ -355,7 +340,7 @@ class MainPage(tk.Frame):
                               title='Select a folder',
                               mustexist=True)
         if folder is not None and len(folder) > 0:
-            self.controller.s.append_input_data('X', self.rel_path(folder))
+            self.controller.s.append_input_data('X', rel_to_abs(folder))
         
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
