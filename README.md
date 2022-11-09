@@ -105,12 +105,12 @@ pytest
 
 To launch the framework with the GUI:
 ```bash
-aidesign
+vai_lab
 ```
 
 To launch the framework with an existing config file
 ```bash
-aidesign --file <path_to_config_file>
+vai_lab --file <path_to_config_file>
 ```
 
 
@@ -151,7 +151,7 @@ To demonstrate the syntax for launching examples using `user_feedback_demo.xml`.
 Using the command line
 
 ```bash
-aidesign --file ./examples/xml_files/user_feedback_demo.xml
+vai_lab --file ./examples/xml_files/user_feedback_demo.xml
 ```
 
 From code
