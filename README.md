@@ -93,12 +93,14 @@ pytest
 
 ### From Command Line
 
-To launch the framework with the GUI:
+To launch the framework with the GUI
+
 ```bash
 aidesign
 ```
 
-To launch the framework with an existing config file
+or to execute an existing config file
+
 ```bash
 aidesign --file <path_to_config_file>
 ```
@@ -106,7 +108,7 @@ aidesign --file <path_to_config_file>
 
 ### From Code
 
-To launch the framework with the GUI:
+To launch the framework with the GUI
 
 ```python
 import aidesign as ai
@@ -115,7 +117,7 @@ core = ai.Core()
 core.run()
 ```
 
-or to execute an existing config file:
+or to execute an existing config file
 
 ```python
 import aidesign as ai
@@ -158,9 +160,7 @@ core.run()
 Absolute paths, as well paths relative to the library's base directory can be used.
 For library-relative paths, starting a path definition with `"./"` defaults to the directory `<path_to_site_packages>/aidesign/`
 
-> In addition to path strings, the config file paths can be passed as lists or tuples of directory paths.
-
-Therefore, the above could also be written as
+In addition to path strings, the config file paths can be passed as lists or tuples of directory paths. Therefore, the above command/code are equivalent to
 
 ```bash
 aidesign --file ./examples xml_files user_feedback_demo.xml
