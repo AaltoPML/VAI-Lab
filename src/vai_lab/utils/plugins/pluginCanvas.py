@@ -91,14 +91,15 @@ class pluginCanvas(tk.Frame):
                          'Assets',
                          'forw_arrow.png')).resize((140, 60)))
 
+        ww = int(self.width/40)
         tk.Button(
             frame3, text='Load Pipeline', fg='white', bg=parent['bg'],
-            height=3, width=15, font=self.controller.pages_font,
+            height=3, width=ww, font=self.controller.pages_font,
             command=self.upload).grid(column=0, row=0, sticky="news",
                                       padx=(10, 0), pady=(0, 10))
         tk.Button(
             frame3, text='Back to main', fg='white', bg=parent['bg'],
-            height=3, width=15, font=self.controller.pages_font,
+            height=3, width=ww, font=self.controller.pages_font,
             command=self.check_quit).grid(column=1, row=0, sticky="news", pady=(0, 10))
 
         self.frame_canvas = tk.Canvas(
@@ -113,15 +114,16 @@ class pluginCanvas(tk.Frame):
         self.save_path = ''
         self.saved = True
         frame1.grid(column=0, row=0, rowspan=5, sticky="nsew")
-        self.frame2.grid(column=1, row=0, sticky="new")
+        self.frame2.grid(column=1, row=0, sticky="new", padx=(10, 0))
         frame3.grid(column=0, row=5, sticky="nswe")
-        self.frame4.grid(column=1, row=5, sticky="sew")
+        self.frame4.grid(column=1, row=5, sticky="nsew")
 
         # self.frame2.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame2.grid_columnconfigure(1, weight=1)
-        # frame3.grid_columnconfigure(tuple(range(2)), weight=2)
-        frame3.grid_columnconfigure(2, weight=2)
-        self.frame4.grid_columnconfigure(2, weight=2)
+        frame3.grid_columnconfigure(tuple(range(2)), weight=2)
+        # frame3.grid_columnconfigure(2, weight=2)
+        self.frame4.grid_columnconfigure(tuple(range(2)), weight=2)
+        # self.frame4.grid_columnconfigure(2, weight=2)
 
     def class_list(self, value):
         """ Temporary fix """
@@ -223,6 +225,8 @@ class pluginCanvas(tk.Frame):
                 self.my_label.config(text='')
                 for widget in self.allWeHearIs:
                     widget.grid_remove()
+                for widget in self.radio_label:
+                    widget.grid_remove()
                 if hasattr(self, 'button_forw'):
                     self.button_back.config(image=self.back_img, bg=self.bg,
                                             state=tk.DISABLED, text='')
@@ -287,21 +291,21 @@ class pluginCanvas(tk.Frame):
             self.framexx = []
         framexx_name = np.array([])
         framexx_i = []
+        self.radio_label = []
         values = np.append(np.unique(type_list[type_list != None]), 'other') if not any(
             type_list == 'other') else np.unique(type_list[type_list != None])
         for i, t in enumerate(values):
             self.framexx.append(tk.Frame(self.framep, bg=self.bg))
             framexx_name = np.append(
                 framexx_name, t if t is not None else 'other')
-            print(framexx_name)
             framexx_i.append(0)
-            label = tk.Label(self.framexx[-1],
+            self.radio_label.append(tk.Label(self.framexx[-1],
                              text=framexx_name[-1].capitalize(),
                              pady=10,
                              font=self.controller.title_font,
                              bg=self.bg,
-                             fg='white')
-            label.grid(column=0,
+                             fg='white'))
+            self.radio_label[-1].grid(column=0,
                        row=0, padx=(10, 0), sticky='nw')
             self.framexx[-1].grid(column=0, row=i, sticky="nsew")
         unsupervised = ['clustering', 'RL']
@@ -724,8 +728,8 @@ class pluginCanvas(tk.Frame):
                 yout + self.cr,
                 xins + self.cr,
                 yins + self.cr,
-                fill="red", width = 2,
-                arrow = tk.LAST, arrowshape = (12,10,5),
+                fill = "red",  width = 2,
+                arrow = tk.LAST, arrowshape = (12,10,5), 
                 tags=('o'+str(parent_id),
                       'o'+str(1), modout['coordinates'][2][connect[p]]))
             self.out_data.iloc[int(parent_id)][1] = 1
@@ -827,8 +831,8 @@ class pluginCanvas(tk.Frame):
                                     yout + self.cr,
                                     xins + self.cr,
                                     yins + self.cr,
-                                    fill = "red", width = 2,
-                                    arrow = tk.LAST, arrowshape = (12,10,5),
+                                    fill = "red",  width = 2,
+                                    arrow = tk.LAST, arrowshape = (12,10,5), 
                                     tags = ('o'+str(parent_id),
                                           # 'o'+str(self.id_mod[-1]), 
                                           modules[key]['coordinates'][2][connect[p]]))
