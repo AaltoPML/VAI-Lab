@@ -317,7 +317,7 @@ class MainPage(tk.Frame):
                         # Infers by default, should it be None?
                         data[variable] = pd.read_csv(filename)
                         isVar[i] = 1
-                        self.controller.s.append_input_data(variable, self.rel_path(filename))
+                        self.controller.s.append_input_data(variable, rel_to_abs(filename))
                         if i == 0:
                             self.controller.Data.set(True)
                         if any(isVar[1::2]) and (
