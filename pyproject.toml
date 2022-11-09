@@ -24,17 +24,16 @@ dependencies = [
     "pandas",
     "sklearn",
     "ttkwidgets",
-    "pytest"
+    "pytest",
+    "opencv-python"
 ]
 
 [project.urls]
 Source = "https://github.com/AaltoPML/VAI-labs"
 
-
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"
-
 
 [project.scripts]
 aidesign = "aidesign.run_pipeline:main"

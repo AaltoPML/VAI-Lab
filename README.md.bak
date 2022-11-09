@@ -55,7 +55,7 @@ Clone this repository via HTTPS:
 ```bash
 git clone https://github.com/AaltoPML/VAI-labs.git
 ```
-or via SSH:
+OR SSH:
 ```bash
 git clone git@github.com:AaltoPML/VAI-labs.git
 ```
@@ -78,13 +78,6 @@ python3 -m pip install -U pip flit
 Install the package
 ```bash
 flit install
-```
-
-## Running Unit Tests
-
-Unit tests are run with pytest with
-```bash
-pytest
 ```
 
 
@@ -125,7 +118,6 @@ core.load_config_file("<path_to_config_file>")
 core.run()
 ```
 
-
 ### Examples
 
 Pre-made [examples](https://github.com/AaltoPML/ai-assisted-framework-design/tree/main/aidesign/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
@@ -137,44 +129,20 @@ Some basic use-cases are provided among many others:
 
 #### Launching examples:
 
-To demonstrate the syntax for launching examples using `user_feedback_demo.xml`.
-
-Using the command line
-
-```bash
-aidesign --file ./examples/xml_files/user_feedback_demo.xml
-```
-
-From code
+To demonstrate the syntax for launching examples using `user_feedback_demo.xml`:
 
 ```python
 import aidesign as ai
 
 core = ai.Core()
-core.load_config_file(("./examples/xml_files/user_feedback_demo.xml"))
+core.load_config_file(("./examples","xml_files",'user_feedback_demo.xml'))
 core.run()
 ```
+
+> Config file paths can be passed as path stings, a list or tuple of directory paths.
 
 Absolute paths, as well paths relative to the library's base directory can be used.
-For library-relative paths, starting a path definition with `"./"` defaults to the directory `<path_to_site_packages>/aidesign/`
-
-> In addition to path strings, the config file paths can be passed as lists or tuples of directory paths.
-
-Therefore, the above could also be written as
-
-```bash
-aidesign --file ./examples xml_files user_feedback_demo.xml
-```
-
-and 
-
-```python
-import aidesign as ai
-
-core = ai.Core()
-core.load_config_file(("./examples","xml_files","user_feedback_demo.xml"))
-core.run()
-```
+For library-relative paths, starting a path definition with `"./"` defaults to the directory of `<path-to-this-repo>/ai-assisted-framework-design/aidesign/`
 
 
 # Defining Pipelines in GUI
