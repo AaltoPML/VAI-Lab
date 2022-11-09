@@ -79,7 +79,7 @@ python3 -m venv venv && source venv/bin/activate
 ```
 or using conda
 ```bash
-conda create --name aidesign python=3.8 && conda activate aidesign
+conda create --name vai_lab python=3.8 && conda activate vai_lab
 ```
 Upgrade pip and install flit
 ```bash
@@ -119,7 +119,7 @@ vai_lab --file <path_to_config_file>
 To launch the framework with the GUI:
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.run()
@@ -128,7 +128,7 @@ core.run()
 or to execute an existing config file:
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.load_config_file("<path_to_config_file>")
@@ -157,7 +157,7 @@ vai_lab --file ./examples/xml_files/user_feedback_demo.xml
 From code
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.load_config_file(("./examples/xml_files/user_feedback_demo.xml"))
@@ -165,18 +165,18 @@ core.run()
 ```
 
 Absolute paths, as well paths relative to the library's base directory can be used.
-For library-relative paths, starting a path definition with `"./"` defaults to the directory `<path_to_site_packages>/aidesign/`
+For library-relative paths, starting a path definition with `"./"` defaults to the directory `<path_to_site_packages>/vai_lab/`
 
 In addition to path strings, the config file paths can be passed as lists or tuples of directory paths. Therefore, the above command/code are equivalent to
 
 ```bash
-aidesign --file ./examples xml_files user_feedback_demo.xml
+vai_lab --file ./examples xml_files user_feedback_demo.xml
 ```
 
 and 
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.load_config_file(("./examples","xml_files","user_feedback_demo.xml"))
