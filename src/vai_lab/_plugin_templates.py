@@ -35,7 +35,7 @@ class PluginTemplate:
     def set_data_in(self, data_in: DataInterface) -> None:
         """Sets and parses incoming data
         :param data_in: saves data as class variable
-                        expected type: aidesign.Data.Data_core.Data
+                        expected type: vai_lab.Data.Data_core.Data
         """
         req_check = [
             r for r in self._PLUGIN_REQUIRED_DATA if r not in data_in.keys()]

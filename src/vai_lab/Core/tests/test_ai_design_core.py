@@ -1,8 +1,8 @@
 """
-Tests for aidesign.Core.AI_design_core.py
+Tests for vai_lab.Core.AI_design_core.py
 """
 
-from aidesign.Core import AI_design_core
+from vai_lab.Core import AI_design_core
 
 def test_core_init():
 

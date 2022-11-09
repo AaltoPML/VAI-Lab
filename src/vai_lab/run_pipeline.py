@@ -16,7 +16,7 @@ def parse_args():
     """
 
     parser = argparse.ArgumentParser(
-                        prog = 'aidesign',
+                        prog = 'vai_lab',
                         description = 'AI-assisted virtual laboratories',
                         )
 

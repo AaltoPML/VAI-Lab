@@ -53,7 +53,7 @@ class PluginSpecs(ast.NodeVisitor):
         if __package__:
             parent_package = __package__.split(".")[0]
         else:
-            parent_package = "aidesign"
+            parent_package = "vai_lab"
         scipt_filename = self.curr_plugin.replace(".py", "")
         return "{0}.{1}.plugins.{2}".format(parent_package, self.curr_module, scipt_filename)
 
