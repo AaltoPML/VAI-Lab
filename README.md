@@ -140,9 +140,9 @@ core.run()
 Pre-made [examples](https://github.com/AaltoPML/ai-assisted-framework-design/tree/main/aidesign/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
 
 Some basic use-cases are provided among many others:
- - [user_feedback_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
- - [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
- - [regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
+ - [user_feedback_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
+ - [canvas_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
+ - [regression_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
 
 #### Launching examples:
 
@@ -240,7 +240,7 @@ Current options:
  - `initial_data`: element for declaring directory for initial data
  - `relationships`: User defined names of modules this one is connected to
 
-Example from [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml)
+Example from [canvas_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml)
 ```XML
 <Initialiser name="Init">
         <inputdata>
@@ -255,7 +255,7 @@ Example from [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework
 ### Loops
 Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.  
 
-See [basic_operation.py](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/basic_operation.xml) for full example.
+See [basic_operation.py](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/basic_operation.xml) for full example.
 Current options:
  - `type`: what variety of loop will this be: `for`, `while`, `manual`(user defined stopping condition on-the-fly)
  - `condition`: Termination condition for the loop. I'm not sure how to deal with the criteria for `while` loops
@@ -274,7 +274,7 @@ Required:
  - `plugin`: The type of plugin to be loaded into the module, along with associated options.
  - `relationships`: User-defined names of the `parent` modules which this module receives data from and `child` modules that this module passes data to.
 
-Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
+Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml):
 ```XML
      <Modelling name="Modelling">
         <relationships>
@@ -293,7 +293,7 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted
 
 Data is loaded from existing files in either the `Initialiser` or `Input Data` modules and is specified using the `inputdata` tags.
 
-Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
+Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml):
 
 ```XML
 <inputdata>
