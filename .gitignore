@@ -2,6 +2,7 @@
 __pycache__/
 **/__pycache__
 **/.vscode
+*.code-workspace
 **/*.pyc
 *.py[cod]
 *$py.class

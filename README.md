@@ -1,8 +1,8 @@
-# Virtual Artificially Intelligent Laboratories (VAI Labs)
+# Virtual Artificially Intelligent Laboratories (VAI-Lab)
 
-![AIDBANNER](./aidesign/utils/resources/Assets/readme_images/VAIL_banner_image.png)
+![AIDBANNER](./imgs/VAIL_banner_image.png)
 
-VAIL is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
+VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
 
 > **Warning**
 > This project is currently a work in progress and is intended for wider use when a full release is made.
@@ -26,14 +26,14 @@ We are actively seeking contribution in the form of users, testers, developers, 
 
 # How it Works
 
-The VAIL framework uses a modular, plugin-based architecture.
+The VAI-Lab framework uses a modular, plugin-based architecture.
 
 ```mermaid
 stateDiagram-v2
 
-    VAIL --> Module1
-    VAIL --> Module2
-    VAIL --> Module_n
+    VAI_Lab --> Module1
+    VAI_Lab --> Module2
+    VAI_Lab --> Module_n
     Module1 --> plugin_1.1
     Module1 --> plugin_1.2
     Module1 --> plugin_1.m
@@ -50,6 +50,16 @@ Each module represents a process (e.g. Modelling) and each plugin is a specific 
 Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
 
 ## Installation
+
+### Installing from package
+
+To install the latest pip release:
+
+```
+pip install vai-lab
+```
+
+### Installing from source 
 
 Clone this repository via HTTPS:
 ```bash
@@ -181,7 +191,7 @@ core.run()
 
 The VAIL module allows to define a pipeline and the relations within by drawing a flowchart on a canvas. This canvas always starts with an `initialiser` module and an `output` module and allows to define any number of modules between these two. To do so, the user needs to define the modules and the relations between them.
 
-![PipelineLoop](./aidesign/utils/resources/Assets/readme_images/VAIL_GUI_screenshot.png)
+![PipelineLoop](./imgs/VAIL_GUI_screenshot.png)
 
 ### Modules
 At this moment, there are 7 possible modules for VAIL. `initialiser` and `output` are compulsory for the pipeline, the rest of them can be freely placed in the canvas. These are:
