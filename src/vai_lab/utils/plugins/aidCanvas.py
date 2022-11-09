@@ -129,36 +129,38 @@ class aidCanvas(tk.Frame):
             command = lambda: self.add_module('Input Data', 
                                               self.width/2, 
                                               self.height/2)
-            ).grid(column = 5, row = 5, padx=(0,10), sticky="news")        
+            ).grid(column = 5, row = 5, padx=(10,10), sticky="news")        
         tk.Button(
             frame4, text = 'Data Storage', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
             command = lambda: self.add_module('Data Storage', 
                                               self.width/2, 
                                               self.height/2)
-            ).grid(column = 5, row = 6, padx=(0,10), sticky="news")
+            ).grid(column = 5, row = 6, padx=(10,10), sticky="news")
         tk.Button(
             frame4, text = 'Delete selection', fg = 'white', bg = parent['bg'],
             height = 3, width = 25, font = self.controller.pages_font,
             command = self.delete_sel).grid(column = 5, row = 7, sticky="news"
-                                            , padx=(0,10), pady=(0,10))
+                                            , padx=(10,10), pady=(0,10))
         
+        self.canvas.update()
+        ww = int(self.width/36) #For some reason it is not 40
         tk.Button(
             frame3, text='Upload', fg='white', bg=parent['bg'],
-            height=3, width=15, font=self.controller.pages_font,
+            height=3, width=ww, font=self.controller.pages_font,
             command=self.upload).grid(column=0, row=10, sticky="news",
                                       padx=(10, 0), pady=(0, 10))
         tk.Button(
             frame3, text='Save', fg='white', bg=parent['bg'],
-            height=3, width=15, font=self.controller.pages_font,
+            height=3, width=ww, font=self.controller.pages_font,
             command=self.save_file).grid(column=1, row=10, sticky="news", pady=(0, 10))
         tk.Button(
             frame3, text='Reset', fg='white', bg=parent['bg'],
-            height=3, width=15, font=self.controller.pages_font,
+            height=3, width=ww, font=self.controller.pages_font,
             command=self.reset).grid(column=2, row=10, sticky="news", pady=(0, 10))
         tk.Button(
             frame3, text='Done', fg='white', bg=parent['bg'],
-            height=3, width=15, font=self.controller.pages_font,
+            height=3, width=ww, font=self.controller.pages_font,
             command=self.check_quit).grid(column=3, row=10, sticky="news", pady=(0, 10))
 
         self.save_path = ''
