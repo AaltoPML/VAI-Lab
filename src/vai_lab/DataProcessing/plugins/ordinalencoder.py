@@ -31,7 +31,7 @@ class OrdinalEncoder(DataProcessingT):
     def set_data_in(self, data_in):
         """Sets and parses incoming data
         :param data_in: saves data as class variable
-                        expected type: aidesign.Data.Data_core.Data
+                        expected type: vai_lab.Data.Data_core.Data
         """
         super().set_data_in(data_in)
 

@@ -34,7 +34,7 @@ class SVC(ModellingPluginT):
     def set_data_in(self, data_in):
         """Sets and parses incoming data
         :param data_in: saves data as class variable
-                        expected type: aidesign.Data.Data_core.Data
+                        expected type: vai_lab.Data.Data_core.Data
         """
         super().set_data_in(data_in)
 
@@ -47,7 +47,7 @@ class SVC(ModellingPluginT):
         """Uses fitted model to predict output of a given Y
         :param data: array-like or sparse matrix, shape (n_samples, n_features)
                     Samples
-                    expected type: aidesign.Data.Data_core.Data
+                    expected type: vai_lab.Data.Data_core.Data
         :returns: array, shape (n_samples,)
                     Returns predicted values.
         """

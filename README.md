@@ -65,7 +65,7 @@ Clone this repository via HTTPS:
 ```bash
 git clone https://github.com/AaltoPML/VAI-labs.git
 ```
-or via SSH:
+OR SSH:
 ```bash
 git clone git@github.com:AaltoPML/VAI-labs.git
 ```
@@ -79,7 +79,7 @@ python3 -m venv venv && source venv/bin/activate
 ```
 or using conda
 ```bash
-conda create --name aidesign python=3.8 && conda activate aidesign
+conda create --name vai_lab python=3.8 && conda activate vai_lab
 ```
 Upgrade pip and install flit
 ```bash
@@ -103,49 +103,46 @@ pytest
 
 ### From Command Line
 
-To launch the framework with the GUI
-
+To launch the framework with the GUI:
 ```bash
-aidesign
+vai_lab
 ```
 
-or to execute an existing config file
-
+To launch the framework with an existing config file
 ```bash
-aidesign --file <path_to_config_file>
+vai_lab --file <path_to_config_file>
 ```
 
 
 ### From Code
 
-To launch the framework with the GUI
+To launch the framework with the GUI:
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.run()
 ```
 
-or to execute an existing config file
+or to execute an existing config file:
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.load_config_file("<path_to_config_file>")
 core.run()
 ```
 
-
 ### Examples
 
-Pre-made [examples](https://github.com/AaltoPML/ai-assisted-framework-design/tree/main/aidesign/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
+Pre-made [examples](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
 
 Some basic use-cases are provided among many others:
- - [user_feedback_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
- - [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
- - [regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
+ - [user_feedback_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/user_feedback_demo.xml) Demonstrates manual image classification of chest X-rays
+ - [canvas_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
+ - [regression_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
 
 #### Launching examples:
 
@@ -154,13 +151,13 @@ To demonstrate the syntax for launching examples using `user_feedback_demo.xml`.
 Using the command line
 
 ```bash
-aidesign --file ./examples/xml_files/user_feedback_demo.xml
+vai_lab --file ./examples/xml_files/user_feedback_demo.xml
 ```
 
 From code
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.load_config_file(("./examples/xml_files/user_feedback_demo.xml"))
@@ -168,18 +165,18 @@ core.run()
 ```
 
 Absolute paths, as well paths relative to the library's base directory can be used.
-For library-relative paths, starting a path definition with `"./"` defaults to the directory `<path_to_site_packages>/aidesign/`
+For library-relative paths, starting a path definition with `"./"` defaults to the directory `<path_to_site_packages>/vai_lab/`
 
 In addition to path strings, the config file paths can be passed as lists or tuples of directory paths. Therefore, the above command/code are equivalent to
 
 ```bash
-aidesign --file ./examples xml_files user_feedback_demo.xml
+vai_lab --file ./examples xml_files user_feedback_demo.xml
 ```
 
 and 
 
 ```python
-import aidesign as ai
+import vai_lab as ai
 
 core = ai.Core()
 core.load_config_file(("./examples","xml_files","user_feedback_demo.xml"))
@@ -243,7 +240,7 @@ Current options:
  - `initial_data`: element for declaring directory for initial data
  - `relationships`: User defined names of modules this one is connected to
 
-Example from [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/canvas_demo.xml)
+Example from [canvas_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml)
 ```XML
 <Initialiser name="Init">
         <inputdata>
@@ -258,7 +255,7 @@ Example from [canvas_demo.xml](https://github.com/AaltoPML/ai-assisted-framework
 ### Loops
 Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.  
 
-See [basic_operation.py](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/basic_operation.xml) for full example.
+See [basic_operation.py](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/basic_operation.xml) for full example.
 Current options:
  - `type`: what variety of loop will this be: `for`, `while`, `manual`(user defined stopping condition on-the-fly)
  - `condition`: Termination condition for the loop. I'm not sure how to deal with the criteria for `while` loops
@@ -277,7 +274,7 @@ Required:
  - `plugin`: The type of plugin to be loaded into the module, along with associated options.
  - `relationships`: User-defined names of the `parent` modules which this module receives data from and `child` modules that this module passes data to.
 
-Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
+Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml):
 ```XML
      <Modelling name="Modelling">
         <relationships>
@@ -296,7 +293,7 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted
 
 Data is loaded from existing files in either the `Initialiser` or `Input Data` modules and is specified using the `inputdata` tags.
 
-Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/ai-assisted-framework-design/blob/main/aidesign/examples/xml_files/ridge_regression_demo.xml):
+Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/VAI-labs/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml):
 
 ```XML
 <inputdata>

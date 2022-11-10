@@ -1,5 +1,5 @@
-"""Adds aidesign root folder to pythonpath assuming this script is 2 levels down.
-Hacky patch For testing only, normally you'd have aidesign in your
+"""Adds vai_lab root folder to pythonpath assuming this script is 2 levels down.
+Hacky patch For testing only, normally you'd have vai_lab in your
 OS's PYTHONPATH"""
 from os import path
 

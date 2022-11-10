@@ -4,8 +4,9 @@ or start a GUI if no config file given.
 """
 
 import argparse
+from os.path import abspath
 
-import aidesign as ai
+import vai_lab as ai
 
 
 
@@ -15,7 +16,7 @@ def parse_args():
     """
 
     parser = argparse.ArgumentParser(
-                        prog = 'aidesign',
+                        prog = 'vai_lab',
                         description = 'AI-assisted virtual laboratories',
                         )
 
@@ -32,6 +33,15 @@ def parse_args():
 
     return args
 
+def _config_files_iter(core,files):
+    """Iterate over config files and load them into core
+    TODO: WIP - need a reset function to avoid instantiating core every time
+    """
+    if files:
+        for f in files:
+            core = ai.Core()
+            core.load_config_file(abspath(f))
+            core.run()
 
 
 def main():
@@ -44,6 +54,8 @@ def main():
 
     # Load config file if given
     if args.file:
+        for i in range(0,len(args.file)):
+            args.file[i] = abspath(args.file[i])
         core.load_config_file(args.file)
 
     # Run pipeline   
@@ -51,6 +63,7 @@ def main():
 
 
 
-if __name__=='__main__':
 
+if __name__=='__main__':
+    
     main()

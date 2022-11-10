@@ -35,4 +35,4 @@ minversion = "6.0"
 addopts = "-ra -q"
 
 [project.scripts]
-aidesign = "aidesign.run_pipeline:main"
+vai_lab = "vai_lab.run_pipeline:main"
