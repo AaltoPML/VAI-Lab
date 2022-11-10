@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [project.urls]
-Source = "https://github.com/AaltoPML/VAI-labs"
+Source = "https://github.com/AaltoPML/VAI-lab"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
