@@ -16,10 +16,13 @@ class Core:
         self.data = Data()
         self.loop_level: int = 0
         self.setup_complete: bool = False
+        
         self.status_logger:Dict = {}
+        self._debug = False
 
     def _launch(self):
         gui_app = GUI()
+        gui_app._debug = self._debug
         gui_app.set_avail_plugins(self._avail_plugins)
         gui_app.set_gui_as_startpage()
         gui_output = gui_app.launch()

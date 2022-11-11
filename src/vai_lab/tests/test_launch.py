@@ -7,4 +7,5 @@ core = ai.Core()
 #     "xml_files",
 #     'pybullet_env_example.xml'))
     
+core._debug = True
 core.run()

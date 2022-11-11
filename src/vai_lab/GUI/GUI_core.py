@@ -25,6 +25,7 @@ class GUI(tk.Tk):
         self._desired_ui_types = []
         self._top_ui_layer = None
         self._module_config = None
+        self._debug = False
         self.closed = False
         self.startpage = False
         self.output = {}
@@ -153,7 +154,10 @@ class GUI(tk.Tk):
 
         self._show_frame(self._top_ui_layer)
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
-        self.mainloop()
+        if not self._debug:
+            self.mainloop()
+        else:
+            self.closed = True
         return self.output
 
     def get_result(self):
