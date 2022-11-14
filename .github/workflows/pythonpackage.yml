@@ -27,7 +27,7 @@ jobs:
         run: |
           pip install pytest
           pip install pytest-cov
-          pytest tests --cov=.src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
+          pytest --cov=.src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 # #      - name: Typecheck with mypy
 # #        run: |
 # #          source $VENV
