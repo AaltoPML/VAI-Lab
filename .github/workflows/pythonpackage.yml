@@ -23,7 +23,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install .
-          sudo apt install xvfb -y
+      - name: Install virtual display
+        uses: GabrielBB/xvfb-action@v1.6
+        run: |
           Xvfb :0
           export DISPLAY=:0
       - name: Test with pytest
