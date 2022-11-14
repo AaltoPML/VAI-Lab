@@ -23,11 +23,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install .
+          sudo apt install xvfb -y
+          Xvfb :0
+          export DISPLAY=:0
+      - name: Setup virtual display
       - name: Test with pytest
         run: |
           pip install pytest
           pip install pytest-cov
-          export DISPLAY=:0
           pytest --cov=.src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 # #      - name: Typecheck with mypy
 # #        run: |
