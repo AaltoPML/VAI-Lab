@@ -1,6 +1,6 @@
 name: Test VAI-Lab
 
-on: [pull_request]
+on: 
   workflow_dispatch:
       inputs:
       logLevel:
