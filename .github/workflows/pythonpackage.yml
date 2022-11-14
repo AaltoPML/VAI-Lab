@@ -27,6 +27,7 @@ jobs:
         run: |
           pip install pytest
           pip install pytest-cov
+          export DISPLAY=:0
           pytest --cov=.src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 # #      - name: Typecheck with mypy
 # #        run: |
