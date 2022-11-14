@@ -26,7 +26,6 @@ jobs:
           sudo apt install xvfb -y
           Xvfb :0
           export DISPLAY=:0
-      - name: Setup virtual display
       - name: Test with pytest
         run: |
           pip install pytest
