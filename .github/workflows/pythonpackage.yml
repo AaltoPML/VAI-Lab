@@ -25,11 +25,10 @@ jobs:
           python -m pip install .
       - name: Install virtual display
         uses: GabrielBB/xvfb-action@v1.6
+      - name: Test with pytest
         run: |
           Xvfb :0
           export DISPLAY=:0
-      - name: Test with pytest
-        run: |
           pip install pytest
           pip install pytest-cov
           pytest --cov=.src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
