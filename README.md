@@ -1,3 +1,7 @@
+
+[![Test VAI-Lab](https://github.com/AaltoPML/VAI-Lab/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/AaltoPML/VAI-Lab/actions/workflows/pythonpackage.yml) [![PyPI Version](https://img.shields.io/pypi/v/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Python Versions](https://img.shields.io/pypi/pyversions/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Wheel](https://img.shields.io/pypi/wheel/vai-lab)](https://pypi.org/project/vai-lab/) [![License](https://img.shields.io/pypi/l/vai-lab)](https://pypi.org/project/vai-lab/)
+
+
 # Virtual Artificially Intelligent Laboratories (VAI-Lab)
 
 ![AIDBANNER](./imgs/VAIL_banner_image.png)
