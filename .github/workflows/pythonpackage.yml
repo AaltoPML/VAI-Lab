@@ -27,8 +27,6 @@ jobs:
         uses: GabrielBB/xvfb-action@v1.6
         with:
           run: |
-            Xvfb :0
-            export DISPLAY=:0
             pip install pytest
             pip install pytest-cov
             pytest --cov=.src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
