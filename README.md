@@ -19,7 +19,7 @@ VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science a
 
 # How to Contribute
 
-The aim of this framework is to be a community effort that will benefit the science, engineering and more.
+The aim of this framework is to be a community effort that will benefit science, engineering and more.
 
 We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
 
