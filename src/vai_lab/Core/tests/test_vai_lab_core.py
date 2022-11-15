@@ -2,14 +2,10 @@
 Tests for vai_lab.Core.vai_lab_core.py
 """
 
-from vai_lab.Core import vai_lab_core
+from vai_lab import Core
 
 def test_core_init():
 
-    core = vai_lab_core.Core()
+    core = Core()
 
     assert core
-
-
-
-

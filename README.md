@@ -1,3 +1,7 @@
+
+[![Test VAI-Lab](https://github.com/AaltoPML/VAI-Lab/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/AaltoPML/VAI-Lab/actions/workflows/pythonpackage.yml) [![PyPI Version](https://img.shields.io/pypi/v/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Python Versions](https://img.shields.io/pypi/pyversions/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Wheel](https://img.shields.io/pypi/wheel/vai-lab)](https://pypi.org/project/vai-lab/) [![License](https://img.shields.io/pypi/l/vai-lab)](https://pypi.org/project/vai-lab/)
+
+
 # Virtual Artificially Intelligent Laboratories (VAI-Lab)
 
 ![AIDBANNER](./imgs/VAIL_banner_image.png)
@@ -15,7 +19,7 @@ VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science a
 
 # How to Contribute
 
-The aim of this framework is to be a community effort that will benefit the science, engineering and more.
+The aim of this framework is to be a community effort that will benefit science, engineering and more.
 
 We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
 
