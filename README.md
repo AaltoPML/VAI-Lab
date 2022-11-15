@@ -4,7 +4,7 @@
 
 # Virtual Artificially Intelligent Laboratories (VAI-Lab)
 
-![AIDBANNER](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_banner_image.png)
+![VAILBANNER](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_banner_image.png)
 
 VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
 
@@ -32,22 +32,7 @@ We are actively seeking contribution in the form of users, testers, developers, 
 
 The VAI-Lab framework uses a modular, plugin-based architecture.
 
-```mermaid
-stateDiagram-v2
-
-    VAI_Lab --> Module1
-    VAI_Lab --> Module2
-    VAI_Lab --> Module_n
-    Module1 --> plugin_1.1
-    Module1 --> plugin_1.2
-    Module1 --> plugin_1.m
-    Module2 --> plugin_2.1
-    Module2 --> plugin_2.2
-    Module2 --> plugin_2.m
-    Module_n --> plugin_m.1
-    Module_n --> plugin_m.2
-    Module_n --> plugin_m.n
-```
+![PLUGINDIAGRAM](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_plugin_diagram.png)
 
 Each module represents a process (e.g. Modelling) and each plugin is a specific implementation of that process (e.g. linear regression).
 
