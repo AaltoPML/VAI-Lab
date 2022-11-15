@@ -4,7 +4,7 @@
 
 # Virtual Artificially Intelligent Laboratories (VAI-Lab)
 
-![AIDBANNER](./imgs/VAIL_banner_image.png)
+![AIDBANNER](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_banner_image.png)
 
 VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
 
@@ -192,7 +192,7 @@ core.run()
 
 The VAIL module allows to define a pipeline and the relations within by drawing a flowchart on a canvas. This canvas always starts with an `initialiser` module and an `output` module and allows to define any number of modules between these two. To do so, the user needs to define the modules and the relations between them.
 
-![PipelineLoop](./imgs/VAIL_GUI_screenshot.png)
+![PipelineLoop](https://github.com/AaltoPML/VAI-Lab/blob/main/imgs/VAIL_GUI_screenshot.png?raw=true)
 
 ### Modules
 At this moment, there are 7 possible modules for VAIL. `initialiser` and `output` are compulsory for the pipeline, the rest of them can be freely placed in the canvas. These are:
