@@ -23,7 +23,6 @@ description = "AI assisted Virtual Laboratory framework."
 
 dependencies = [
     "numpy >= 1.20.0",
-    "tk >= 0.1.0",
     "pillow >= 9.0.0", # package name of PIL
     "pandas >= 1.4.0",
     "sklearn >= 0.0",
