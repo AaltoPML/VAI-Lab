@@ -85,13 +85,13 @@ or using conda
 ```bash
 conda create --name vai_lab python=3.8 && conda activate vai_lab
 ```
-Upgrade pip and install flit
+Upgrade pip
 ```bash
-python3 -m pip install -U pip flit
+python3 -m pip install -U pip
 ```
 Install the package
 ```bash
-flit install
+python3 -m pip install .
 ```
 
 ## Running Unit Tests
