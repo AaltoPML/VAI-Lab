@@ -4,7 +4,7 @@
 
 # Virtual Artificially Intelligent Laboratories (VAI-Lab)
 
-![AIDBANNER](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_banner_image.png)
+![VAILBANNER](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_banner_image.png)
 
 VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science and design, where Artifical Intelligence assists the user in their goals.
 
@@ -23,31 +23,16 @@ The aim of this framework is to be a community effort that will benefit science,
 
 We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
 
- - If you have methods which can be added to the framework, [get in touch](#Get-in-Touch)!
- - If you think this framework will be useful to your research, [get in touch](#Get-in-Touch)!
- - If want to get invovled in development, [get in touch](#Get-in-Touch)!
- - Noticed a bug or other issue? [get in touch](#Get-in-Touch)!
+ - If you have methods which can be added to the framework, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - If you think this framework will be useful to your research, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - If want to get invovled in development, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - Noticed a bug or other issue? [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
 
 # How it Works
 
 The VAI-Lab framework uses a modular, plugin-based architecture.
 
-```mermaid
-stateDiagram-v2
-
-    VAI_Lab --> Module1
-    VAI_Lab --> Module2
-    VAI_Lab --> Module_n
-    Module1 --> plugin_1.1
-    Module1 --> plugin_1.2
-    Module1 --> plugin_1.m
-    Module2 --> plugin_2.1
-    Module2 --> plugin_2.2
-    Module2 --> plugin_2.m
-    Module_n --> plugin_m.1
-    Module_n --> plugin_m.2
-    Module_n --> plugin_m.n
-```
+![PLUGINDIAGRAM](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_plugin_diagram.png)
 
 Each module represents a process (e.g. Modelling) and each plugin is a specific implementation of that process (e.g. linear regression).
 
@@ -259,7 +244,7 @@ Example from [canvas_demo.xml](https://github.com/AaltoPML/VAI-lab/tree/main/src
 ### Loops
 Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.  
 
-See [basic_operation.py](https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/basic_operation.xml) for full example.
+See [basic_operation.xml](https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/basic_operation.xml) for full example.
 Current options:
  - `type`: what variety of loop will this be: `for`, `while`, `manual`(user defined stopping condition on-the-fly)
  - `condition`: Termination condition for the loop. I'm not sure how to deal with the criteria for `while` loops
