@@ -1,10 +1,9 @@
 import vai_lab as ai
 
-core = ai.Core()
-
-# core.load_config_file(
-#     ("./examples",
-#     "xml_files",
-#     'pybullet_env_example.xml'))
-    
-core.run()
+def test_launch():
+    """
+    Test launching GUI
+    """
+    core = ai.Core()    
+    core._debug = True
+    core.run()
