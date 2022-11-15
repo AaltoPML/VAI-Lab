@@ -1,6 +1,9 @@
 name: CI Tests
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
