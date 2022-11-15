@@ -23,10 +23,10 @@ The aim of this framework is to be a community effort that will benefit science,
 
 We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
 
- - If you have methods which can be added to the framework, [get in touch](#Get-in-Touch)!
- - If you think this framework will be useful to your research, [get in touch](#Get-in-Touch)!
- - If want to get invovled in development, [get in touch](#Get-in-Touch)!
- - Noticed a bug or other issue? [get in touch](#Get-in-Touch)!
+ - If you have methods which can be added to the framework, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - If you think this framework will be useful to your research, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - If want to get invovled in development, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - Noticed a bug or other issue? [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
 
 # How it Works
 
@@ -244,7 +244,7 @@ Example from [canvas_demo.xml](https://github.com/AaltoPML/VAI-lab/tree/main/src
 ### Loops
 Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.  
 
-See [basic_operation.py](https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/basic_operation.xml) for full example.
+See [basic_operation.xml](https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/basic_operation.xml) for full example.
 Current options:
  - `type`: what variety of loop will this be: `for`, `while`, `manual`(user defined stopping condition on-the-fly)
  - `condition`: Termination condition for the loop. I'm not sure how to deal with the criteria for `while` loops
