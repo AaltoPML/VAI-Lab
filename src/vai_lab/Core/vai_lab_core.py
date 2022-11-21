@@ -1,21 +1,23 @@
+import time
+from os.path import join
+from sys import exit
+from typing import Dict, List, Tuple, Union
+
 from vai_lab._import_helper import import_module
+from vai_lab._plugin_helpers import PluginSpecs
+from vai_lab._types import ModuleInterface, PluginSpecsInterface
+from vai_lab.Data.Data_core import Data
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab.GUI.GUI_core import GUI
-from vai_lab.Data.Data_core import Data
-from vai_lab._plugin_helpers import PluginSpecs
-from vai_lab._types import PluginSpecsInterface, ModuleInterface
-import time
-from sys import exit
 
-from os.path import join
-from typing import Dict, Tuple, Union, List
+
 class Core:
     def __init__(self) -> None:
         self._xml_handler = XML_handler()
         self._avail_plugins: PluginSpecsInterface = PluginSpecs()
         self.data = Data()
         self.loop_level: int = 0
-        self.setup_complete: bool = False
+        self._initialised: bool = False
         
         self.status_logger:Dict = {}
         self._debug = False
@@ -39,7 +41,7 @@ class Core:
         else:
             filedir = str(filename)
         self._xml_handler.load_XML(filedir)
-        self.setup_complete = True
+        self._initialised = True
 
     def _load_data(self) -> None:
         init_data_fn = self._xml_handler.data_to_load
@@ -148,11 +150,14 @@ class Core:
                     print('Pipeline terminated')
                     exit()
 
+    def _initialise(self):
+        print("Loading GUI.")
+        print("To load existing config, run core.load_config_file(<path_to_file>)")
+        self._launch()
+
     def run(self):
-        if not self.setup_complete:
-            print("No pipeline specified. Running GUI.")
-            print("To load existing config, run core.load_config_file(<path_to_file>)")
-            self._launch()
+        if not self._initialised:
+            self._initialise()
         print("Running pipeline...")
         self._load_data()
         
