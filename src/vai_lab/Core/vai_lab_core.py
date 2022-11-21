@@ -150,14 +150,15 @@ class Core:
                     print('Pipeline terminated')
                     exit()
 
-    def _initialise(self):
-        print("Loading GUI.")
+    def _initialise_with_gui(self):
+        """Launches GUI when no XML file is specified"""
+        print("Loading GUI")
         print("To load existing config, run core.load_config_file(<path_to_file>)")
         self._launch()
 
     def run(self):
         if not self._initialised:
-            self._initialise()
+            self._initialise_with_gui()
         print("Running pipeline...")
         self._load_data()
         
