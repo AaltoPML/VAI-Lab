@@ -85,7 +85,7 @@ class progressTracker(tk.Frame):
             height = 3, width = 15, font = self.controller.pages_font, 
             command = self.terminate).grid(column = 0, row = 26, sticky="news", pady=(0,10))
         
-        self.controller._append_to_output('close', False)
+        self.controller._append_to_output('terminate', False)
         self.save_path = ''
         self.saved = True
         frame1.grid(column=0, row=0, sticky="nsew")
@@ -114,7 +114,7 @@ class progressTracker(tk.Frame):
 
     def terminate(self):
         """ Terminates window and pipeline. """
-        self.controller._append_to_output('close', True)
+        self.controller._append_to_output('terminate', True)
         self.check_quit()
         
     def select(self, x: float, y:float):

@@ -1,24 +1,24 @@
 import time
-from os.path import join
 from sys import exit
+from os.path import join
 from typing import Dict, List, Tuple, Union
 
 from vai_lab._import_helper import import_module
 from vai_lab._plugin_helpers import PluginSpecs
 from vai_lab._types import ModuleInterface, PluginSpecsInterface
+from vai_lab.GUI.GUI_core import GUI
 from vai_lab.Data.Data_core import Data
 from vai_lab.Data.xml_handler import XML_handler
-from vai_lab.GUI.GUI_core import GUI
 
 
 class Core:
     def __init__(self) -> None:
+        self.data = Data()
         self._xml_handler = XML_handler()
         self._avail_plugins: PluginSpecsInterface = PluginSpecs()
-        self.data = Data()
+        
         self.loop_level: int = 0
         self._initialised: bool = False
-        
         self.status_logger:Dict = {}
         self._debug = False
 
@@ -36,6 +36,9 @@ class Core:
             self._load_data()
 
     def load_config_file(self, filename: Union[str,List,Tuple]):
+        """Loads XML file into XML_handler object.
+        Parses filename first, if needed.
+        """
         if type(filename) == list or type(filename) == tuple:
             filedir:str = join(*filename)
         else:
@@ -44,6 +47,7 @@ class Core:
         self._initialised = True
 
     def _load_data(self) -> None:
+        """Loads data from XML file into Data object"""
         init_data_fn = self._xml_handler.data_to_load
         self.data.import_data_from_config(init_data_fn)
 
@@ -69,8 +73,7 @@ class Core:
         try:
             print("\t"*self.loop_level
                         + specs["type"]
-                        + " loop: "
-                        + "\"{}\"".format(specs["name"])
+                        + " loop: \"{}\"".format(specs["name"])
                         + " starting...")
             self.loop_level += 1
             getattr(self, "_execute_{}_loop".format(specs["type"]))(specs)
@@ -88,7 +91,7 @@ class Core:
         """Placeholder: Will parse the Output module when ready"""
         pass
 
-    def _parse_condition(self, condition):
+    def _parse_loop_condition(self, condition):
         try:
             condition = int(condition)
             
@@ -100,7 +103,7 @@ class Core:
                 "Other formats in in development. Only ranged for loops are working currently")
 
     def _execute_for_loop(self, specs):
-        condition = self._parse_condition(specs["condition"])
+        condition = self._parse_loop_condition(specs["condition"])
         for c in condition:
             self._execute(specs)
 
@@ -143,8 +146,9 @@ class Core:
             self._progress_finish(specs[key])
 
             if specs[key]["class"] == 'module':
-                term = self._runTracker()
-                if not term['close']:
+                _tracker = self._runTracker()
+
+                if not _tracker['terminate']:
                     self.load_config_file(self._xml_handler.filename)
                 else:
                     print('Pipeline terminated')
