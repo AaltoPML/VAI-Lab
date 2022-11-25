@@ -185,8 +185,8 @@ class progressTracker(tk.Frame):
             tag = ('n0',)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
         # Check module status
-        if 'start' in self.controller.status[boxName]:
-            if 'finish' in self.controller.status[boxName]:
+        if 'start' in self.controller._status[boxName]:
+            if 'finish' in self.controller._status[boxName]:
                 colour = '#46da63'
             else:
                 colour = '#dbaa21'
@@ -214,9 +214,9 @@ class progressTracker(tk.Frame):
             justify = tk.CENTER)
         
         CanvasTooltip(self.canvas, self.canvas.find_withtag('p'+str(self.modules))[0], 
-                           text = 'Model progress status:\n'+self.pretty_status(self.controller.status[boxName])) # Link box
+                           text = 'Model progress status:\n'+self.pretty_status(self.controller._status[boxName])) # Link box
         CanvasTooltip(self.canvas, self.canvas.find_withtag('t'+str(self.modules))[0], 
-                           text = 'Model progress status:\n'+self.pretty_status(self.controller.status[boxName])) # Link text
+                           text = 'Model progress status:\n'+self.pretty_status(self.controller._status[boxName])) # Link text
         
         if not out:
             self.canvas.create_oval(
