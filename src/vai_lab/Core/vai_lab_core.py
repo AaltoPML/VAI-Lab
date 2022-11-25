@@ -81,7 +81,7 @@ class Core:
         except KeyError:
             print("\nError: Invalid Loop Type.")
             print("Loop \"{0}\" with type \"{1}\" not recognised".format(
-                specs.key, specs["type"]))
+                specs["name"], specs["type"]))
 
     def _execute_entry_point(self, specs):
         """Placeholder: Will parse the initialiser module when ready"""
