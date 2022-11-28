@@ -515,6 +515,17 @@ class progressTracker(tk.Frame):
         else:
             self.finishButton.focus()
 
+    def isKey(self, d, k):
+        """ Checks if the elements of a dictionary hava a specific key 
+        : param d: dict type.
+        : param k: string type.        
+        """
+        for key in [key for key, val in d.items() if type(val) == dict]:
+            if k not in d[key].keys():
+                print('There are no ' + k + ' for at least one module.')
+                return False
+        return True
+    
     def upload(self):
         """ Opens the XML file that was previously uploaded and places the 
         modules, loops and connections in the canvas."""
@@ -527,35 +538,40 @@ class progressTracker(tk.Frame):
         self.s.load_XML(filename)
         # self.s._print_pretty(self.s.loaded_modules)
         modules = self.s.loaded_modules
-        modout = modules['Output']
-        # del modules['Initialiser'], modules['Output'] # They are generated when resetting
-        self.disp_mod = []
-        self.id_mod = []
+        if self.isKey(modules, 'coordinates'):
+            modout = modules['Output']
+            # del modules['Initialiser'], modules['Output'] # They are generated when resetting
+            self.disp_mod = []
+            self.id_mod = []
 
-        # Place the modules
-        self.place_modules(modules)
-        connect = list(modout['coordinates'][2].keys())
-        for p, parent in enumerate(modout['parents']):
-            parent_id = self.id_mod[np.where(
-                np.array(self.disp_mod) == parent)[0][0]]
-            out, ins = modout['coordinates'][2][connect[p]].split('-')
-            xout, yout, _, _ = self.canvas.coords(out[0]+str(parent_id))
-            xins, yins, _, _ = self.canvas.coords(ins[0]+str(1))
-            self.canvas.create_line(
-                xout + self.cr,
-                yout + self.cr,
-                xins + self.cr,
-                yins + self.cr,
-                fill="red",
-                arrow=tk.LAST,
-                tags=('o'+str(parent_id),
-                      'o'+str(1), modout['coordinates'][2][connect[p]]))
-            self.out_data.iloc[int(parent_id)][1] = 1
-            self.connections[1][
-                int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
-        self.m = self.id_mod[2]
-        x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
-        # self.select(x0, y0)
+            # Place the modules
+            self.place_modules(modules)
+            connect = list(modout['coordinates'][2].keys())
+            for p, parent in enumerate(modout['parents']):
+                parent_id = self.id_mod[np.where(
+                    np.array(self.disp_mod) == parent)[0][0]]
+                out, ins = modout['coordinates'][2][connect[p]].split('-')
+                xout, yout, _, _ = self.canvas.coords(out[0]+str(parent_id))
+                xins, yins, _, _ = self.canvas.coords(ins[0]+str(1))
+                self.canvas.create_line(
+                    xout + self.cr,
+                    yout + self.cr,
+                    xins + self.cr,
+                    yins + self.cr,
+                    fill="red",
+                    arrow=tk.LAST,
+                    tags=('o'+str(parent_id),
+                        'o'+str(1), modout['coordinates'][2][connect[p]]))
+                self.out_data.iloc[int(parent_id)][1] = 1
+                self.connections[1][
+                    int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
+            self.m = self.id_mod[2]
+            x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
+            # self.select(x0, y0)
+
+        else: # There are no coordinates for some modules.
+            self.canvas.pack_forget()
+
 
     def place_modules(self, modules: dict):
         """Places the modules in the dictionary in the canvas.
