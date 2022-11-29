@@ -39,14 +39,14 @@ class progressTracker(tk.Frame):
                 'VAILabsIcon.ico'))))
         self.grid_columnconfigure(0, weight=1)
 
-        frame1 = tk.Frame(self, bg=self.bg)
-        self.frame2 = tk.Frame(self, bg=self.bg)
+        self.frame1 = tk.Frame(self, bg=self.bg)
+        frame2 = tk.Frame(self, bg=self.bg)
         frame3 = tk.Frame(self, bg=self.bg)
         self.frame4 = tk.Frame(self, bg=self.bg)
 
         # Create canvas
         self.width, self.height = 700, 700
-        self.canvas = tk.Canvas(frame1, width=self.width,
+        self.canvas = tk.Canvas(self.frame1, width=self.width,
                                 height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
@@ -64,7 +64,7 @@ class progressTracker(tk.Frame):
 
         sec = 5
         self.click = False
-        self.my_label = tk.Label(self.frame2, 
+        self.my_label = tk.Label(frame2, 
                     text = 
                     'This window will get\nclosed after '+str(sec)+' seconds\nunless you click on the canvas.',
                     pady= 10,
@@ -86,8 +86,8 @@ class progressTracker(tk.Frame):
         self.controller._append_to_output('terminate', False)
         self.save_path = ''
         self.saved = True
-        frame1.grid(column=0, row=0, sticky="nsew")
-        self.frame2.grid(column=1, row=0, sticky="new")
+        self.frame1.grid(column=0, row=0, sticky="nsew")
+        frame2.grid(column=1, row=0, sticky="new")
         frame3.grid(column=0, row=1, sticky="swe")
         self.frame4.grid(column=1, row=1, sticky="sew")
         
@@ -303,7 +303,7 @@ class progressTracker(tk.Frame):
 
             frame2 = tk.Frame(self.newWindow, bg='green')
             self.r = 1
-            self.create_treeView(frame2)
+            self.create_treeView(frame2, ['Name', 'Type', 'Value'])
             self.fill_treeview(frame2, self.req_settings, self.opt_settings)
             frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
 
@@ -323,7 +323,7 @@ class progressTracker(tk.Frame):
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
-    def create_treeView(self, tree_frame):
+    def create_treeView(self, tree_frame, columns_names):
         """ Function to create a new tree view in the given frame
 
         Parameters
@@ -347,7 +347,6 @@ class progressTracker(tk.Frame):
         tree_scrollx.config(command=self.tree.xview)
         tree_scrolly.config(command=self.tree.yview)
 
-        columns_names = ['Name', 'Type', 'Value']
         self.tree['columns'] = columns_names
 
         # Format columns
@@ -538,7 +537,6 @@ class progressTracker(tk.Frame):
 
         if all(self.isCoords):
             modout = modules['Output']
-            # del modules['Initialiser'], modules['Output'] # They are generated when resetting
             self.disp_mod = []
             self.id_mod = []
 
@@ -564,11 +562,22 @@ class progressTracker(tk.Frame):
                 self.connections[1][
                     int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
             self.m = self.id_mod[2]
-            x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
-            # self.select(x0, y0)
 
         else: # There are no coordinates for some modules.
             self.canvas.pack_forget()
+            frame_tree = tk.Frame(self.frame1, bg='green')
+            self.create_treeView(frame_tree, ['Module'])
+            self.r=0
+            for module in self.modules_names:
+                self.tree.insert(parent='', index='end', iid=str(self.r), text='',
+                                    values=tuple([module]), tags=('mod',))
+                self.r+=1
+
+            frame_tree.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+
+            frame_tree.grid_rowconfigure(tuple(range(len(self.modules_names))), weight=1)
+            frame_tree.grid_columnconfigure(tuple(range(2)), weight=1)
+            self.tree.bind('<Button-1>', self.on_click)
 
 
     def place_modules(self, modules: dict):
@@ -639,6 +648,41 @@ class progressTracker(tk.Frame):
                             arrow=tk.LAST,
                             tags=('o'+str(parent_id),
                                   'o'+str(self.id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
+                        self.out_data.iloc[int(parent_id)][int(
+                            self.id_mod[-1])] = 1
+                        self.connections[int(self.id_mod[-1])][
+                            int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(self.id_mod[-1])
+                    else:
+                        self.loops[-1]['mod'].append(key)
+                self.disp_mod.append(key)
+
+    def save_modules_info(self, modules: dict):
+        """Saves the information of the modules.
+        :param modules: dict type of modules in the pipeline.
+        """
+
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            if modules[key]['class'] == 'loop':
+                # Extracts numbers from string
+                l = int(
+                    ''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
+
+                self.loops.append({'type': modules[key]['type'],
+                                   'condition': modules[key]['condition'],
+                                   'mod': []})
+                self.place_modules(modules[key])
+            else:
+                # Display module
+                self.id_mod.append(modules[key]['coordinates'][1])
+                connect = list(modules[key]['coordinates'][2].keys())
+
+                # Connect modules
+                for p, parent in enumerate(modules[key]['parents']):
+                    if not (parent[:4] == 'loop'):
+                        parent_id = self.id_mod[np.where(
+                            np.array(self.disp_mod) == parent)[0][0]]
+                        out, ins = modules[key]['coordinates'][2][connect[p]].split(
+                            '-')
                         self.out_data.iloc[int(parent_id)][int(
                             self.id_mod[-1])] = 1
                         self.connections[int(self.id_mod[-1])][
