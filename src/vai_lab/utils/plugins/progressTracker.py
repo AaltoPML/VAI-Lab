@@ -28,10 +28,9 @@ class progressTracker(tk.Frame):
         super().__init__(parent, bg=parent['bg'])
         self.bg = parent['bg']
         self.controller = controller
-        self.s = XML_handler()
+        self.xml_handler = XML_handler()
         self.controller.title('Progress Tracker')
         
-        script_dir = os.path.dirname(__file__)
         self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
             file=os.path.join(os.path.join(
                 get_lib_parent_dir(),
@@ -97,10 +96,6 @@ class progressTracker(tk.Frame):
         self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
 
         self.controller.after(sec*1000,lambda:self.check_click())
-
-    def class_list(self,value):
-        """ Temporary fix """
-        return value
 
     def on_click(self, event):
         """ Passes the mouse click coordinates to the select function."""
@@ -268,8 +263,8 @@ class progressTracker(tk.Frame):
         of the selected plugin."""
         
         self.module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
-        self.plugin = self.s.loaded_modules[self.module]['plugin']['plugin_name']
-        module_type = self.s.loaded_modules[self.module]['module_type']
+        self.plugin = self.xml_handler.loaded_modules[self.module]['plugin']['plugin_name']
+        module_type = self.xml_handler.loaded_modules[self.module]['module_type']
         ps = PluginSpecs()
         self.opt_settings = ps.optional_settings[module_type][self.plugin]
         self.req_settings = ps.required_settings[module_type][self.plugin]
@@ -535,10 +530,9 @@ class progressTracker(tk.Frame):
 
         self.reset()
 
-        self.s = XML_handler()
-        self.s.load_XML(filename)
-        # self.s._print_pretty(self.s.loaded_modules)
-        modules = self.s.loaded_modules
+        self.xml_handler = XML_handler()
+        self.xml_handler.load_XML(filename)
+        modules = self.xml_handler.loaded_modules
         self.modules_names = []
         self.isCoords = []
         self.isKey(modules, 'coordinates')
