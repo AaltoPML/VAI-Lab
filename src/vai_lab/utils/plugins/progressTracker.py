@@ -6,7 +6,6 @@ from tkinter import ttk
 import numpy as np
 import pandas as pd
 from PIL import Image, ImageTk
-from vai_lab._plugin_helpers import PluginSpecs
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._import_helper import get_lib_parent_dir
 
@@ -265,9 +264,9 @@ class progressTracker(tk.Frame):
         self.module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         self.plugin = self.xml_handler.loaded_modules[self.module]['plugin']['plugin_name']
         module_type = self.xml_handler.loaded_modules[self.module]['module_type']
-        ps = PluginSpecs()
-        self.opt_settings = ps.optional_settings[module_type][self.plugin]
-        self.req_settings = ps.required_settings[module_type][self.plugin]
+        
+        self.opt_settings = self.controller._available_plugins.optional_settings[module_type][self.plugin]
+        self.req_settings = self.controller._available_plugins.required_settings[module_type][self.plugin]
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow!= None):
                 self.newWindow.destroy()
