@@ -47,8 +47,8 @@ class GUI(tk.Tk):
     def set_gui_as_startpage(self):
         self.startpage = True
         self._load_plugin("main")
-        self.s = XML_handler()
-        self.s.new_config_file()
+        self.xml_handler = XML_handler()
+        self.xml_handler.new_config_file()
         
     def set_gui(self, status):
         self.startpage = True
