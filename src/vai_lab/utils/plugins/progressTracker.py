@@ -533,8 +533,6 @@ class progressTracker(tk.Frame):
 
         filename = self.controller.output["xml_filename"]
 
-        self.reset()
-
         self.s = XML_handler()
         self.s.load_XML(filename)
         # self.s._print_pretty(self.s.loaded_modules)
@@ -544,10 +542,13 @@ class progressTracker(tk.Frame):
         self.isKey(modules, 'coordinates')
 
         if all(self.isCoords):
+
+            self.reset()
+
             modout = modules['Output']
-            # del modules['Initialiser'], modules['Output'] # They are generated when resetting
-            self.disp_mod = []
-            self.id_mod = []
+            del modules['Initialiser'], modules['Output'] # They are generated when resetting
+            self.disp_mod = ['Initialiser', 'Output']
+            self.id_mod = [0, 1]
 
             # Place the modules
             self.place_modules(modules)
@@ -677,8 +678,8 @@ class progressTracker(tk.Frame):
         self.module_list = []
         self.module_names = []
 
-        # self.add_module('Initialiser', self.width/2, self.h, ini=True)
-        # self.add_module('Output', self.width/2, self.height - self.h, out=True)
+        self.add_module('Initialiser', self.width/2, self.h, ini=True)
+        self.add_module('Output', self.width/2, self.height - self.h, out=True)
 
         self.draw = False
         self.loops = []
