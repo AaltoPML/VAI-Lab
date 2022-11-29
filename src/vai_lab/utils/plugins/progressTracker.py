@@ -40,14 +40,14 @@ class progressTracker(tk.Frame):
                 'VAILabsIcon.ico'))))
         self.grid_columnconfigure(0, weight=1)
 
-        self.frame1 = tk.Frame(self, bg=self.bg)
+        frame1 = tk.Frame(self, bg=self.bg)
         self.frame2 = tk.Frame(self, bg=self.bg)
         frame3 = tk.Frame(self, bg=self.bg)
         self.frame4 = tk.Frame(self, bg=self.bg)
 
         # Create canvas
         self.width, self.height = 700, 700
-        self.canvas = tk.Canvas(self.frame1, width=self.width,
+        self.canvas = tk.Canvas(frame1, width=self.width,
                                 height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
@@ -87,7 +87,7 @@ class progressTracker(tk.Frame):
         self.controller._append_to_output('terminate', False)
         self.save_path = ''
         self.saved = True
-        self.frame1.grid(column=0, row=0, sticky="nsew")
+        frame1.grid(column=0, row=0, sticky="nsew")
         self.frame2.grid(column=1, row=0, sticky="new")
         frame3.grid(column=0, row=1, sticky="swe")
         self.frame4.grid(column=1, row=1, sticky="sew")
@@ -423,7 +423,7 @@ class progressTracker(tk.Frame):
         self.entry.destroy()
         self.saved = False
 
-    def fill_treeview(self, frame, req_settings = {}, opt_settings = {}, parent = ''):
+    def fill_treeview(self, frame, req_settings, opt_settings, parent = ''):
         """ Adds an entry for each setting. Displays it in the specified row.
         :param req_settings: dict type of plugin required setting options
         :param opt_settings: dict type of plugin optional setting options
@@ -538,13 +538,10 @@ class progressTracker(tk.Frame):
         self.isKey(modules, 'coordinates')
 
         if all(self.isCoords):
-
-            self.reset()
-
             modout = modules['Output']
-            del modules['Initialiser'], modules['Output'] # They are generated when resetting
-            self.disp_mod = ['Initialiser', 'Output']
-            self.id_mod = [0, 1]
+            # del modules['Initialiser'], modules['Output'] # They are generated when resetting
+            self.disp_mod = []
+            self.id_mod = []
 
             # Place the modules
             self.place_modules(modules)
@@ -572,16 +569,7 @@ class progressTracker(tk.Frame):
             # self.select(x0, y0)
 
         else: # There are no coordinates for some modules.
-
             self.canvas.pack_forget()
-            frame_tree = tk.Frame(self.frame2, bg='green')
-            self.create_treeView(frame_tree)
-            self.fill_treeview(frame_tree, self.req_settings, self.opt_settings)
-            frame_tree.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
-
-            frame_tree.grid_rowconfigure(tuple(range()), weight=1)
-            frame_tree.grid_columnconfigure(tuple(range(2)), weight=1)
-
 
 
     def place_modules(self, modules: dict):
@@ -674,8 +662,8 @@ class progressTracker(tk.Frame):
         self.module_list = []
         self.module_names = []
 
-        self.add_module('Initialiser', self.width/2, self.h, ini=True)
-        self.add_module('Output', self.width/2, self.height - self.h, out=True)
+        # self.add_module('Initialiser', self.width/2, self.h, ini=True)
+        # self.add_module('Output', self.width/2, self.height - self.h, out=True)
 
         self.draw = False
         self.loops = []
