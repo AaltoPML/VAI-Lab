@@ -70,15 +70,16 @@ class Core:
         self.data = mod.get_result()
 
     def _execute_loop(self, specs):
-        try:
+        if  hasattr(self,"_execute_{}_loop".format(specs["type"])):
             print("\t"*self.loop_level
+                        + "Starting "
                         + specs["type"]
                         + " loop: \"{}\"".format(specs["name"])
-                        + " starting...")
+                        + " ...")
             self.loop_level += 1
             getattr(self, "_execute_{}_loop".format(specs["type"]))(specs)
             self.loop_level -= 1
-        except KeyError:
+        else:
             print("\nError: Invalid Loop Type.")
             print("Loop \"{0}\" with type \"{1}\" not recognised".format(
                 specs["name"], specs["type"]))
