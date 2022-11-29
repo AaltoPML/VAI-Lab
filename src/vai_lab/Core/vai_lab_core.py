@@ -64,7 +64,7 @@ class Core:
         mod.set_options(specs)
         print("\t"*self.loop_level
                 + specs["module_type"]
-                + " module: \"{}\"".format(specs["name"])
+                + " module: \"{}\" ".format(specs["name"])
                 + "processing..."
               )
         mod.launch()
