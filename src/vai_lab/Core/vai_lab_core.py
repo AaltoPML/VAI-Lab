@@ -107,11 +107,12 @@ class Core:
         for c in condition:
             self._execute(specs)
 
-    def _runTracker(self):
+    def _show_updated_tracker(self):
         self.gui_app = GUI()
         self.gui_app.set_avail_plugins(self._avail_plugins)
-        self.gui_app.set_gui(self.status_logger)
+        self.gui_app.set_gui_as_progress_tracker(self.status_logger)
         self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
+        self.gui_app._load_plugin("progressTracker")
         return self.gui_app.launch()
     
     def _init_status(self, modules):
@@ -126,7 +127,6 @@ class Core:
 
     def _progress_finish(self, module):
         self._add_status(module, 'finish', self._t)
-
 
     @property
     def _t(self):
@@ -146,10 +146,11 @@ class Core:
             self._progress_finish(specs[key])
 
             if specs[key]["class"] == 'module':
-                _tracker = self._runTracker()
+                _tracker = self._show_updated_tracker()
 
                 if not _tracker['terminate']:
                     self.load_config_file(self._xml_handler.filename)
+                    # pass
                 else:
                     print('Pipeline terminated')
                     exit()
