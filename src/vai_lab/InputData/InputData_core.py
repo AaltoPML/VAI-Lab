@@ -39,3 +39,7 @@ class InputData(Data):
 
     def get_result(self):
         return self._data_in
+
+    def _sort_order_manual(self):
+        # Read XML, get order of files/folders if multiple
+        pass
