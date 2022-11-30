@@ -254,7 +254,7 @@ class progressTracker(tk.Frame):
         self.canvas_startxy.append((x, y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
-        self.module_list.append(boxName)
+        # self.module_list.append(boxName)
         self.modules += 1
         
     def optionsWindow(self):
@@ -374,7 +374,6 @@ class progressTracker(tk.Frame):
         """ Executed when a row of the treeview is double clicked.
         Opens an entry box to edit a cell. """
 
-        # ii = self.notebook.index(self.notebook.select())
         self.treerow = self.tree.identify_row(event.y)
         self.treecol = self.tree.identify_column(event.x)
         tags = self.tree.item(self.treerow)["tags"]
@@ -508,17 +507,24 @@ class progressTracker(tk.Frame):
         else:
             self.finishButton.focus()
 
-    def isKey(self, d, k):
+    def isKey(self, d, k, key_list, cond_list):
         """ Checks if the elements of a dictionary hava a specific key 
         : param d: dict type.
-        : param k: string type.        
+        : param k: string type.      
+        : param key_list: list type with keys that are not loop.
+        : param cond_list: list type with whether k is in a module in key_list.
         """
         for key in [key for key, val in d.items() if type(val) == dict]:
             if d[key]['class'] == 'loop':
-                self.isKey(d[key],k)
+                self.isKey(d[key],k,key_list,cond_list)
             else:
-                self.modules_names.append(key)
-                self.isCoords.append(k in d[key].keys())
+                if d[key]['class'].lower() == 'entry_point':
+                    self.init_module = key
+                elif d[key]['class'].lower()  == 'exit_point':
+                    self.out_module = key
+                key_list.append(key)
+                cond_list.append(k in d[key].keys())
+        return key_list, cond_list
     
     def upload(self):
         """ Opens the XML file that was previously uploaded and places the 
@@ -531,17 +537,23 @@ class progressTracker(tk.Frame):
         self.xml_handler = XML_handler()
         self.xml_handler.load_XML(filename)
         modules = self.xml_handler.loaded_modules
-        self.modules_names = []
-        self.isCoords = []
-        self.isKey(modules, 'coordinates')
+        self.module_list, self.isCoords = self.isKey(modules, 'coordinates', [], [])
 
         if all(self.isCoords):
-            modout = modules['Output']
-            self.disp_mod = []
-            self.id_mod = []
+
+            # Place Initialiser and Output
+            self.add_module(self.init_module, self.width/2, self.h, ini=True)
+            self.add_module(self.out_module, self.width/2, self.height - self.h, out=True)
+
+            modout = modules[self.out_module]
+            del modules[self.init_module], modules[self.out_module] # They are generated when resetting
+            self.disp_mod = [self.init_module, self.out_module]
+            self.id_mod = [0, 1]
 
             # Place the modules
             self.place_modules(modules)
+
+            #Output module
             connect = list(modout['coordinates'][2].keys())
             for p, parent in enumerate(modout['parents']):
                 parent_id = self.id_mod[np.where(
@@ -564,21 +576,45 @@ class progressTracker(tk.Frame):
             self.m = self.id_mod[2]
 
         else: # There are no coordinates for some modules.
+            self.id_mod = list(range(len(self.module_list)))
             self.canvas.pack_forget()
             frame_tree = tk.Frame(self.frame1, bg='green')
             self.create_treeView(frame_tree, ['Module'])
             self.r=0
-            for module in self.modules_names:
+            for module in self.module_list:
                 self.tree.insert(parent='', index='end', iid=str(self.r), text='',
                                     values=tuple([module]), tags=('mod',))
                 self.r+=1
 
             frame_tree.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
 
-            frame_tree.grid_rowconfigure(tuple(range(len(self.modules_names))), weight=1)
+            frame_tree.grid_rowconfigure(tuple(range(len(self.module_list))), weight=1)
             frame_tree.grid_columnconfigure(tuple(range(2)), weight=1)
-            self.tree.bind('<Button-1>', self.on_click)
+            self.tree.bind('<Button-1>', self.on_click_noCanvas)
 
+    def on_click_noCanvas(self, event):
+        """ Passes the mouse click coordinates to the select function when there is no Canvas."""
+        self.click = True
+        self.select_noCanvas(event.x, event.y)
+        
+    def select_noCanvas(self, x: float, y:float):
+        """ 
+        Selects the module at the mouse location and updates the associated 
+        plugins as well as the colours. 
+        Blue means no plugin has been specified,
+        Orange means the module is selected.
+        Green means the plugin for this module is already set. 
+        :param x: float type of module x coordinate
+        :param y: float type of module y coordinate
+        """
+        self.treerow = self.tree.identify_row(y)
+        self.treecol = self.tree.identify_column(x)
+        tags = self.tree.item(self.treerow)["tags"]
+
+        if len(tags) > 0:
+            self.m = int(self.treerow)
+            if int(self.m) > 1:
+                self.optionsWindow()
 
     def place_modules(self, modules: dict):
         """Places the modules in the dictionary in the canvas.
@@ -702,7 +738,6 @@ class progressTracker(tk.Frame):
         self.out_data = pd.DataFrame()
         self.connections = {}
         self.modules = 0
-        self.module_list = []
         self.module_names = []
 
         # self.add_module('Initialiser', self.width/2, self.h, ini=True)
