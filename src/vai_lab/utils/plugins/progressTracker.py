@@ -30,13 +30,14 @@ class progressTracker(tk.Frame):
         self.xml_handler = XML_handler()
         self.controller.title('Progress Tracker')
         
-        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
-            file=os.path.join(os.path.join(
-                get_lib_parent_dir(),
-                'utils',
-                'resources',
-                'Assets',
-                'VAILabsIcon.ico'))))
+        if not self.controller._debug:
+            self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
+                file=os.path.join(os.path.join(
+                    get_lib_parent_dir(),
+                    'utils',
+                    'resources',
+                    'Assets',
+                    'VAILabsIcon.ico'))))
         self.grid_columnconfigure(0, weight=1)
 
         self.frame1 = tk.Frame(self, bg=self.bg)

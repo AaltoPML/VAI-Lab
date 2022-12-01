@@ -22,7 +22,6 @@ class PyBulletEnv(EnvironmentPluginT):
 
     def __init__(self) -> None:
         super().__init__(globals())
-        self.connection_mode = p.GUI
         self.model_ids: Dict = {}
 
     def set_gui(self, use_gui: bool = True):

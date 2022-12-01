@@ -111,6 +111,7 @@ class Core:
 
     def _runTracker(self):
         self.gui_app = GUI()
+        self.gui_app._debug = self._debug
         self.gui_app.set_avail_plugins(self._avail_plugins)
         self.gui_app.set_gui(self.status_logger)
         self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
