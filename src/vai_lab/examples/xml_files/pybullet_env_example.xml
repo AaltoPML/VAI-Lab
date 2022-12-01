@@ -39,7 +39,7 @@
     <Output name="Output">
         <plugin type="" />
         <relationships>
-            <parent name="Modelling" />
+            <parent name="MyEnv" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{2:'d2-u1'}]
