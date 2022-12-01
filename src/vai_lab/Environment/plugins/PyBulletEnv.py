@@ -25,6 +25,8 @@ class PyBulletEnv(EnvironmentPluginT):
         self.model_ids: Dict = {}
 
     def set_gui(self, use_gui: bool = True):
+        if type(use_gui) == str:
+            use_gui = eval(use_gui)
         if use_gui:
             self.connection_mode = p.GUI  # Use pybullet GUI
         else:

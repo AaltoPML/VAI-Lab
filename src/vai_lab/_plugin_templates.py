@@ -239,4 +239,4 @@ class EnvironmentPluginT(PluginTemplate, ABC):
     def configure(self, config: dict):
         """Extended from PluginTemplate.configure"""
         super().configure(config)
-        self.set_gui(self._config["options"]["headless"])
+        self.set_gui(self._config["options"]["usegui"])

@@ -34,6 +34,21 @@ class aidCanvas(tk.Frame):
         self.bg = parent['bg']
         self.controller = controller
 
+        self.canvas_startxy: List[Tuple] = []
+        self.out_data = pd.DataFrame()
+        self.connections: DictT = {}
+        self.modules = 0
+        self.module_list: List[str] = []
+        self.module_names: List[str] = []
+
+        # Create module
+        self.w, self.h = 100, 50
+        self.cr = 4
+
+        if not self.controller._debug:
+            self._setup_frame()
+
+    def _setup_frame(self):
         script_dir = get_lib_parent_dir()
         self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
             file=os.path.join(os.path.join(
@@ -68,17 +83,6 @@ class aidCanvas(tk.Frame):
         # self.canvas = ResizingCanvas(frame1, width=self.width,
         #     height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
-
-        self.canvas_startxy: List[Tuple] = []
-        self.out_data = pd.DataFrame()
-        self.connections: DictT = {}
-        self.modules = 0
-        self.module_list: List[str] = []
-        self.module_names: List[str] = []
-
-        # Create module
-        self.w, self.h = 100, 50
-        self.cr = 4
 
         # Initialiser module
         self.add_module('Initialiser', self.width/2, self.h, ini=True)
