@@ -32,7 +32,7 @@
                     0.01
             </timestep>
             <max_steps>
-                    1000
+                    10
             </max_steps>            
         </plugin>
     </Environment>
