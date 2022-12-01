@@ -26,12 +26,16 @@ class PluginSpecs(ast.NodeVisitor):
                 f for f in plugins if f.endswith(".py")]
 
     def _get_clean_module_dirs(self, root_dir: str) -> List[str]:
-        excludes = ["__init__.py", "__pycache__", "resources"]
+        excludes = ["tests", "examples", "resources", "run_pipeline.py"]
         if os.path.exists(root_dir):
             mod_dirs = os.listdir(root_dir)
-            for ex in excludes:
-                if ex in mod_dirs:
-                    mod_dirs.remove(ex)
+            rm_list = []
+            for m in mod_dirs:
+                if m.startswith("_") \
+                    or m in excludes:
+                    rm_list.append(m)
+            for ex in rm_list:
+                mod_dirs.remove(ex)
             return mod_dirs
         else:
             return []
@@ -97,8 +101,8 @@ class PluginSpecs(ast.NodeVisitor):
                 self.available_plugins[self.curr_module][self.curr_plugin][key] = val
 
     def _get_default_name_from_dict(self, plugin: DictT) -> str:
-        default = list(plugin["_PLUGIN_READABLE_NAMES"].keys())\
-            [list(plugin["_PLUGIN_READABLE_NAMES"].values()).index("default")]
+        default = list(plugin.keys())\
+            [list(plugin.values()).index("default")]
         return default
 
     def _get_option_specs(self, option: str) -> dict:
@@ -116,7 +120,7 @@ class PluginSpecs(ast.NodeVisitor):
             output[module] = {}
             for plugin in self.available_plugins[module].keys():
                 if option in self.available_plugins[module][plugin]:
-                    rn = self._get_default_name_from_dict(self.available_plugins[module][plugin])
+                    rn = self._get_default_name_from_dict(self.available_plugins[module][plugin]["_PLUGIN_READABLE_NAMES"])
                     output[module][rn] = self.available_plugins[module][plugin][option]
         return output
 
@@ -158,9 +162,7 @@ class PluginSpecs(ast.NodeVisitor):
         output = []
         for n in names.keys():
             for plugin in names[n]:
-                for variant in names[n][plugin].keys():
-                    if names[n][plugin][variant] == "default":
-                        output.append(variant)
+                output.append(self._get_default_name_from_dict(names[n][plugin]))
         return output
 
     def find_from_class_name(self, value):
@@ -177,7 +179,7 @@ class PluginSpecs(ast.NodeVisitor):
 
 if __name__ == "__main__":
     ps = PluginSpecs()
-    ps.print(ps.available_plugin_names)
+    # ps.print(ps.available_plugin_names)
     ps.print(ps.optional_settings)
     # ps.print(ps.names)
     # ps.print(ps.class_descriptions)
