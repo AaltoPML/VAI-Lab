@@ -1,8 +1,8 @@
-from typing import List, Iterator, Union
-from vai_lab._types import DictT
-
 import ast
 import os
+from typing import Iterator, List, Union
+
+from vai_lab._types import DictT
 
 
 class PluginSpecs(ast.NodeVisitor):
@@ -96,6 +96,11 @@ class PluginSpecs(ast.NodeVisitor):
                            "<ast expression>", "eval"))
                 self.available_plugins[self.curr_module][self.curr_plugin][key] = val
 
+    def _get_default_name_from_dict(self, plugin: DictT) -> str:
+        default = list(plugin["_PLUGIN_READABLE_NAMES"].keys())\
+            [list(plugin["_PLUGIN_READABLE_NAMES"].values()).index("default")]
+        return default
+
     def _get_option_specs(self, option: str) -> dict:
         """Gets either required OR optional settings for each plugin.
 
@@ -106,16 +111,16 @@ class PluginSpecs(ast.NodeVisitor):
 
         :returns output: nested dict of options by [Module][Plugin Class Name]
         """
-        output : DictT= {}
+        output: DictT = {}
         for module in self.available_plugins.keys():
             output[module] = {}
             for plugin in self.available_plugins[module].keys():
                 if option in self.available_plugins[module][plugin]:
-                    cn = self.available_plugins[module][plugin]["_PLUGIN_CLASS_NAME"]
-                    output[module][cn] = self.available_plugins[module][plugin][option]
+                    rn = self._get_default_name_from_dict(self.available_plugins[module][plugin])
+                    output[module][rn] = self.available_plugins[module][plugin][option]
         return output
 
-    def _find_plugin_by_tag_and_value(self, tag: str, name: str) -> Union[DictT,None]:
+    def _find_plugin_by_tag_and_value(self, tag: str, name: str) -> Union[DictT, None]:
         for module in self.available_plugins.keys():
             for plugin in self.available_plugins[module].keys():
                 if tag in self.available_plugins[module][plugin]:
@@ -173,6 +178,7 @@ class PluginSpecs(ast.NodeVisitor):
 if __name__ == "__main__":
     ps = PluginSpecs()
     ps.print(ps.available_plugin_names)
+    ps.print(ps.optional_settings)
     # ps.print(ps.names)
     # ps.print(ps.class_descriptions)
     # print(list(ps.class_descriptions()['GUI'].values()))
