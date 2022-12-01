@@ -60,8 +60,6 @@ class progressTracker(tk.Frame):
         self.canvas.bind('<Button-1>', self.on_click)
         self.dataType: Dict = {}
         
-        self.upload()
-
         sec = 5
         self.click = False
         self.my_label = tk.Label(frame2, 
@@ -74,6 +72,9 @@ class progressTracker(tk.Frame):
                     anchor = tk.CENTER)
         self.my_label.grid(column = 0,
                             row = 0, columnspan = 2, padx=10)
+        
+        self.upload()
+
         tk.Button(
             self.frame4, text = 'Next step', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
@@ -566,9 +567,7 @@ class progressTracker(tk.Frame):
                 self.plugin_list.append(e['plugin_name'])
             else:
                 self.plugin_list.append(0)
-        self.plugin_list.insert(1, self.plugin_list.pop(len(self.plugin_list)-1))
         self.type_list = self.allKeysinDict(modules, 'module_type', [])
-        self.type_list.insert(1, self.type_list.pop(len(self.type_list)-1))
 
         if all(self.isCoords):
 
@@ -580,6 +579,9 @@ class progressTracker(tk.Frame):
             del modules[self.init_module], modules[self.out_module] # They are generated when resetting
             self.disp_mod = [self.init_module, self.out_module]
             self.id_mod = [0, 1]
+            # Reorder to have input and output in first two positions
+            self.plugin_list.insert(1, self.plugin_list.pop(len(self.plugin_list)-1))
+            self.type_list.insert(1, self.type_list.pop(len(self.type_list)-1))
 
             # Place the modules
             self.place_modules(modules)
@@ -607,6 +609,8 @@ class progressTracker(tk.Frame):
             self.m = self.id_mod[2]
 
         else: # There are no coordinates for some modules.
+            self.my_label.config(text = " ".join(self.my_label.cget('text').split(' ')[:-1] + ['list.']))
+
             self.update_output(modules)
             self.id_mod = list(range(len(self.module_list)))
             self.disp_mod = self.module_list
@@ -631,8 +635,6 @@ class progressTracker(tk.Frame):
             frame_tree.grid_columnconfigure(tuple(range(2)), weight=1)
             self.tree.bind('<Button-1>', self.on_click_noCanvas)
 
-            
-
     def on_click_noCanvas(self, event):
         """ Passes the mouse click coordinates to the select function when there is no Canvas."""
         self.click = True
@@ -654,7 +656,7 @@ class progressTracker(tk.Frame):
 
         if len(tags) > 0:
             self.m = int(self.treerow)
-            if int(self.m) > 1:
+            if int(self.m) > 0 and int(self.m) < len(self.module_list)-1:
                 self.optionsWindow()
 
     def update_output(self, modules: dict):
