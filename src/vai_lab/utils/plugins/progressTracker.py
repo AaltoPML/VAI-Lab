@@ -261,12 +261,13 @@ class progressTracker(tk.Frame):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
         
-        self.module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
-        self.plugin = self.xml_handler.loaded_modules[self.module]['plugin']['plugin_name']
-        module_type = self.xml_handler.loaded_modules[self.module]['module_type']
+        mod_idx = np.where(self.m == np.array(self.id_mod))[0][0]
+        self.module = np.array(self.module_list)[mod_idx]
+        self.plugin = np.array(self.plugin_list)[mod_idx]
+        module_type = np.array(self.type_list)[mod_idx]
         
-        self.opt_settings = self.controller._available_plugins.optional_settings[module_type][self.plugin]
-        self.req_settings = self.controller._available_plugins.required_settings[module_type][self.plugin]
+        self.opt_settings = self.controller._avail_plugins.optional_settings[module_type][self.plugin]
+        self.req_settings = self.controller._avail_plugins.required_settings[module_type][self.plugin]
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow!= None):
                 self.newWindow.destroy()
@@ -282,7 +283,7 @@ class progressTracker(tk.Frame):
                     'Assets',
                     'VAILabsIcon.ico'))))
             self.newWindow.geometry("350x400")
-
+            self.raise_above_all(self.newWindow)
             frame1 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
             
@@ -322,6 +323,10 @@ class progressTracker(tk.Frame):
             frame4.grid(column=0, row=2, sticky="se")
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
+
+    def raise_above_all(self, window):
+        window.attributes('-topmost', 1)
+        window.attributes('-topmost', 0)
 
     def create_treeView(self, tree_frame, columns_names):
         """ Function to create a new tree view in the given frame
@@ -516,7 +521,7 @@ class progressTracker(tk.Frame):
         """
         for key in [key for key, val in d.items() if type(val) == dict]:
             if d[key]['class'] == 'loop':
-                self.isKey(d[key],k,key_list,cond_list)
+                key_list, cond_list = self.isKey(d[key],k,key_list,cond_list)
             else:
                 if d[key]['class'].lower() == 'entry_point':
                     self.init_module = key
@@ -525,6 +530,22 @@ class progressTracker(tk.Frame):
                 key_list.append(key)
                 cond_list.append(k in d[key].keys())
         return key_list, cond_list
+    
+    def allKeysinDict(self, d, k, out_list):
+        """ Stores the elements of a dictionary for a specific key 
+        : param d: dict type.
+        : param k: string type.      
+        : param out_list: list type to store the keys that fulfill the condition.
+        """
+        for key in [key for key, val in d.items() if type(val) == dict]:
+            if d[key]['class'] == 'loop':
+                out_list = self.allKeysinDict(d[key],k,out_list)
+            else:
+                if k in d[key].keys():
+                    out_list.append(d[key][k])
+                else:
+                    out_list.append({})
+        return out_list
     
     def upload(self):
         """ Opens the XML file that was previously uploaded and places the 
@@ -538,6 +559,16 @@ class progressTracker(tk.Frame):
         self.xml_handler.load_XML(filename)
         modules = self.xml_handler.loaded_modules
         self.module_list, self.isCoords = self.isKey(modules, 'coordinates', [], [])
+        self.p_list = self.allKeysinDict(modules, 'plugin', [])
+        self.plugin_list = []
+        for e in self.p_list:
+            if type(e) == dict and 'plugin_name' in e.keys():
+                self.plugin_list.append(e['plugin_name'])
+            else:
+                self.plugin_list.append(0)
+        self.plugin_list.insert(1, self.plugin_list.pop(len(self.plugin_list)-1))
+        self.type_list = self.allKeysinDict(modules, 'module_type', [])
+        self.type_list.insert(1, self.type_list.pop(len(self.type_list)-1))
 
         if all(self.isCoords):
 
@@ -576,21 +607,31 @@ class progressTracker(tk.Frame):
             self.m = self.id_mod[2]
 
         else: # There are no coordinates for some modules.
+            self.update_output(modules)
             self.id_mod = list(range(len(self.module_list)))
+            self.disp_mod = self.module_list
             self.canvas.pack_forget()
             frame_tree = tk.Frame(self.frame1, bg='green')
             self.create_treeView(frame_tree, ['Module'])
             self.r=0
-            for module in self.module_list:
+            for i, module in enumerate(self.module_list):
                 self.tree.insert(parent='', index='end', iid=str(self.r), text='',
-                                    values=tuple([module]), tags=('mod',))
+                                    values=tuple([module]), tags=('odd' if i%2 == 0 else 'even',))
                 self.r+=1
+            self.tree.column(
+                'Module', width=int(self.controller.pages_font.measure(str(max(self.module_list, key=len))))+20,
+                minwidth=50, anchor=tk.CENTER)
+            self.tree.tag_configure('odd', foreground='black',
+                                    background='#9fc5e8')
+            self.tree.tag_configure('even', foreground='black',
+                                    background='#cfe2f3')
 
             frame_tree.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
-
             frame_tree.grid_rowconfigure(tuple(range(len(self.module_list))), weight=1)
             frame_tree.grid_columnconfigure(tuple(range(2)), weight=1)
             self.tree.bind('<Button-1>', self.on_click_noCanvas)
+
+            
 
     def on_click_noCanvas(self, event):
         """ Passes the mouse click coordinates to the select function when there is no Canvas."""
@@ -615,6 +656,31 @@ class progressTracker(tk.Frame):
             self.m = int(self.treerow)
             if int(self.m) > 1:
                 self.optionsWindow()
+
+    def update_output(self, modules: dict):
+        """Update the output.
+        :param modules: dict type of modules in the pipeline.
+        """
+
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            if modules[key]['class'] == 'loop':
+                # Extracts numbers from string
+                l = int(
+                    ''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
+                self.loops.append({'type': modules[key]['type'],
+                                   'condition': modules[key]['condition'],
+                                   'mod': []})
+                self.update_output(modules[key])
+            else:
+                self.module_out(modules[key]['name'])
+                # Connect modules
+                for p, parent in enumerate(modules[key]['parents']):
+                    if not (parent[:4] == 'loop'):
+                        self.out_data.loc[parent].loc[modules[key]['name']] = 1
+                        # self.connections[int(self.id_mod[-1])][
+                        #     int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(self.id_mod[-1])
+                    else:
+                        self.loops[-1]['mod'].append(key)
 
     def place_modules(self, modules: dict):
         """Places the modules in the dictionary in the canvas.
@@ -684,41 +750,6 @@ class progressTracker(tk.Frame):
                             arrow=tk.LAST,
                             tags=('o'+str(parent_id),
                                   'o'+str(self.id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
-                        self.out_data.iloc[int(parent_id)][int(
-                            self.id_mod[-1])] = 1
-                        self.connections[int(self.id_mod[-1])][
-                            int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(self.id_mod[-1])
-                    else:
-                        self.loops[-1]['mod'].append(key)
-                self.disp_mod.append(key)
-
-    def save_modules_info(self, modules: dict):
-        """Saves the information of the modules.
-        :param modules: dict type of modules in the pipeline.
-        """
-
-        for key in [key for key, val in modules.items() if type(val) == dict]:
-            if modules[key]['class'] == 'loop':
-                # Extracts numbers from string
-                l = int(
-                    ''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
-
-                self.loops.append({'type': modules[key]['type'],
-                                   'condition': modules[key]['condition'],
-                                   'mod': []})
-                self.place_modules(modules[key])
-            else:
-                # Display module
-                self.id_mod.append(modules[key]['coordinates'][1])
-                connect = list(modules[key]['coordinates'][2].keys())
-
-                # Connect modules
-                for p, parent in enumerate(modules[key]['parents']):
-                    if not (parent[:4] == 'loop'):
-                        parent_id = self.id_mod[np.where(
-                            np.array(self.disp_mod) == parent)[0][0]]
-                        out, ins = modules[key]['coordinates'][2][connect[p]].split(
-                            '-')
                         self.out_data.iloc[int(parent_id)][int(
                             self.id_mod[-1])] = 1
                         self.connections[int(self.id_mod[-1])][

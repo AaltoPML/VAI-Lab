@@ -14,7 +14,7 @@
             </plugin>
             <relationships>
                 <parent name="Init" />
-                <child name="Data Processing 1" />
+                <child name="My Second UserInteraction Module" />
             </relationships>
         </UserInteraction>
         <loop type="for" condition="1" name="For Loop 2">
@@ -27,8 +27,8 @@
                     </class_list>
                 </plugin>
                 <relationships>
-                    <parent name="Data Processing 1" />
-                    <child name="Data Processing 1" />
+                    <parent name="My First UserInteraction Module" />
+                    <child name="My First UserInteraction Module" />
                     <child name="Output" />
                 </relationships>
             </UserInteraction>
