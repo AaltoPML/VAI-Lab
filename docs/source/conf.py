@@ -8,13 +8,10 @@
 
 import pathlib
 import sys
-sys.path.insert(0, pathlib.Path().absolute().parents[1] / "src")
-print("sys.path", sys.path)
 
 project = 'VAI-Lab'
 copyright = '2022, Chris McGreavy, Carlos Sevilla-Salcedo'
 author = 'Chris McGreavy, Carlos Sevilla-Salcedo'
-
 
 
 # -- General configuration ---------------------------------------------------
@@ -34,6 +31,6 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'classic'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
