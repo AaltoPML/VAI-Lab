@@ -1,0 +1,39 @@
+vai\_lab package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   vai_lab.Core
+   vai_lab.Data
+   vai_lab.DataProcessing
+   vai_lab.DataStorage
+   vai_lab.DecisionMaking
+   vai_lab.GUI
+   vai_lab.InputData
+   vai_lab.Modelling
+   vai_lab.UserInteraction
+   vai_lab.tests
+   vai_lab.utils
+
+Submodules
+----------
+
+vai\_lab.run\_pipeline module
+-----------------------------
+
+.. automodule:: vai_lab.run_pipeline
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: vai_lab
+   :members:
+   :undoc-members:
+   :show-inheritance:

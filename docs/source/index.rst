@@ -6,9 +6,15 @@
 Welcome to VAI-Lab's documentation!
 ===================================
 
-Contents
---------
-
 .. toctree::
+   :caption: Contents:
 
-   api
+   modules   
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`   
+

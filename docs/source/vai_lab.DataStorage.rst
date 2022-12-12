@@ -1,0 +1,29 @@
+vai\_lab.DataStorage package
+============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   vai_lab.DataStorage.tests
+
+Submodules
+----------
+
+vai\_lab.DataStorage.DataStorage\_core module
+---------------------------------------------
+
+.. automodule:: vai_lab.DataStorage.DataStorage_core
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: vai_lab.DataStorage
+   :members:
+   :undoc-members:
+   :show-inheritance:
