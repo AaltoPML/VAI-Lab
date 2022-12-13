@@ -295,7 +295,6 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/VAI-lab/tre
 ### Writing Data
 Two methods are given to add data to the XML file. One for modules (`append_pipeline_module_to_file`) and one for data structures (`append_data_structure_field_to_file`).
 
-
 # Documentation
 
 API reference is available [here]().
@@ -308,9 +307,7 @@ and run
 ```bash
 cd docs && make html
 ```
-The HTML files are generated to `docs/build/html/`. 
-Path to index page is ``docs/build/html/index.html`.
-
+The generated HTML pages are in `docs/build/html`.
 
 # Feature and Release Schedule :calendar:
 
