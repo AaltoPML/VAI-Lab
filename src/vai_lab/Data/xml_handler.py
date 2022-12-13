@@ -480,9 +480,10 @@ class XML_handler:
                           xml_parent: Union[ET.Element, str] = "Initialiser",
                           save_dir_as_relative: bool = True):
         """Appened path to input datafile. Replaces windows backslash
+
         :param plugin_type: string type of plugin to be loaded into module
         :param plugin_options: dict where keys & values are options & values
-        :param xml_parent: dict OR str. 
+        :param xml_parent: dict OR str.
                             If string given, parent elem is found via search,
                             Otherwise, plugin appeneded directly
         :param save_dir_as_relative: bool. If True [default], attempts to 
@@ -511,6 +512,7 @@ class XML_handler:
                                 overwrite_existing: Union[bool, int] = False
                                 ):
         """Appened plugin as subelement to existing module element
+        
         :param plugin_type: string type of plugin to be loaded into module
         :param plugin_options: dict where keys & values are options & values
         :param xml_parent: dict OR str. 

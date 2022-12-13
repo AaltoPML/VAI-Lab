@@ -66,7 +66,7 @@ Create a virtual environment and activate it using venv
 ```bash
 python3 -m venv venv && source venv/bin/activate
 ```
-or using conda
+or, alternatively, using conda environment
 ```bash
 conda create --name vai_lab python=3.8 && conda activate vai_lab
 ```
@@ -85,7 +85,6 @@ Unit tests are run with pytest with
 ```bash
 pytest
 ```
-
 
 
 ## Launching and Examples
@@ -295,6 +294,23 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/VAI-lab/tre
 
 ### Writing Data
 Two methods are given to add data to the XML file. One for modules (`append_pipeline_module_to_file`) and one for data structures (`append_data_structure_field_to_file`).
+
+
+# Documentation
+
+API reference is available [here]().
+
+To build the API reference from source, install Sphinx and the ReadTheDocs theme
+```bash
+python3 -m pip install -U sphinx sphinx-rtd-theme
+```
+and run
+```bash
+cd docs && make html
+```
+The HTML files are generated to `docs/build/html/`. 
+Path to index page is ``docs/build/html/index.html`.
+
 
 # Feature and Release Schedule :calendar:
 
