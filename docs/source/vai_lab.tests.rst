@@ -1,8 +1,7 @@
 vai\_lab.tests package
 ======================
 
-Submodules
-----------
+
 
 vai\_lab.tests.test\_launch module
 ----------------------------------
@@ -12,8 +11,7 @@ vai\_lab.tests.test\_launch module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
 
 .. automodule:: vai_lab.tests
    :members:

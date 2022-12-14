@@ -1,8 +1,7 @@
 vai\_lab.UserInteraction.plugins package
 ========================================
 
-Submodules
-----------
+
 
 vai\_lab.UserInteraction.plugins.CanvasInput module
 ---------------------------------------------------
@@ -20,8 +19,7 @@ vai\_lab.UserInteraction.plugins.ManualInput module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
 
 .. automodule:: vai_lab.UserInteraction.plugins
    :members:

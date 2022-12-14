@@ -1,5 +1,5 @@
-vai_lab
-=======
+API 
+===
 
 .. toctree::
    :maxdepth: 4

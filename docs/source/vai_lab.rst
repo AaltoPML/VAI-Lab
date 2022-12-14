@@ -1,8 +1,6 @@
 vai\_lab package
 ================
 
-Subpackages
------------
 
 .. toctree::
    :maxdepth: 4
@@ -19,8 +17,7 @@ Subpackages
    vai_lab.tests
    vai_lab.utils
 
-Submodules
-----------
+
 
 vai\_lab.run\_pipeline module
 -----------------------------
@@ -30,8 +27,7 @@ vai\_lab.run\_pipeline module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
 
 .. automodule:: vai_lab
    :members:

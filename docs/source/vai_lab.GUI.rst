@@ -1,8 +1,6 @@
 vai\_lab.GUI package
 ====================
 
-Subpackages
------------
 
 .. toctree::
    :maxdepth: 4
@@ -10,8 +8,7 @@ Subpackages
    vai_lab.GUI.plugins
    vai_lab.GUI.tests
 
-Submodules
-----------
+
 
 vai\_lab.GUI.GUI\_core module
 -----------------------------
@@ -29,8 +26,7 @@ vai\_lab.GUI.User\_Feedback\_template module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
 
 .. automodule:: vai_lab.GUI
    :members:

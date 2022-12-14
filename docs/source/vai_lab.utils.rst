@@ -1,8 +1,6 @@
 vai\_lab.utils package
 ======================
 
-Subpackages
------------
 
 .. toctree::
    :maxdepth: 4
@@ -10,8 +8,7 @@ Subpackages
    vai_lab.utils.plugins
    vai_lab.utils.tests
 
-Submodules
-----------
+
 
 vai\_lab.utils.AID\_core module
 -------------------------------
@@ -29,8 +26,7 @@ vai\_lab.utils.UserInterfaceClass module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
 
 .. automodule:: vai_lab.utils
    :members:

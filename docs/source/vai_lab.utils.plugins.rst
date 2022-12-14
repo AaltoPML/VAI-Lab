@@ -1,8 +1,7 @@
 vai\_lab.utils.plugins package
 ==============================
 
-Submodules
-----------
+
 
 vai\_lab.utils.plugins.MainPage module
 --------------------------------------
@@ -52,8 +51,7 @@ vai\_lab.utils.plugins.startpage module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
 
 .. automodule:: vai_lab.utils.plugins
    :members:

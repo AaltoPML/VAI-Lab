@@ -1,16 +1,13 @@
 vai\_lab.Data package
 =====================
 
-Subpackages
------------
 
 .. toctree::
    :maxdepth: 4
 
    vai_lab.Data.tests
 
-Submodules
-----------
+
 
 vai\_lab.Data.Data\_core module
 -------------------------------
@@ -28,8 +25,7 @@ vai\_lab.Data.xml\_handler module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+
 
 .. automodule:: vai_lab.Data
    :members:
