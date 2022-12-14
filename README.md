@@ -303,9 +303,8 @@ python3 -m pip install -U sphinx sphinx-rtd-theme sphinx-apidoc myst-parser
 ```
 and run
 ```bash
-cd docs
-sphinx-apidoc --templatedir templates/apidoc -o source ../src/vai_lab
-sphinx-build -b html source build
+sphinx-apidoc --templatedir docs/templates/apidoc -o docs/source src/vai_lab
+sphinx-build -M html docs/source docs/build
 ```
 The generated HTML pages are in `docs/build/html`.
 
