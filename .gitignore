@@ -74,7 +74,9 @@ instance/
 
 # Sphinx documentation
 docs/_build/
-    
+docs/source/vai_lab*.rst
+docs/source/modules.rst
+
 # PyBuilder
 .pybuilder/
 target/

@@ -297,15 +297,15 @@ Two methods are given to add data to the XML file. One for modules (`append_pipe
 
 # Documentation
 
-API reference is available [here]().
-
-To build the API reference from source, install Sphinx and the ReadTheDocs theme
+To build documentation from source, install required tools
 ```bash
-python3 -m pip install -U sphinx sphinx-rtd-theme
+python3 -m pip install -U sphinx sphinx-rtd-theme sphinx-apidoc myst-parser
 ```
 and run
 ```bash
-cd docs && make html
+cd docs
+sphinx-apidoc --templatedir templates/apidoc -o source ../src/vai_lab
+sphinx-build -b html source build
 ```
 The generated HTML pages are in `docs/build/html`.
 
