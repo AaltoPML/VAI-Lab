@@ -299,7 +299,7 @@ Two methods are given to add data to the XML file. One for modules (`append_pipe
 
 To build documentation from source, install the required tools
 ```bash
-python3 -m pip install sphinx sphinx-rtd-theme sphinx-apidoc myst-parser
+python3 -m pip install sphinx sphinx-rtd-theme myst-parser
 ```
 and run
 ```bash
