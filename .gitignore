@@ -73,7 +73,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docs/build/
 docs/source/vai_lab*.rst
 docs/source/modules.rst
 
