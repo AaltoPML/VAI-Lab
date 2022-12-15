@@ -18,9 +18,9 @@ author = 'Chris McGreavy, Carlos Sevilla-Salcedo'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'myst_parser',
+    'sphinx.ext.autodoc',       # For API 
+    'sphinx.ext.autosummary',   # For API
+    'myst_parser',              # For importing README.md
     ]
 
 templates_path = ['_templates']
