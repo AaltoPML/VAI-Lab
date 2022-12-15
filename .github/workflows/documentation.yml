@@ -11,7 +11,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install .
-          python -m pip install sphinx sphinx-rtd-theme sphinx-apidoc myst-parser
+          python -m pip install sphinx sphinx-rtd-theme myst-parser
       - name: Sphinx build
         run: |
           sphinx-apidoc --templatedir docs/templates/apidoc -o docs/source src/vai_lab
