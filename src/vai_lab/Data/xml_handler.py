@@ -481,15 +481,15 @@ class XML_handler:
                           save_dir_as_relative: bool = True):
         """Appened path to input datafile. Replaces windows backslash
 
-        :param plugin_type: string type of plugin to be loaded into module
-        :param plugin_options: dict where keys & values are options & values
-        :param xml_parent: dict OR str.
-                            If string given, parent elem is found via search,
-                            Otherwise, plugin appeneded directly
-        :param save_dir_as_relative: bool. If True [default], attempts to 
-                            replace the library base path in the absolute
-                            filename with "./" to make it relative to library
-                            path. Recommended.
+        :param plugin_type: plugin to be loaded into module
+        :type plugin_type: str
+        :param plugin_options: plugin options as key-value pairs
+        :type plugin_options: dict
+        :param xml_parent: Name of parent or pass element directly
+        :type xml_parent: str, ET.Element
+        :param save_dir_as_relative: Replace root path in filename with "./"
+        :type save_dir_as_relative: bool, optional
+        :return: None
         """
         if isinstance(xml_parent, str):
             xml_parent = self._get_element_from_name(xml_parent)
