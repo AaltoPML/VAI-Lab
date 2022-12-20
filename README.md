@@ -1,5 +1,7 @@
 
-[![Test VAI-Lab](https://github.com/AaltoPML/VAI-Lab/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/AaltoPML/VAI-Lab/actions/workflows/pythonpackage.yml) [![PyPI Version](https://img.shields.io/pypi/v/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Python Versions](https://img.shields.io/pypi/pyversions/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Wheel](https://img.shields.io/pypi/wheel/vai-lab)](https://pypi.org/project/vai-lab/) [![License](https://img.shields.io/pypi/l/vai-lab)](https://pypi.org/project/vai-lab/)
+[![CI Tests](https://img.shields.io/github/actions/workflow/status/AaltoPML/VAI-Lab/pythonpackage.yml?branch=main&label=CI%20Test&logo=github)](https://github.com/AaltoPML/VAI-Lab/actions/workflows/documentation.yml)[![Docs Test](https://img.shields.io/github/actions/workflow/status/AaltoPML/VAI-Lab/documentation.yml?branch=main&label=Docs&logo=github)](https://github.com/AaltoPML/VAI-Lab/actions/workflows/documentation.yml)
+[![PyPI Version](https://img.shields.io/pypi/v/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Python Versions](https://img.shields.io/pypi/pyversions/vai-lab?color=blue)](https://pypi.org/project/vai-lab/) [![Wheel](https://img.shields.io/pypi/wheel/vai-lab)](https://pypi.org/project/vai-lab/) [![License](https://img.shields.io/pypi/l/vai-lab)](https://pypi.org/project/vai-lab/)
+
 
 
 # Virtual Artificially Intelligent Laboratories (VAI-Lab)
@@ -66,7 +68,7 @@ Create a virtual environment and activate it using venv
 ```bash
 python3 -m venv venv && source venv/bin/activate
 ```
-or using conda
+or, alternatively, using conda environment
 ```bash
 conda create --name vai_lab python=3.8 && conda activate vai_lab
 ```
@@ -85,7 +87,6 @@ Unit tests are run with pytest with
 ```bash
 pytest
 ```
-
 
 
 ## Launching and Examples
@@ -295,6 +296,19 @@ Example from [ridge_regression_demo.xml](https://github.com/AaltoPML/VAI-lab/tre
 
 ### Writing Data
 Two methods are given to add data to the XML file. One for modules (`append_pipeline_module_to_file`) and one for data structures (`append_data_structure_field_to_file`).
+
+# Documentation
+
+To build documentation from source, install the required tools
+```bash
+python3 -m pip install sphinx sphinx-rtd-theme myst-parser
+```
+and run
+```bash
+sphinx-apidoc --templatedir docs/templates/apidoc -o docs/source src/vai_lab
+sphinx-build -M html docs/source docs/build
+```
+The generated HTML pages are in `docs/build/html`.
 
 # Feature and Release Schedule :calendar:
 
