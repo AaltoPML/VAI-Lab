@@ -52,17 +52,16 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
 
         self.opt_var = list(self._data_in["X"].columns.values)
         if len(self.opt_var) < 3:
-            figure3 = plt.Figure(figsize=(5, 4), dpi=100)
-            ax3 = figure3.add_subplot(111)
-            ax3.scatter(self._data_in["X"][self.opt_var[0]], self._data_in["X"][self.opt_var[1]])
-            scatter3 = FigureCanvasTkAgg(figure3, self.frame1)
-            plot_frame = scatter3.get_tk_widget()
+            figure = plt.Figure(figsize=(5, 4), dpi=100)
+            self.ax = figure.add_subplot(111)
+
+            self.plot_points(self._data_in["X"], self.opt_var)
+
+            self.canvas = FigureCanvasTkAgg(figure, self.frame1)
+            plot_frame = self.canvas.get_tk_widget()
             plot_frame.grid(column=0, row=0, pady=10, padx=10, sticky="nsew")
             self.frame1.grid_rowconfigure(0, weight=1)
             self.frame1.grid_columnconfigure(0, weight=1)
-            ax3.set_xlabel(self.opt_var[0])
-            ax3.set_ylabel(self.opt_var[1])
-            ax3.set_title('Suggested points')
 
         # Inital window
         self.N = len(self._data_in["X"])
@@ -82,14 +81,26 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         self.frame1.grid(row=0, column=0, sticky="nsew")
         frame4.grid(row=1, column=0, sticky="nsew")
         frame5.grid(row=1, column=1, sticky="nsew")
-        # frame6.grid(row=2, column=0, columnspan=3, sticky="sew")
 
         frame4.grid_columnconfigure(0, weight=1)
         frame5.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
-        # self.grid_rowconfigure(1, weight=3)
         self.grid_columnconfigure(tuple(range(2)), weight=1)
-        # self.grid_columnconfigure(0, weight=2)
+
+    def plot_points(self, data, labels, x=[None]):
+        """Plots points in pre-existing axis. If some extra points are given,
+        these are plotted with a different colour.
+        :param data: dict, dictionary to be plotted
+        :param labels: list, column and axis labels
+        :param x: array, extra points to be plotted
+         """
+        
+        self.ax.scatter(data[labels[0]], data[labels[1]])
+        self.ax.set_xlabel(labels[0])
+        self.ax.set_ylabel(labels[1])
+        self.ax.set_title('Suggested points')
+        if None not in x: 
+            self.ax.scatter(x[0], x[1], color='r')
 
     def set_data_in(self, data_in):
         req_check = [
@@ -180,6 +191,10 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         # Select the current row
         self.tree.selection_set(str(int(0)))
 
+        # Define click on row action
+        if len(self.opt_var) < 3:
+            self.tree.bind('<ButtonRelease-1>', self.OnClick)
+
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
 
@@ -255,8 +270,16 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
                        values=tuple(self.out_data[n, :].astype(int)))
         self.saved = False
 
+    def OnClick(self, event):
+        "Displays the corresponding ."
+
+        item = self.tree.selection()[0]
+        x = self.tree.item(item)['values']
+        self.ax.clear()         # clear axes from previous plot
+        self.plot_points(self._data_in["X"], self.opt_var, x = x)
+        self.canvas.draw()
+
     def OnDoubleClick(self, event):
         "Moves to the image corresponding to the row clicked on the tree."
 
         item = self.tree.selection()[0]
-        # self.forward_back(self.tree.item(item, "text"))
