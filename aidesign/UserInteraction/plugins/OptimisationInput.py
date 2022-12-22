@@ -16,12 +16,12 @@ from tkinter.filedialog import asksaveasfile
 
 _PLUGIN_READABLE_NAMES = {"optimisation": "default",
                           "BO": "alias",
-                          "BayesianOptimisation": "alias"}            # type:ignore
+                          "BayesianOptimisation": "alias"}      # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                           "required_children": None}            # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                                  # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {}                                  # type:ignore
-_PLUGIN_REQUIRED_DATA = {"X"}                              # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"Bounds"}                          # type:ignore
+_PLUGIN_REQUIRED_DATA = {"X"}                                   # type:ignore
 
 
 class OptimisationInput(tk.Frame, UI):            # type:ignore
@@ -95,9 +95,12 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         :param x: array, extra points to be plotted
          """
         
+        self.ax.clear()         # clear axes from previous plot
         self.ax.scatter(data[labels[0]], data[labels[1]])
         self.ax.set_xlabel(labels[0])
         self.ax.set_ylabel(labels[1])
+        # self.ax.set_xlim(min(data[labels[0]]), max(data[labels[0]]))
+        # self.ax.set_ylim(min(data[labels[0]]), max(data[labels[0]]))
         self.ax.set_title('Suggested points')
         if None not in x: 
             self.ax.scatter(x[0], x[1], color='r')
@@ -129,8 +132,7 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         :param value: class labels for binary classification
         :type value: list of strings
         """
-        # self._class_list = list(self._data_in["Y"]["Class"])
-        self.out_data = np.array(self._data_in["X"])
+        self.out_data = self._data_in["X"]
 
         self.button_cl = {}
 
@@ -180,13 +182,13 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         self.tree.tag_configure('even', foreground='black',
                                 background='#DFDFDF')
         # Add data
-        for n, sample in enumerate(self.out_data):
+        for n, sample in enumerate(self.out_data.values):
             if n % 2 == 0:
                 self.tree.insert(parent='', index='end', iid=n, text=n+1,
-                                 values=tuple(sample.astype(int)), tags=('even',))
+                                 values=tuple(sample.astype(float)), tags=('even',))
             else:
                 self.tree.insert(parent='', index='end', iid=n, text=n+1,
-                                 values=tuple(sample.astype(int)), tags=('odd',))
+                                 values=tuple(sample.astype(float)), tags=('odd',))
 
         # Select the current row
         self.tree.selection_set(str(int(0)))
@@ -198,33 +200,61 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
 
-    def resizing(self, event):
-        """ Resizes window to tree view height and buttons width """
-        n = int(self.tree.selection()[0])
-        iw, ih = self.image_list[n].width, self.image_list[n].height
-        iw = iw() if type(iw) is not int else iw
-        ih = ih() if type(ih) is not int else ih
+    def OnClick(self, event):
+        "Displays the corresponding ."
 
-        mw, mh = self.frame1.winfo_width()-14, self.frame1.winfo_height() - \
-            14  # Frame border correction
-        if (iw != mw) and (ih != mh):
-            if iw > ih:
-                ih = ih*(mw/iw)
-                r = mh/ih if (ih/mh) > 1 else 1
-                iw, ih = mw*r, ih*r
-            else:
-                iw = iw*(mh/ih)
-                r = mw/iw if (iw/mw) > 1 else 1
-                iw, ih = iw*r, mh*r
-            
-            if type(self.image_list[n]) == ImageTk.PhotoImage:
-                _temp_img:Image = ImageTk.getimage(self.image_list[n])
-            else:
-                _temp_img:Image = self.image_list[n]
+        item = self.tree.selection()[0]
+        x = [float(i) for i in self.tree.item(item)['values']] 
+        self.plot_points(self.out_data, self.opt_var, x = x)
+        self.canvas.draw()
 
-            self.image_list[n] = ImageTk.PhotoImage(_temp_img.resize((int(iw), int(ih))))
-        self.my_img.config(image=self.image_list[n])
+    def OnDoubleClick(self, event):
+        """ Executed when a row is double clicked.
+        Opens an entry box to edit a cell and updates the plot and the 
+        stored data. """
 
+        self.treerow = int(self.tree.identify_row(event.y))
+        self.treecol = self.tree.identify_column(event.x)
+
+        # get column position info
+        x, y, width, height = self.tree.bbox(self.treerow, self.treecol)
+
+        # y-axis offset
+        pady = height // 2
+        # pady = 0
+
+        if hasattr(self, 'entry'):
+            self.entry.destroy()
+
+        self.entry = tk.Entry(self.tree, justify='center')
+
+        if int(self.treecol[1:]) > 0:
+            self.entry.insert(
+                0, self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1])
+            self.entry['exportselection'] = False
+
+            self.entry.focus_force()
+            self.entry.bind("<Return>", self.OnReturn)
+            self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
+
+            self.entry.place(x=x,
+                             y=y + pady,
+                             anchor=tk.W, width=width)
+
+    def OnReturn(self, event):
+        """ Updates the stored data with the values in the entry. """
+        val = self.tree.item(self.treerow)['values']
+        val = [float(i) for i in val]
+        val[int(self.treecol[1:])-1] = float(self.entry.get())
+        self.tree.item(self.treerow, values=val)
+        self.entry.destroy()
+        self.saved = False
+
+        self.out_data.loc[self.treerow] = val
+
+        self.OnClick(0)
+        self.saved = False
+        
     def check_quit(self):
 
         if not self.saved:
@@ -261,25 +291,3 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
             # typically the above line would do. however this is used to ensure that the file is written
             os.fsync(self.save_path.fileno())
             self.saved = True
-
-    def onPress(self, n, i):
-        "Updates the stored values on clicking the checkbutton."
-
-        self.out_data[n, i] = not self.out_data[n, i]
-        self.tree.item(self.tree.get_children()[n], text=n+1,
-                       values=tuple(self.out_data[n, :].astype(int)))
-        self.saved = False
-
-    def OnClick(self, event):
-        "Displays the corresponding ."
-
-        item = self.tree.selection()[0]
-        x = self.tree.item(item)['values']
-        self.ax.clear()         # clear axes from previous plot
-        self.plot_points(self._data_in["X"], self.opt_var, x = x)
-        self.canvas.draw()
-
-    def OnDoubleClick(self, event):
-        "Moves to the image corresponding to the row clicked on the tree."
-
-        item = self.tree.selection()[0]
