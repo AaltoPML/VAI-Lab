@@ -40,9 +40,9 @@ Each module represents a process (e.g. Modelling) and each plugin is a specific 
 
 Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
 
-## Installation
+# Installation
 
-### Installing from package
+## Installing from package
 
 To install the latest pip release:
 
@@ -50,7 +50,7 @@ To install the latest pip release:
 pip install vai-lab
 ```
 
-### Installing from source 
+## Installing from source 
 
 Clone this repository via HTTPS:
 ```bash
@@ -81,7 +81,7 @@ Install the package
 python3 -m pip install .
 ```
 
-## Running Unit Tests
+# Running Unit Tests
 
 Unit tests are run with pytest with
 ```bash
@@ -89,9 +89,9 @@ pytest
 ```
 
 
-## Launching and Examples
+# Launching and Examples
 
-### From Command Line
+## From Command Line
 
 To launch the framework with the GUI:
 ```bash
@@ -104,7 +104,7 @@ vai_lab --file <path_to_config_file>
 ```
 
 
-### From Code
+## From Code
 
 To launch the framework with the GUI:
 
@@ -125,7 +125,7 @@ core.load_config_file("<path_to_config_file>")
 core.run()
 ```
 
-### Examples
+## Examples
 
 Pre-made [examples](https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files) show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.
 
@@ -134,7 +134,7 @@ Some basic use-cases are provided among many others:
  - [canvas_demo.xml](https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml) Launches the canvas state-action pair visualiser and editor
  - [regression_demo.xml](https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/regression_demo.xml) Demonstrates simple linear regression on a small set of sample data
 
-#### Launching examples:
+## Launching examples:
 
 To demonstrate the syntax for launching examples using `user_feedback_demo.xml`.
 
