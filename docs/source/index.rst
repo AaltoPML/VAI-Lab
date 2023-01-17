@@ -16,6 +16,7 @@ Contents
    :maxdepth: 1
 
    Intro and Installation <readme>
+   Getting Started <getting_started>
    API <modules>
 
 Indices and tables
