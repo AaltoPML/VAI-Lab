@@ -10,7 +10,7 @@ import pathlib
 import sys
 
 project = 'VAI-Lab'
-copyright = '2023, Chris McGreavy, Carlos Sevilla-Salcedo'
+copyright = '2023, VAI Labs Team'
 author = 'Chris McGreavy, Carlos Sevilla-Salcedo'
 
 
