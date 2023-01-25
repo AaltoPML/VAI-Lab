@@ -1,9 +1,2 @@
-vai\_lab.GUI.plugins package
-============================
-
-
-
-.. automodule:: vai_lab.GUI.plugins
-   :members:
-   :undoc-members:
-   :show-inheritance:
+vai\_lab.GUI.plugins 
+=====================

@@ -31,7 +31,7 @@ class Birch(ModellingPluginT):
     def set_data_in(self, data_in):
         """Sets and parses incoming data
         :param data_in: saves data as class variable
-                        expected type: vai_lab.Data.Data_core.Data
+        expected type: vai_lab.Data.Data_core.Data
         """
         super().set_data_in(data_in)
 
@@ -42,20 +42,20 @@ class Birch(ModellingPluginT):
 
     def predict(self, data):
         """Uses fitted model to predict output of a given Y
-        :param data: array-like or sparse matrix, shape (n_samples, n_features)
-                    Samples
-                    expected type: vai_lab.Data.Data_core.Data
-        :returns: array, shape (n_samples,)
-                    Returns predicted values.
+        :param data: array-like or sparse matrix, 
+        shape (n_samples, n_features) Samples 
+        expected type: vai_lab.Data.Data_core.Data
+        :returns: array, shape (n_samples,) Returns predicted values.
         """
         return self.clf.predict(data)
 
     def score(self, X, Y, sample_weight=None):
         """Return the coefficient of determination
         :param  X : array-like of shape (n_samples, n_features)
-        :param  Y :  array-like of shape (n_samples,) or (n_samples, n_outputs)
-        :param sample_weight : array-like of shape (n_samples,), default=None
-                    Sample weights.
+        :param  Y :  array-like of shape (n_samples,) 
+        or (n_samples, n_outputs)
+        :param sample_weight : array-like of shape (n_samples,), 
+        default=None Sample weights.
 
         :returns: score : float R^2` of ``self.predict(X)`` wrt. `y`.
         """

@@ -1,5 +1,5 @@
-vai\_lab package
-================
+vai\_lab 
+=========
 
 
 .. toctree::
@@ -16,19 +16,15 @@ vai\_lab package
    vai_lab.UserInteraction
    vai_lab.utils
 
+run_pipeline
+^^^^^^^^^^^^
 
+.. toctree::
+   :maxdepth: 4
 
-vai\_lab.run\_pipeline module
------------------------------
+   vai_lab.run_pipeline
 
 .. automodule:: vai_lab.run_pipeline
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-
-.. automodule:: vai_lab
    :members:
    :undoc-members:
    :show-inheritance:

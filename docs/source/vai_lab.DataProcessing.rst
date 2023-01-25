@@ -1,21 +1,16 @@
-vai\_lab.DataProcessing package
-===============================
+vai\_lab.DataProcessing 
+========================
 
-
+Core 
+-----
 .. toctree::
    :maxdepth: 4
 
-vai\_lab.DataProcessing.DataProcessing\_core module
----------------------------------------------------
+   vai_lab.DataProcessing.DataProcessing_core
+
+
 
 .. automodule:: vai_lab.DataProcessing.DataProcessing_core
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-
-.. automodule:: vai_lab.DataProcessing
    :members:
    :undoc-members:
    :show-inheritance:

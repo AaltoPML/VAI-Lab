@@ -24,6 +24,7 @@ extensions = [
     'sphinx.ext.autosummary',   # For API
     'myst_parser',              # For importing README.md
     ]
+# autosummary_generate = True
 
 templates_path = ['_templates']
 exclude_patterns:List = []

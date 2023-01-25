@@ -1,22 +1,23 @@
-vai\_lab.Modelling package
-==========================
+vai\_lab.Modelling 
+===================
 
-
+Core 
+-----
 .. toctree::
    :maxdepth: 4
 
+   vai_lab.Modelling.Modelling_core
 
-vai\_lab.Modelling.Modelling\_core module
------------------------------------------
+
 
 .. automodule:: vai_lab.Modelling.Modelling_core
    :members:
    :undoc-members:
    :show-inheritance:
+Plugins 
+--------
 
+.. toctree::
+   :maxdepth: 4
 
-
-.. automodule:: vai_lab.Modelling
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   vai_lab.Modelling.plugins

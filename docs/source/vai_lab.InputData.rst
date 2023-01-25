@@ -1,22 +1,16 @@
-vai\_lab.InputData package
-==========================
+vai\_lab.InputData 
+===================
 
-
+Core 
+-----
 .. toctree::
    :maxdepth: 4
 
+   vai_lab.InputData.InputData_core
 
-vai\_lab.InputData.InputData\_core module
------------------------------------------
+
 
 .. automodule:: vai_lab.InputData.InputData_core
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-
-.. automodule:: vai_lab.InputData
    :members:
    :undoc-members:
    :show-inheritance:
