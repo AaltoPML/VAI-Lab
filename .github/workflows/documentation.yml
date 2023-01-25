@@ -14,7 +14,7 @@ jobs:
           python -m pip install sphinx sphinx-rtd-theme myst-parser
       - name: Sphinx build
         run: |
-          sphinx-apidoc --templatedir docs/templates/apidoc -o docs/source src/vai_lab
+          sphinx-apidoc --templatedir docs/source/_templates/apidoc/ -o docs/source src/vai_lab
           sphinx-build -M html docs/source docs/build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
