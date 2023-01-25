@@ -8,9 +8,11 @@
 
 import pathlib
 import sys
+from datetime import datetime
+from typing import List
 
 project = 'VAI-Lab'
-copyright = '2023, VAI Labs Team'
+copyright = '2022 - {0}, VAI Labs Team'.format(datetime.now().year)
 author = 'Chris McGreavy, Carlos Sevilla-Salcedo'
 
 
@@ -24,7 +26,7 @@ extensions = [
     ]
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns:List = []
 
 
 
@@ -32,6 +34,6 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-html_static_path = []
+html_static_path:List = []
 
 
