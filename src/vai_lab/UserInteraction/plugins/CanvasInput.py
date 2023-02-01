@@ -252,10 +252,7 @@ class CanvasInput(tk.Frame, UI):
                     # Update coordinates in corresponding row if exists.
                     if self.tree[ii].selection():
                         n = int(self.tree[ii].selection()[0]) + 1
-                        if n % 2 == 0:
-                            tag = ('even',)
-                        else:
-                            tag = ('odd',)
+                        tag = ('odd' if n%2 == 0 else 'even',)
                         self.tree[ii].insert(
                             parent='', index='end', iid=n, text=n+1,
                             values=tuple(self.dict2mat(

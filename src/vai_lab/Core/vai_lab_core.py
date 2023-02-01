@@ -28,7 +28,7 @@ class Core:
         gui_app.set_avail_plugins(self._avail_plugins)
         gui_app.set_gui_as_startpage()
         gui_output = gui_app.launch()
-        if not gui_app.closed:
+        if not self._debug:
             try:
                 self.load_config_file(gui_output["xml_filename"])
             except:
@@ -58,12 +58,13 @@ class Core:
         :param specs: dict of module to be executed
         """
         mod: ModuleInterface = import_module(globals(), specs["module_type"]).__call__()
+        mod._debug = self._debug
         mod.set_avail_plugins(self._avail_plugins)
         mod.set_data_in(self.data)
         mod.set_options(specs)
         print("\t"*self.loop_level
                 + specs["module_type"]
-                + " module: \"{}\"".format(specs["name"])
+                + " module: \"{}\" ".format(specs["name"])
                 + "processing..."
               )
         mod.launch()
@@ -110,6 +111,7 @@ class Core:
 
     def _show_updated_tracker(self):
         self.gui_app = GUI()
+        self.gui_app._debug = self._debug
         self.gui_app.set_avail_plugins(self._avail_plugins)
         self.gui_app.set_gui_as_progress_tracker(self.status_logger)
         self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
@@ -119,6 +121,8 @@ class Core:
     def _init_status(self, modules):
         for key in [key for key, val in modules.items() if type(val) == dict]:
             self.status_logger[modules[key]['name']] = {}
+            if modules[key]['class'] == "loop":
+                self._init_status(modules[key])
 
     def _add_status(self, module, key, value):
         self.status_logger[module['name']][key] = value

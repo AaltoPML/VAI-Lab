@@ -6,7 +6,6 @@ from tkinter import ttk
 import numpy as np
 import pandas as pd
 from PIL import Image, ImageTk
-from vai_lab._plugin_helpers import PluginSpecs
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._import_helper import get_lib_parent_dir
 
@@ -28,27 +27,27 @@ class progressTracker(tk.Frame):
         super().__init__(parent, bg=parent['bg'])
         self.bg = parent['bg']
         self.controller = controller
-        self.s = XML_handler()
+        self.xml_handler = XML_handler()
         self.controller.title('Progress Tracker')
         
-        script_dir = os.path.dirname(__file__)
-        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
-            file=os.path.join(os.path.join(
-                get_lib_parent_dir(),
-                'utils',
-                'resources',
-                'Assets',
-                'VAILabsIcon.ico'))))
+        if not self.controller._debug:
+            self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
+                file=os.path.join(os.path.join(
+                    get_lib_parent_dir(),
+                    'utils',
+                    'resources',
+                    'Assets',
+                    'VAILabsIcon.ico'))))
         self.grid_columnconfigure(0, weight=1)
 
-        frame1 = tk.Frame(self, bg=self.bg)
-        self.frame2 = tk.Frame(self, bg=self.bg)
+        self.frame1 = tk.Frame(self, bg=self.bg)
+        frame2 = tk.Frame(self, bg=self.bg)
         frame3 = tk.Frame(self, bg=self.bg)
         self.frame4 = tk.Frame(self, bg=self.bg)
 
         # Create canvas
         self.width, self.height = 700, 700
-        self.canvas = tk.Canvas(frame1, width=self.width,
+        self.canvas = tk.Canvas(self.frame1, width=self.width,
                                 height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
@@ -62,11 +61,9 @@ class progressTracker(tk.Frame):
         self.canvas.bind('<Button-1>', self.on_click)
         self.dataType: Dict = {}
         
-        self.upload()
-
         sec = 5
         self.click = False
-        self.my_label = tk.Label(self.frame2, 
+        self.my_label = tk.Label(frame2, 
                     text = 
                     'This window will get\nclosed after '+str(sec)+' seconds\nunless you click on the canvas.',
                     pady= 10,
@@ -76,6 +73,9 @@ class progressTracker(tk.Frame):
                     anchor = tk.CENTER)
         self.my_label.grid(column = 0,
                             row = 0, columnspan = 2, padx=10)
+        
+        self.upload()
+
         tk.Button(
             self.frame4, text = 'Next step', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
@@ -88,8 +88,8 @@ class progressTracker(tk.Frame):
         self.controller._append_to_output('terminate', False)
         self.save_path = ''
         self.saved = True
-        frame1.grid(column=0, row=0, sticky="nsew")
-        self.frame2.grid(column=1, row=0, sticky="new")
+        self.frame1.grid(column=0, row=0, sticky="nsew")
+        frame2.grid(column=1, row=0, sticky="new")
         frame3.grid(column=0, row=1, sticky="swe")
         self.frame4.grid(column=1, row=1, sticky="sew")
         
@@ -97,10 +97,6 @@ class progressTracker(tk.Frame):
         self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
 
         self.controller.after(sec*1000,lambda:self.check_click())
-
-    def class_list(self,value):
-        """ Temporary fix """
-        return value
 
     def on_click(self, event):
         """ Passes the mouse click coordinates to the select function."""
@@ -260,19 +256,20 @@ class progressTracker(tk.Frame):
         self.canvas_startxy.append((x, y))
         self.connections[self.modules] = {}
         self.module_out(boxName)
-        self.module_list.append(boxName)
+        # self.module_list.append(boxName)
         self.modules += 1
         
     def optionsWindow(self):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
         
-        self.module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
-        self.plugin = self.s.loaded_modules[self.module]['plugin']['plugin_name']
-        module_type = self.s.loaded_modules[self.module]['module_type']
-        ps = PluginSpecs()
-        self.opt_settings = ps.optional_settings[module_type][self.plugin]
-        self.req_settings = ps.required_settings[module_type][self.plugin]
+        mod_idx = np.where(self.m == np.array(self.id_mod))[0][0]
+        self.module = np.array(self.module_list)[mod_idx]
+        self.plugin = np.array(self.plugin_list)[mod_idx]
+        module_type = np.array(self.type_list)[mod_idx]
+        
+        self.opt_settings = self.controller._avail_plugins.optional_settings[module_type][self.plugin]
+        self.req_settings = self.controller._avail_plugins.required_settings[module_type][self.plugin]
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow!= None):
                 self.newWindow.destroy()
@@ -288,7 +285,7 @@ class progressTracker(tk.Frame):
                     'Assets',
                     'VAILabsIcon.ico'))))
             self.newWindow.geometry("350x400")
-
+            self.raise_above_all(self.newWindow)
             frame1 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
             
@@ -309,7 +306,7 @@ class progressTracker(tk.Frame):
 
             frame2 = tk.Frame(self.newWindow, bg='green')
             self.r = 1
-            self.create_treeView(frame2)
+            self.create_treeView(frame2, ['Name', 'Type', 'Value'])
             self.fill_treeview(frame2, self.req_settings, self.opt_settings)
             frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
 
@@ -329,7 +326,11 @@ class progressTracker(tk.Frame):
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
-    def create_treeView(self, tree_frame):
+    def raise_above_all(self, window):
+        window.attributes('-topmost', 1)
+        window.attributes('-topmost', 0)
+
+    def create_treeView(self, tree_frame, columns_names):
         """ Function to create a new tree view in the given frame
 
         Parameters
@@ -353,7 +354,6 @@ class progressTracker(tk.Frame):
         tree_scrollx.config(command=self.tree.xview)
         tree_scrolly.config(command=self.tree.yview)
 
-        columns_names = ['Name', 'Type', 'Value']
         self.tree['columns'] = columns_names
 
         # Format columns
@@ -381,7 +381,6 @@ class progressTracker(tk.Frame):
         """ Executed when a row of the treeview is double clicked.
         Opens an entry box to edit a cell. """
 
-        # ii = self.notebook.index(self.notebook.select())
         self.treerow = self.tree.identify_row(event.y)
         self.treecol = self.tree.identify_column(event.x)
         tags = self.tree.item(self.treerow)["tags"]
@@ -515,6 +514,41 @@ class progressTracker(tk.Frame):
         else:
             self.finishButton.focus()
 
+    def isKey(self, d, k, key_list, cond_list):
+        """ Checks if the elements of a dictionary hava a specific key 
+        : param d: dict type.
+        : param k: string type.      
+        : param key_list: list type with keys that are not loop.
+        : param cond_list: list type with whether k is in a module in key_list.
+        """
+        for key in [key for key, val in d.items() if type(val) == dict]:
+            if d[key]['class'] == 'loop':
+                key_list, cond_list = self.isKey(d[key],k,key_list,cond_list)
+            else:
+                if d[key]['class'].lower() == 'entry_point':
+                    self.init_module = key
+                elif d[key]['class'].lower()  == 'exit_point':
+                    self.out_module = key
+                key_list.append(key)
+                cond_list.append(k in d[key].keys())
+        return key_list, cond_list
+    
+    def allKeysinDict(self, d, k, out_list):
+        """ Stores the elements of a dictionary for a specific key 
+        : param d: dict type.
+        : param k: string type.      
+        : param out_list: list type to store the keys that fulfill the condition.
+        """
+        for key in [key for key, val in d.items() if type(val) == dict]:
+            if d[key]['class'] == 'loop':
+                out_list = self.allKeysinDict(d[key],k,out_list)
+            else:
+                if k in d[key].keys():
+                    out_list.append(d[key][k])
+                else:
+                    out_list.append({})
+        return out_list
+    
     def upload(self):
         """ Opens the XML file that was previously uploaded and places the 
         modules, loops and connections in the canvas."""
@@ -523,39 +557,133 @@ class progressTracker(tk.Frame):
 
         self.reset()
 
-        self.s = XML_handler()
-        self.s.load_XML(filename)
-        # self.s._print_pretty(self.s.loaded_modules)
-        modules = self.s.loaded_modules
-        modout = modules['Output']
-        del modules['Initialiser'], modules['Output'] # They are generated when resetting
-        self.disp_mod = ['Initialiser', 'Output']
-        self.id_mod = [0, 1]
+        self.xml_handler = XML_handler()
+        self.xml_handler.load_XML(filename)
+        modules = self.xml_handler.loaded_modules
+        self.module_list, self.isCoords = self.isKey(modules, 'coordinates', [], [])
+        self.p_list = self.allKeysinDict(modules, 'plugin', [])
+        self.plugin_list = []
+        for e in self.p_list:
+            if type(e) == dict and 'plugin_name' in e.keys():
+                self.plugin_list.append(e['plugin_name'])
+            else:
+                self.plugin_list.append(0)
+        self.type_list = self.allKeysinDict(modules, 'module_type', [])
 
-        # Place the modules
-        self.place_modules(modules)
-        connect = list(modout['coordinates'][2].keys())
-        for p, parent in enumerate(modout['parents']):
-            parent_id = self.id_mod[np.where(
-                np.array(self.disp_mod) == parent)[0][0]]
-            out, ins = modout['coordinates'][2][connect[p]].split('-')
-            xout, yout, _, _ = self.canvas.coords(out[0]+str(parent_id))
-            xins, yins, _, _ = self.canvas.coords(ins[0]+str(1))
-            self.canvas.create_line(
-                xout + self.cr,
-                yout + self.cr,
-                xins + self.cr,
-                yins + self.cr,
-                fill="red",
-                arrow=tk.LAST,
-                tags=('o'+str(parent_id),
-                      'o'+str(1), modout['coordinates'][2][connect[p]]))
-            self.out_data.iloc[int(parent_id)][1] = 1
-            self.connections[1][
-                int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
-        self.m = self.id_mod[2]
-        x0, y0, x1, y1 = self.canvas.coords('p'+str(self.m))
-        # self.select(x0, y0)
+        if all(self.isCoords):
+
+            # Place Initialiser and Output
+            self.add_module(self.init_module, self.width/2, self.h, ini=True)
+            self.add_module(self.out_module, self.width/2, self.height - self.h, out=True)
+
+            modout = modules[self.out_module]
+            del modules[self.init_module], modules[self.out_module] # They are generated when resetting
+            self.disp_mod = [self.init_module, self.out_module]
+            self.id_mod = [0, 1]
+            # Reorder to have input and output in first two positions
+            self.plugin_list.insert(1, self.plugin_list.pop(len(self.plugin_list)-1))
+            self.type_list.insert(1, self.type_list.pop(len(self.type_list)-1))
+
+            # Place the modules
+            self.place_modules(modules)
+
+            #Output module
+            connect = list(modout['coordinates'][2].keys())
+            for p, parent in enumerate(modout['parents']):
+                parent_id = self.id_mod[np.where(
+                    np.array(self.disp_mod) == parent)[0][0]]
+                out, ins = modout['coordinates'][2][connect[p]].split('-')
+                xout, yout, _, _ = self.canvas.coords(out[0]+str(parent_id))
+                xins, yins, _, _ = self.canvas.coords(ins[0]+str(1))
+                self.canvas.create_line(
+                    xout + self.cr,
+                    yout + self.cr,
+                    xins + self.cr,
+                    yins + self.cr,
+                    fill="red",
+                    arrow=tk.LAST,
+                    tags=('o'+str(parent_id),
+                        'o'+str(1), modout['coordinates'][2][connect[p]]))
+                self.out_data.iloc[int(parent_id)][1] = 1
+                self.connections[1][
+                    int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
+            self.m = self.id_mod[2]
+
+        else: # There are no coordinates for some modules.
+            self.my_label.config(text = " ".join(self.my_label.cget('text').split(' ')[:-1] + ['list.']))
+
+            self.update_output(modules)
+            self.id_mod = list(range(len(self.module_list)))
+            self.disp_mod = self.module_list
+            self.canvas.pack_forget()
+            frame_tree = tk.Frame(self.frame1, bg='green')
+            self.create_treeView(frame_tree, ['Module'])
+            self.r=0
+            for i, module in enumerate(self.module_list):
+                self.tree.insert(parent='', index='end', iid=str(self.r), text='',
+                                    values=tuple([module]), tags=('odd' if i%2 == 0 else 'even',))
+                self.r+=1
+            self.tree.column(
+                'Module', width=int(self.controller.pages_font.measure(str(max(self.module_list, key=len))))+20,
+                minwidth=50, anchor=tk.CENTER)
+            self.tree.tag_configure('odd', foreground='black',
+                                    background='#9fc5e8')
+            self.tree.tag_configure('even', foreground='black',
+                                    background='#cfe2f3')
+
+            frame_tree.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+            frame_tree.grid_rowconfigure(tuple(range(len(self.module_list))), weight=1)
+            frame_tree.grid_columnconfigure(tuple(range(2)), weight=1)
+            self.tree.bind('<Button-1>', self.on_click_noCanvas)
+
+    def on_click_noCanvas(self, event):
+        """ Passes the mouse click coordinates to the select function when there is no Canvas."""
+        self.click = True
+        self.select_noCanvas(event.x, event.y)
+        
+    def select_noCanvas(self, x: float, y:float):
+        """ 
+        Selects the module at the mouse location and updates the associated 
+        plugins as well as the colours. 
+        Blue means no plugin has been specified,
+        Orange means the module is selected.
+        Green means the plugin for this module is already set. 
+        :param x: float type of module x coordinate
+        :param y: float type of module y coordinate
+        """
+        self.treerow = self.tree.identify_row(y)
+        self.treecol = self.tree.identify_column(x)
+        tags = self.tree.item(self.treerow)["tags"]
+
+        if len(tags) > 0:
+            self.m = int(self.treerow)
+            if int(self.m) > 0 and int(self.m) < len(self.module_list)-1:
+                self.optionsWindow()
+
+    def update_output(self, modules: dict):
+        """Update the output.
+        :param modules: dict type of modules in the pipeline.
+        """
+
+        for key in [key for key, val in modules.items() if type(val) == dict]:
+            if modules[key]['class'] == 'loop':
+                # Extracts numbers from string
+                l = int(
+                    ''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
+                self.loops.append({'type': modules[key]['type'],
+                                   'condition': modules[key]['condition'],
+                                   'mod': []})
+                self.update_output(modules[key])
+            else:
+                self.module_out(modules[key]['name'])
+                # Connect modules
+                for p, parent in enumerate(modules[key]['parents']):
+                    if not (parent[:4] == 'loop'):
+                        self.out_data.loc[parent].loc[modules[key]['name']] = 1
+                        # self.connections[int(self.id_mod[-1])][
+                        #     int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(self.id_mod[-1])
+                    else:
+                        self.loops[-1]['mod'].append(key)
 
     def place_modules(self, modules: dict):
         """Places the modules in the dictionary in the canvas.
@@ -644,11 +772,10 @@ class progressTracker(tk.Frame):
         self.out_data = pd.DataFrame()
         self.connections = {}
         self.modules = 0
-        self.module_list = []
         self.module_names = []
 
-        self.add_module('Initialiser', self.width/2, self.h, ini=True)
-        self.add_module('Output', self.width/2, self.height - self.h, out=True)
+        # self.add_module('Initialiser', self.width/2, self.h, ini=True)
+        # self.add_module('Output', self.width/2, self.height - self.h, out=True)
 
         self.draw = False
         self.loops = []

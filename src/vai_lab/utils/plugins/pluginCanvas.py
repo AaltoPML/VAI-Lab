@@ -32,7 +32,19 @@ class pluginCanvas(tk.Frame):
         self.parent = parent
         self.controller = controller
         self.s = XML_handler()
+        self.m: int
+        self.w, self.h = 100, 50
+        self.cr = 4
+        self.id_done = [0, 1]
+        self.id_mod:List[int] = [0, 1]
+        self.out_data = pd.DataFrame()
+        self.plugin: Dict[int, tk.StringVar] = {}
+        self.dataType: Dict[int, tk.StringVar] = {}
+        self.allWeHearIs: List[tk.Radiobutton] = []
+        if not self.controller._debug:
+            self._setup_frame()
 
+    def _setup_frame(self):
         script_dir = get_lib_parent_dir()
         self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
             file=os.path.join(os.path.join(
@@ -57,16 +69,8 @@ class pluginCanvas(tk.Frame):
                                 height=self.height, background="white")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
-        self.m: int
-        self.w, self.h = 100, 50
-        self.cr = 4
         self.canvas.bind('<Button-1>', self.on_click)
-        self.id_done = [0, 1]
-        self.id_mod:List[int] = [0, 1]
-        self.out_data = pd.DataFrame()
-        self.plugin: Dict[int, tk.StringVar] = {}
-        self.dataType: Dict[int, tk.StringVar] = {}
-        self.allWeHearIs: List[tk.Radiobutton] = []
+        
 
         self.my_label = tk.Label(self.frame2,
                                  text='',
