@@ -70,7 +70,7 @@ python3 -m venv venv && source venv/bin/activate
 ```
 or, alternatively, using conda environment
 ```bash
-conda create --name vai_lab python=3.8 && conda activate vai_lab
+conda create --name vai_lab python=3.10 && conda activate vai_lab
 ```
 Upgrade pip
 ```bash
