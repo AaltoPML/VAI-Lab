@@ -164,9 +164,16 @@ class DataProcessingT(PluginTemplate, ABC):
         TODO: in future, reverse the direction of this function - instead pull all options
                 that are directly required by the solver
         """
-        return {i[0]: i[1]
+        _cleaned =  {i[0]: i[1]
                 for i in self._config["options"].items()
                 if i[0] not in self._options_to_ignore}
+        for key, val in _cleaned.items():
+            if val == 'True':
+                _cleaned[key] = True
+            elif val == 'False':
+                _cleaned[key] = False
+        return _cleaned
+            
 
     @abstractmethod
     def fit(self):
