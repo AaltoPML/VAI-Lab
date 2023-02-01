@@ -79,7 +79,7 @@ From code
     import vai_lab as ai
 
     core = ai.Core()
-    core.load_config_file(("./examples/xml_files/user_feedback_demo.xml"))
+    core.load_config_file(("./src/vai_lab/examples/xml_files/user_feedback_demo.xml"))
     core.run()
 
 Absolute paths, as well paths relative to the library's base directory can be used.
