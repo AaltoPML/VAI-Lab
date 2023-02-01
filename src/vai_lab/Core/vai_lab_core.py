@@ -28,11 +28,12 @@ class Core:
         gui_app.set_avail_plugins(self._avail_plugins)
         gui_app.set_gui_as_startpage()
         gui_output = gui_app.launch()
-        try:
-            self.load_config_file(gui_output["xml_filename"])
-        except:
-            raise Exception("No XML File Selected. Cannot Run Pipeline")
-        self._load_data()
+        if not self._debug:
+            try:
+                self.load_config_file(gui_output["xml_filename"])
+            except:
+                raise Exception("No XML File Selected. Cannot Run Pipeline")
+            self._load_data()
 
     def load_config_file(self, filename: Union[str,List,Tuple]):
         """Loads XML file into XML_handler object.
