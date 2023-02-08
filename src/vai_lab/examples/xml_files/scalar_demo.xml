@@ -21,7 +21,11 @@
         <coordinates>
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="StandardScaler" />
+        <plugin type="StandardScaler">
+            <with_mean>
+                True
+            </with_mean>
+        </plugin>
     </DataProcessing>
     <Output name="Output">
         <plugin type="" />

@@ -4,10 +4,10 @@
             <child name="My Data Processing" />
         </relationships>
 		<inputdata>
-            <X file="./supervised_classification/X_tr.csv"/>
-            <Y file="./supervised_classification/Y_tr.csv"/>
-            <X_test file="./supervised_classification/X_tst.csv"/>
-            <Y_test file="./supervised_classification/Y_tst.csv"/>
+            <X file="./examples/supervised_classification/X_tr.csv"/>
+            <Y file="./examples/supervised_classification/Y_tr.csv"/>
+            <X_test file="./examples/supervised_classification/X_tst.csv"/>
+            <Y_test file="./examples/supervised_classification/Y_tst.csv"/>
         </inputdata>
     </Initialiser>
   
@@ -35,7 +35,7 @@
         <relationships>
             <parent name="My Modelling Module" />
         </relationships>
-      <outData file="./my_results.csv" />
+      <!-- <outData file="./my_results.csv" /> -->
     </Output>
   
 </pipeline>

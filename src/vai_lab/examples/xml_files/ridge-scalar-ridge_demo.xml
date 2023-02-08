@@ -37,7 +37,7 @@
         </coordinates>
         <plugin type="StandardScaler">
             <with_mean>
-                 
+                 True
             </with_mean>
         </plugin>
     </DataProcessing>

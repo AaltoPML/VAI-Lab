@@ -26,8 +26,8 @@ class GUI(tk.Tk):
         self._top_ui_layer = None
         self._module_config = None
         self._debug = False
-        self.closed = False
-        self.startpage = False
+        self._closed = False
+        self._is_startpage = False
         self.output = {}
 
     def set_avail_plugins(self, avail_plugins: PluginSpecsInterface):
@@ -45,15 +45,15 @@ class GUI(tk.Tk):
         self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
     def set_gui_as_startpage(self):
-        self.startpage = True
+        self._is_startpage = True
         self._load_plugin("main")
-        self.s = XML_handler()
-        self.s.new_config_file()
+        self.xml_handler = XML_handler()
+        self.xml_handler.new_config_file()
         
-    def set_gui(self, status):
-        self.startpage = True
+    def set_gui_as_progress_tracker(self, status):
+        self._is_startpage = True
         self._load_plugin("progressTracker")
-        self.status = status
+        self._status = status
 
     def _compare_layer_priority(self, ui_specs):
         """Check if a new module should have higher layer priority than the existing one
@@ -125,7 +125,7 @@ class GUI(tk.Tk):
         frame.tkraise()
 
     def _on_closing(self) -> None:
-        self.closed = True
+        self._closed = True
         self.destroy()
 
     def destroy(self) -> None:
@@ -145,7 +145,7 @@ class GUI(tk.Tk):
             page_name = F.__name__
             frame = F(parent=container, controller=self,
                       config=self._module_config)
-            if not self.startpage:
+            if not self._is_startpage:
                 frame.set_data_in(self._data_in)
             self.frames[page_name] = frame
 
@@ -157,7 +157,7 @@ class GUI(tk.Tk):
         if not self._debug:
             self.mainloop()
         else:
-            self.closed = True
+            self._closed = True
         return self.output
 
     def get_result(self):

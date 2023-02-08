@@ -25,7 +25,7 @@
             <save_to file="../resources/output_test.csv" />
         </plugin>
         <relationships>
-            <parent name="My Second UserInteraction Module" />
+            <parent name="My First UserInteraction Module" />
         </relationships>
     </Output>
 </pipeline>

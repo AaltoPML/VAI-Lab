@@ -1,22 +1,24 @@
-from vai_lab._import_helper import import_module
-from vai_lab.Data.xml_handler import XML_handler
-from vai_lab.GUI.GUI_core import GUI
-from vai_lab.Data.Data_core import Data
-from vai_lab._plugin_helpers import PluginSpecs
-from vai_lab._types import PluginSpecsInterface, ModuleInterface
 import time
 from sys import exit
-
 from os.path import join
-from typing import Dict, Tuple, Union, List
+from typing import Dict, List, Tuple, Union
+
+from vai_lab._import_helper import import_module
+from vai_lab._plugin_helpers import PluginSpecs
+from vai_lab._types import ModuleInterface, PluginSpecsInterface
+from vai_lab.GUI.GUI_core import GUI
+from vai_lab.Data.Data_core import Data
+from vai_lab.Data.xml_handler import XML_handler
+
+
 class Core:
     def __init__(self) -> None:
+        self.data = Data()
         self._xml_handler = XML_handler()
         self._avail_plugins: PluginSpecsInterface = PluginSpecs()
-        self.data = Data()
-        self.loop_level: int = 0
-        self.setup_complete: bool = False
         
+        self.loop_level: int = 0
+        self._initialised: bool = False
         self.status_logger:Dict = {}
         self._debug = False
 
@@ -26,7 +28,7 @@ class Core:
         gui_app.set_avail_plugins(self._avail_plugins)
         gui_app.set_gui_as_startpage()
         gui_output = gui_app.launch()
-        if not gui_app.closed:
+        if not self._debug:
             try:
                 self.load_config_file(gui_output["xml_filename"])
             except:
@@ -34,14 +36,18 @@ class Core:
             self._load_data()
 
     def load_config_file(self, filename: Union[str,List,Tuple]):
+        """Loads XML file into XML_handler object.
+        Parses filename first, if needed.
+        """
         if type(filename) == list or type(filename) == tuple:
             filedir:str = join(*filename)
         else:
             filedir = str(filename)
         self._xml_handler.load_XML(filedir)
-        self.setup_complete = True
+        self._initialised = True
 
     def _load_data(self) -> None:
+        """Loads data from XML file into Data object"""
         init_data_fn = self._xml_handler.data_to_load
         self.data.import_data_from_config(init_data_fn)
 
@@ -52,31 +58,32 @@ class Core:
         :param specs: dict of module to be executed
         """
         mod: ModuleInterface = import_module(globals(), specs["module_type"]).__call__()
+        mod._debug = self._debug
         mod.set_avail_plugins(self._avail_plugins)
         mod.set_data_in(self.data)
         mod.set_options(specs)
         print("\t"*self.loop_level
                 + specs["module_type"]
-                + " module: \"{}\"".format(specs["name"])
+                + " module: \"{}\" ".format(specs["name"])
                 + "processing..."
               )
         mod.launch()
         self.data = mod.get_result()
 
     def _execute_loop(self, specs):
-        try:
+        if  hasattr(self,"_execute_{}_loop".format(specs["type"])):
             print("\t"*self.loop_level
+                        + "Starting "
                         + specs["type"]
-                        + " loop: "
-                        + "\"{}\"".format(specs["name"])
-                        + " starting...")
+                        + " loop: \"{}\"".format(specs["name"])
+                        + " ...")
             self.loop_level += 1
             getattr(self, "_execute_{}_loop".format(specs["type"]))(specs)
             self.loop_level -= 1
-        except KeyError:
+        else:
             print("\nError: Invalid Loop Type.")
             print("Loop \"{0}\" with type \"{1}\" not recognised".format(
-                specs.key, specs["type"]))
+                specs["name"], specs["type"]))
 
     def _execute_entry_point(self, specs):
         """Placeholder: Will parse the initialiser module when ready"""
@@ -86,7 +93,7 @@ class Core:
         """Placeholder: Will parse the Output module when ready"""
         pass
 
-    def _parse_condition(self, condition):
+    def _parse_loop_condition(self, condition):
         try:
             condition = int(condition)
             
@@ -98,20 +105,24 @@ class Core:
                 "Other formats in in development. Only ranged for loops are working currently")
 
     def _execute_for_loop(self, specs):
-        condition = self._parse_condition(specs["condition"])
+        condition = self._parse_loop_condition(specs["condition"])
         for c in condition:
             self._execute(specs)
 
-    def _runTracker(self):
+    def _show_updated_tracker(self):
         self.gui_app = GUI()
+        self.gui_app._debug = self._debug
         self.gui_app.set_avail_plugins(self._avail_plugins)
-        self.gui_app.set_gui(self.status_logger)
+        self.gui_app.set_gui_as_progress_tracker(self.status_logger)
         self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
+        self.gui_app._load_plugin("progressTracker")
         return self.gui_app.launch()
     
     def _init_status(self, modules):
         for key in [key for key, val in modules.items() if type(val) == dict]:
             self.status_logger[modules[key]['name']] = {}
+            if modules[key]['class'] == "loop":
+                self._init_status(modules[key])
 
     def _add_status(self, module, key, value):
         self.status_logger[module['name']][key] = value
@@ -121,7 +132,6 @@ class Core:
 
     def _progress_finish(self, module):
         self._add_status(module, 'finish', self._t)
-
 
     @property
     def _t(self):
@@ -141,18 +151,24 @@ class Core:
             self._progress_finish(specs[key])
 
             if specs[key]["class"] == 'module':
-                term = self._runTracker()
-                if not term['close']:
+                _tracker = self._show_updated_tracker()
+
+                if not _tracker['terminate']:
                     self.load_config_file(self._xml_handler.filename)
+                    # pass
                 else:
                     print('Pipeline terminated')
                     exit()
 
+    def _initialise_with_gui(self):
+        """Launches GUI when no XML file is specified"""
+        print("Loading GUI")
+        print("To load existing config, run core.load_config_file(<path_to_file>)")
+        self._launch()
+
     def run(self):
-        if not self.setup_complete:
-            print("No pipeline specified. Running GUI.")
-            print("To load existing config, run core.load_config_file(<path_to_file>)")
-            self._launch()
+        if not self._initialised:
+            self._initialise_with_gui()
         print("Running pipeline...")
         self._load_data()
         

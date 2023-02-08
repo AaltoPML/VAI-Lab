@@ -110,6 +110,8 @@ class PluginSpecsInterface(Protocol):
 
 
 class ModuleInterface(Protocol):
+    _debug: bool
+
     def set_avail_plugins(self, avail_plugins: PluginSpecsInterface):
         ...
 

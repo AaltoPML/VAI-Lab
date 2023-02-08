@@ -31,7 +31,10 @@ class MainPage(tk.Frame):
         self.controller.output_type = 'regression'
         self.out_data = pd.DataFrame()
         self.bg = parent['bg']
+        if not self.controller._debug:
+            self._setup_frame()
 
+    def _setup_frame(self):
         self.script_dir = get_lib_parent_dir()
         self.my_img1 = ImageTk.PhotoImage(
             Image.open(
