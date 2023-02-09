@@ -70,15 +70,11 @@ python3 -m venv venv && source venv/bin/activate
 ```
 or, alternatively, using conda environment
 ```bash
-conda create --name vai_lab python=3.10 && conda activate vai_lab
+conda create --channel conda-forge --name vai_lab python=3.10 gcc cxx-compiler && conda activate vai_lab
 ```
-Upgrade pip
+Upgrade pip and install the package
 ```bash
-python3 -m pip install -U pip
-```
-Install the package
-```bash
-python3 -m pip install .
+python3 -m pip install -U pip && python3 -m pip install .
 ```
 
 # Running Unit Tests
