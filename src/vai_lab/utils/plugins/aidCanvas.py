@@ -73,7 +73,7 @@ class aidCanvas(tk.Frame):
         frame3 = tk.Frame(self, bg=self.bg)
         frame4 = tk.Frame(self, bg=self.bg)
 
-        self.my_label = tk.Label(frame2, image=self.my_img1, bg=parent['bg'], anchor = 'center')
+        self.my_label = tk.Label(frame2, image=self.my_img1, bg=self.bg, anchor = 'center')
         self.my_label.grid(column=5, row=0, padx=(10, 10), pady=(10, 10), sticky="nwse")
 
         # Create canvas
@@ -100,69 +100,69 @@ class aidCanvas(tk.Frame):
 
         # for m, module in enumerate(modules):
         tk.Button(
-            frame4, text='Data processing', fg='white', bg=parent['bg'],
+            frame4, text='Data processing', fg='white', bg=self.bg,
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('Data Processing',
                                             self.width/2,
                                             self.height/2)
         ).grid(column=5, row=1, padx=(10, 10), sticky="news")
         tk.Button(
-            frame4, text='Modelling', fg='white', bg=parent['bg'],
+            frame4, text='Modelling', fg='white', bg=self.bg,
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('Modelling',
                                             self.width/2,
                                             self.height/2)
         ).grid(column=5, row=2, padx=(10, 10), sticky="news")
         tk.Button(
-            frame4, text='Decision making', fg='white', bg=parent['bg'],
+            frame4, text='Decision making', fg='white', bg=self.bg,
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('Decision Making',
                                             self.width/2,
                                             self.height/2)
         ).grid(column=5, row=3, padx=(10, 10), sticky="news")
         tk.Button(
-            frame4, text='User Interaction', fg='white', bg=parent['bg'],
+            frame4, text='User Interaction', fg='white', bg=self.bg,
             height=3, width=25, font=self.controller.pages_font,
             command=lambda: self.add_module('User Interaction',
                                             self.width/2,
                                             self.height/2)
         ).grid(column=5, row=4, padx=(10, 10), sticky="news")
         tk.Button(
-            frame4, text = 'Input data', fg = 'white', bg = parent['bg'],
+            frame4, text = 'Input data', fg = 'white', bg = self.bg,
             height = 3, width = 25, font = self.controller.pages_font,
             command = lambda: self.add_module('Input Data', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 5, padx=(10,10), sticky="news")        
         tk.Button(
-            frame4, text = 'Data Storage', fg = 'white', bg = parent['bg'],
+            frame4, text = 'Data Storage', fg = 'white', bg = self.bg,
             height = 3, width = 25, font = self.controller.pages_font,
             command = lambda: self.add_module('Data Storage', 
                                               self.width/2, 
                                               self.height/2)
             ).grid(column = 5, row = 6, padx=(10,10), sticky="news")
         tk.Button(
-            frame4, text = 'Delete selection', fg = 'white', bg = parent['bg'],
+            frame4, text = 'Delete selection', fg = 'white', bg = self.bg,
             height = 3, width = 25, font = self.controller.pages_font,
             command = self.delete_sel).grid(column = 5, row = 7, sticky="news"
                                             , padx=(10,10), pady=(0,10))
         
         ww = int(self.width/40)
         tk.Button(
-            frame3, text='Upload', fg='white', bg=parent['bg'],
+            frame3, text='Upload', fg='white', bg=self.bg,
             height=3, width=ww, font=self.controller.pages_font,
             command=self.upload).grid(column=0, row=10, sticky="news",
                                       padx=(10, 0), pady=(0, 10))
         tk.Button(
-            frame3, text='Save', fg='white', bg=parent['bg'],
+            frame3, text='Save', fg='white', bg=self.bg,
             height=3, width=ww, font=self.controller.pages_font,
             command=self.save_file).grid(column=1, row=10, sticky="news", pady=(0, 10))
         tk.Button(
-            frame3, text='Reset', fg='white', bg=parent['bg'],
+            frame3, text='Reset', fg='white', bg=self.bg,
             height=3, width=ww, font=self.controller.pages_font,
             command=self.reset).grid(column=2, row=10, sticky="news", pady=(0, 10))
         tk.Button(
-            frame3, text='Done', fg='white', bg=parent['bg'],
+            frame3, text='Done', fg='white', bg=self.bg,
             height=3, width=ww, font=self.controller.pages_font,
             command=self.check_quit).grid(column=3, row=10, sticky="news", pady=(0, 10))
 

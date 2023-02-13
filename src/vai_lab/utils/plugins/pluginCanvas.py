@@ -97,12 +97,12 @@ class pluginCanvas(tk.Frame):
 
         ww = int(self.width/40)
         tk.Button(
-            frame3, text='Load Pipeline', fg='white', bg=parent['bg'],
+            frame3, text='Load Pipeline', fg='white', bg=self.bg,
             height=3, width=ww, font=self.controller.pages_font,
             command=self.upload).grid(column=0, row=0, sticky="news",
                                       padx=(10, 0), pady=(0, 10))
         tk.Button(
-            frame3, text='Back to main', fg='white', bg=parent['bg'],
+            frame3, text='Back to main', fg='white', bg=self.bg,
             height=3, width=ww, font=self.controller.pages_font,
             command=self.check_quit).grid(column=1, row=0, sticky="news", pady=(0, 10))
 
