@@ -14,9 +14,9 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile
 
-_PLUGIN_READABLE_NAMES = {"optimisation": "default",
-                          "BO": "alias",
-                          "BayesianOptimisation": "alias"}      # type:ignore
+_PLUGIN_READABLE_NAMES = {"optimisationUI": "default",
+                          "BOUI": "alias",
+                          "BayesianOptimisationUI": "alias"}      # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                           "required_children": None}            # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                                  # type:ignore
