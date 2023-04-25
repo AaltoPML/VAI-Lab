@@ -34,7 +34,14 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         self.controller.title('Optimisation Input')
 
         self.dirpath = get_lib_parent_dir()
-
+        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
+            file=os.path.join(os.path.join(
+                self.dirpath,
+                'utils',
+                'resources',
+                'Assets',
+                'VAILabsIcon.ico'))))
+        
         self.assets_path = os.path.join(self.dirpath, 'utils', 'resources', 'Assets')
 
         self._data_in: DataInterface
