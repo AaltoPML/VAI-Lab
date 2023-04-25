@@ -77,13 +77,13 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         self.button_save = tk.Button(
             frame4, text='Save', fg='white', bg=self.parent['bg'], height=3,
             width=20, command=self.save_file)
-        self.button_save.grid(column=0, row=0, sticky="news", pady=10)
-
+        self.button_save.grid(column=0, row=0, sticky="news", pady=2, padx=[2,0])
+        
         tk.Button(
             frame5, text="Done",
             fg='white', bg=self.parent['bg'],
             height=3, width=20,
-            command=self.check_quit).grid(column=0, row=0, sticky="news", pady=10)
+            command=self.check_quit).grid(column=0, row=0, sticky="news", pady=2, padx=[0,2])
 
         self.frame1.grid(row=0, column=0, sticky="nsew")
         frame4.grid(row=1, column=0, sticky="nsew")
