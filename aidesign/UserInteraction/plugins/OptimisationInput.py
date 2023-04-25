@@ -31,7 +31,7 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         self.parent = parent
         super().__init__(parent, bg=self.parent['bg'])
         self.controller: GUICoreInterface = controller
-        self.controller.title('Optimisation Input')
+        self.controller.title('Optimisation Interaction')
 
         self.dirpath = get_lib_parent_dir()
         self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
@@ -212,8 +212,9 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
 
         item = self.tree.selection()[0]
         x = [float(i) for i in self.tree.item(item)['values']] 
-        self.plot_points(self.out_data, self.opt_var, x = x)
-        self.canvas.draw()
+        if len(self.opt_var) < 3:
+            self.plot_points(self.out_data, self.opt_var, x = x)
+            self.canvas.draw()
 
     def OnDoubleClick(self, event):
         """ Executed when a row is double clicked.
