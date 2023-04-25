@@ -1,0 +1,31 @@
+<pipeline>
+    <Initialiser name="Init">
+        <inputdata>
+            <X folder="./examples/image_classification/training_images/" />
+            <Y file="./examples/image_classification/Y_data.csv" />
+        </inputdata>
+        <relationships>
+            <child name="My First UserInteraction Module" />
+        </relationships>
+    </Initialiser>
+    <UserInteraction name="My First UserInteraction Module">
+        <plugin type="manual">
+            <some_param val = "2" />
+        </plugin>
+        <relationships>
+            <parent name="Init" />
+            <child name="Output" />
+        </relationships>
+    </UserInteraction>
+    <Output>
+        <plugin type="">
+            <out_data>
+                all
+            </out_data>
+            <save_to file="../resources/output_test.csv" />
+        </plugin>
+        <relationships>
+            <parent name="My First UserInteraction Module" />
+        </relationships>
+    </Output>
+</pipeline>
