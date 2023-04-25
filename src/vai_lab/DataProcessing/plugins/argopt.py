@@ -3,7 +3,7 @@ from numpy import argmin, argmax
 from vai_lab._plugin_templates import DataProcessingT
 import pandas as pd
 
-_PLUGIN_READABLE_NAMES = {"argopt": "default",
+_PLUGIN_READABLE_NAMES = {"argopt": "math operator",
                           "argmax": "alias",            
                           "argmin": "alias"}            # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "Other"}              # type:ignore

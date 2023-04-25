@@ -4,7 +4,7 @@ import pandas as pd
 
 _PLUGIN_READABLE_NAMES = {"Integral": "default",
                           "integral": "alias"}          # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "Other"}              # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "math operator"}      # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}             # type:ignore
 _PLUGIN_OPTIONAL_SETTINGS = {}                          # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                              # type:ignore
