@@ -11,7 +11,8 @@ class GUI(tk.Tk):
     """
     TODO: This structure still needs serious overhaul. 
 
-    TODO: By having the TKinter controller as in the main GUI module, we are locked to using TKinter which defeats the purpose of being modular. This class needs to only be calling the plugins themselves, not acting as a controller.
+    TODO: By having the TKinter controller as in the main GUI module, we are locked to using TKinter which defeats the purpose of being modular. 
+    This class needs to only be calling the plugins themselves, not acting as a controller.
     """
 
     def __init__(self, *args, **kwargs):
