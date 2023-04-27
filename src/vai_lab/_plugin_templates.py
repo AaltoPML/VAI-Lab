@@ -3,7 +3,7 @@ from vai_lab._types import DataInterface
 from abc import ABC, abstractmethod
 
 import numpy as np
-
+import pandas as pd
 
 class PluginTemplate:
     def __init__(self, plugin_globals: dict) -> None:
@@ -174,14 +174,36 @@ class DataProcessingT(PluginTemplate, ABC):
                 _cleaned[key] = False
         return _cleaned
             
-
-    @abstractmethod
     def fit(self):
-        pass
+        cleaned_options = self._clean_solver_options()
+        try:
+            self.proc.set_params(**cleaned_options)
+        except Exception as exc:
+            print('The plugin encountered an error on the parameters of '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
+        try:
+            self.proc.fit(self.X)
+        except Exception as exc:
+            print('The plugin encountered an error when fitting '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
 
-    @abstractmethod
     def transform(self, data: DataInterface) -> DataInterface:
-        pass
+        try:
+            data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
+        except Exception as exc:
+            print('The plugin encountered an error when transforming the data with '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
+        if self.X_tst is not None:
+            try:
+                data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
+            except Exception as exc:
+                print('The plugin encountered an error when transforming the data with '
+                        +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                raise
+        return data
 
 
 class ModellingPluginT(PluginTemplate, ABC):
