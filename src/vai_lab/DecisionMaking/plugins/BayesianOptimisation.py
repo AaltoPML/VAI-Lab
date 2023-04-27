@@ -3,15 +3,22 @@ from  GPyOpt.methods import BayesianOptimization as model
 
 _PLUGIN_READABLE_NAMES = {"BayesianOptimisation": "default",
                           "BO": "alias",}                   # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "DecisionMaking"}         # type:ignore
-_PLUGIN_REQUIRED_SETTINGS = {"batches": "int"}              # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"damping": "float"}            # type:ignore
-_PLUGIN_REQUIRED_DATA = {"X"}                               # type:ignore
-_PLUGIN_OPTIONAL_DATA = {"Y", "X_tst", 'Y_tst'}             # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "decision making"}        # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {"f": "function"}              # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"bounds": "list",
+                             "constraints": "list",
+                             "acquisition_type ": "str",
+                             "files": "list",
+                             "normalize_Y": "bool",
+                             "evaluator_type": "str",
+                             "batch_size": "int",
+                             "acquisition_jitter": "float"} # type:ignore
+_PLUGIN_REQUIRED_DATA = {}                                  # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X","Y"}                           # type:ignore
 
 class BayesianOptimisation(DecissionMakingPluginT):
     """
-    Bayesian Optimisation
+    Bayesian optimisation model
     """
 
     def __init__(self):
@@ -19,7 +26,7 @@ class BayesianOptimisation(DecissionMakingPluginT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.BO_batch = model()
+        self.BO = model()
 
     def configure(self, config: dict):
         """Sets and parses plugin configurations options
@@ -36,18 +43,15 @@ class BayesianOptimisation(DecissionMakingPluginT):
 
     def solve(self):
         """Sends params to solver, then runs solver"""
-        self.clf.set_params(**self._config["options"])
-        self.clf.fit(self.X, self.Y)
+        self.BO.set_params(**self._config["options"])
+        self.BO.fit(self.X, self.Y)
 
-    def predict(self, data):
-        """Uses fitted model to predict output of a given Y
-        :param data: array-like or sparse matrix, shape (n_samples, n_features)
-                    Samples
-                    expected type: aidesign.Data.Data_core.Data
-        :returns: array, shape (n_samples,)
-                    Returns predicted values.
+    def predict(self):
+        """Uses fitted model to suggest next points
+        :returns: array, shape (n_samples, n_features)
+                    Returns suggested values.
         """
-        return self.clf.predict(data)
+        return self.BO_batch.suggest_next_locations()
 
     def score(self, X, Y, sample_weight=None):
         """Return the coefficient of determination

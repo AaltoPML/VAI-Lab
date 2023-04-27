@@ -1,0 +1,48 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Decision Making" />
+        </relationships>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
+    </Initialiser>
+    <DecisionMaking name="Decision Making">
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(350.0,350.0),2,{0:'d0-u2'}]
+        </coordinates>
+        <plugin type="BayesianOptimisation">
+            <f>
+                 None
+            </f>
+            <acquisition_type >
+                 'EI_DFT'
+            </acquisition_type >
+            <files>
+                 ['/phasestability/CsFA/fulldata/CsFA_T300_above.csv',  '/phasestability/FAMA/fulldata/FAMA_T300_above.csv',  '/phasestability/CsMA/fulldata/CsMA_T300_above.csv']
+            </files>
+            <normalize_Y>
+                 True
+            </normalize_Y>
+            <evaluator_type>
+                 'local_penalization'
+            </evaluator_type>
+            <acquisition_jitter>
+                 0.01
+            </acquisition_jitter>
+        </plugin>
+    </DecisionMaking>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Decision Making" />
+        </relationships>
+        <coordinates>
+            [(350.0,650),1,{2:'d2-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>

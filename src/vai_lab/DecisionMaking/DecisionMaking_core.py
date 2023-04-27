@@ -22,7 +22,7 @@ class Modelling(object):
         self.options = options
 
     def solve(self):
-        # send the input data to the modelling plugin and assign it to an output property
+        # send the input data to the decision making plugin and assign it to an output property
         pass
 
     def get_result(self):
