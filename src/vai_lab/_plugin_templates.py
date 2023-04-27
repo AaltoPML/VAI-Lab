@@ -225,7 +225,7 @@ class ModellingPluginT(PluginTemplate, ABC):
         :param sample_weight : array-like of shape (n_samples,), default=None
                     Sample weights.
 
-        :returns: score : float R^2` of ``self.predict(X)`` wrt. `y`.
+        :returns: score : float of ``self.predict(X)`` wrt. `y`.
         """
         try:
             return self.clf.score(X, Y, sample_weight)
