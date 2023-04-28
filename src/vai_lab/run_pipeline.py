@@ -58,11 +58,13 @@ def main():
             args.file[i] = abspath(args.file[i])
         core.load_config_file(args.file)
 
+    core.load_config_file(
+        ("./examples",
+        "xml_files",
+        'KNN-classification_demo.xml'))
+
     # Run pipeline   
     core.run()
-
-
-
 
 if __name__=='__main__':
     
