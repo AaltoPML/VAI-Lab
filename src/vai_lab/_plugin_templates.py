@@ -275,6 +275,37 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
             raise
 
+class DecisionMakingPluginT(PluginTemplate, ABC):
+    def __init__(self, plugin_globals: dict) -> None:
+        super().__init__(plugin_globals)
+
+    def run_optimization(self):
+        """Sends parameters to optimizer, then runs Bayesian Optimization for a number 'max_iter' of iterations"""
+        try:
+            self.BO.set_params(**self._config["options"])
+        except Exception as exc:
+            print('The plugin encountered an error on the parameters of '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
+        try:
+            self.BO.run_optimization()
+        except Exception as exc:
+            print('The plugin encountered an error when running the optimization '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
+
+    def suggest_next_locations(self, data):
+        """Run a single optimization step and return the next locations to evaluate the objective. 
+        Number of suggested locations equals to batch_size.
+        :returns: array, shape (n_samples,)
+                    Returns suggested values.
+        """
+        try:
+            return self.BO.predict(data)
+        except Exception as exc:
+            print('The plugin encountered an error when suggesting points with '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
 
 class UI(PluginTemplate, ABC):
     @property
