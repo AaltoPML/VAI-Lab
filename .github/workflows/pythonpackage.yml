@@ -12,7 +12,6 @@ on:
           description: 'Test scenario tags' 
 
 jobs:
-  timeout-minutes: 60
   build:
     runs-on: ${{ matrix.os }}
      strategy:
