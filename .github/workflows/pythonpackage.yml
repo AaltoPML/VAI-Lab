@@ -33,8 +33,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .
       - name: Test with pytest
-        # uses: GabrielBB/xvfb-action@v1.6
-        uses: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255
+        uses: GabrielBB/xvfb-action@v1.6
+        # uses: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255
         with:
           run: |
             pip install pytest
