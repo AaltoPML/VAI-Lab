@@ -30,7 +30,7 @@ jobs:
 
       # micromamba
       - name: Create Conda environment from environment.yml
-          uses: mamba-org/provision-with-micromamba@main        
+        uses: mamba-org/provision-with-micromamba@main        
 
       #- name: Set up Python ${{ matrix.python-version }}
       #  uses: actions/setup-python@v4
