@@ -1,4 +1,4 @@
-name: vailab2
+name: vailab
 channels:
   - conda-forge
 dependencies:
