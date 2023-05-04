@@ -23,6 +23,11 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v3
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -37,8 +42,7 @@ jobs:
         uses: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255
         with:
           run: |
-            pip install pytest
-            pip install pytest-cov
+            pip install pytest pytest-cov
             pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 
 
