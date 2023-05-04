@@ -11,6 +11,10 @@ on:
         tags:
           description: 'Test scenario tags' 
 
+defaults:
+  run:
+    shell: bash -l {0}
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -20,10 +24,6 @@ jobs:
         #os: [ubuntu-latest, macos-latest, windows-latest]
         os: [ubuntu-latest]
         #python-version: ["3.10", "3.11"]
-
-    defaults:
-      run:
-        shell: bash -l {0}
 
     steps:
       - uses: actions/checkout@v3
@@ -51,7 +51,6 @@ jobs:
         uses: coactions/setup-xvfb@v1
         #uses: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255
         with:
-          shell: bash -el {0}
           run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 
         # Note: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255 is a 
