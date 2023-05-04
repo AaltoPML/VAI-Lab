@@ -537,7 +537,7 @@ class pluginCanvas(tk.Frame):
         self.focus()
     
     def get_all_children(self, item=""):
-        """ Iterates over the treeview to get all childer """
+        """ Iterates over the treeview to get all children """
         children = self.tree.get_children(item)
         for child in children:
             children += self.get_all_children(child)
