@@ -18,17 +18,18 @@ jobs:
       matrix:
         #os: [ubuntu-latest, macos-latest, windows-latest]
         os: [ubuntu-latest]
-        python-version: ["3.10", "3.11"]
     defaults:
       run:
         shell: bash
     steps:
       - uses: actions/checkout@v3
-      - name: Set up GCC
-        uses: egor-tensin/setup-gcc@v1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          version: latest
-          platform: x64
+          mamba-version: "*"
+          channels: conda-forge,defaults
+          channel-priority: true
+          activate-environment: anaconda-client-env
+          environment-file: etc/example-environment.yml
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
