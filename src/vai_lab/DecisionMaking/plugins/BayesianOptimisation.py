@@ -5,7 +5,7 @@ _PLUGIN_READABLE_NAMES = {"BayesianOptimisation": "default",
                           "BO": "alias",}                   # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "decision making"}        # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {"f": "function"}              # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"bounds": "list",
+_PLUGIN_OPTIONAL_SETTINGS = {"domain": "list",
                              "constraints": "list",
                              "acquisition_type ": "str",
                              "files": "list",
@@ -26,4 +26,4 @@ class BayesianOptimisation(DecisionMakingPluginT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.BO = model
+        self.model = model

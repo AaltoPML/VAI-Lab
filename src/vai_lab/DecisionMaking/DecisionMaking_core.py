@@ -29,8 +29,8 @@ class DecisionMaking(object):
     def launch(self):
         self._plugin.set_data_in(self._data_in)
         self._plugin.configure(self._module_config["plugin"])
-        self._plugin.run_optimization()
-        self.output_data = self._plugin.suggest_next_locations()
+        self._plugin.optimise()
+        self.output_data = self._plugin.suggest_locations()
         # self.output_data = self._plugin._test(self.output_data)
 
     def get_result(self):

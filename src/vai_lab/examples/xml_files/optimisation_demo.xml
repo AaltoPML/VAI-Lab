@@ -27,7 +27,7 @@
                  EI
             </acquisition_type >
             <files>
-                 ['./phasestability/CsFA/fulldata/CsFA_T300_above.csv',  './phasestability/FAMA/fulldata/FAMA_T300_above.csv',  './phasestability/CsMA/fulldata/CsMA_T300_above.csv']
+                 ['./examples/optimisation/phasestability/CsFA/fulldata/CsFA_T300_above.csv',  './examples/optimisation/phasestability/FAMA/fulldata/FAMA_T300_above.csv',  './examples/optimisation/phasestability/CsMA/fulldata/CsMA_T300_above.csv']
             </files>
             <normalize_Y>
                  True
@@ -38,9 +38,9 @@
             <acquisition_jitter>
                  0.01
             </acquisition_jitter>
-            <bounds>
+            <domain>
                 [{'name': 'CsPbI', 'type': 'continuous', 'domain': (0, 1)}, {'name': 'MAPbI', 'type': 'continuous', 'domain': (0, 1)}, {'name': 'FAPbI', 'type': 'continuous', 'domain': (0, 1)}]
-            </bounds>
+            </domain>
         </plugin>
     </DecisionMaking>
     <Output name="Output">
