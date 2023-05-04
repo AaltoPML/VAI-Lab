@@ -28,6 +28,7 @@ dependencies = [
     "matplotlib >= 3.5.0",
     "opencv-python >= 4.6.0.65",
     "pytest >= 7.2.0",
+    "pytest-cov >= 4.0.0",
     "pybullet >= 3.2.5" 
 ]
 

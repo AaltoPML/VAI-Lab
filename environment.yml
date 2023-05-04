@@ -1,7 +1,10 @@
-name: vailab
+name: vailab2
 channels:
   - conda-forge
 dependencies:
   - python=3.10
   - gcc
   - cxx-compiler
+  - pip
+  - pip:
+    - .
