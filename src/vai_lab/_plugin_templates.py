@@ -314,14 +314,14 @@ class DecisionMakingPluginT(PluginTemplate, ABC):
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
             raise
 
-    def suggest_locations(self, data):
+    def suggest_locations(self):
         """Run a single optimization step and return the next locations to evaluate the objective. 
         Number of suggested locations equals to batch_size.
         :returns: array, shape (n_samples,)
                     Returns suggested values.
         """
         try:
-            return self.BO.predict(data)
+            return self.BO.suggest_next_locations()
         except Exception as exc:
             print('The plugin encountered an error when suggesting points with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
