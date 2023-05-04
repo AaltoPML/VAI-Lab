@@ -48,9 +48,9 @@ jobs:
       # pytest
       - name: Run pytest
         # uses: GabrielBB/xvfb-action@v1.6
+        shell: bash -el {0}
         uses: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255
         with:
-          shell: bash -el {0}
           run: |
             pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 
