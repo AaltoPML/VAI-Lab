@@ -17,17 +17,13 @@ jobs:
     strategy:
       matrix:
         #os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ["3.10", "3.11"]
     defaults:
       run:
         shell: bash
     steps:
       - uses: actions/checkout@v3
-      - name: Set up MinGW
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: x64
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
