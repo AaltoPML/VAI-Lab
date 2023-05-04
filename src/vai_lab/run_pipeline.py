@@ -59,7 +59,7 @@ def main():
         core.load_config_file(args.file)
     core.load_config_file(("./examples",
                             "xml_files",
-                            'ridge_regression_demo.xml'))
+                            'optimisation_demo.xml'))
     # Run pipeline   
     core.run()
 

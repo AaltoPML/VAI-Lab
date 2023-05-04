@@ -1,29 +1,37 @@
 # -*- coding: utf-8 -*-
-class Modelling(object):
+from vai_lab._import_helper import import_plugin_absolute
+class DecisionMaking(object):
     def __init__(self):
-        self.node_name = None
-        self.plugin_name = None
         self.output_data = None
 
-    def set_input_data(self, data):
-        self.input_data = data
+    def set_avail_plugins(self,avail_plugins):
+        self._avail_plugins = avail_plugins
 
-    def set_target_data(self, data):
-        self.target_data = data
+    def set_data_in(self,data_in):
+        self._data_in = data_in
 
-    def _load_plugin(self):
-        pass
+    def _load_plugin(self, plugin_name:str):
+        avail_plugins = self._avail_plugins.find_from_readable_name(plugin_name)
+        self._plugin_name = plugin_name
+        self._plugin = import_plugin_absolute(globals(),\
+                                avail_plugins["_PLUGIN_PACKAGE"],\
+                                avail_plugins["_PLUGIN_CLASS_NAME"])\
+                                .__call__()
 
-    def set_plugin_name(self, plugin_name):
-        self.plugin_name = plugin_name
-        self._load_plugin()
+    def set_options(self, module_config: dict):
+        """Send configuration arguments to plugin
 
-    def set_options(self, options):
-        self.options = options
+        :param module_config: dict of settings to configure the plugin
+        """
+        self._module_config = module_config
+        self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
-    def solve(self):
-        # send the input data to the decision making plugin and assign it to an output property
-        pass
+    def launch(self):
+        self._plugin.set_data_in(self._data_in)
+        self._plugin.configure(self._module_config["plugin"])
+        self._plugin.run_optimization()
+        self.output_data = self._plugin.suggest_next_locations()
+        # self.output_data = self._plugin._test(self.output_data)
 
     def get_result(self):
         return self.output_data

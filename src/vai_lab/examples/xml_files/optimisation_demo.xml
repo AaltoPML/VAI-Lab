@@ -6,6 +6,10 @@
         <coordinates>
             [(350.0,50),0,{}]
         </coordinates>
+        <inputdata>
+            <X file="./examples/optimisation/X.csv" />
+            <Y file="./examples/optimisation/Y.csv" />
+        </inputdata>
     </Initialiser>
     <DecisionMaking name="Decision Making">
         <relationships>
@@ -20,20 +24,23 @@
                  None
             </f>
             <acquisition_type >
-                 'EI_DFT'
+                 EI
             </acquisition_type >
             <files>
-                 ['/phasestability/CsFA/fulldata/CsFA_T300_above.csv',  '/phasestability/FAMA/fulldata/FAMA_T300_above.csv',  '/phasestability/CsMA/fulldata/CsMA_T300_above.csv']
+                 ['./phasestability/CsFA/fulldata/CsFA_T300_above.csv',  './phasestability/FAMA/fulldata/FAMA_T300_above.csv',  './phasestability/CsMA/fulldata/CsMA_T300_above.csv']
             </files>
             <normalize_Y>
                  True
             </normalize_Y>
             <evaluator_type>
-                 'local_penalization'
+                 local_penalization
             </evaluator_type>
             <acquisition_jitter>
                  0.01
             </acquisition_jitter>
+            <bounds>
+                [{'name': 'CsPbI', 'type': 'continuous', 'domain': (0, 1)}, {'name': 'MAPbI', 'type': 'continuous', 'domain': (0, 1)}, {'name': 'FAPbI', 'type': 'continuous', 'domain': (0, 1)}]
+            </bounds>
         </plugin>
     </DecisionMaking>
     <Output name="Output">
