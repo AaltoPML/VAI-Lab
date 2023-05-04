@@ -52,7 +52,7 @@ jobs:
         uses: coactions/setup-xvfb@v1
         #uses: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255
         with:
-        run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
+          run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 
         # Note: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255 is a 
         # PR waiting to be merged to GabrielBB/xvfb-action@v1.6 to update xvfb-action
