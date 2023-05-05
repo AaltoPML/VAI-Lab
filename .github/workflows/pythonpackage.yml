@@ -31,8 +31,8 @@ jobs:
       # micromamba
       - name: Create Conda environment from environment.yml
         uses: mamba-org/provision-with-micromamba@main
-      #  with:
-      #    environment-file: environment.yml
+        with:
+          environment-file: environment.yml
       #  #with:
       #  #  cache-env: true
       #  shell: bash -l {0}
