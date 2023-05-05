@@ -35,13 +35,9 @@ jobs:
           environment-file: environment.yml
           cache-env: true
 
-      - name: Test import numpy
-        run: |
-          python -c "import numpy"
-
       - name: Test import pytest
         run: |
-          python -c "import pytest"
+          pytest
 
       # pytest
       - name: Run pytest
