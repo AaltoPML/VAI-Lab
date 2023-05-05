@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v3
 
       # micromamba
-      - name: Create Conda environment from environment.yml
+      #- name: Create Conda environment from environment.yml
 
       # pytest
       - name: Run pytest
