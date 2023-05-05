@@ -38,7 +38,11 @@ jobs:
       - name: Test import numpy
         run: |
           python -c "import numpy"
-          
+
+      - name: Test import pytest
+        run: |
+          python -c "import pytest"
+
       # pytest
       #- name: Run pytest
       #  uses: coactions/setup-xvfb@v1
