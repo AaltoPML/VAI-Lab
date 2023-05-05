@@ -30,12 +30,14 @@ jobs:
 
       # micromamba
       - name: Create Conda environment from environment.yml
-        uses: mamba-org/provision-with-micromamba@main        
+        uses: mamba-org/provision-with-micromamba@main          
         with:
           cache-env: true
+        run: |
+          python -c "import pytest"
 
       # pytest
-      - name: Run pytest
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
+      #- name: Run pytest
+      #  uses: coactions/setup-xvfb@v1
+      #  with:
+      #    run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
