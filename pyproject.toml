@@ -30,7 +30,7 @@ dependencies = [
     "pytest >= 7.2.0",
     "pytest-cov >= 4.0.0",
     "pybullet >= 3.2.5",
-    "attrs->= 23.1.0",
+    "attrs >= 23.1.0",
     "tk >= 0.1.0"
 ]
 
