@@ -30,26 +30,13 @@ jobs:
 
       # micromamba
       - name: Create Conda environment from environment.yml
-        uses: mamba-org/provision-with-micromamba@main        
-        with:
-          cache-env: true
-
-      #- name: Set up Python ${{ matrix.python-version }}
-      #  uses: actions/setup-python@v4
-      #  with:
-      #    #python-version: ${{ matrix.python-version }}
-      #    architecture: x64
-
-      # build from source
-      #- name: Install dependencies
-      #  shell: bash -el {0}
-      #  run: |
 
       # pytest
       - name: Run pytest
-        # uses: GabrielBB/xvfb-action@v1.6
+        uses: mamba-org/provision-with-micromamba@main        
+        with:
+          cache-env: true
         uses: coactions/setup-xvfb@v1
-        #uses: hankolsen/xvfb-action@dcb076c1c3802845f73bb6fe14a009d8d3377255
         with:
           run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
 
