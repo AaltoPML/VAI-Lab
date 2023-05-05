@@ -41,10 +41,12 @@ jobs:
       
       # pip install
       - name: pip install
-        run: python3 -m venv venv && venv/bin/python -m pip install -U pip attrs tk && venv/bin/python -m pip install .
+        #run: python3 -m venv venv && venv/bin/python -m pip install -U pip attrs tk && venv/bin/python -m pip install .
+        run: python -m pip install -U pip attrs tk && python -m pip install .
 
       # pytest
       - name: Run pytest
         uses: coactions/setup-xvfb@v1
         with:
-          run: venv/bin/pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
+          #run: venv/bin/pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
+          run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing
