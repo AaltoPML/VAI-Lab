@@ -34,7 +34,8 @@ jobs:
         with:
           environment-file: environment.yml
           cache-env: true
-        run: python -c "import pytest"
+        run: |
+          python -c "import pytest"
 
       # pytest
       #- name: Run pytest
