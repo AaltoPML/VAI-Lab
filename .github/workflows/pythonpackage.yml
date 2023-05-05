@@ -29,14 +29,14 @@ jobs:
       - uses: actions/checkout@v3
 
       # micromamba
-      - name: Create Conda environment from environment.yml
+      - name: Create Conda environment
         uses: mamba-org/provision-with-micromamba@main
         with:
           environment-file: environment.yml
-      #  #with:
+          cache-env: true
+        run: python -c "import pytest"
       #  #  cache-env: true
-      #  shell: bash -l {0}
-      #  #run: python -c "import pytest"
+      #  #with:
 
       # pytest
       #- name: Run pytest
