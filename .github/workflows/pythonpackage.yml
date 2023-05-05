@@ -48,8 +48,8 @@ jobs:
 
       # pip install
       - name: pip install
-        run: python -m pip install -U pip && python - pip install .
-        
+        run: python -m pip install -U pip && python -m pip install .
+
       # pytest: fails  because pytest tries to run outside conda env
       - name: Run pytest
         uses: coactions/setup-xvfb@v1
