@@ -30,10 +30,11 @@ jobs:
 
       # setup gcc
       - name: Set up GCC
-        uses: egor-tensin/setup-gcc@v1
-        with:
-          version: latest
-          platform: x64
+        #uses: egor-tensin/setup-gcc@v1
+        #with:
+        #  version: latest
+        #  platform: x64
+        run: sudo apt-get install gcc cxx-compiler python3.10-tk
 
       # pip install with cache
       - name: pip install
