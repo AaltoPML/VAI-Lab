@@ -33,6 +33,7 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main          
         #with:
         #  cache-env: true
+        shell: bash -l {0}
         run: python -c "import pytest"
 
       # pytest
