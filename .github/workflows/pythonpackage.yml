@@ -30,11 +30,11 @@ jobs:
 
       # micromamba
       - name: Create Conda environment from environment.yml
-        uses: mamba-org/provision-with-micromamba@main          
+        uses: mamba-org/provision-with-micromamba@main
         #with:
         #  cache-env: true
         shell: bash -l {0}
-        run: python -c "import pytest"
+        #run: python -c "import pytest"
 
       # pytest
       #- name: Run pytest
