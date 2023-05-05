@@ -34,7 +34,8 @@ jobs:
         with:
           environment-file: environment.yml
           cache-env: true
-        shell: bash -l {0}
+
+      - name: Test import numpy
         run: |
           python -c "import numpy"
           
