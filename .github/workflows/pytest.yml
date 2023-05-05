@@ -33,11 +33,11 @@ jobs:
         run: sudo apt-get install python3-tk
 
       # pip cache
-      - name: pip cache
-        uses: actions/setup-python@v4
-        with:
-          python-version: {{ matrix.python-version }}
-          cache: 'pip'
+      #- name: pip cache
+      #  uses: actions/setup-python@v4
+      #  with:
+      #    python-version: {{ matrix.python-version }}
+      #    cache: 'pip'
       
       # pip install
       #- name: pip install
