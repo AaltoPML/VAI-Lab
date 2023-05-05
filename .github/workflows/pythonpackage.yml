@@ -34,9 +34,10 @@ jobs:
         with:
           environment-file: environment.yml
           cache-env: true
+        shell: bash -l {0}
         run: |
           python -c "import numpy"
-
+          
       # pytest
       #- name: Run pytest
       #  uses: coactions/setup-xvfb@v1
