@@ -30,7 +30,7 @@ jobs:
 
       # setup gcc
       - name: apt install
-        run: sudo apt-get install gcc g++ python3-tk build-essential
+        run: sudo apt-get install python3-tk
         #run: sudo apt-get install gcc python3-tk
         #uses: egor-tensin/setup-gcc@v1
         #with:
