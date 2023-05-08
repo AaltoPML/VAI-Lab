@@ -14,13 +14,13 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile
 
-_PLUGIN_READABLE_NAMES = {"optimisationUI": "default",
+_PLUGIN_READABLE_NAMES = {"OptimisationInput": "default",
                           "BOUI": "alias",
-                          "BayesianOptimisationUI": "alias"}      # type:ignore
+                          "optimisationUI": "alias"}            # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                           "required_children": None}            # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                                  # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"Bounds"}                          # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"Bounds": "list"}                      # type:ignore
 _PLUGIN_REQUIRED_DATA = {"X"}                                   # type:ignore
 
 

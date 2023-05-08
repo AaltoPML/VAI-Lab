@@ -2,18 +2,18 @@ from vai_lab._plugin_templates import DecisionMakingPluginT
 from bayes_opt import BayesianOptimization as model
 
 _PLUGIN_READABLE_NAMES = {"bayes_opt": "default",
-                          "BayesOpt": "alias",}           # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "decision making"}       # type:ignore
+                          "BayesOpt": "alias",}               # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "decision making"}          # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {"f": "function",
-                             "pbounds": "dict"}              # type:ignore
+                             "pbounds": "dict"}               # type:ignore
 _PLUGIN_OPTIONAL_SETTINGS = {
                             #  "constraint": "ConstraintModel",
                              "random_state ": "int",
                              "verbose": "bool",
                             #  "bounds_transformer": "DomainTransformer",
                              "allow_duplicate_points": "str"} # type:ignore
-_PLUGIN_REQUIRED_DATA = {}                                  # type:ignore
-_PLUGIN_OPTIONAL_DATA = {"X","Y"}                           # type:ignore
+_PLUGIN_REQUIRED_DATA = {}                                    # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X","Y"}                             # type:ignore
 
 class bayes_opt(DecisionMakingPluginT):
     """
