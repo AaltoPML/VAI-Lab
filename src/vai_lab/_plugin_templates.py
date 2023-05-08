@@ -284,14 +284,6 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
 class DecisionMakingPluginT(PluginTemplate, ABC):
     def __init__(self, plugin_globals: dict) -> None:
         super().__init__(plugin_globals)
-
-    def _parse_options_dict(self,options_dict:Dict):
-        super()._parse_options_dict(options_dict)
-        if self.X is not None:
-            options_dict['X'] = self.X
-        if self.Y is not None:
-            options_dict['Y'] = self.Y.reshape(-1,1)
-        return options_dict
     
     def configure(self, config: dict):
         """Extended from PluginTemplate.configure"""
@@ -305,27 +297,6 @@ class DecisionMakingPluginT(PluginTemplate, ABC):
         if type(self.X) is None and type(self.Y) is None:
             print('Invalid Data name. Indicate whether to use `X` or `Y`')
 
-    def optimise(self):
-        """Sends parameters to optimizer, then runs Bayesian Optimization for a number 'max_iter' of iterations"""
-        try:
-            self.BO.run_optimization()
-        except Exception as exc:
-            print('The plugin encountered an error when running the optimization '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
-            raise
-
-    def suggest_locations(self):
-        """Run a single optimization step and return the next locations to evaluate the objective. 
-        Number of suggested locations equals to batch_size.
-        :returns: array, shape (n_samples,)
-                    Returns suggested values.
-        """
-        try:
-            return self.BO.suggest_next_locations()
-        except Exception as exc:
-            print('The plugin encountered an error when suggesting points with '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
-            raise
 
 class UI(PluginTemplate, ABC):
     @property

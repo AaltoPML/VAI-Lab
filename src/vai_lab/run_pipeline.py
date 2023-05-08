@@ -59,7 +59,7 @@ def main():
         core.load_config_file(args.file)
     core.load_config_file(("./examples",
                             "xml_files",
-                            'optimisation_demo.xml'))
+                            'bayes_opt_demo.xml'))
     # Run pipeline   
     core.run()
 
