@@ -42,7 +42,7 @@ Modules can be chained, looped and modified in real-time to create a highly cust
 
 # Installation
 
-## Installing from package
+## Install from package
 
 To install the latest pip release:
 
@@ -50,13 +50,13 @@ To install the latest pip release:
 pip install vai-lab
 ```
 
-## Installing from source 
+## Install from source 
 
-Clone this repository via HTTPS:
-```bash
+Clone this repository via HTTPS
+```bash,
 git clone https://github.com/AaltoPML/VAI-lab.git
 ```
-OR SSH:
+or, alternatively, via SSH
 ```bash
 git clone git@github.com:AaltoPML/VAI-lab.git
 ```
@@ -64,25 +64,23 @@ Change directory
 ```bash
 cd VAI-lab
 ```
-Create a virtual environment and activate it using venv
+Install into a [virtual environment](https://docs.python.org/3/library/venv.html)
 ```bash
-python3 -m venv venv && source venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install .
 ```
-or, alternatively, using conda environment
+or, alternatively, install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 ```bash
-conda create --channel conda-forge --name vai_lab python=3.10 gcc cxx-compiler && conda activate vai_lab
+conda create --file environment.yml && conda activate vai-lab
 ```
-Upgrade pip and install the package
+You can verify the installation was successful by [running unit tests](#run-unit-tests).
+
+# Run Unit Tests
+
+Run unit tests with pytest
 ```bash
-python3 -m pip install -U pip && python3 -m pip install .
+pytest .
 ```
 
-# Running Unit Tests
-
-Unit tests are run with pytest with
-```bash
-pytest
-```
 
 # Feature and Release Schedule :calendar:
 
