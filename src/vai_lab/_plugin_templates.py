@@ -5,6 +5,11 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 
+class MissingDataError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+
 class PluginTemplate:
     def __init__(self, plugin_globals: dict) -> None:
         """Instantiates data containers and parses plugin-specific options
@@ -63,7 +68,7 @@ class PluginTemplate:
 
     def _data_missing_error(self, req):
         """If incoming data does not match required data, raise Exception and print"""
-        raise Exception("Minimal Data Requirements not met"
+        raise MissingDataError("Minimal Data Requirements not met"
                         + "\n\t{0} ".format(self.default_name)
                         + "requires data: {0}".format(self._PLUGIN_REQUIRED_DATA)
                         + "\n\tThe following data is missing:"
@@ -186,13 +191,13 @@ class DataProcessingT(PluginTemplate, ABC):
             self.proc.set_params(**cleaned_options)
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
             raise
         try:
             self.proc.fit(self.X)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
             raise
 
     def transform(self, data: DataInterface) -> DataInterface:
@@ -200,14 +205,14 @@ class DataProcessingT(PluginTemplate, ABC):
             data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
         except Exception as exc:
             print('The plugin encountered an error when transforming the data with '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
             raise
         if self.X_tst is not None:
             try:
                 data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
             except Exception as exc:
                 print('The plugin encountered an error when transforming the data with '
-                        +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                        +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
                 raise
         return data
 
@@ -222,13 +227,13 @@ class ModellingPluginT(PluginTemplate, ABC):
             self.clf.set_params(**self._config["options"])
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
             raise
         try:
             self.clf.fit(self.X, self.Y)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
             raise
 
     def predict(self, data):
@@ -243,7 +248,7 @@ class ModellingPluginT(PluginTemplate, ABC):
             return self.clf.predict(data)
         except Exception as exc:
             print('The plugin encountered an error when predicting with '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
             raise
 
     def score(self, X, Y, sample_weight):
