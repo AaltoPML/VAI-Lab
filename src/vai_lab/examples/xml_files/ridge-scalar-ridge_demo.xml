@@ -1,0 +1,67 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Modelling" />
+        </relationships>
+        <coordinates>
+            [(300.0,50),0,{}]
+        </coordinates>
+        <inputdata>
+            <X file="./examples/supervised_regression/X_tr.csv" />
+            <Y file="./examples/supervised_regression/Y_tr.csv" />
+            <X_test file="./examples/supervised_regression/X_tst.csv" />
+            <Y_test file="./examples/supervised_regression/Y_tst.csv" />
+        </inputdata>
+    </Initialiser>
+    <Modelling name="Modelling">
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Data Processing" />
+        </relationships>
+        <coordinates>
+            [(300,180),2,{0:'d0-u2'}]
+        </coordinates>
+        <plugin type="RidgeRegression">
+            <alpha>
+                 0.01
+            </alpha>
+        </plugin>
+    </Modelling>
+    <DataProcessing name="Data Processing">
+        <relationships>
+            <parent name="Modelling" />
+            <child name="Modelling-1" />
+        </relationships>
+        <coordinates>
+            [(300.0,300.0),3,{2:'d2-u3'}]
+        </coordinates>
+        <plugin type="StandardScaler">
+            <with_mean>
+                 True
+            </with_mean>
+        </plugin>
+    </DataProcessing>
+    <Modelling name="Modelling-1">
+        <relationships>
+            <parent name="Data Processing" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(300,408),4,{3:'d3-u4'}]
+        </coordinates>
+        <plugin type="RidgeRegression">
+            <alpha>
+                 0.01
+            </alpha>
+        </plugin>
+    </Modelling>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="Modelling-1" />
+        </relationships>
+        <coordinates>
+            [(300.0,550),1,{4:'d4-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>
