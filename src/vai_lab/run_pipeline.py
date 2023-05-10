@@ -57,9 +57,10 @@ def main():
         for i in range(0,len(args.file)):
             args.file[i] = abspath(args.file[i])
         core.load_config_file(args.file)
-    # core.load_config_file(("./examples",
-    #                         "xml_files",
-    #                         'bayes_opt_demo.xml'))
+    core.load_config_file(("./examples",
+                            "xml_files",
+                            # 'bayes_opt_demo.xml'))
+                            'optimisation_demo.xml'))
     # Run pipeline   
     core.run()
 
