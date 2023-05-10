@@ -17,6 +17,7 @@ Contents
 
    Intro and Installation <readme>
    Getting Started <getting_started>
+   Contributing <contributing>
    API <modules>
 
 Indices and tables
