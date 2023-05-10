@@ -24,7 +24,7 @@
             <save_to file="../resources/output_test.csv" />
         </plugin>
         <relationships>
-            <parent name="My Second UserFeedback Module" />
+            <parent name="My First UserFeedback Module" />
         </relationships>
     </Output>
 </pipeline>

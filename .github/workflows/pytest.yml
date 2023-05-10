@@ -1,0 +1,45 @@
+name: pytest
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+        logLevel:
+          description: 'Log level'     
+          required: true
+          default: 'warning'
+        tags:
+          description: 'Test scenario tags' 
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  run-matrix:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # pip cache
+      - name: pip cache
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      
+      # pip install
+      - name: pip install
+        run: python3 -m pip install -U pip wheel && python3 -m pip install .
+
+      # pytest
+      - name: Run pytest
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: pytest --cov=./src/vai_lab -v --cov-report=xml:./coverage.xml --cov-report term-missing

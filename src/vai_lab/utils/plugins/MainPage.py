@@ -31,7 +31,10 @@ class MainPage(tk.Frame):
         self.controller.output_type = 'regression'
         self.out_data = pd.DataFrame()
         self.bg = parent['bg']
+        if not self.controller._debug:
+            self._setup_frame()
 
+    def _setup_frame(self):
         self.script_dir = get_lib_parent_dir()
         self.my_img1 = ImageTk.PhotoImage(
             Image.open(
@@ -52,7 +55,7 @@ class MainPage(tk.Frame):
 
         self.my_label = tk.Label(frame1,
                                  image=self.my_img1,
-                                 bg=parent['bg'])
+                                 bg=self.bg)
 
         self.my_label.grid(column=0,
                            row=0,
@@ -64,8 +67,8 @@ class MainPage(tk.Frame):
         my_label = tk.Label(frame2,
                             text='Indicate the data folder and define the pipeline.',
                             pady=10,
-                            font=controller.title_font,
-                            bg=parent['bg'],
+                            font=self.controller.title_font,
+                            bg=self.bg,
                             fg='white')
         my_label.grid(column=0,
                       row=11,
@@ -74,8 +77,8 @@ class MainPage(tk.Frame):
         tk.Button(frame3,
                   text='Upload data matrix',
                   fg='white',
-                  font=controller.title_font,
-                  bg=parent['bg'],
+                  font=self.controller.title_font,
+                  bg=self.bg,
                   height=3,
                   width=20,
                   command=self.upload_data_folder,
@@ -83,8 +86,8 @@ class MainPage(tk.Frame):
         tk.Button(frame3,
                   text='Upload data path',
                   fg='white',
-                  font=controller.title_font,
-                  bg=parent['bg'],
+                  font=self.controller.title_font,
+                  bg=self.bg,
                   height=3,
                   width=20,
                   command=self.upload_data_path,
@@ -93,8 +96,8 @@ class MainPage(tk.Frame):
                                              text='Optional',
                                              pady=10,
                                              padx=10,
-                                             font=controller.title_font,
-                                             bg=parent['bg'],
+                                             font=self.controller.title_font,
+                                             bg=self.bg,
                                              fg='white')
         self.controller.Datalabel.grid(column=2,
                                        row=12)
@@ -102,8 +105,8 @@ class MainPage(tk.Frame):
         self.interactButton = tk.Button(frame3,
                                         text='Interact with canvas',
                                         fg='white',
-                                        font=controller.title_font,
-                                        bg=parent['bg'],
+                                        font=self.controller.title_font,
+                                        bg=self.bg,
                                         height=3,
                                         width=20,
                                         # state=tk.DISABLED,
@@ -115,8 +118,8 @@ class MainPage(tk.Frame):
         self. uploadButton = tk.Button(frame3,
                                        text='Upload XML file',
                                        fg='white',
-                                       font=controller.title_font,
-                                       bg=parent['bg'],
+                                       font=self.controller.title_font,
+                                       bg=self.bg,
                                        height=3,
                                        width=20,
                                     #    state=tk.DISABLED,
@@ -128,16 +131,16 @@ class MainPage(tk.Frame):
                                             text='Incomplete',
                                             pady=10,
                                             padx=10,
-                                            font=controller.title_font,
-                                            bg=parent['bg'],
+                                            font=self.controller.title_font,
+                                            bg=self.bg,
                                             fg='white')
         self.controller.XMLlabel.grid(column=2,
                                       row=13)
         self.PluginButton = tk.Button(frame3,
                                       text='Modules plugins',
                                       fg='white',
-                                      font=controller.title_font,
-                                      bg=parent['bg'],
+                                      font=self.controller.title_font,
+                                      bg=self.bg,
                                       height=3,
                                       width=20,
                                       state=tk.DISABLED,
@@ -148,8 +151,8 @@ class MainPage(tk.Frame):
         self.RunButton = tk.Button(frame3,
                                    text='Run Pipeline',
                                    fg='white',
-                                   font=controller.title_font,
-                                   bg=parent['bg'],
+                                   font=self.controller.title_font,
+                                   bg=self.bg,
                                    height=3,
                                    width=20,
                                    state=tk.DISABLED,

@@ -65,10 +65,9 @@ To demonstrate the syntax for launching examples using ``user_feedback_demo.xml`
 From Command Line
 """""""""""""""""
 
-
 .. code-block:: bash
 
-    vai_lab --file ./examples/xml_files/user_feedback_demo.xml
+    vai_lab --file ./src/vai_lab/examples/xml_files/user_feedback_demo.xml
 
 From code
 """""""""
@@ -89,7 +88,7 @@ In addition to path strings, the config file paths can be passed as lists or tup
 
 .. code-block:: bash
 
-    vai_lab --file ./examples xml_files user_feedback_demo.xml
+    vai_lab --file ./src/vai_lab/examples xml_files user_feedback_demo.xml
 
 and 
 

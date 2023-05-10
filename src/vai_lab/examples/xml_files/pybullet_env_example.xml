@@ -20,9 +20,9 @@
                  plane.urdf
                  ./Environment/resources/models/half_cheetah_with_mass.xml
             </model_dir>
-            <headless>
+            <usegui>
                  False
-            </headless>
+            </usegui>
             <setGravity>
                     0.0
                     0.0
@@ -32,14 +32,14 @@
                     0.01
             </timestep>
             <max_steps>
-                    1000
+                    10
             </max_steps>            
         </plugin>
     </Environment>
     <Output name="Output">
         <plugin type="" />
         <relationships>
-            <parent name="Modelling" />
+            <parent name="MyEnv" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{2:'d2-u1'}]

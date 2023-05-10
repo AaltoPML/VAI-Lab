@@ -3,6 +3,11 @@ from vai_lab._types import DataInterface
 from abc import ABC, abstractmethod
 
 import numpy as np
+import pandas as pd
+
+class MissingDataError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
 
 
 class PluginTemplate:
@@ -63,7 +68,7 @@ class PluginTemplate:
 
     def _data_missing_error(self, req):
         """If incoming data does not match required data, raise Exception and print"""
-        raise Exception("Minimal Data Requirements not met"
+        raise MissingDataError("Minimal Data Requirements not met"
                         + "\n\t{0} ".format(self.default_name)
                         + "requires data: {0}".format(self._PLUGIN_REQUIRED_DATA)
                         + "\n\tThe following data is missing:"
@@ -164,34 +169,116 @@ class DataProcessingT(PluginTemplate, ABC):
         TODO: in future, reverse the direction of this function - instead pull all options
                 that are directly required by the solver
         """
-        return {i[0]: i[1]
+        _cleaned =  {i[0]: i[1]
                 for i in self._config["options"].items()
                 if i[0] not in self._options_to_ignore}
-
-    @abstractmethod
+        for key, val in _cleaned.items():
+            if val == 'True':
+                _cleaned[key] = True
+            elif val == 'False':
+                _cleaned[key] = False
+        return _cleaned
+            
     def fit(self):
-        pass
+        cleaned_options = self._clean_solver_options()
+        try:
+            self.proc.set_params(**cleaned_options)
+        except Exception as exc:
+            print('The plugin encountered an error on the parameters of '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
+            raise
+        try:
+            self.proc.fit(self.X)
+        except Exception as exc:
+            print('The plugin encountered an error when fitting '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
+            raise
 
-    @abstractmethod
     def transform(self, data: DataInterface) -> DataInterface:
-        pass
+        try:
+            data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
+        except Exception as exc:
+            print('The plugin encountered an error when transforming the data with '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
+            raise
+        if self.X_tst is not None:
+            try:
+                data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
+            except Exception as exc:
+                print('The plugin encountered an error when transforming the data with '
+                        +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
+                raise
+        return data
 
 
 class ModellingPluginT(PluginTemplate, ABC):
     def __init__(self, plugin_globals: dict) -> None:
         super().__init__(plugin_globals)
 
-    @abstractmethod
     def solve(self):
-        pass
+        """Sends params to solver, then runs solver"""
+        try:
+            self.clf.set_params(**self._config["options"])
+        except Exception as exc:
+            print('The plugin encountered an error on the parameters of '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
+            raise
+        try:
+            self.clf.fit(self.X, self.Y)
+        except Exception as exc:
+            print('The plugin encountered an error when fitting '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
+            raise
 
-    @abstractmethod
-    def predict(self):
-        pass
+    def predict(self, data):
+        """Uses fitted model to predict output of a given Y
+        :param data: array-like or sparse matrix, shape (n_samples, n_features)
+                    Samples
+                    expected type: vai_lab.Data.Data_core.Data
+        :returns: array, shape (n_samples,)
+                    Returns predicted values.
+        """
+        try:
+            return self.clf.predict(data)
+        except Exception as exc:
+            print('The plugin encountered an error when predicting with '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+exc+'.')
+            raise
 
-    @abstractmethod
-    def score(self):
-        pass
+    def score(self, X, Y, sample_weight):
+        """Return the coefficient of determination
+        :param  X : array-like of shape (n_samples, n_features)
+        :param  Y :  array-like of shape (n_samples,) or (n_samples, n_outputs)
+        :param sample_weight : array-like of shape (n_samples,), default=None
+                    Sample weights.
+
+        :returns: score : float of ``self.predict(X)`` wrt. `y`.
+        """
+        try:
+            return self.clf.score(X, Y, sample_weight)
+        except Exception as exc:
+            print('The plugin encountered an error when calculating the score with '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
+
+class ModellingPluginTClass(ModellingPluginT, ABC):
+    def __init__(self, plugin_globals: dict) -> None:
+        super().__init__(plugin_globals)
+
+    def predict_proba(self, data):
+        """Uses fitted model to predict the probability of the output of a given Y
+        :param data: array-like or sparse matrix, shape (n_samples, n_features)
+                    Samples
+                    expected type: vai_lab.Data.Data_core.Data
+        :returns: array, shape (n_samples,)
+                    Returns predicted values.
+        """
+        try:
+            return self.clf.predict_proba(data)
+        except Exception as exc:
+            print('The plugin encountered an error when predicting the probability with '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
 
 
 class UI(PluginTemplate, ABC):
@@ -239,4 +326,4 @@ class EnvironmentPluginT(PluginTemplate, ABC):
     def configure(self, config: dict):
         """Extended from PluginTemplate.configure"""
         super().configure(config)
-        self.set_gui(self._config["options"]["headless"])
+        self.set_gui(self._config["options"]["usegui"])
