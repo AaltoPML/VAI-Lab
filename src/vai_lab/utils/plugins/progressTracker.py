@@ -80,6 +80,9 @@ class progressTracker(tk.Frame):
             self.frame4, text = 'Next step', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
             command = self.check_quit).grid(column = 1, row = 26, sticky="news", pady=(0,10))
+        """
+        TODO: Save the ran pipeline to this point and allow loading a previous one
+        """
         tk.Button(
             self.frame4, text = 'Stop pipeline', fg = 'white', bg = parent['bg'], 
             height = 3, width = 15, font = self.controller.pages_font, 
@@ -96,17 +99,18 @@ class progressTracker(tk.Frame):
         frame3.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame4.grid_columnconfigure(tuple(range(2)), weight=1)
 
-        self.controller.after(sec*1000,lambda:self.check_click())
+        self._job = self.controller.after(sec*1000, self.check_quit)
 
     def on_click(self, event):
         """ Passes the mouse click coordinates to the select function."""
-        self.click = True
+        self.cancel_timer()
         self.select(event.x, event.y)
     
-    def check_click(self):
-        """ If not clicked on canvas, closes the window."""
-        if not self.click:
-            self.check_quit()
+    def cancel_timer(self):
+        """ Cancels the timer set to close the window. """
+        if self._job is not None:
+            self.controller.after_cancel(self._job)
+            self._job = None
 
     def terminate(self):
         """ Terminates window and pipeline. """
@@ -638,7 +642,7 @@ class progressTracker(tk.Frame):
 
     def on_click_noCanvas(self, event):
         """ Passes the mouse click coordinates to the select function when there is no Canvas."""
-        self.click = True
+        self.cancel_timer()
         self.select_noCanvas(event.x, event.y)
         
     def select_noCanvas(self, x: float, y:float):
