@@ -14,8 +14,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      - name: install dependencies
-        run: python3 -m pip install sphinx sphinx-rtd-theme myst-parser
+      - name: pip install
+        run: python3 -m pip ".[sphinx]"
       - name: build
         run: |
           sphinx-apidoc --templatedir docs/source/_templates/apidoc/ -o docs/source src/vai_lab
