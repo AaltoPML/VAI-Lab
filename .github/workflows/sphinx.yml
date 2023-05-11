@@ -19,7 +19,7 @@ jobs:
 
       # pip install
       - name: pip install
-        run: python3 -m pip install -U pip && python3 -m pip install ".[sphinx]"
+        run: python3 -m pip install -U pip && python3 -m pip install -r sphinx_requirements.txt
       - name: build
         run: |
           sphinx-apidoc --templatedir docs/source/_templates/apidoc/ -o docs/source src/vai_lab
