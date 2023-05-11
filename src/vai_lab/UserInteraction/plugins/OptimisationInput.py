@@ -20,7 +20,7 @@ _PLUGIN_READABLE_NAMES = {"OptimisationInput": "default",
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                           "required_children": None}            # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                                  # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"Bounds": "list"}                      # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"Bounds": "list"}                  # type:ignore
 _PLUGIN_REQUIRED_DATA = {"X"}                                   # type:ignore
 
 
