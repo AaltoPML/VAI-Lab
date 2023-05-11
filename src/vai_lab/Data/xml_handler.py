@@ -329,7 +329,7 @@ class XML_handler:
                                      key: str,
                                      val: Any,
                                      out=None) -> List[Dict[str, str]]:
-        """Seach nested dict for a given key-value pair
+        """Search nested dict for a given key-value pair
         :param parent: dict to be searched
         :param key: str of key to find
         :param val: val to find in target key

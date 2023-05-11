@@ -95,7 +95,6 @@ class GUI(tk.Tk):
         ui_type = ui_type\
             if isinstance(ui_type, list)\
             else [ui_type]
-
         for ui in ui_type:
             ui_specs = self._avail_plugins.find_from_readable_name(ui)
             try:

@@ -115,7 +115,6 @@ class Core:
         self.gui_app.set_avail_plugins(self._avail_plugins)
         self.gui_app.set_gui_as_progress_tracker(self.status_logger)
         self.gui_app._append_to_output("xml_filename", self._xml_handler.filename)
-        self.gui_app._load_plugin("progressTracker")
         return self.gui_app.launch()
     
     def _init_status(self, modules):
