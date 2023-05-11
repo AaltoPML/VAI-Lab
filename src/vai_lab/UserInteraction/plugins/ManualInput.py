@@ -53,9 +53,6 @@ class ManualInput(tk.Frame, UI):            # type:ignore
                     .resize((pixels, pixels))))
 
         # Inital window
-        self.my_label = tk.Label(self, image=self.image_list[0],
-                                 bg=self.parent['bg'])
-        self.my_label.grid(column=0, row=0, rowspan=10, columnspan=3)
         self.N = len(self._data_in["X"])
 
         # Status bar in the lower part of the window
@@ -275,7 +272,8 @@ class ManualInput(tk.Frame, UI):            # type:ignore
             response = messagebox.askokcancel(
                 "Exit?",
                 "Are you sure you are finished?")
-            self.controller.destroy()
+            if response:
+                self.controller.destroy()
 
     def save_file_as(self):
 
