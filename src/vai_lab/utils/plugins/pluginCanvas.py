@@ -254,7 +254,7 @@ class pluginCanvas(tk.Frame):
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None'):  # add
             self.id_done.append(self.m)
-            self.s.append_plugin_to_module(self.plugin[self.m].get(),
+            self.xml_handler.append_plugin_to_module(self.plugin[self.m].get(),
                                            {**self.req_settings, **
                                                self.opt_settings},
                                            np.array(self.module_names)[
@@ -537,7 +537,7 @@ class pluginCanvas(tk.Frame):
         self.focus()
     
     def get_all_children(self, item=""):
-        """ Iterates over the treeview to get all childer """
+        """ Iterates over the treeview to get all children """
         children = self.tree.get_children(item)
         for child in children:
             children += self.get_all_children(child)
@@ -707,10 +707,10 @@ class pluginCanvas(tk.Frame):
 
         self.reset()
 
-        self.s = XML_handler()
-        self.s.load_XML(filename)
-        # self.s._print_pretty(self.s.loaded_modules)
-        modules = self.s.loaded_modules
+        self.xml_handler = XML_handler()
+        self.xml_handler.load_XML(filename)
+        # self.xml_handler._print_pretty(self.xml_handler.loaded_modules)
+        modules = self.xml_handler.loaded_modules
         modout = modules['Output']
         # They are generated when resetting
         del modules['Initialiser'], modules['Output']
@@ -885,18 +885,18 @@ class pluginCanvas(tk.Frame):
                 self.canvas.delete(tk.ALL)
                 self.frame_canvas.delete(tk.ALL)
                 self.saved = True
-                self.s.write_to_XML()
+                self.xml_handler.write_to_XML()
                 self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         # TODO: Check if loaded
-        elif len(self.s.loaded_modules) == 0:
+        elif len(self.xml_handler.loaded_modules) == 0:
             self.controller._show_frame("MainPage")
             self.controller.Plugin.set(False)
         else:
             self.reset()
             self.canvas.delete(tk.ALL)
             self.frame_canvas.delete(tk.ALL)
-            self.s.write_to_XML()
+            self.xml_handler.write_to_XML()
             self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")
 

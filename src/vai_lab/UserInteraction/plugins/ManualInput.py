@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile
 
-_PLUGIN_READABLE_NAMES = {"manual": "default",
+_PLUGIN_READABLE_NAMES = {"ManualInput": "default",
                           "binary": "alias",
                           "classification": "alias"}            # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,

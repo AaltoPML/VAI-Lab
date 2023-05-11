@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import math
 
-_PLUGIN_READABLE_NAMES = {"canvas": "default",
+_PLUGIN_READABLE_NAMES = {"CanvasInput": "default",
                           "state-action": "alias", "robot": "alias"}    # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                           "required_children": None}                    # type:ignore
