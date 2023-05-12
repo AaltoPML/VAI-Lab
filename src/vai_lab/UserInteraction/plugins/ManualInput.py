@@ -3,6 +3,7 @@ from vai_lab._import_helper import get_lib_parent_dir
 from vai_lab._types import DictT, DataInterface, GUICoreInterface
 
 import os
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from typing import Tuple, List, Union
@@ -11,6 +12,7 @@ from PIL import Image, ImageTk, PngImagePlugin
 import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile
+
 
 _PLUGIN_READABLE_NAMES = {"manual": "default",
                           "binary": "alias",
@@ -34,7 +36,7 @@ class ManualInput(tk.Frame, UI):            # type:ignore
         self.dirpath = get_lib_parent_dir()
 
         
-        self.assets_path = os.path.join(self.dirpath, 'utils', 'resources', 'Assets')
+        self.assets_path = Path(self.dirpath) / "utils" / "resources" / "Assets" 
 
         self._data_in: DataInterface
         self._class_list = None
@@ -68,10 +70,8 @@ class ManualInput(tk.Frame, UI):            # type:ignore
         frame6 = tk.Frame(self, bg=self.parent['bg'])
 
         # Buttons initialisation
-        self.back_img = ImageTk.PhotoImage(Image.open(
-            os.path.join(self.assets_path, 'back_arrow.png')).resize((150, 50)))
-        self.forw_img = ImageTk.PhotoImage(Image.open(
-            os.path.join(self.assets_path, 'forw_arrow.png')).resize((150, 50)))
+        self.back_img = ImageTk.PhotoImage(Image.open(Path(self.assets_path) / "back_arrow.png").resize((150, 50)))
+        self.forw_img = ImageTk.PhotoImage(Image.open(Path(self.assets_path) / "forw_arrow.png").resize((150, 50)))
         self.button_back = tk.Button(
             frame4, image=self.back_img, bg=self.parent['bg'],
             state=tk.DISABLED)
