@@ -4,7 +4,7 @@ or start a GUI if no config file given.
 """
 
 import argparse
-from os.path import abspath
+from pathlib import Path 
 
 import vai_lab as ai
 
@@ -40,7 +40,7 @@ def _config_files_iter(core,files):
     if files:
         for f in files:
             core = ai.Core()
-            core.load_config_file(abspath(f))
+            core.load_config_file(Path(f).resolve())
             core.run()
 
 
@@ -54,8 +54,7 @@ def main():
 
     # Load config file if given
     if args.file:
-        for i in range(0,len(args.file)):
-            args.file[i] = abspath(args.file[i])
+        args.file = [Path(f).resolve() for f in args.file]
         core.load_config_file(args.file)
 
     # Run pipeline   
