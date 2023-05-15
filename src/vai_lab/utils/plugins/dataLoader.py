@@ -1,11 +1,11 @@
 import tkinter as tk
-import os
 from PIL import ImageTk
 from tkinter import ttk
 import numpy as np
 from vai_lab._import_helper import get_lib_parent_dir
 # from ttkwidgets import CheckboxTreeview
 # from sys import platform
+from pathlib import Path
 
 class dataLoader():
     """ Creates a window 
@@ -17,14 +17,8 @@ class dataLoader():
         
         # Window options
         self.newWindow.title('Data Importer')
-        self.newWindow.tk.call('wm','iconphoto', self.newWindow._w, ImageTk.PhotoImage(
-            file = os.path.join(os.path.join(
-                get_lib_parent_dir(), 
-                'utils', 
-                'resources', 
-                'Assets', 
-                'VAILabsIcon.ico'))))
-        
+        filename = Path(get_lib_parent_dir()) / "utils" / "resources" / "Assets" / "VAILabsIcon.ico"
+        self.newWindow.tk.call('wm','iconphoto', self.newWindow._w, ImageTk.PhotoImage(file=filename))        
         self.newWindow.geometry("700x400")
         self.newWindow.grid_rowconfigure(2, weight=1)
         self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
