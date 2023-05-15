@@ -2,7 +2,6 @@ from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._plugin_helpers import PluginSpecs
 from vai_lab._import_helper import get_lib_parent_dir
 
-import os
 import numpy as np
 import pandas as pd
 
@@ -10,6 +9,8 @@ from typing import Dict, List
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox, ttk
+
+from pathlib import Path
 
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas": "default",
@@ -46,13 +47,8 @@ class pluginCanvas(tk.Frame):
 
     def _setup_frame(self):
         script_dir = get_lib_parent_dir()
-        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
-            file=os.path.join(os.path.join(
-                script_dir,
-                'utils',
-                'resources',
-                'Assets',
-                'VAILabsIcon.ico'))))
+        filename = Path(script_dir) / "utils" / "resources" / "Assets" / "VAILabsIcon.ico"
+        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(file=filename))
         # self.grid_rowconfigure(tuple(range(5)), weight=1)
         self.grid_rowconfigure(4, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -82,19 +78,10 @@ class pluginCanvas(tk.Frame):
         self.my_label.grid(column=5,
                            row=0, columnspan=2, padx=10)
 
-        self.back_img = ImageTk.PhotoImage(Image.open(
-            os.path.join(script_dir,
-                         'utils',
-                         'resources',
-                         'Assets',
-                         'back_arrow.png')).resize((140, 60)))
-        self.forw_img = ImageTk.PhotoImage(Image.open(
-            os.path.join(script_dir,
-                         'utils',
-                         'resources',
-                         'Assets',
-                         'forw_arrow.png')).resize((140, 60)))
-
+        filename = Path(script_dir) / "utils" / "resources" / "Assets" / "back_arrow.png"
+        self.back_img = ImageTk.PhotoImage(Image.open(filename)).resize((140, 60))
+        filename = Path(script_dir) / "utils" / "resources" / "Assets" / "forw_arrow.png"
+        self.forw_img = ImageTk.PhotoImage(Image.open(filename)).resize((140, 60))
         ww = int(self.width/40)
         tk.Button(
             frame3, text='Load Pipeline', fg='white', bg=self.bg,
@@ -350,13 +337,8 @@ class pluginCanvas(tk.Frame):
             # Window options
             self.newWindow.title(self.plugin[self.m].get()+' plugin options')
             script_dir = get_lib_parent_dir()
-            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
-                file=os.path.join(os.path.join(
-                    script_dir,
-                    'utils',
-                    'resources',
-                    'Assets',
-                    'VAILabsIcon.ico'))))
+            filename = Path(script_dir) / "utils" / "resources" / "Assets" / "VAILabsIcon.ico"
+            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(filename))
             # self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)
