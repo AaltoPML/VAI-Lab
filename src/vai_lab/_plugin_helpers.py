@@ -1,6 +1,7 @@
 import ast
 import os
 from typing import Iterator, List, Union
+from pathlib import Path
 
 from vai_lab._types import DictT
 
@@ -14,10 +15,10 @@ class PluginSpecs(ast.NodeVisitor):
 
     def _get_plugin_files(self, root_dir: str = None) -> None:
         if root_dir is None:
-            root_dir = os.path.dirname(os.path.realpath(__file__))
+            root_dir = Path(__file__).parent
 
         for mod_folder in self._get_clean_module_dirs(root_dir):
-            mod_path = os.path.join(root_dir, mod_folder, "plugins")
+            mod_path = Path(root_dir) / Path(mod_folder) / "plugins"
             plugins = self._get_clean_module_dirs(mod_path)
 
             self.module_dirs[mod_folder] = {}
@@ -27,8 +28,8 @@ class PluginSpecs(ast.NodeVisitor):
 
     def _get_clean_module_dirs(self, root_dir: str) -> List[str]:
         excludes = ["tests", "examples", "resources", "run_pipeline.py"]
-        if os.path.exists(root_dir):
-            mod_dirs = os.listdir(root_dir)
+        if Path(root_dir).is_dir():
+            mod_dirs = Path(root_dir).iterdir()
             rm_list = []
             for m in mod_dirs:
                 if m.startswith("_") \
@@ -44,7 +45,7 @@ class PluginSpecs(ast.NodeVisitor):
         plugin_names = self.module_dirs[self.curr_module]["files"]
         for plugin in plugin_names:
             self.curr_plugin = plugin
-            yield os.path.join(self.module_dirs[self.curr_module]["root"], plugin)
+            yield Path(self.module_dirs[self.curr_module]["root"]) / plugin
 
     def _modules_generator(self):
         for self.curr_module in self.module_dirs.keys():

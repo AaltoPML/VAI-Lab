@@ -38,6 +38,12 @@ pytest = [
     "pytest-cov >= 4.0.0"
 ]
 
+lint = [
+    "black",
+    "isort",
+    "pyflakes"
+]
+
 [project.urls]
 Source = "https://github.com/AaltoPML/VAI-lab"
 

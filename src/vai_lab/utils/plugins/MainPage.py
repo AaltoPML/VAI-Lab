@@ -1,11 +1,11 @@
 import tkinter as tk
 import os
 from PIL import Image, ImageTk
+from pathlib import Path
 
 from tkinter.filedialog import askopenfilename, askdirectory
 import pandas as pd
 
-from vai_lab.Data.xml_handler import XML_handler
 from vai_lab.utils.plugins.dataLoader import dataLoader
 from vai_lab._import_helper import get_lib_parent_dir, rel_to_abs
 
@@ -36,17 +36,8 @@ class MainPage(tk.Frame):
 
     def _setup_frame(self):
         self.script_dir = get_lib_parent_dir()
-        self.my_img1 = ImageTk.PhotoImage(
-            Image.open(
-                os.path.join(
-                    self.script_dir,
-                    'utils',
-                    'resources',
-                    'Assets',
-                    'VAILabs.png')
-            ).resize((350, 350))
-        )
-
+        filename = Path(self.script_dir) / "utils" / "resources" / "Assets" / "VAILabs.png"
+        self.my_img1 = ImageTk.PhotoImage(Image.open(filename)).resize((350, 350))
         self.grid_columnconfigure(0, weight=1)
 
         frame1 = tk.Frame(self, bg=self.bg)
@@ -225,13 +216,8 @@ class MainPage(tk.Frame):
         self.newWindow = tk.Toplevel(self.controller)
         # Window options
         self.newWindow.title('Data upload')
-        self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
-            file=os.path.join(os.path.join(
-                self.script_dir,
-                'utils',
-                'resources',
-                'Assets',
-                'VAILabsIcon.ico'))))
+        filename = Path(self.script_dir) / "utils" / "resources" / "Assets" / "VAILabsIcon.ico"
+        self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(filename))
         # self.newWindow.geometry("600x200")
 
         frame1 = tk.Frame(self.newWindow)
@@ -352,12 +338,11 @@ class MainPage(tk.Frame):
                               title='Select a folder',
                               mustexist=True)
         if folder is not None and len(folder) > 0:
-            onlyfiles = [f for f in os.listdir(
-                folder) if os.path.isfile(os.path.join(folder, f))]
+            onlyfiles = [f for f in Path(folder).iterdir() if f.is_file()]
             self.upload_data_file()
             for file in onlyfiles:
-                name = file.lower()
-                filename = os.path.join(folder, file)
+                name = file.lower()                
+                filename = Path(folder) / file
                 width = 63
                 filenm = '...' + \
                     filename[-width +

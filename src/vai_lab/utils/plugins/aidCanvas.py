@@ -4,12 +4,13 @@ from vai_lab._types import DictT
 import os
 import numpy as np
 import pandas as pd
-from typing import List, Literal,Tuple
+from typing import List, Tuple
+from pathlib import Path
 
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox
-from tkinter.filedialog import asksaveasfile, askopenfile, askopenfilename
+from tkinter.filedialog import asksaveasfile, askopenfilename
 from vai_lab._import_helper import get_lib_parent_dir
 
 
@@ -50,20 +51,10 @@ class aidCanvas(tk.Frame):
 
     def _setup_frame(self):
         script_dir = get_lib_parent_dir()
-        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
-            file=os.path.join(os.path.join(
-                script_dir,
-                'utils',
-                'resources',
-                'Assets',
-                'VAILabsIcon.ico'))))
-        self.my_img1 = ImageTk.PhotoImage(Image.open(os.path.join(
-            script_dir,
-            'utils',
-            'resources',
-            'Assets',
-            'VAILabs.png')).resize((200, 200)))
-
+        filename = Path(script_dir) / "utils" / "resources" / "Assets" / "VAILabsIcon.ico"
+        self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(file=filename))
+        filename = Path(script_dir) / "utils" / "resources" / "Assets" / "VAILabs.png"
+        self.my_img1 = ImageTk.PhotoImage(Image.open(filename)).resize(200, 200)
         # self.grid_rowconfigure(tuple(range(2)), weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
