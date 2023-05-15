@@ -1,13 +1,14 @@
-import os
 import tkinter as tk
 from typing import Dict
 from tkinter import ttk
 
 import numpy as np
 import pandas as pd
-from PIL import Image, ImageTk
+from PIL import ImageTk
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._import_helper import get_lib_parent_dir
+
+from pathlib import Path
 
 _PLUGIN_READABLE_NAMES = {"progress_tracker":"default",
                             "progressTracker":"alias",
@@ -31,13 +32,8 @@ class progressTracker(tk.Frame):
         self.controller.title('Progress Tracker')
         
         if not self.controller._debug:
-            self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(
-                file=os.path.join(os.path.join(
-                    get_lib_parent_dir(),
-                    'utils',
-                    'resources',
-                    'Assets',
-                    'VAILabsIcon.ico'))))
+            filename = Path(get_lib_parent_dir()) / "utils" / "resources" / "Assets" / "VAILabsIcon.ico"
+            self.tk.call('wm', 'iconphoto', self.controller._w, ImageTk.PhotoImage(file=filename))
         self.grid_columnconfigure(0, weight=1)
 
         self.frame1 = tk.Frame(self, bg=self.bg)
@@ -281,13 +277,8 @@ class progressTracker(tk.Frame):
             # Window options
             self.newWindow.title(self.plugin+' plugin options')
             script_dir = get_lib_parent_dir()
-            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
-                file=os.path.join(os.path.join(
-                    script_dir,
-                    'utils',
-                    'resources',
-                    'Assets',
-                    'VAILabsIcon.ico'))))
+            filename = Path(script_dir) / "utils" / "resources" / "Assets" / "VAILabsIcon.ico"
+            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(file=filename))
             self.newWindow.geometry("350x400")
             self.raise_above_all(self.newWindow)
             frame1 = tk.Frame(self.newWindow)
@@ -672,8 +663,6 @@ class progressTracker(tk.Frame):
         for key in [key for key, val in modules.items() if type(val) == dict]:
             if modules[key]['class'] == 'loop':
                 # Extracts numbers from string
-                l = int(
-                    ''.join(map(str, list(filter(str.isdigit, modules[key]['name'])))))
                 self.loops.append({'type': modules[key]['type'],
                                    'condition': modules[key]['condition'],
                                    'mod': []})
