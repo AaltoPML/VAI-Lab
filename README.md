@@ -28,6 +28,8 @@ Each module represents a process (e.g. Modelling) and each plugin is a specific 
 
 Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
 
+See the [documentation](https://aaltopml.github.io/VAI-Lab/) for more discussion on the project and usage examples.
+
 # Installation
 
 ## Install from PyPi
