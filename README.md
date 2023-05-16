@@ -95,11 +95,11 @@ cd VAI-lab
 ```
 Install the dependencies into a [virtual environment](https://docs.python.org/3/library/venv.html)
 ```bash
-python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install -r sphinx-requirements.txt"
+python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install -r sphinx-requirements.txt
 ```
 Alternatively, , install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 ```bash
-conda create --file dev-environment.yml && conda activate vai-lab
+conda create --file sphinx-environment.yml && conda activate sphinx-env
 ```
 
 Build the documentation with
