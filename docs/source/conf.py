@@ -6,8 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import pathlib
-import sys
 from datetime import datetime
 from typing import List
 
@@ -20,15 +18,10 @@ author = 'Chris McGreavy, Carlos Sevilla-Salcedo'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',       # For API 
-    'sphinx.ext.autosummary',   # For API
-    'myst_parser',              # For importing README.md
+    'myst_parser', # to handle .md files
     ]
-# autosummary_generate = True
 
-templates_path = ['_templates']
 exclude_patterns:List = []
-
 
 
 # -- Options for HTML output -------------------------------------------------

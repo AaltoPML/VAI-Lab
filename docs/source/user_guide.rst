@@ -1,5 +1,5 @@
-Getting Started
-===============
+User Guide
+===========
 
 
 Launching
@@ -260,21 +260,3 @@ Writing Data
 ^^^^^^^^^^^^
 
 Two methods are given to add data to the XML file. One for modules (``append_pipeline_module_to_file``) and one for data structures (``append_data_structure_field_to_file``).
-
-Building Documentation
-----------------------
-
-To build documentation locally from source, install the required tools
-
-.. code-block:: bash
-    
-    python3 -m pip install sphinx sphinx-rtd-theme myst-parser
-
-and run
-
-.. code-block:: bash
-
-    sphinx-apidoc --templatedir docs/templates/apidoc -o docs/source src/vai_lab
-    sphinx-build -M html docs/source docs/build
-
-The generated HTML pages are in ``docs/build/html``.
