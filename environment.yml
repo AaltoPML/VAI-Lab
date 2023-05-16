@@ -1,4 +1,4 @@
-name: vai-lab
+name: vai-lab-env
 channels:
   - conda-forge
 dependencies:

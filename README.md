@@ -59,7 +59,7 @@ python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U 
 ```
 Alternatively, , install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 ```bash
-conda create --file environment.yml && conda activate vai-lab
+conda create --file environment.yml && conda activate vai-lab-env
 ```
 
 ## Install development dependencies and run tests
@@ -76,7 +76,7 @@ python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U 
 ```
 Alternatively, , install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 ```bash
-conda create --file dev-environment.yml && conda activate vai-lab
+conda create --file dev-environment.yml && conda activate dev-vai-lab-env
 ```
 
 Run unit tests with pytest
