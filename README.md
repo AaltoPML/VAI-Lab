@@ -62,7 +62,7 @@ Alternatively, , install into a [conda environment](https://conda.io/projects/co
 conda create --file environment.yml && conda activate vai-lab-env
 ```
 
-## Install development dependencies and run tests
+## Install development dependencies from source and run tests
 
 In order to run tests using [pytest](https://docs.pytest.org/en/7.3.x/), install the optional development dependencies.
 
