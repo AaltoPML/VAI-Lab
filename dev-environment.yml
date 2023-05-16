@@ -1,0 +1,9 @@
+name: vai-lab
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - gcc
+  - pip
+  - pip:
+    - .[dev]

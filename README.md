@@ -18,17 +18,6 @@ VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science a
 >
 > Any contributions, forks, or pull requests are very welcome. Feel free to get in touch
 
-# How to Contribute
-
-The aim of this framework is to be a community effort that will benefit science, engineering and more.
-
-We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
-
- - If you have methods which can be added to the framework, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
- - If you think this framework will be useful to your research, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
- - If want to get invovled in development, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
- - Noticed a bug or other issue? [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
-
 # How it Works
 
 The VAI-Lab framework uses a modular, plugin-based architecture.
@@ -41,44 +30,79 @@ Modules can be chained, looped and modified in real-time to create a highly cust
 
 # Installation
 
-## Install from package
+## Install from PyPi
 
-To install the latest pip release:
-
+Install the latest pip release into a [virtual environment](https://docs.python.org/3/library/venv.html)
 ```
-pip install vai-lab
+python3.10 -m venv .venv && source .venv/bin/activate && python3.10 -m pip install -U pip vai-lab 
+```
+Install the latest pip release into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+```
+conda env create --name vai-lab python=3.10 pip && conda activate vai-lab && python3.10 -m pip install vai-lab
 ```
 
 ## Install from source 
 
-Clone this repository via HTTPS
+Clone this repository and change directory
 ```bash,
-git clone https://github.com/AaltoPML/VAI-lab.git
-```
-or, alternatively, via SSH
-```bash
-git clone git@github.com:AaltoPML/VAI-lab.git
-```
-Change directory
-```bash
-cd VAI-lab
+git clone https://github.com/AaltoPML/VAI-lab.git && cd VAI-lab
 ```
 Install into a [virtual environment](https://docs.python.org/3/library/venv.html)
 ```bash
-python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install .
+python3.10 -m venv .venv && source .venv/bin/activate && python3.10 -m pip install -U pip && python3.10 -m pip install .
 ```
 or, alternatively, install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 ```bash
 conda create --file environment.yml && conda activate vai-lab
 ```
-You can verify the installation was successful by [running unit tests](#run-unit-tests).
 
-# Run Unit Tests
+## Install development dependencies and run tests
+
+In order to run tests using [pytest](), install the optional development dependencies.
+
+Clone this repository and change directory
+```bash,
+git clone https://github.com/AaltoPML/VAI-lab.git && cd VAI-lab
+```
+Install into a [virtual environment](https://docs.python.org/3/library/venv.html)
+```bash
+python3.10 -m venv .venv && source .venv/bin/activate && python3.10 -m pip install -U pip && python3.10 -m pip install ".[dev]"
+```
+or, alternatively, install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+```bash
+conda create --file dev-environment.yml && conda activate vai-lab
+```
 
 Run unit tests with pytest
 ```bash
 pytest .
 ```
+
+# Documentation
+
+Documentation is available [here](https://aaltopml.github.io/VAI-Lab/). Alternatively, you can build the documentation locally.
+
+Clone this repository and change directory
+```bash,
+git clone https://github.com/AaltoPML/VAI-lab.git
+cd VAI-lab
+```
+Install the development dependencies into a [virtual environment](https://docs.python.org/3/library/venv.html)
+```bash
+python3.10 -m venv .venv && source .venv/bin/activate && python3.10 -m pip install -U pip && python3.10 -m pip install ".[dev]"
+```
+or, alternatively, install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+```bash
+conda create --file dev-environment.yml && conda activate vai-lab
+```
+
+Build the documentation with
+```
+sphinx-apidoc --templatedir docs/templates/apidoc -o docs/source src/vai_lab
+sphinx-build -M html docs/source docs/build
+```
+The generated HTML pages are in `docs/build/html`. A good place to start is `docs/build/html/index.html`.
+
 
 
 # Feature and Release Schedule :calendar:
@@ -88,8 +112,15 @@ pytest .
 - [ ] Spring 2023: Initial full release of manual pipeline
 - [ ] Fall 2023: Initial release of preliminary AI-Assistance
 
-# Get in Touch
-If you would like contribute, test, give feedback, or ask questions about this framework, we'd like to hear from you!
-Email us at:
-- Chris McGreavy, chris.mcgreavy [at] aalto.fi
-- Carlos Sevilla-Salcedo, carlos.sevillasalcedo [at] aalto.fi
+# How to Contribute
+
+The aim of this framework is to be a community effort that will benefit science, engineering and more.
+
+We are actively seeking contribution in the form of users, testers, developers, and anyone else who would like to contribute.
+
+ - If you have methods which can be added to the framework, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - If you think this framework will be useful to your research, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - If want to get invovled in development, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+ - Noticed a bug or other issue? [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
+
+
