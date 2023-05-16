@@ -93,9 +93,9 @@ Clone this repository and change directory
 git clone https://github.com/AaltoPML/VAI-lab.git
 cd VAI-lab
 ```
-Install the development dependencies into a [virtual environment](https://docs.python.org/3/library/venv.html)
+Install the dependencies into a [virtual environment](https://docs.python.org/3/library/venv.html)
 ```bash
-python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install ".[dev]"
+python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install -r sphinx-requirements.txt"
 ```
 Alternatively, , install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
 ```bash
