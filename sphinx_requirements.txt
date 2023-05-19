@@ -1,0 +1,4 @@
+# requirements.txt for sphinx
+sphinx
+sphinx-rtd-theme
+myst-parser
