@@ -386,6 +386,20 @@ class pluginCanvas(tk.Frame):
             frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
             frame2.grid_columnconfigure(tuple(range(2)), weight=1)
 
+            frame5 = tk.Frame(self.newWindow)
+            tk.Label(frame5,
+                     text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+            
+            frame6 = tk.Frame(self.newWindow)
+
+            dataSources = self.module_list
+            dataSources.pop(1)
+
+            self.dropDown = tk.ttk.Combobox(frame6, value=dataSources)
+            self.dropDown.current(np.where(self.m == np.array(self.id_mod))[0][0]-2)
+            self.dropDown.bind("<<ComboboxSelected>>", self.updateOutput)
+            self.dropDown.pack()
+
             self.finishButton = tk.Button(
                 frame4, text='Finish', command=self.removewindow)
             self.finishButton.grid(
@@ -395,9 +409,15 @@ class pluginCanvas(tk.Frame):
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
             frame1.grid(column=0, row=0, sticky="ew")
-            frame4.grid(column=0, row=2, sticky="se")
+            frame4.grid(column=0, row=20, sticky="se")
+            frame5.grid(column=0, row=2, sticky="ew")
+            frame6.grid(column=0, row=3, sticky="ew")
+
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
+
+    def updateOutput(self, event):
+        print('Output is '+str(self.dropDown.get()))
 
     def create_treeView(self, tree_frame):
         """ Function to create a new tree view in the given frame
