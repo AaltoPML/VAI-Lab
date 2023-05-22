@@ -392,7 +392,7 @@ class pluginCanvas(tk.Frame):
             
             frame6 = tk.Frame(self.newWindow)
 
-            dataSources = self.module_list
+            dataSources = self.module_list.copy()
             dataSources.pop(1)
 
             self.dropDown = tk.ttk.Combobox(frame6, value=dataSources)
