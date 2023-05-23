@@ -503,11 +503,15 @@ class XML_handler:
         if save_dir_as_relative:
             data_dir = data_dir.replace(self.lib_base_path, "./")
         data_dir = data_dir.replace("\\", "/")
-        plugin_elem.set('file', data_dir)
+        if path.exists(path.dirname(data_dir)):
+            plugin_elem.set('file', data_dir)
+        else:
+            plugin_elem.set('module', data_dir)
 
     def append_plugin_to_module(self,
                                 plugin_type: str,
                                 plugin_options: dict,
+                                plugin_data: str,
                                 xml_parent: Union[ET.Element, str],
                                 overwrite_existing: Union[bool, int] = False
                                 ):
@@ -515,6 +519,7 @@ class XML_handler:
         
         :param plugin_type: string type of plugin to be loaded into module
         :param plugin_options: dict where keys & values are options & values
+        :param plugin_data: string type of data to be used as input
         :param xml_parent: dict OR str. 
                             If string given, parent elem is found via search,
                             Otherwise, plugin appeneded directly
@@ -531,6 +536,8 @@ class XML_handler:
         if plugin_elem is None:
             plugin_elem = ET.SubElement(xml_parent, "plugin")
             plugin_elem.set('type', plugin_type)
+        if len(plugin_data) > 0:
+            self.append_input_data('X', plugin_data, xml_parent, False)
         self._add_plugin_options(plugin_elem, plugin_options)
 
     def append_pipeline_module(self,
@@ -562,6 +569,7 @@ class XML_handler:
         if plugin_type != None:
             self.append_plugin_to_module(plugin_type,
                                          plugin_options,
+                                         parents[0],
                                          new_mod,
                                          0
                                          )
