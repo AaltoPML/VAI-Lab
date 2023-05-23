@@ -393,10 +393,12 @@ class pluginCanvas(tk.Frame):
             frame6 = tk.Frame(self.newWindow)
 
             dataSources = self.module_list.copy()
-            dataSources.pop(1)
+            current = np.where(self.m == np.array(self.id_mod))[0][0]
+
+            dataSources = [i for j, i in enumerate(dataSources) if j not in [1,current]]
 
             self.dropDown = tk.ttk.Combobox(frame6, value=dataSources)
-            self.dropDown.current(np.where(self.m == np.array(self.id_mod))[0][0]-2)
+            self.dropDown.current(current-2)
             self.dropDown.bind("<<ComboboxSelected>>", self.updateOutput)
             self.dropDown.pack()
 
