@@ -178,7 +178,7 @@ class XML_handler:
                              "class": "data",
                              "to_load": {}}
         for child in element:
-            assert "file" in child.attrib or "folder" in child.attrib,\
+            assert "file" in child.attrib or "folder" in child.attrib or "module" in child.attrib,\
                 str("XML Parse Error \
                         \n\tA path to data file must be specified. \
                         \n\t{0} does not contain the \"file\" tag. \
