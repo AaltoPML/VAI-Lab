@@ -15,15 +15,11 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   Intro and Installation <readme>
-   Getting Started <getting_started>
+   Intro <intro>
+   Installation <installation>
+   User Guide <user_guide>
+   Development <development>
+   Documentation <documentation>   
    Contributing <contributing>
-   API <modules>
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`   
 
