@@ -61,7 +61,7 @@ def main():
     #                         "xml_files",
     #                         # 'bayes_opt_demo.xml'))
     #                         'optimisation_demo.xml'))
-    # Run pipeline   
+    # Run pipeline
     core.run()
 
 if __name__=='__main__':
