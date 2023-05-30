@@ -13,7 +13,8 @@ from vai_lab.Data.xml_handler import XML_handler
 
 class Core:
     def __init__(self) -> None:
-        self.data = Data()
+        self.data = {}
+        self.data['Initialiser'] = Data()
         self._xml_handler = XML_handler()
         self._avail_plugins: PluginSpecsInterface = PluginSpecs()
         
@@ -33,7 +34,7 @@ class Core:
                 self.load_config_file(gui_output["xml_filename"])
             except:
                 raise Exception("No XML File Selected. Cannot Run Pipeline")
-            self._load_data()
+            self._load_data('Initialiser')
 
     def load_config_file(self, filename: Union[str,List,Tuple]):
         """Loads XML file into XML_handler object.
@@ -46,10 +47,15 @@ class Core:
         self._xml_handler.load_XML(filedir)
         self._initialised = True
 
-    def _load_data(self) -> None:
+    def _load_data(self, module) -> None:
         """Loads data from XML file into Data object"""
-        init_data_fn = self._xml_handler.data_to_load
-        self.data.import_data_from_config(init_data_fn)
+        init_data_fn = self._xml_handler.data_to_load(module)
+        if module not in self.data.keys():
+            self.data[module] = Data()
+        if isinstance(init_data_fn, str):
+            self.data[module].import_existing_data(init_data_fn, self.data)
+        elif isinstance(init_data_fn, dict):
+            self.data[module].import_data_from_config(init_data_fn)
 
     def _execute_module(self, specs):
         """Executes named module with given options
@@ -60,7 +66,8 @@ class Core:
         mod: ModuleInterface = import_module(globals(), specs["module_type"]).__call__()
         mod._debug = self._debug
         mod.set_avail_plugins(self._avail_plugins)
-        mod.set_data_in(self.data)
+        self._load_data(specs["name"])
+        mod.set_data_in(self.data[specs["name"]])
         mod.set_options(specs)
         print("\t"*self.loop_level
                 + specs["module_type"]
@@ -68,7 +75,7 @@ class Core:
                 + "processing..."
               )
         mod.launch()
-        self.data = mod.get_result()
+        self.data[specs["name"]] = mod.get_result()
 
     def _execute_loop(self, specs):
         if  hasattr(self,"_execute_{}_loop".format(specs["type"])):
@@ -169,7 +176,7 @@ class Core:
         if not self._initialised:
             self._initialise_with_gui()
         print("Running pipeline...")
-        self._load_data()
+        self._load_data('Initialiser')
         
         self._init_status(self._xml_handler.loaded_modules)
         self._execute(self._xml_handler.loaded_modules)

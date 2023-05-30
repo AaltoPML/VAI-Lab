@@ -198,6 +198,9 @@ class XML_handler:
                         .format(self._check_filename_abs_rel(child.attrib["folder"])))
                 parent[data_name]["to_load"][child.tag] = child.attrib["folder"]
 
+            if "module" in child.attrib:
+                parent[data_name]["to_load"] = child.attrib["module"]          
+
     def _load_exit_point(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with output and appends to parent dict
         :param elem: xml.etree.ElementTree.Element to be parsed
@@ -617,9 +620,9 @@ class XML_handler:
 
         xml_parent_element.append(new_loop)
 
-    def _get_init_data_structure(self) -> Dict[str, Any]:
+    def _get_data_structure(self, module) -> Dict[str, Any]:
         data_struct = self._find_dict_with_key_val_pair(
-            self.loaded_modules,
+            self.loaded_modules[module],
             "class", "data")
 
         assert len(data_struct) < 2, \
@@ -632,9 +635,12 @@ class XML_handler:
             out = {"to_load": {}}
         return out
 
-    @property
-    def data_to_load(self) -> Dict[str, str]:
-        return (self._get_init_data_structure()["to_load"])
+    #@property
+    def data_to_load(self, module=None) -> Dict[str, str]:
+        if module is None:
+            return self._get_data_structure('Initialiser')["to_load"]
+        else:
+            return self._get_data_structure(module)["to_load"]
 
 
 # Use case examples:

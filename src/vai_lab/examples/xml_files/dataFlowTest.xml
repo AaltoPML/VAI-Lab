@@ -16,7 +16,6 @@
     <DataProcessing name="Data Processing">
         <inputdata>
             <X module="Initialiser" />
-            <X module="Initialiser" />
         </inputdata>
         <relationships>
             <parent name="Initialiser" />
@@ -34,7 +33,6 @@
     <Modelling name="Modelling">
         <inputdata>
             <X module="Data Processing" />
-            <X module="DataProcessing" />
         </inputdata>
         <relationships>
             <parent name="Data Processing" />

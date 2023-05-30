@@ -101,6 +101,10 @@ class Data:
         for c in config.keys():
             self.import_data(config[c], c)
 
+    def import_existing_data(self: DataT, config: dict, data: DataT) -> None:
+        for item in data[config].keys():
+            self.data[item] = data[config][item]
+
     def append_data_column(self: DataT, col_name: str, data=None) -> None:
         self.data[col_name] = data
 
