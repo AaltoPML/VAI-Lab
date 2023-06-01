@@ -254,12 +254,11 @@ class pluginCanvas(tk.Frame):
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None'):  # add
             self.id_done.append(self.m)
-            self.xml_handler.append_plugin_to_module(self.plugin[self.m].get(),
-                                           {**self.req_settings, **
-                                               self.opt_settings},
-                                            self.plugin_inputData,
-                                           np.array(self.module_names)[
-                self.m == np.array(self.id_mod)][0],
+            self.xml_handler.append_plugin_to_module(
+                self.plugin[self.m].get(),
+                {**self.req_settings, **self.opt_settings},
+                self.plugin_inputData,
+                np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
 
     def display_buttons(self):

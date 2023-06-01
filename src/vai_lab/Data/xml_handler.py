@@ -502,6 +502,10 @@ class XML_handler:
         if input_data_elem is None:
             input_data_elem = ET.SubElement(xml_parent, "inputdata")
 
+        data_name_elem = input_data_elem.find("./"+data_name)
+        if data_name_elem is not None:
+            input_data_elem.remove(data_name_elem)
+
         plugin_elem = ET.SubElement(input_data_elem, data_name)
         if save_dir_as_relative:
             data_dir = data_dir.replace(self.lib_base_path, "./")

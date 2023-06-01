@@ -7,23 +7,23 @@
             [(350.0,50),0,{}]
         </coordinates>
         <inputdata>
-            <X file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_classification/X_tr.csv" />
-            <Y file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_classification/Y_tr.csv" />
-            <X_test file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_classification/X_tst.csv" />
-            <Y_test file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_classification/Y_tst.csv" />
+            <X file="./examples/supervised_regression/X_tr.csv" />
+            <Y file="./examples/supervised_regression/Y_tr.csv" />
+            <X_test file="./examples/supervised_regression/X_tst.csv" />
+            <Y_test file="./examples/supervised_regression/Y_tst.csv" />
         </inputdata>
     </Initialiser>
     <DataProcessing name="Data Processing">
-        <inputdata>
-            <X module="Initialiser" />
-        </inputdata>
         <relationships>
             <parent name="Initialiser" />
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(350,263),2,{0:'d0-u2'}]
+            [(351,240),2,{0:'d0-u2'}]
         </coordinates>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <plugin type="StandardScaler">
             <Data>
                  X
@@ -31,17 +31,17 @@
         </plugin>
     </DataProcessing>
     <Modelling name="Modelling">
-        <inputdata>
-            <X module="Data Processing" />
-        </inputdata>
         <relationships>
             <parent name="Data Processing" />
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(346,452),3,{2:'d2-u3'}]
+            [(350,414),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="SVC" />
+        <inputdata>
+            <X module="DataProcessing" />
+        </inputdata>
+        <plugin type="RidgeRegression" />
     </Modelling>
     <Output name="Output">
         <plugin type="" />
