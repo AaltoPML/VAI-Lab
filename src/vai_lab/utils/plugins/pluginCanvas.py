@@ -392,7 +392,7 @@ class pluginCanvas(tk.Frame):
             
             frame6 = tk.Frame(self.newWindow)
 
-            dataSources = self.module_list.copy()
+            dataSources = self.module_names.copy()
             current = np.where(self.m == np.array(self.id_mod))[0][0]
             dataSources = [i for j, i in enumerate(dataSources) if j not in [1,current]]
             
