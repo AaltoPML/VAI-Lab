@@ -395,7 +395,7 @@ class pluginCanvas(tk.Frame):
             dataSources = self.module_names.copy()
             current = np.where(self.m == np.array(self.id_mod))[0][0]
             dataSources = [i for j, i in enumerate(dataSources) if j not in [1,current]]
-            
+
             self.dropDown = tk.ttk.Combobox(frame6, value=dataSources)
             self.dropDown.current(current-2)
             self.plugin_inputData = self.dropDown.get()
@@ -419,7 +419,6 @@ class pluginCanvas(tk.Frame):
             self.newWindow.grid_columnconfigure(0, weight=1)
 
     def updateInput(self, event):
-        print('Output is '+str(self.dropDown.get()))
         self.plugin_inputData = self.dropDown.get()
 
     def create_treeView(self, tree_frame):
