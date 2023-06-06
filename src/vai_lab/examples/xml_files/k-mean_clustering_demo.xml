@@ -21,9 +21,12 @@
         </coordinates>
         <plugin type="StandardScaler">
             <Data>
-                X
+                 X
             </Data>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </DataProcessing>
     <Modelling name="Modelling">
         <relationships>
@@ -34,6 +37,9 @@
             [(300.0,300.0),3,{2:'d2-u3'}]
         </coordinates>
         <plugin type="KMeans" />
+        <inputdata>
+            <X module="Data Processing" />
+        </inputdata>
     </Modelling>
     <Output name="Output">
         <plugin type="" />

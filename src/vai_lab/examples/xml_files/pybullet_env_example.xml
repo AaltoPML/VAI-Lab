@@ -35,6 +35,9 @@
                     10
             </max_steps>            
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </Environment>
     <Output name="Output">
         <plugin type="" />

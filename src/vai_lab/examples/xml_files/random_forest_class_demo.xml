@@ -21,6 +21,9 @@
                 X
             </Data>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </DataProcessing>
   
     <Modelling name="My Modelling Module">
@@ -29,6 +32,9 @@
             <child name="Output" />
         </relationships>
         <plugin type="RandomForestClassifier" />
+        <inputdata>
+            <X module="My Data Processing" />
+        </inputdata>
     </Modelling>
   
     <Output name="Output">

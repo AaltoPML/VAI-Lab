@@ -23,9 +23,12 @@
         </coordinates>
         <plugin type="StandardScaler">
             <Data>
-                X
+                 X
             </Data>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </DataProcessing>
     <Modelling name="Modelling">
         <relationships>
@@ -35,11 +38,10 @@
         <coordinates>
             [(300,328),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="RidgeRegression">
-            <alpha>
-                0.0002
-            </alpha>
-        </plugin>
+        <plugin type="RidgeRegression" />
+        <inputdata>
+            <X module="DataProcessing" />
+        </inputdata>
     </Modelling>
     <Output name="Output">
         <plugin type="" />

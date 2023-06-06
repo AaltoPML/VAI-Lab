@@ -21,14 +21,10 @@
         <coordinates>
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="KNNClassifier">
-            <n_neighbors>
-                 50
-            </n_neighbors>
-            <weights>
-                 distance
-            </weights>
-        </plugin>
+        <plugin type="KNNClassifier" />
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </Modelling>
     <Output name="Output">
         <plugin type="" />

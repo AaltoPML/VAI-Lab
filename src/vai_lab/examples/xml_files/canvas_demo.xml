@@ -1,5 +1,5 @@
 <pipeline>
-    <Initialiser name="Init">
+    <Initialiser name="Initialiser">
         <inputdata>
             <X file="./examples/state-action/X_data.csv" />
         </inputdata>
@@ -9,10 +9,10 @@
     </Initialiser>
     <UserInteraction name="My First UserFeedback Module">
         <plugin type="canvas">
-            <some_param val = "2" />
+            <some_param val="2" />
         </plugin>
         <relationships>
-            <parent name="Init" />
+            <parent name="Initialiser" />
             <child name="Output" />
         </relationships>
     </UserInteraction>
