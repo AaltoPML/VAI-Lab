@@ -158,7 +158,7 @@ class pluginCanvas(tk.Frame):
 
         self.check_updated()
 
-        if self.m in self.id_done and self.m > 1:
+        if self.m in self.id_done and self.m > 0:
             self.canvas.itemconfig('p'+str(self.m), fill='#46da63')
         else:
             self.canvas.itemconfig('p'+str(self.m), fill=self.bg)
@@ -167,21 +167,31 @@ class pluginCanvas(tk.Frame):
             if not (len(self.canvas.gettags(self.canvas_selected)[0].split('-')) > 1) and\
                     not (self.canvas.gettags(self.canvas_selected)[0].split('-')[0] == 'loop'):
                 self.m = int(self.canvas.gettags(self.canvas_selected)[0][1:])
-            if self.m > 1:
-                if self.m not in self.id_done and self.m > 1:
+            if self.m > 0: #> 1:
+                if self.m not in self.id_done:
                     self.canvas.itemconfig('p'+str(self.m), fill='#dbaa21')
                 for widget in self.allWeHearIs:
                     widget.grid_remove()
-
-                self.display_buttons()
+                if self.m > 1:
+                    self.display_buttons()
+                else:
+                    self.reset_sidepanel()
+                    # self.display_tree()#¿?¿?¿?
                 module_number = self.id_mod.index(self.m)
                 if not hasattr(self, 'button_forw'):
-                    if module_number == len(self.id_mod)-1:
+                    if module_number == 1:
                         self.button_forw = tk.Button(
                             self.frame4, text='Finish', bg=self.bg,
                             font=self.controller.pages_font,
                             fg='white', height=3, width=15,
                             command=self.finish, state=tk.NORMAL, image='')
+                    elif module_number == len(self.id_mod)-1:
+                        pCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[1]))
+                        self.button_forw = tk.Button(
+                            self.frame4, image=self.forw_img, bg=self.bg,
+                            command=lambda: self.select(
+                                pCoord[0], pCoord[1]), state=tk.NORMAL)
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
@@ -191,10 +201,17 @@ class pluginCanvas(tk.Frame):
                                 pCoord[0], pCoord[1]), state=tk.NORMAL)
                     self.button_forw.grid(
                         column=1, row=0, sticky="news", pady=(0, 10), padx=(0, 10))
-                    if module_number < 3:
+                    if module_number == 1:
+                        mCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[-1]))
                         self.button_back = tk.Button(
                             self.frame4, image=self.back_img, bg=self.bg,
-                            state=tk.DISABLED)
+                            command=lambda: self.select(
+                                mCoord[0], mCoord[1]), state=tk.NORMAL)
+                    elif module_number < 3:
+                        self.button_back = tk.Button(
+                                self.frame4, image=self.back_img, bg=self.bg,
+                                state=tk.DISABLED)
                     else:
                         mCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number-1]))
@@ -205,18 +222,30 @@ class pluginCanvas(tk.Frame):
                     self.button_back.grid(
                         column=0, row=0, sticky="news", pady=(0, 10))
                 else:
-                    if module_number == len(self.id_mod)-1:
+                    if module_number == 1:
                         self.button_forw.config(text='Finish', bg=self.bg,
                                                 font=self.controller.pages_font,
                                                 fg='white', height=3, width=15,
                                                 command=self.finish, state=tk.NORMAL, image='')
+                    elif module_number == len(self.id_mod)-1:
+                        pCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[1]))
+                        self.button_forw.config(image=self.forw_img, bg=self.bg,
+                                                command=lambda: self.select(
+                                                    pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
                         self.button_forw.config(image=self.forw_img, bg=self.bg,
                                                 command=lambda: self.select(
                                                     pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
-                    if module_number < 3:
+                    if module_number == 1:
+                        mCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[-1]))
+                        self.button_back.config(image=self.back_img, bg=self.bg,
+                                                command=lambda: self.select(
+                                                    mCoord[0], mCoord[1]), text='', state=tk.NORMAL)
+                    elif module_number < 3:
                         self.button_back.config(image=self.back_img, bg=self.bg,
                                                 state=tk.DISABLED, text='')
                     else:
@@ -225,19 +254,23 @@ class pluginCanvas(tk.Frame):
                         self.button_back.config(image=self.back_img, bg=self.bg,
                                                 command=lambda: self.select(
                                                     mCoord[0], mCoord[1]), text='', state=tk.NORMAL)
-            else:  # If user clicks on Initialiser or Output
-                self.my_label.config(text='')
-                for widget in self.allWeHearIs:
-                    widget.grid_remove()
-                for widget in self.radio_label:
-                    widget.grid_remove()
+            else:          # If user clicks on Initialiser
+                self.reset_sidepanel()
                 if hasattr(self, 'button_forw'):
                     self.button_back.config(image=self.back_img, bg=self.bg,
                                             state=tk.DISABLED, text='')
                     pCoord = self.canvas.coords('p'+str(self.id_mod[2]))
                     self.button_forw.config(image=self.forw_img, bg=self.bg,
                                             command=lambda: self.select(
-                                                pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
+                                                pCoord[0], pCoord[1]), text='', state=tk.NORMAL)               
+    def reset_sidepanel(self):
+        """ Removes information from the panel to the side of the canvas.
+        """
+        self.my_label.config(text='')
+        for widget in self.allWeHearIs:
+            widget.grid_remove()
+        for widget in self.radio_label:
+            widget.grid_remove()
 
     def finish(self):
         """ Calls function check_quit.
@@ -652,10 +685,12 @@ class pluginCanvas(tk.Frame):
         :param out: bool type of whether the module corresponds to output.
         """
         iid = self.modules if iid is None else iid
-        if not ini and not out:
-            tag = ('o'+str(iid),)
-        else: #Make initialisation and output unmoveable
+        if ini: #Make initialisation and output unmoveable
             tag = ('n0',)
+        elif out:
+            tag = ('n1',)
+        else:
+            tag = ('o'+str(iid),)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
         self.canvas.create_rectangle(
             x - text_w/2 , 
@@ -889,7 +924,7 @@ class pluginCanvas(tk.Frame):
         self.loops = []
         self.drawLoop = False
         self.l = 0
-        self.id_done = [0, 1]
+        self.id_done = [0]
         self.plugin = {}
         for widget in self.allWeHearIs:
             widget.grid_remove()
