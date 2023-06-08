@@ -41,6 +41,7 @@ class pluginCanvas(tk.Frame):
         self.plugin: Dict[int, tk.StringVar] = {}
         self.dataType: Dict[int, tk.StringVar] = {}
         self.allWeHearIs: List[tk.Radiobutton] = []
+        self.check_list: List[tk.Checkbutton] = []
         if not self.controller._debug:
             self._setup_frame()
 
@@ -173,10 +174,11 @@ class pluginCanvas(tk.Frame):
                 for widget in self.allWeHearIs:
                     widget.grid_remove()
                 if self.m > 1:
+                    self.reset_sidecheck()
                     self.display_buttons()
                 else:
                     self.reset_sidepanel()
-                    # self.display_tree()#¿?¿?¿?
+                    self.display_checklist()
                 module_number = self.id_mod.index(self.m)
                 if not hasattr(self, 'button_forw'):
                     if module_number == 1:
@@ -270,6 +272,11 @@ class pluginCanvas(tk.Frame):
         for widget in self.allWeHearIs:
             widget.grid_remove()
         for widget in self.radio_label:
+            widget.grid_remove()
+        self.reset_sidecheck()
+    
+    def reset_sidecheck(self):
+        for widget in self.check_list:
             widget.grid_remove()
 
     def finish(self):
@@ -365,6 +372,43 @@ class pluginCanvas(tk.Frame):
             framexx_i[frame_idx] += 1
             self.CreateToolTip(rb, text=descriptions[p])
             self.allWeHearIs.append(rb)
+
+    def display_checklist(self):
+        """ Updates the displayed tree to the left of canvas.
+         Used to specify the output data and files. """
+        self.my_label.config(
+            text='Indicate which module\'s output data\nshould be saved:')
+        dataSources = self.module_names.copy()
+        dataSources = [i for j, i in enumerate(dataSources) if j != 1]
+        frame_tree = tk.Frame(self.frame_canvas, bg='green')
+        frame_tree.grid(column=0, row=0, sticky="new", padx=(10, 0))
+        self.out_data_list = []
+        self.check_list = []
+        for choice in dataSources:
+            var = tk.StringVar(value=choice)
+            var.set(0)
+            self.out_data_list.append(var)
+            cb = tk.Checkbutton(frame_tree, var=var, text=choice,
+                                onvalue=choice, offvalue="",
+                                pady=10,
+                                font=self.controller.pages_font,
+                                bg=self.bg,
+                                fg='white',
+                                selectcolor=self.bg,
+                                anchor='w',
+                                width=20, 
+                                background=self.frame_canvas.cget("background")
+            )
+            cb.pack(side="top", fill="x", anchor="w")
+            self.check_list.append(cb)
+ 
+    def getCheckedItems(self):
+            values = []
+            for var in self.vars:
+                value =  var.get()
+                if value:
+                    values.append(value)
+            return values
 
     def optionsWindow(self):
         """ Function to create a new window displaying the available options 
