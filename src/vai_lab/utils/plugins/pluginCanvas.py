@@ -10,7 +10,7 @@ from typing import Dict, List
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox, ttk
-
+from tkinter.filedialog import askdirectory
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas": "default",
                           "pluginCanvas": "alias",
@@ -81,8 +81,8 @@ class pluginCanvas(tk.Frame):
                                  bg=self.bg,
                                  fg='white',
                                  anchor=tk.CENTER)
-        self.my_label.grid(column=5,
-                           row=0, columnspan=2, padx=10)
+        self.my_label.grid(column=0,
+                           row=0, columnspan=3, padx=10)
 
         self.back_img = ImageTk.PhotoImage(Image.open(
             os.path.join(script_dir,
@@ -279,6 +279,8 @@ class pluginCanvas(tk.Frame):
     def reset_sidecheck(self):
         if hasattr(self, 'frame_tree'):
             self.frame_tree.grid_remove()
+        if hasattr(self, 'frame_path'):
+            self.frame_path.grid_remove()
 
     def finish(self):
         """ Calls function check_quit.
@@ -309,7 +311,8 @@ class pluginCanvas(tk.Frame):
             self.id_done.append(self.m)
             self.xml_handler.append_plugin_to_module(
                 'Output',
-                {'out_data': self.out_data_xml},
+                {'outdata': self.out_data_xml, 
+                 'outpath': self.path_out},
                 None,
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
@@ -392,7 +395,7 @@ class pluginCanvas(tk.Frame):
         self.my_label.config(
             text='Indicate which module\'s output data\nshould be saved:')
         dataSources = [i for j, i in enumerate(self.module_names) if j != 1]
-        self.frame_tree = tk.Frame(self.frame_canvas)
+        self.frame_tree = tk.Frame(self.frame_canvas, bg=self.bg)
         self.frame_tree.grid(column=0, row=0, sticky="new", padx=(10, 0))
         for c, choice in enumerate(dataSources):
             cb = tk.Checkbutton(self.frame_tree, var=self.out_data_list[c], text=choice,
@@ -407,7 +410,49 @@ class pluginCanvas(tk.Frame):
                                 background=self.frame_canvas.cget("background")
             )
             cb.grid(row=c, column=0)
- 
+        self.frame_path = tk.Frame(self.frame_canvas, bg=self.bg)
+        self.frame_path.grid(column=0, row=1, sticky="new", padx=(10, 0))
+        self.my_label = tk.Label(self.frame_path,
+                                 text='Indicate the folder to store the output:',
+                                 pady=10,
+                                 font=self.controller.title_font,
+                                 bg=self.bg,
+                                 fg='white',
+                                 anchor=tk.CENTER)
+        self.my_label.grid(column=0,
+                           row=0, columnspan=2, padx=10)
+        tk.Button(self.frame_path,
+                    text="Browse",
+                    command=self.upload_file
+                    ).grid(column=0, row=1)
+        width = 63
+        self.path_out = get_lib_parent_dir()
+        folder = '...' + \
+            self.path_out[-width +
+                     3:] if self.path_out and len(self.path_out) > width else self.path_out
+        self.label_list = tk.Label(self.frame_path, text=folder,
+                                pady=10,
+                                padx=10,
+                                font=self.controller.pages_font,
+                                fg='white', 
+                                bg=self.bg
+                                )
+        self.label_list.grid(column=1, row=1)
+    
+    def upload_file(self):
+        """ Asks for a file and stores the path and displays it.
+        :param r: int type of data variable number.
+        """
+        folder = askdirectory(initialdir=get_lib_parent_dir(),
+                        title='Select a folder',
+                        mustexist=True)
+        self.path_out = folder
+        width = 63
+        folder = '...' + \
+            folder[-width +
+                     3:] if folder and len(folder) > width else folder
+        self.label_list.config(text=folder)
+
     def getCheckedItems(self):
             values = []
             for var in self.vars:
