@@ -41,7 +41,8 @@ class pluginCanvas(tk.Frame):
         self.plugin: Dict[int, tk.StringVar] = {}
         self.dataType: Dict[int, tk.StringVar] = {}
         self.allWeHearIs: List[tk.Radiobutton] = []
-        self.check_list: List[tk.Checkbutton] = []
+        self.out_data_xml: List[int, tk.StringVar] = []
+        self.out_data_list: List[int, tk.StringVar] = []
         if not self.controller._debug:
             self._setup_frame()
 
@@ -276,8 +277,8 @@ class pluginCanvas(tk.Frame):
         self.reset_sidecheck()
     
     def reset_sidecheck(self):
-        for widget in self.check_list:
-            widget.grid_remove()
+        if hasattr(self, 'frame_tree'):
+            self.frame_tree.grid_remove()
 
     def finish(self):
         """ Calls function check_quit.
@@ -300,6 +301,10 @@ class pluginCanvas(tk.Frame):
                 self.plugin_inputData,
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
+
+        elif len(set([elem.get() for elem in self.out_data_list if len(elem.get())>1]) 
+                 ^ set(self.out_data_xml)) > 0 :
+            self.out_data_xml = [elem.get() for elem in self.out_data_list if len(elem.get())>1]
 
     def display_buttons(self):
         """ Updates the displayed radiobuttons and the description windows.
@@ -380,15 +385,10 @@ class pluginCanvas(tk.Frame):
             text='Indicate which module\'s output data\nshould be saved:')
         dataSources = self.module_names.copy()
         dataSources = [i for j, i in enumerate(dataSources) if j != 1]
-        frame_tree = tk.Frame(self.frame_canvas, bg='green')
-        frame_tree.grid(column=0, row=0, sticky="new", padx=(10, 0))
-        self.out_data_list = []
-        self.check_list = []
-        for choice in dataSources:
-            var = tk.StringVar(value=choice)
-            var.set(0)
-            self.out_data_list.append(var)
-            cb = tk.Checkbutton(frame_tree, var=var, text=choice,
+        self.frame_tree = tk.Frame(self.frame_canvas)
+        self.frame_tree.grid(column=0, row=0, sticky="new", padx=(10, 0))
+        for c, choice in enumerate(dataSources):
+            cb = tk.Checkbutton(self.frame_tree, var=self.out_data_list[c], text=choice,
                                 onvalue=choice, offvalue="",
                                 pady=10,
                                 font=self.controller.pages_font,
@@ -399,8 +399,7 @@ class pluginCanvas(tk.Frame):
                                 width=20, 
                                 background=self.frame_canvas.cget("background")
             )
-            cb.pack(side="top", fill="x", anchor="w")
-            self.check_list.append(cb)
+            cb.grid(row=c, column=0)
  
     def getCheckedItems(self):
             values = []
@@ -860,6 +859,12 @@ class pluginCanvas(tk.Frame):
                          rowspan=4, pady=(0, 10))
         self.framex.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Define modules for output data selection
+        for choice in self.module_names:
+            var = tk.StringVar(value=choice)
+            var.set(0)
+            self.out_data_list.append(var)
 
     def set_mousewheel(self, widget, command):
         """Activate / deactivate mousewheel scrolling when 
