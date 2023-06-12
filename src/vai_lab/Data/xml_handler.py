@@ -543,7 +543,7 @@ class XML_handler:
         if plugin_elem is None:
             plugin_elem = ET.SubElement(xml_parent, "plugin")
             plugin_elem.set('type', plugin_type)
-        if len(plugin_data) > 0:
+        if plugin_data is not None and len(plugin_data) > 0:
             self.append_input_data('X', plugin_data, xml_parent, False)
         self._add_plugin_options(plugin_elem, plugin_options)
 

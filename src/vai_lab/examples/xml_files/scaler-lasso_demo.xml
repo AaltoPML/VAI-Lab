@@ -21,14 +21,14 @@
         <coordinates>
             [(296,183),2,{0:'d0-u2'}]
         </coordinates>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <plugin type="StandardScaler">
             <Data>
                  X
             </Data>
         </plugin>
-        <inputdata>
-            <X module="Initialiser" />
-        </inputdata>
     </DataProcessing>
     <Modelling name="Modelling">
         <relationships>
@@ -38,18 +38,26 @@
         <coordinates>
             [(300,328),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="RidgeRegression" />
         <inputdata>
-            <X module="DataProcessing" />
+            <X module="Data Processing" />
         </inputdata>
+        <plugin type="Lasso">
+            <alpha>
+                 0.02
+            </alpha>
+        </plugin>
     </Modelling>
     <Output name="Output">
-        <plugin type="" />
         <relationships>
             <parent name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{3:'d3-u1'}]
         </coordinates>
+        <plugin type="Output">
+            <out_data>
+                Modelling
+            </out_data>
+        </plugin>
     </Output>
 </pipeline>

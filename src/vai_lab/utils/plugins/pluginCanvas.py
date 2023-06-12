@@ -289,8 +289,9 @@ class pluginCanvas(tk.Frame):
         self.check_quit()
 
     def check_updated(self):
-        """ Checks if the current plugin exists and 
-        stores/updates the plugin options
+        """ Checks if the current plugin exists and stores/updates the plugin options. 
+        It also cheks if the output data has been modfied and stores/updates the 
+        information accordingly.
         """
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None'):  # add
@@ -305,6 +306,13 @@ class pluginCanvas(tk.Frame):
         elif len(set([elem.get() for elem in self.out_data_list if len(elem.get())>1]) 
                  ^ set(self.out_data_xml)) > 0 :
             self.out_data_xml = [elem.get() for elem in self.out_data_list if len(elem.get())>1]
+            self.id_done.append(self.m)
+            self.xml_handler.append_plugin_to_module(
+                'Output',
+                {'out_data': self.out_data_xml},
+                None,
+                np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
+                True)
 
     def display_buttons(self):
         """ Updates the displayed radiobuttons and the description windows.
@@ -383,8 +391,7 @@ class pluginCanvas(tk.Frame):
          Used to specify the output data and files. """
         self.my_label.config(
             text='Indicate which module\'s output data\nshould be saved:')
-        dataSources = self.module_names.copy()
-        dataSources = [i for j, i in enumerate(dataSources) if j != 1]
+        dataSources = [i for j, i in enumerate(self.module_names) if j != 1]
         self.frame_tree = tk.Frame(self.frame_canvas)
         self.frame_tree.grid(column=0, row=0, sticky="new", padx=(10, 0))
         for c, choice in enumerate(dataSources):
