@@ -2,6 +2,7 @@ import time
 from sys import exit
 from os.path import join
 from typing import Dict, List, Tuple, Union
+import pickle
 
 from vai_lab._import_helper import import_module
 from vai_lab._plugin_helpers import PluginSpecs
@@ -97,8 +98,14 @@ class Core:
         pass
 
     def _execute_exit_point(self, specs):
-        """Placeholder: Will parse the Output module when ready"""
-        pass
+        """ Runs the Output module """
+        if all(k in specs['plugin']['options'] for k in ('outdata', 'outpath')):
+            data_out = {}
+            for module in specs['plugin']['options']['outdata']:
+                data_out[module] = self.data[module]
+
+            with open(specs['plugin']['options']['outpath']+'output.pkl', 'wb') as handle:
+                pickle.dump(data_out, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def _parse_loop_condition(self, condition):
         try:
@@ -109,7 +116,7 @@ class Core:
         except:
             print("Condition \"{0}\" cannot be parsed".format(condition))
             print(
-                "Other formats in in development. Only ranged for loops are working currently")
+                "Other formats in development. Only ranged for loops are working currently")
 
     def _execute_for_loop(self, specs):
         condition = self._parse_loop_condition(specs["condition"])

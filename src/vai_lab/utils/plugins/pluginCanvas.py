@@ -10,7 +10,7 @@ from typing import Dict, List
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox, ttk
-from tkinter.filedialog import askdirectory
+from tkinter.filedialog import asksaveasfilename
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas": "default",
                           "pluginCanvas": "alias",
@@ -413,7 +413,7 @@ class pluginCanvas(tk.Frame):
         self.frame_path = tk.Frame(self.frame_canvas, bg=self.bg)
         self.frame_path.grid(column=0, row=1, sticky="new", padx=(10, 0))
         self.my_label = tk.Label(self.frame_path,
-                                 text='Indicate the folder to store the output:',
+                                 text='Indicate the output file name:',
                                  pady=10,
                                  font=self.controller.title_font,
                                  bg=self.bg,
@@ -426,11 +426,11 @@ class pluginCanvas(tk.Frame):
                     command=self.upload_file
                     ).grid(column=0, row=1)
         width = 63
-        self.path_out = get_lib_parent_dir()
-        folder = '...' + \
+        self.path_out = get_lib_parent_dir()+'output.pkl'
+        filename = '...' + \
             self.path_out[-width +
                      3:] if self.path_out and len(self.path_out) > width else self.path_out
-        self.label_list = tk.Label(self.frame_path, text=folder,
+        self.label_list = tk.Label(self.frame_path, text=filename,
                                 pady=10,
                                 padx=10,
                                 font=self.controller.pages_font,
@@ -441,17 +441,18 @@ class pluginCanvas(tk.Frame):
     
     def upload_file(self):
         """ Asks for a file and stores the path and displays it.
-        :param r: int type of data variable number.
         """
-        folder = askdirectory(initialdir=get_lib_parent_dir(),
-                        title='Select a folder',
-                        mustexist=True)
-        self.path_out = folder
-        width = 63
-        folder = '...' + \
-            folder[-width +
-                     3:] if folder and len(folder) > width else folder
-        self.label_list.config(text=folder)
+        filename = asksaveasfilename(initialdir=get_lib_parent_dir(),
+                                    title='Select an output file',
+                                    defaultextension='.pkl', 
+                                    filetypes=[('Pickle file', '.pkl')])
+        if filename is not None:
+            self.path_out = filename
+            width = 63
+            filename = '...' + \
+                filename[-width +
+                        3:] if filename and len(filename) > width else filename
+            self.label_list.config(text=filename)
 
     def getCheckedItems(self):
             values = []
