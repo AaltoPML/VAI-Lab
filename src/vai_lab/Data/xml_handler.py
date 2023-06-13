@@ -270,11 +270,12 @@ class XML_handler:
         :returns out: list containing parsed text data
         """
         if element.text is not None:
-            new = element.text.strip().replace(" ", "")
+            new = element.text.strip()
 
         out: List[Any] = new.split("\n")
         raw_elem_text = str()
         for idx in range(0, len(out)):
+            out[idx] = " ".join(out[idx].split())
             raw_elem_text = (raw_elem_text+"\n{}").format(out[idx])
             if "[" in out[idx] and "]" in out[idx]:
                 out[idx] = literal_eval(out[idx])

@@ -104,7 +104,7 @@ class Core:
             for module in specs['plugin']['options']['outdata']:
                 data_out[module] = self.data[module]
 
-            with open(specs['plugin']['options']['outpath']+'output.pkl', 'wb') as handle:
+            with open(specs['plugin']['options']['outpath'], 'wb') as handle:
                 pickle.dump(data_out, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def _parse_loop_condition(self, condition):
