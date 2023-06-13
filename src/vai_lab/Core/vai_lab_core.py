@@ -101,12 +101,14 @@ class Core:
         """ Runs the Output module """
         if all(k in specs['plugin']['options'] for k in ('outdata', 'outpath')):
             data_out = {}
-            for module in specs['plugin']['options']['outdata']:
-                data_out[module] = self.data[module]
+            if type(specs['plugin']['options']['outdata']) is list:
+                for module in specs['plugin']['options']['outdata']:
+                    data_out[module] = self.data[module]
+            elif type(specs['plugin']['options']['outdata']) is str:
+                data_out[specs['plugin']['options']['outdata']] = self.data[specs['plugin']['options']['outdata']]
 
             with open(specs['plugin']['options']['outpath'], 'wb') as handle:
                 pickle.dump(data_out, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
     def _parse_loop_condition(self, condition):
         try:
             condition = int(condition)
