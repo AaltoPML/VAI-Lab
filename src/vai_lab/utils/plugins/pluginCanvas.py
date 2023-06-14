@@ -309,8 +309,13 @@ class pluginCanvas(tk.Frame):
                  ^ set(self.out_data_xml)) > 0 :
             self.out_data_xml = [elem.get() for elem in self.out_data_list if len(elem.get())>1]
             self.id_done.append(self.m)
-            rel_path = os.path.join('.', os.path.relpath(self.path_out, 
-                                            os.path.commonpath([self.path_out, get_lib_parent_dir()])))
+
+            if os.path.normpath(get_lib_parent_dir()) == os.path.normpath(os.path.commonpath([self.path_out, get_lib_parent_dir()])):
+                rel_path = os.path.join('.', os.path.relpath(self.path_out, 
+                                                os.path.commonpath([self.path_out, get_lib_parent_dir()])))
+            else:
+                rel_path = self.path_out
+
             self.xml_handler.append_plugin_to_module(
                 'Output',
                 {'outdata': self.out_data_xml, 
