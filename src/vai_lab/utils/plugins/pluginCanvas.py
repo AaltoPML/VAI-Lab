@@ -309,10 +309,12 @@ class pluginCanvas(tk.Frame):
                  ^ set(self.out_data_xml)) > 0 :
             self.out_data_xml = [elem.get() for elem in self.out_data_list if len(elem.get())>1]
             self.id_done.append(self.m)
+            rel_path = os.path.join('.', os.path.relpath(self.path_out, 
+                                            os.path.commonpath([self.path_out, get_lib_parent_dir()])))
             self.xml_handler.append_plugin_to_module(
                 'Output',
                 {'outdata': self.out_data_xml, 
-                 'outpath': self.path_out},
+                 'outpath': rel_path},
                 None,
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
@@ -426,7 +428,7 @@ class pluginCanvas(tk.Frame):
                     command=self.upload_file
                     ).grid(column=0, row=1)
         width = 63
-        self.path_out = get_lib_parent_dir()+'output.pkl'
+        self.path_out = os.path.join(get_lib_parent_dir(),'examples','results','output.pkl')
         filename = '...' + \
             self.path_out[-width +
                      3:] if self.path_out and len(self.path_out) > width else self.path_out
@@ -442,7 +444,7 @@ class pluginCanvas(tk.Frame):
     def upload_file(self):
         """ Asks for a file and stores the path and displays it.
         """
-        filename = asksaveasfilename(initialdir=get_lib_parent_dir(),
+        filename = asksaveasfilename(initialdir=os.path.join(get_lib_parent_dir(),'examples','results'),
                                     title='Select an output file',
                                     defaultextension='.pkl', 
                                     filetypes=[('Pickle file', '.pkl')])
