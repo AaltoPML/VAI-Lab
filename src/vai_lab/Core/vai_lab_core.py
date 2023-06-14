@@ -4,7 +4,7 @@ from os.path import join
 from typing import Dict, List, Tuple, Union
 import pickle
 
-from vai_lab._import_helper import import_module
+from vai_lab._import_helper import import_module, rel_to_abs
 from vai_lab._plugin_helpers import PluginSpecs
 from vai_lab._types import ModuleInterface, PluginSpecsInterface
 from vai_lab.GUI.GUI_core import GUI
@@ -107,7 +107,7 @@ class Core:
             elif type(specs['plugin']['options']['outdata']) is str:
                 data_out[specs['plugin']['options']['outdata']] = self.data[specs['plugin']['options']['outdata']]
 
-            with open(specs['plugin']['options']['outpath'], 'wb') as handle:
+            with open(rel_to_abs(specs['plugin']['options']['outpath']), 'wb') as handle:
                 pickle.dump(data_out, handle, protocol=pickle.HIGHEST_PROTOCOL)
     def _parse_loop_condition(self, condition):
         try:
