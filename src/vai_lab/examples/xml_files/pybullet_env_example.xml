@@ -40,7 +40,14 @@
         </inputdata>
     </Environment>
     <Output name="Output">
-        <plugin type="" />
+        <plugin type="Output">
+            <outdata>
+                Modelling
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
         <relationships>
             <parent name="MyEnv" />
         </relationships>

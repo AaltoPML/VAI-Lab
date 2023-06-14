@@ -41,7 +41,13 @@
         <relationships>
             <parent name="My Modelling Module" />
         </relationships>
-      <!-- <outData file="./my_results.csv" /> -->
+        <plugin type="Output">
+            <outdata>
+                My Modelling Module
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
     </Output>
-  
 </pipeline>

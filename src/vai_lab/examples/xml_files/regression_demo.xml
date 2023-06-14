@@ -21,9 +21,19 @@
         </coordinates>
         <plugin type="LinearRegression">
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </Modelling>
-    <Output name="Output">
-        <plugin type="" />
+    <Output name="Output">        
+        <plugin type="Output">
+            <outdata>
+                Modelling
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
         <relationships>
             <parent name="Modelling" />
         </relationships>

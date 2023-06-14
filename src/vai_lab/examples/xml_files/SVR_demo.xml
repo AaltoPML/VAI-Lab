@@ -23,23 +23,30 @@
         </coordinates>
         <plugin type="SVR">
             <C>
-                 0.01
+                 0.1
             </C>
             <kernel>
-                 rbf
+                 linear
             </kernel>
-            <gamma>
-                 10
-            </gamma>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </Modelling>
     <Output name="Output">
-        <plugin type="" />
         <relationships>
             <parent name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{2:'d2-u1'}]
         </coordinates>
+        <plugin type="Output">
+            <outdata>
+                Modelling
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
     </Output>
 </pipeline>

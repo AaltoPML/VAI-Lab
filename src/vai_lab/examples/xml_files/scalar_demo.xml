@@ -22,18 +22,28 @@
             [(300.0,300.0),2,{0:'d0-u2'}]
         </coordinates>
         <plugin type="StandardScaler">
-            <with_mean>
-                True
-            </with_mean>
+            <Data>
+                X
+            </Data>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </DataProcessing>
     <Output name="Output">
-        <plugin type="" />
         <relationships>
             <parent name="Data Processing" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{2:'d2-u1'}]
         </coordinates>
+        <plugin type="Output">
+            <outdata>
+                Data Processing
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
     </Output>
 </pipeline>

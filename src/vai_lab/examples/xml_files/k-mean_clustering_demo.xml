@@ -19,14 +19,14 @@
         <coordinates>
             [(301,201),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="StandardScaler">
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
+        <plugin type="MinMaxScaler">
             <Data>
                  X
             </Data>
         </plugin>
-        <inputdata>
-            <X module="Initialiser" />
-        </inputdata>
     </DataProcessing>
     <Modelling name="Modelling">
         <relationships>
@@ -36,18 +36,25 @@
         <coordinates>
             [(300.0,300.0),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="KMeans" />
         <inputdata>
             <X module="Data Processing" />
         </inputdata>
+        <plugin type="KMeans" />
     </Modelling>
     <Output name="Output">
-        <plugin type="" />
         <relationships>
             <parent name="Modelling" />
         </relationships>
         <coordinates>
             [(300.0,550),1,{3:'d3-u1'}]
         </coordinates>
+        <plugin type="Output">
+            <outdata>
+                Modelling
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
     </Output>
 </pipeline>

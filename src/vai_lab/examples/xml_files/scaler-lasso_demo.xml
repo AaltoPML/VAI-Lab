@@ -43,7 +43,7 @@
         </inputdata>
         <plugin type="Lasso">
             <alpha>
-                 0.02
+                 0.2
             </alpha>
         </plugin>
     </Modelling>
@@ -55,9 +55,13 @@
             [(300.0,550),1,{3:'d3-u1'}]
         </coordinates>
         <plugin type="Output">
-            <out_data>
+            <outdata>
+                Data Processing
                 Modelling
-            </out_data>
+            </outdata>
+            <outpath>
+                 ./examples/results/test.pkl
+            </outpath>
         </plugin>
     </Output>
 </pipeline>

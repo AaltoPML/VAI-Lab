@@ -17,11 +17,13 @@
         </relationships>
     </UserInteraction>
     <Output>
-        <plugin type="">
-            <out_data>
-                all
-            </out_data>
-            <save_to file="../resources/output_test.csv" />
+        <plugin type="Output">
+            <outdata>
+                Modelling
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
         </plugin>
         <relationships>
             <parent name="My First UserFeedback Module" />

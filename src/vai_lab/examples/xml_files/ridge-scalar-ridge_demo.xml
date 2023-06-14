@@ -26,6 +26,9 @@
                  0.01
             </alpha>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </Modelling>
     <DataProcessing name="Data Processing">
         <relationships>
@@ -40,6 +43,9 @@
                  True
             </with_mean>
         </plugin>
+        <inputdata>
+            <X module="Modelling" />
+        </inputdata>
     </DataProcessing>
     <Modelling name="Modelling-1">
         <relationships>
@@ -54,9 +60,20 @@
                  0.01
             </alpha>
         </plugin>
+        <inputdata>
+            <X module="Data Processing" />
+        </inputdata>
     </Modelling>
     <Output name="Output">
-        <plugin type="" />
+        <plugin type="Output">
+            <outdata>
+                Modelling
+                Modelling-1
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
         <relationships>
             <parent name="Modelling-1" />
         </relationships>

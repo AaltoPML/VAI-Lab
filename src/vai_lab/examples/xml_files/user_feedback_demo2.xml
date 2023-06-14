@@ -1,41 +1,42 @@
 <pipeline>
     <Initialiser name="Initialiser">
+        <inputdata>
+            <X folder="./examples/image_classification/training_images/" />
+            <Y file="./examples/image_classification/Y_data.csv" />
+        </inputdata>
         <relationships>
-            <child name="Modelling" />
+            <child name="User Interaction" />
         </relationships>
         <coordinates>
-            [(300.0,50),0,{}]
+            [(350.0, 50), 0, {}]
         </coordinates>
-        <inputdata>
-            <X file="./examples/supervised_classification/X_tr.csv" />
-            <Y file="./examples/supervised_classification/Y_tr.csv" />
-            <X_test file="./examples/supervised_classification/X_tst.csv" />
-            <Y_test file="./examples/supervised_classification/Y_tst.csv" />
-        </inputdata>
     </Initialiser>
-    <Modelling name="Modelling">
+    <UserInteraction name="User Interaction">
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <relationships>
             <parent name="Initialiser" />
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300.0,300.0),2,{0:'d0-u2'}]
+            [(350.0, 350.0), 2, {0: 'd0-u2'}]
         </coordinates>
-        <inputdata>
-            <X module="Initialiser" />
-        </inputdata>
-        <plugin type="KNNClassifier" />
-    </Modelling>
+        <plugin type="ManualInput" />
+    </UserInteraction>
     <Output name="Output">
+        <inputdata>
+            <X module="User Interaction" />
+        </inputdata>
         <relationships>
-            <parent name="Modelling" />
+            <parent name="User Interaction" />
         </relationships>
         <coordinates>
-            [(300.0,550),1,{2:'d2-u1'}]
+            [(350.0, 650), 1, {2: 'd2-u1'}]
         </coordinates>
         <plugin type="Output">
             <outdata>
-                Modelling
+                User Interaction
             </outdata>
             <outpath>
                  .\examples\results\output.pkl
