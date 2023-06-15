@@ -535,6 +535,10 @@ class pluginCanvas(tk.Frame):
 
             self.plugin_inputData = tk.StringVar(frame6)
             dropDown = tk.ttk.OptionMenu(frame6, self.plugin_inputData, dataSources[current-2], *dataSources)
+            style.theme_use('clam')
+            style.configure('raised.TMenubutton', borderwidth=1)
+            style.configure("TMenubutton", background="white")
+            dropDown["menu"].configure(bg="white")
             dropDown.pack()
 
             self.finishButton = tk.Button(

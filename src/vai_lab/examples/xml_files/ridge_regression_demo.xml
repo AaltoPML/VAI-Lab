@@ -4,7 +4,7 @@
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(300.0,50),0,{}]
+            [(350.0,50),0,{}]
         </coordinates>
         <inputdata>
             <X file="./examples/supervised_regression/X_tr.csv" />
@@ -19,7 +19,7 @@
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300.0,300.0),2,{0:'d0-u2'}]
+            [(350.0,350.0),2,{0:'d0-u2'}]
         </coordinates>
         <plugin type="RidgeRegression">
             <alpha>
@@ -35,7 +35,7 @@
             <parent name="Modelling" />
         </relationships>
         <coordinates>
-            [(300.0,550),1,{2:'d2-u1'}]
+            [(350.0,650),1,{2:'d2-u1'}]
         </coordinates>        
         <plugin type="Output">
             <outdata>

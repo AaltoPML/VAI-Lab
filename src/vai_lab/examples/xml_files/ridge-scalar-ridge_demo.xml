@@ -4,7 +4,7 @@
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(300.0,50),0,{}]
+            [(350.0,50),0,{}]
         </coordinates>
         <inputdata>
             <X file="./examples/supervised_regression/X_tr.csv" />
@@ -19,7 +19,7 @@
             <child name="Data Processing" />
         </relationships>
         <coordinates>
-            [(300,180),2,{0:'d0-u2'}]
+            [(350,180),2,{0:'d0-u2'}]
         </coordinates>
         <plugin type="RidgeRegression">
             <alpha>
@@ -36,16 +36,16 @@
             <child name="Modelling-1" />
         </relationships>
         <coordinates>
-            [(300.0,300.0),3,{2:'d2-u3'}]
+            [(350.0,350.0),3,{2:'d2-u3'}]
         </coordinates>
-        <plugin type="StandardScaler">
-            <with_mean>
-                 True
-            </with_mean>
-        </plugin>
         <inputdata>
             <X module="Modelling" />
         </inputdata>
+        <plugin type="StandardScaler">
+            <Data>
+                 X
+            </Data>
+        </plugin>
     </DataProcessing>
     <Modelling name="Modelling-1">
         <relationships>
@@ -53,18 +53,24 @@
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300,408),4,{3:'d3-u4'}]
+            [(350,408),4,{3:'d3-u4'}]
         </coordinates>
+        <inputdata>
+            <X module="Data Processing" />
+        </inputdata>
         <plugin type="RidgeRegression">
             <alpha>
                  0.01
             </alpha>
         </plugin>
-        <inputdata>
-            <X module="Data Processing" />
-        </inputdata>
     </Modelling>
     <Output name="Output">
+        <relationships>
+            <parent name="Modelling-1" />
+        </relationships>
+        <coordinates>
+            [(350.0,650),1,{4:'d4-u1'}]
+        </coordinates>
         <plugin type="Output">
             <outdata>
                 Modelling
@@ -74,11 +80,5 @@
                  .\examples\results\output.pkl
             </outpath>
         </plugin>
-        <relationships>
-            <parent name="Modelling-1" />
-        </relationships>
-        <coordinates>
-            [(300.0,550),1,{4:'d4-u1'}]
-        </coordinates>
     </Output>
 </pipeline>

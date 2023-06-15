@@ -6,6 +6,9 @@
         <relationships>
             <child name="My First UserFeedback Module" />
         </relationships>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
     </Initialiser>
     <UserInteraction name="My First UserFeedback Module">
         <plugin type="canvas">
@@ -14,7 +17,10 @@
         <relationships>
             <parent name="Initialiser" />
             <child name="Output" />
-        </relationships>
+        </relationships>        
+        <coordinates>
+            [(350.0,350.0),2,{0:'d0-u2'}]
+        </coordinates>
     </UserInteraction>
     <Output>
         <plugin type="Output">
@@ -28,5 +34,8 @@
         <relationships>
             <parent name="My First UserFeedback Module" />
         </relationships>
+        <coordinates>
+            [(350.0,650),1,{2:'d2-u1'}]
+        </coordinates>
     </Output>
 </pipeline>

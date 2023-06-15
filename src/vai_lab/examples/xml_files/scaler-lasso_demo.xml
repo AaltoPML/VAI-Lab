@@ -4,7 +4,7 @@
             <child name="Data Processing" />
         </relationships>
         <coordinates>
-            [(300.0,50),0,{}]
+            [(350.0,50),0,{}]
         </coordinates>
         <inputdata>
             <X file="./examples/supervised_regression/X_tr.csv" />
@@ -19,14 +19,14 @@
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(296,183),2,{0:'d0-u2'}]
+            [(350,183),2,{0:'d0-u2'}]
         </coordinates>
         <inputdata>
             <X module="Initialiser" />
         </inputdata>
         <plugin type="StandardScaler">
             <Data>
-                 X
+                X
             </Data>
         </plugin>
     </DataProcessing>
@@ -36,14 +36,14 @@
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300,328),3,{2:'d2-u3'}]
+            [(350,328),3,{2:'d2-u3'}]
         </coordinates>
         <inputdata>
             <X module="Data Processing" />
         </inputdata>
         <plugin type="Lasso">
             <alpha>
-                 0.2
+                0.2
             </alpha>
         </plugin>
     </Modelling>
@@ -52,7 +52,7 @@
             <parent name="Modelling" />
         </relationships>
         <coordinates>
-            [(300.0,550),1,{3:'d3-u1'}]
+            [(350.0,650),1,{3:'d3-u1'}]
         </coordinates>
         <plugin type="Output">
             <outdata>
@@ -60,7 +60,7 @@
                 Modelling
             </outdata>
             <outpath>
-                 ./examples/results/test.pkl
+                ./examples/results/test.pkl
             </outpath>
         </plugin>
     </Output>

@@ -9,6 +9,9 @@
             <X_test file="./examples/supervised_classification/X_tst.csv"/>
             <Y_test file="./examples/supervised_classification/Y_tst.csv"/>
         </inputdata>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
     </Initialiser>
   
     <DataProcessing name="My Data Processing">
@@ -34,10 +37,16 @@
         <plugin type="RandomForestClassifier" />
         <inputdata>
             <X module="My Data Processing" />
-        </inputdata>
+        </inputdata>        
+        <coordinates>
+            [(350.0,350.0),2,{0:'d0-u2'}]
+        </coordinates>
     </Modelling>
   
     <Output name="Output">
+        <coordinates>
+            [(350.0,650),1,{2:'d2-u1'}]
+        </coordinates>
         <relationships>
             <parent name="My Modelling Module" />
         </relationships>
