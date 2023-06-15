@@ -417,6 +417,8 @@ class pluginCanvas(tk.Frame):
                                 background=self.frame_canvas.cget("background")
             )
             cb.grid(row=c, column=0)
+            if c == len(dataSources)-1:
+                cb.select()
         self.frame_path = tk.Frame(self.frame_canvas, bg=self.bg)
         self.frame_path.grid(column=0, row=1, sticky="new", padx=(10, 0))
         self.my_label = tk.Label(self.frame_path,
