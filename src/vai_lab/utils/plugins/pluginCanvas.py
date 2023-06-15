@@ -528,15 +528,13 @@ class pluginCanvas(tk.Frame):
             tk.Label(frame5,
                      text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
             
-            frame6 = tk.Frame(self.newWindow)
+            frame6 = tk.Frame(self.newWindow, highlightbackground="black", highlightthickness=1)
 
             current = np.where(self.m == np.array(self.id_mod))[0][0]
             dataSources = [i for j, i in enumerate(self.module_names) if j not in [1,current]]
 
             self.plugin_inputData = tk.StringVar(frame6)
             dropDown = tk.ttk.OptionMenu(frame6, self.plugin_inputData, dataSources[current-2], *dataSources)
-            style.theme_use('clam')
-            style.configure('raised.TMenubutton', borderwidth=1)
             style.configure("TMenubutton", background="white")
             dropDown["menu"].configure(bg="white")
             dropDown.pack()
@@ -552,7 +550,7 @@ class pluginCanvas(tk.Frame):
             frame1.grid(column=0, row=0, sticky="ew")
             frame4.grid(column=0, row=20, sticky="se")
             frame5.grid(column=0, row=2, sticky="ew")
-            frame6.grid(column=0, row=3, sticky="ew")
+            frame6.grid(column=0, row=3)
 
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
