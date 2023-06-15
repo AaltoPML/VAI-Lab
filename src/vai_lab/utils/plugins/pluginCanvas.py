@@ -301,7 +301,7 @@ class pluginCanvas(tk.Frame):
             self.xml_handler.append_plugin_to_module(
                 self.plugin[self.m].get(),
                 {**self.req_settings, **self.opt_settings},
-                self.plugin_inputData,
+                self.plugin_inputData.get(),
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
 
@@ -528,15 +528,12 @@ class pluginCanvas(tk.Frame):
             
             frame6 = tk.Frame(self.newWindow)
 
-            dataSources = self.module_names.copy()
             current = np.where(self.m == np.array(self.id_mod))[0][0]
-            dataSources = [i for j, i in enumerate(dataSources) if j not in [1,current]]
+            dataSources = [i for j, i in enumerate(self.module_names) if j not in [1,current]]
 
-            self.dropDown = tk.ttk.Combobox(frame6, value=dataSources)
-            self.dropDown.current(current-2)
-            self.plugin_inputData = self.dropDown.get()
-            self.dropDown.bind("<<ComboboxSelected>>", self.updateInput)
-            self.dropDown.pack()
+            self.plugin_inputData = tk.StringVar(frame6)
+            dropDown = tk.ttk.OptionMenu(frame6, self.plugin_inputData, dataSources[current-2], *dataSources)
+            dropDown.pack()
 
             self.finishButton = tk.Button(
                 frame4, text='Finish', command=self.removewindow)
@@ -553,9 +550,6 @@ class pluginCanvas(tk.Frame):
 
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
-
-    def updateInput(self, event):
-        self.plugin_inputData = self.dropDown.get()
 
     def create_treeView(self, tree_frame):
         """ Function to create a new tree view in the given frame
