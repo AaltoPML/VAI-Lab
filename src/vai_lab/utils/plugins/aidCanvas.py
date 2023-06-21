@@ -702,9 +702,9 @@ class aidCanvas(tk.Frame):
             # to avoid numpy bug during elementwise comparison of lists 
             loop_modules.dtype = mn.dtype if len(loop_modules) == 0 else loop_modules.dtype
             
-            self.controller.s.update_module_coords(self.module_list[0],[self.canvas_startxy[0], 0, self.connections[0]])
-            self.controller.s.append_module_relationships(self.module_list[0],list(mn[values[:,0]]),list(mn[values[0,:]]))
-            self.controller.s.filename = self.save_path.name
+            self.controller.xml_handler.update_module_coords(self.module_list[0],[self.canvas_startxy[0], 0, self.connections[0]])
+            self.controller.xml_handler.append_module_relationships(self.module_list[0],list(mn[values[:,0]]),list(mn[values[0,:]]))
+            self.controller.xml_handler.filename = self.save_path.name
             for i, mnn in enumerate(mn_id):
                 if (i > 1) and mnn:
                     xml_parent = None
@@ -713,7 +713,7 @@ class aidCanvas(tk.Frame):
                         for x, loop in enumerate(self.loops):
                             if mn[i] in loop['mod']:  # Model in this loop
                                 if not out_loops[x]:  # Loop already defined
-                                    self.controller.s.append_pipeline_loop(self.loops[x]['type'],
+                                    self.controller.xml_handler.append_pipeline_loop(self.loops[x]['type'],
                                                                            self.loops[x]['condition'],
                                                                            "loop" +
                                                                            str(x),
@@ -728,7 +728,7 @@ class aidCanvas(tk.Frame):
                                 xml_parent = "loop"+str(x)
                                 parent_loops.append("loop"+str(x))
 
-                    self.controller.s.append_pipeline_module(self.module_list[i],
+                    self.controller.xml_handler.append_pipeline_module(self.module_list[i],
                                                              mn[i],
                                                              "",
                                                              {},
@@ -739,7 +739,7 @@ class aidCanvas(tk.Frame):
                                                              xml_parent,
                                                              [self.canvas_startxy[i], i, self.connections[i]])
 
-            self.controller.s.append_pipeline_module(self.module_list[1],  # Out
+            self.controller.xml_handler.append_pipeline_module(self.module_list[1],  # Out
                                                      mn[1],
                                                      "",
                                                      {},
@@ -747,7 +747,7 @@ class aidCanvas(tk.Frame):
                                                      list(mn[values[1, :]]),
                                                      None,
                                                      [self.canvas_startxy[1], 1, self.connections[1]])
-            self.controller.s.write_to_XML()
+            self.controller.xml_handler.write_to_XML()
             self.saved = True
             self.controller._append_to_output(
                 "xml_filename", self.save_path.name)

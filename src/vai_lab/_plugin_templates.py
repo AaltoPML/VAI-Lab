@@ -113,6 +113,12 @@ class PluginTemplate:
                         val = int(val)
                     cleaned_opts.append(val)
                 options_dict[key] = cleaned_opts
+            elif type(val) == str and val.lower() in ('y', 'yes', 't', 'true', 'on'):
+                options_dict[key] = True
+            elif type(val) == str and val.lower() in ('n', 'no', 'f', 'false', 'off'):
+                options_dict[key] = False
+            elif type(val) == str and val.lower() in ('none'):
+                options_dict[key] = None
         return options_dict
 
     def _clean_options(self):
@@ -120,7 +126,7 @@ class PluginTemplate:
                 and modifies DataInterface in-place
                 str options which only contain numeric data are converted to float OR int
         """
-        self._parse_options_dict(self._config["options"])
+        return self._parse_options_dict(self._config["options"])
 
     def _test(self, data: DataInterface) -> DataInterface:
         """Run debug tests on data operations
@@ -279,6 +285,22 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
             print('The plugin encountered an error when predicting the probability with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
             raise
+
+class DecisionMakingPluginT(PluginTemplate, ABC):
+    def __init__(self, plugin_globals: dict) -> None:
+        super().__init__(plugin_globals)
+    
+    def configure(self, config: dict):
+        """Extended from PluginTemplate.configure"""
+        super().configure(config)
+        try:
+            self.BO = self.model(**self._clean_options())
+        except Exception as exc:
+            print('The plugin encountered an error on the parameters of '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
+        if type(self.X) is None and type(self.Y) is None:
+            print('Invalid Data name. Indicate whether to use `X` or `Y`')
 
 
 class UI(PluginTemplate, ABC):

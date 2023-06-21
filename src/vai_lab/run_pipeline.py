@@ -57,8 +57,11 @@ def main():
         for i in range(0,len(args.file)):
             args.file[i] = abspath(args.file[i])
         core.load_config_file(args.file)
-
-    # Run pipeline   
+    core.load_config_file(("./examples",
+                            "xml_files",
+                            # 'bayes_opt_demo.xml'))
+                            'dataFlowTest.xml'))
+    # Run pipeline
     core.run()
 
 if __name__=='__main__':

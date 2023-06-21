@@ -1,19 +1,17 @@
 <pipeline>
     <Initialiser name="Initialiser">
+        <inputdata>
+            <X folder="./examples/image_classification/training_images/" />
+            <Y file="./examples/image_classification/Y_data.csv" />
+        </inputdata>
         <relationships>
-            <child name="Data Processing" />
+            <child name="User Interaction" />
         </relationships>
         <coordinates>
             [(350.0, 50), 0, {}]
         </coordinates>
-        <inputdata>
-            <X file="./examples/supervised_regression/X_tr.csv" />
-            <Y file="./examples/supervised_regression/Y_tr.csv" />
-            <X_test file="./examples/supervised_regression/X_tst.csv" />
-            <Y_test file="./examples/supervised_regression/Y_tst.csv" />
-        </inputdata>
     </Initialiser>
-    <DataProcessing name="Data Processing">
+    <UserInteraction name="User Interaction">
         <inputdata>
             <X module="Initialiser" />
         </inputdata>
@@ -24,25 +22,21 @@
         <coordinates>
             [(350.0, 350.0), 2, {0: 'd0-u2'}]
         </coordinates>
-        <plugin type="StandardScaler">
-            <Data>
-                 X
-            </Data>
-        </plugin>
-    </DataProcessing>
+        <plugin type="ManualInput" />
+    </UserInteraction>
     <Output name="Output">
         <inputdata>
-            <X module="Data Processing" />
+            <X module="User Interaction" />
         </inputdata>
         <relationships>
-            <parent name="Data Processing" />
+            <parent name="User Interaction" />
         </relationships>
         <coordinates>
             [(350.0, 650), 1, {2: 'd2-u1'}]
         </coordinates>
         <plugin type="Output">
             <outdata>
-                Data Processing
+                User Interaction
             </outdata>
             <outpath>
                  .\examples\results\output.pkl

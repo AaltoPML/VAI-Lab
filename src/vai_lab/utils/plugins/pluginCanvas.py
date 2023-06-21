@@ -10,7 +10,7 @@ from typing import Dict, List
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import messagebox, ttk
-
+from tkinter.filedialog import asksaveasfilename
 
 _PLUGIN_READABLE_NAMES = {"plugin_canvas": "default",
                           "pluginCanvas": "alias",
@@ -41,6 +41,8 @@ class pluginCanvas(tk.Frame):
         self.plugin: Dict[int, tk.StringVar] = {}
         self.dataType: Dict[int, tk.StringVar] = {}
         self.allWeHearIs: List[tk.Radiobutton] = []
+        self.out_data_xml: List[int, tk.StringVar] = []
+        self.out_data_list: List[int, tk.StringVar] = []
         if not self.controller._debug:
             self._setup_frame()
 
@@ -79,8 +81,8 @@ class pluginCanvas(tk.Frame):
                                  bg=self.bg,
                                  fg='white',
                                  anchor=tk.CENTER)
-        self.my_label.grid(column=5,
-                           row=0, columnspan=2, padx=10)
+        self.my_label.grid(column=0,
+                           row=0, columnspan=3, padx=10)
 
         self.back_img = ImageTk.PhotoImage(Image.open(
             os.path.join(script_dir,
@@ -158,7 +160,7 @@ class pluginCanvas(tk.Frame):
 
         self.check_updated()
 
-        if self.m in self.id_done and self.m > 1:
+        if self.m in self.id_done and self.m > 0:
             self.canvas.itemconfig('p'+str(self.m), fill='#46da63')
         else:
             self.canvas.itemconfig('p'+str(self.m), fill=self.bg)
@@ -167,21 +169,32 @@ class pluginCanvas(tk.Frame):
             if not (len(self.canvas.gettags(self.canvas_selected)[0].split('-')) > 1) and\
                     not (self.canvas.gettags(self.canvas_selected)[0].split('-')[0] == 'loop'):
                 self.m = int(self.canvas.gettags(self.canvas_selected)[0][1:])
-            if self.m > 1:
-                if self.m not in self.id_done and self.m > 1:
+            if self.m > 0: #> 1:
+                if self.m not in self.id_done:
                     self.canvas.itemconfig('p'+str(self.m), fill='#dbaa21')
                 for widget in self.allWeHearIs:
                     widget.grid_remove()
-
-                self.display_buttons()
+                if self.m > 1:
+                    self.reset_sidecheck()
+                    self.display_buttons()
+                else:
+                    self.reset_sidepanel()
+                    self.display_checklist()
                 module_number = self.id_mod.index(self.m)
                 if not hasattr(self, 'button_forw'):
-                    if module_number == len(self.id_mod)-1:
+                    if module_number == 1:
                         self.button_forw = tk.Button(
                             self.frame4, text='Finish', bg=self.bg,
                             font=self.controller.pages_font,
                             fg='white', height=3, width=15,
                             command=self.finish, state=tk.NORMAL, image='')
+                    elif module_number == len(self.id_mod)-1:
+                        pCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[1]))
+                        self.button_forw = tk.Button(
+                            self.frame4, image=self.forw_img, bg=self.bg,
+                            command=lambda: self.select(
+                                pCoord[0], pCoord[1]), state=tk.NORMAL)
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
@@ -191,10 +204,17 @@ class pluginCanvas(tk.Frame):
                                 pCoord[0], pCoord[1]), state=tk.NORMAL)
                     self.button_forw.grid(
                         column=1, row=0, sticky="news", pady=(0, 10), padx=(0, 10))
-                    if module_number < 3:
+                    if module_number == 1:
+                        mCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[-1]))
                         self.button_back = tk.Button(
                             self.frame4, image=self.back_img, bg=self.bg,
-                            state=tk.DISABLED)
+                            command=lambda: self.select(
+                                mCoord[0], mCoord[1]), state=tk.NORMAL)
+                    elif module_number < 3:
+                        self.button_back = tk.Button(
+                                self.frame4, image=self.back_img, bg=self.bg,
+                                state=tk.DISABLED)
                     else:
                         mCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number-1]))
@@ -205,18 +225,30 @@ class pluginCanvas(tk.Frame):
                     self.button_back.grid(
                         column=0, row=0, sticky="news", pady=(0, 10))
                 else:
-                    if module_number == len(self.id_mod)-1:
+                    if module_number == 1:
                         self.button_forw.config(text='Finish', bg=self.bg,
                                                 font=self.controller.pages_font,
                                                 fg='white', height=3, width=15,
                                                 command=self.finish, state=tk.NORMAL, image='')
+                    elif module_number == len(self.id_mod)-1:
+                        pCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[1]))
+                        self.button_forw.config(image=self.forw_img, bg=self.bg,
+                                                command=lambda: self.select(
+                                                    pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
                     else:
                         pCoord = self.canvas.coords(
                             'p'+str(self.id_mod[module_number+1]))
                         self.button_forw.config(image=self.forw_img, bg=self.bg,
                                                 command=lambda: self.select(
                                                     pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
-                    if module_number < 3:
+                    if module_number == 1:
+                        mCoord = self.canvas.coords(
+                            'p'+str(self.id_mod[-1]))
+                        self.button_back.config(image=self.back_img, bg=self.bg,
+                                                command=lambda: self.select(
+                                                    mCoord[0], mCoord[1]), text='', state=tk.NORMAL)
+                    elif module_number < 3:
                         self.button_back.config(image=self.back_img, bg=self.bg,
                                                 state=tk.DISABLED, text='')
                     else:
@@ -225,19 +257,30 @@ class pluginCanvas(tk.Frame):
                         self.button_back.config(image=self.back_img, bg=self.bg,
                                                 command=lambda: self.select(
                                                     mCoord[0], mCoord[1]), text='', state=tk.NORMAL)
-            else:  # If user clicks on Initialiser or Output
-                self.my_label.config(text='')
-                for widget in self.allWeHearIs:
-                    widget.grid_remove()
-                for widget in self.radio_label:
-                    widget.grid_remove()
+            else:          # If user clicks on Initialiser
+                self.reset_sidepanel()
                 if hasattr(self, 'button_forw'):
                     self.button_back.config(image=self.back_img, bg=self.bg,
                                             state=tk.DISABLED, text='')
                     pCoord = self.canvas.coords('p'+str(self.id_mod[2]))
                     self.button_forw.config(image=self.forw_img, bg=self.bg,
                                             command=lambda: self.select(
-                                                pCoord[0], pCoord[1]), text='', state=tk.NORMAL)
+                                                pCoord[0], pCoord[1]), text='', state=tk.NORMAL)               
+    def reset_sidepanel(self):
+        """ Removes information from the panel to the side of the canvas.
+        """
+        self.my_label.config(text='')
+        for widget in self.allWeHearIs:
+            widget.grid_remove()
+        for widget in self.radio_label:
+            widget.grid_remove()
+        self.reset_sidecheck()
+    
+    def reset_sidecheck(self):
+        if hasattr(self, 'frame_tree'):
+            self.frame_tree.grid_remove()
+        if hasattr(self, 'frame_path'):
+            self.frame_path.grid_remove()
 
     def finish(self):
         """ Calls function check_quit.
@@ -248,17 +291,37 @@ class pluginCanvas(tk.Frame):
         self.check_quit()
 
     def check_updated(self):
-        """ Checks if the current plugin exists and 
-        stores/updates the plugin options
+        """ Checks if the current plugin exists and stores/updates the plugin options. 
+        It also cheks if the output data has been modfied and stores/updates the 
+        information accordingly.
         """
         if (self.m in self.plugin.keys()) and\
                 (self.plugin[self.m].get() != 'None'):  # add
             self.id_done.append(self.m)
-            self.s.append_plugin_to_module(self.plugin[self.m].get(),
-                                           {**self.req_settings, **
-                                               self.opt_settings},
-                                           np.array(self.module_names)[
-                self.m == np.array(self.id_mod)][0],
+            self.xml_handler.append_plugin_to_module(
+                self.plugin[self.m].get(),
+                {**self.req_settings, **self.opt_settings},
+                self.plugin_inputData.get(),
+                np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
+                True)
+
+        elif len(set([elem.get() for elem in self.out_data_list if len(elem.get())>1]) 
+                 ^ set(self.out_data_xml)) > 0 :
+            self.out_data_xml = [elem.get() for elem in self.out_data_list if len(elem.get())>1]
+            self.id_done.append(self.m)
+
+            if os.path.normpath(get_lib_parent_dir()) == os.path.normpath(os.path.commonpath([self.path_out, get_lib_parent_dir()])):
+                rel_path = os.path.join('.', os.path.relpath(self.path_out, 
+                                                os.path.commonpath([self.path_out, get_lib_parent_dir()])))
+            else:
+                rel_path = self.path_out
+
+            self.xml_handler.append_plugin_to_module(
+                'Output',
+                {'outdata': self.out_data_xml, 
+                 'outpath': rel_path},
+                None,
+                np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
 
     def display_buttons(self):
@@ -333,6 +396,81 @@ class pluginCanvas(tk.Frame):
             self.CreateToolTip(rb, text=descriptions[p])
             self.allWeHearIs.append(rb)
 
+    def display_checklist(self):
+        """ Updates the displayed tree to the left of canvas.
+         Used to specify the output data and files. """
+        self.my_label.config(
+            text='Indicate which module\'s output data\nshould be saved:')
+        dataSources = [i for j, i in enumerate(self.module_names) if j != 1]
+        self.frame_tree = tk.Frame(self.frame_canvas, bg=self.bg)
+        self.frame_tree.grid(column=0, row=0, sticky="new", padx=(10, 0))
+        for c, choice in enumerate(dataSources):
+            cb = tk.Checkbutton(self.frame_tree, var=self.out_data_list[c], text=choice,
+                                onvalue=choice, offvalue="",
+                                pady=10,
+                                font=self.controller.pages_font,
+                                bg=self.bg,
+                                fg='white',
+                                selectcolor=self.bg,
+                                anchor='w',
+                                width=20, 
+                                background=self.frame_canvas.cget("background")
+            )
+            cb.grid(row=c, column=0)
+            if c == len(dataSources)-1:
+                cb.select()
+        self.frame_path = tk.Frame(self.frame_canvas, bg=self.bg)
+        self.frame_path.grid(column=0, row=1, sticky="new", padx=(10, 0))
+        self.my_label = tk.Label(self.frame_path,
+                                 text='Indicate the output file name:',
+                                 pady=10,
+                                 font=self.controller.title_font,
+                                 bg=self.bg,
+                                 fg='white',
+                                 anchor=tk.CENTER)
+        self.my_label.grid(column=0,
+                           row=0, columnspan=2, padx=10)
+        tk.Button(self.frame_path,
+                    text="Browse",
+                    command=self.upload_file
+                    ).grid(column=0, row=1)
+        width = 63
+        self.path_out = os.path.join(get_lib_parent_dir(),'examples','results','output.pkl')
+        filename = '...' + \
+            self.path_out[-width +
+                     3:] if self.path_out and len(self.path_out) > width else self.path_out
+        self.label_list = tk.Label(self.frame_path, text=filename,
+                                pady=10,
+                                padx=10,
+                                font=self.controller.pages_font,
+                                fg='white', 
+                                bg=self.bg
+                                )
+        self.label_list.grid(column=1, row=1)
+    
+    def upload_file(self):
+        """ Asks for a file and stores the path and displays it.
+        """
+        filename = asksaveasfilename(initialdir=os.path.join(get_lib_parent_dir(),'examples','results'),
+                                    title='Select an output file',
+                                    defaultextension='.pkl', 
+                                    filetypes=[('Pickle file', '.pkl')])
+        if filename is not None:
+            self.path_out = filename
+            width = 63
+            filename = '...' + \
+                filename[-width +
+                        3:] if filename and len(filename) > width else filename
+            self.label_list.config(text=filename)
+
+    def getCheckedItems(self):
+            values = []
+            for var in self.vars:
+                value =  var.get()
+                if value:
+                    values.append(value)
+            return values
+
     def optionsWindow(self):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
@@ -386,6 +524,21 @@ class pluginCanvas(tk.Frame):
             frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
             frame2.grid_columnconfigure(tuple(range(2)), weight=1)
 
+            frame5 = tk.Frame(self.newWindow)
+            tk.Label(frame5,
+                     text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+            
+            frame6 = tk.Frame(self.newWindow, highlightbackground="black", highlightthickness=1)
+
+            current = np.where(self.m == np.array(self.id_mod))[0][0]
+            dataSources = [i for j, i in enumerate(self.module_names) if j not in [1,current]]
+
+            self.plugin_inputData = tk.StringVar(frame6)
+            dropDown = tk.ttk.OptionMenu(frame6, self.plugin_inputData, dataSources[current-2], *dataSources)
+            style.configure("TMenubutton", background="white")
+            dropDown["menu"].configure(bg="white")
+            dropDown.pack()
+
             self.finishButton = tk.Button(
                 frame4, text='Finish', command=self.removewindow)
             self.finishButton.grid(
@@ -395,7 +548,10 @@ class pluginCanvas(tk.Frame):
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
             frame1.grid(column=0, row=0, sticky="ew")
-            frame4.grid(column=0, row=2, sticky="se")
+            frame4.grid(column=0, row=20, sticky="se")
+            frame5.grid(column=0, row=2, sticky="ew")
+            frame6.grid(column=0, row=3)
+
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
 
@@ -537,7 +693,7 @@ class pluginCanvas(tk.Frame):
         self.focus()
     
     def get_all_children(self, item=""):
-        """ Iterates over the treeview to get all childer """
+        """ Iterates over the treeview to get all children """
         children = self.tree.get_children(item)
         for child in children:
             children += self.get_all_children(child)
@@ -630,10 +786,12 @@ class pluginCanvas(tk.Frame):
         :param out: bool type of whether the module corresponds to output.
         """
         iid = self.modules if iid is None else iid
-        if not ini and not out:
-            tag = ('o'+str(iid),)
-        else: #Make initialisation and output unmoveable
+        if ini: #Make initialisation and output unmoveable
             tag = ('n0',)
+        elif out:
+            tag = ('n1',)
+        else:
+            tag = ('o'+str(iid),)
         text_w = self.controller.pages_font.measure(boxName+'-00') + 10
         self.canvas.create_rectangle(
             x - text_w/2 , 
@@ -707,10 +865,10 @@ class pluginCanvas(tk.Frame):
 
         self.reset()
 
-        self.s = XML_handler()
-        self.s.load_XML(filename)
-        # self.s._print_pretty(self.s.loaded_modules)
-        modules = self.s.loaded_modules
+        self.xml_handler = XML_handler()
+        self.xml_handler.load_XML(filename)
+        # self.xml_handler._print_pretty(self.xml_handler.loaded_modules)
+        modules = self.xml_handler.loaded_modules
         modout = modules['Output']
         # They are generated when resetting
         del modules['Initialiser'], modules['Output']
@@ -759,6 +917,12 @@ class pluginCanvas(tk.Frame):
                          rowspan=4, pady=(0, 10))
         self.framex.grid_columnconfigure(tuple(range(2)), weight=1)
         self.frame_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Define modules for output data selection
+        for choice in self.module_names:
+            var = tk.StringVar(value=choice)
+            var.set(0)
+            self.out_data_list.append(var)
 
     def set_mousewheel(self, widget, command):
         """Activate / deactivate mousewheel scrolling when 
@@ -867,7 +1031,7 @@ class pluginCanvas(tk.Frame):
         self.loops = []
         self.drawLoop = False
         self.l = 0
-        self.id_done = [0, 1]
+        self.id_done = [0]
         self.plugin = {}
         for widget in self.allWeHearIs:
             widget.grid_remove()
@@ -885,18 +1049,18 @@ class pluginCanvas(tk.Frame):
                 self.canvas.delete(tk.ALL)
                 self.frame_canvas.delete(tk.ALL)
                 self.saved = True
-                self.s.write_to_XML()
+                self.xml_handler.write_to_XML()
                 self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         # TODO: Check if loaded
-        elif len(self.s.loaded_modules) == 0:
+        elif len(self.xml_handler.loaded_modules) == 0:
             self.controller._show_frame("MainPage")
             self.controller.Plugin.set(False)
         else:
             self.reset()
             self.canvas.delete(tk.ALL)
             self.frame_canvas.delete(tk.ALL)
-            self.s.write_to_XML()
+            self.xml_handler.write_to_XML()
             self.controller.Plugin.set(True)
             self.controller._show_frame("MainPage")
 
