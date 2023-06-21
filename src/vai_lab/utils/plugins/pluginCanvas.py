@@ -1,10 +1,11 @@
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._plugin_helpers import PluginSpecs
-from vai_lab._import_helper import get_lib_parent_dir
+from vai_lab._import_helper import get_lib_parent_dir, import_plugin_absolute
 
 import os
 import numpy as np
 import pandas as pd
+from inspect import getmembers, isfunction
 
 from typing import Dict, List
 from PIL import Image, ImageTk
@@ -481,6 +482,14 @@ class pluginCanvas(tk.Frame):
         )]
         self.req_settings = ps.required_settings[module][self.plugin[self.m].get(
         )]
+
+        file_name = os.path.split(ps.find_from_class_name(self.plugin[self.m].get())['_PLUGIN_DIR'])[-1]
+        avail_plugins = ps.available_plugins[module][file_name]
+        plugin = import_plugin_absolute(globals(),
+                                                    avail_plugins["_PLUGIN_PACKAGE"],
+                                                    avail_plugins["_PLUGIN_CLASS_NAME"])
+        function_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
+
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow != None):
                 self.newWindow.destroy()
