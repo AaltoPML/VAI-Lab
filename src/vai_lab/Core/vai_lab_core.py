@@ -35,7 +35,6 @@ class Core:
                 self.load_config_file(gui_output["xml_filename"])
             except:
                 raise Exception("No XML File Selected. Cannot Run Pipeline")
-            self._load_data('Initialiser')
 
     def load_config_file(self, filename: Union[str,List,Tuple]):
         """Loads XML file into XML_handler object.
@@ -185,7 +184,8 @@ class Core:
         if not self._initialised:
             self._initialise_with_gui()
         print("Running pipeline...")
-        self._load_data('Initialiser')
+        if not self._debug:
+            self._load_data('Initialiser')
         
         self._init_status(self._xml_handler.loaded_modules)
         self._execute(self._xml_handler.loaded_modules)
