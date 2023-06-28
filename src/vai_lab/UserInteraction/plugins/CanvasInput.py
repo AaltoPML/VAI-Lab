@@ -570,7 +570,7 @@ class CanvasInput(tk.Frame, UI):
                 self.canvas[ii].create_oval(
                     float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3,
                     fill="black", width=0,
-                    tags=("state-" + str(len(
+                    tags=("state"+str(ii)+"-" + str(len(
                         self.out_data[ii]['state_x']))))
                 self.canvas[ii].create_line(
                     float(sx), float(sy), float(ax), float(ay),
