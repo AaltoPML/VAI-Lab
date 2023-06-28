@@ -96,7 +96,6 @@ class CanvasInput(tk.Frame, UI):
         for ii in np.arange(len(self.out_data)):
             self.frame.append(tk.Frame(self, bg=self.parent['bg']))
             self.frame[-1].grid(row=0, column=0, sticky="nsew", pady=15)
-            # if self._class_list[ii][0].split('_')[1] == 'a':
             if self._class_list[ii][0].split('_')[1] == 'a':
                 self.type.append('Rotating')
                 self.clock.append(tk.StringVar())
@@ -162,7 +161,7 @@ class CanvasInput(tk.Frame, UI):
                 command=self.check_quit).grid(column=3, row=3)
             style = ttk.Style()
             style.configure(
-                "Treeview", background='white', foreground='white',
+                "Treeview", background='white', foreground='black',
                 rowheight=25, fieldbackground='white',
                 font=self.controller.pages_font)
             style.configure("Treeview.Heading",
@@ -221,6 +220,9 @@ class CanvasInput(tk.Frame, UI):
 
             # Define double-click on row action
             self.tree[-1].bind("<Double-1>", self.OnDoubleClick)
+        
+        if not self._data_in["X"].empty:
+            self.load_data(self._data_in["X"].values, True)
 
     def draw_dot(self, event):
 
@@ -554,9 +556,45 @@ class CanvasInput(tk.Frame, UI):
                              y=y + pady,
                              anchor=tk.W, width=width)
 
-    def upload_sa(self):
+    def load_data(self, data, read = False):
 
         ii = self.notebook.index(self.notebook.select())
+        self.draw[ii].set('drag')
+        for point in data:
+            if read:  # Not elegant at all, just to omit the header.
+                if isinstance(point, str):
+                    sx, sy, ax, ay = point.split()
+                elif isinstance(point, (list, np.ndarray)):
+                    sx, sy, ax, ay = point
+                # Draw an oval in the given coordinates
+                self.canvas[ii].create_oval(
+                    float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3,
+                    fill="black", width=0,
+                    tags=("state-" + str(len(
+                        self.out_data[ii]['state_x']))))
+                self.canvas[ii].create_line(
+                    float(sx), float(sy), float(ax), float(ay),
+                    fill="red", arrow=tk.LAST,
+                    tags=("action"+str(ii)+"-" + str(len(
+                        self.out_data[ii]['action_x']))))
+                self.out_data[ii]['state_x'].append(sx)
+                self.out_data[ii]['state_y'].append(sy)
+                self.out_data[ii]['action_x'].append(ax)
+                self.out_data[ii]['action_y'].append(ay)
+                self.tree[ii].insert(
+                    parent='', index='end',
+                    iid=len(self.out_data[ii]['action_x'])-1,
+                    text=len(self.out_data[ii]['action_x']),
+                    values=tuple(self.dict2mat(
+                        self.out_data[ii])
+                        [len(self.out_data[ii]
+                                ['action_x'])-1, :].astype(int)))
+                self.tree[ii].selection_set(str(len(
+                    self.out_data[ii]['action_x'])-1))
+            else:
+                read = True
+
+    def upload_sa(self):
         filename = askopenfilename(initialdir=os.getcwd(),
                                    title='Select a file',
                                    defaultextension='.txt',
@@ -565,38 +603,7 @@ class CanvasInput(tk.Frame, UI):
                                               ('All Files', '*.*')])
         if filename is not None:
             data = open(filename, 'r')
-            read = False
-            self.draw[ii].set('drag')
-            for n, point in enumerate(data):
-                if read:  # Not elegant at all, just to omit the header.
-                    i, sx, sy, ax, ay = point.split()
-                    # Draw an oval in the given coordinates
-                    self.canvas[ii].create_oval(
-                        float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3,
-                        fill="black", width=0,
-                        tags=("state-" + str(len(
-                            self.out_data[ii]['state_x']))))
-                    self.canvas[ii].create_line(
-                        float(sx), float(sy), float(ax), float(ay),
-                        fill="red", arrow=tk.LAST,
-                        tags=("action"+str(ii)+"-" + str(len(
-                            self.out_data[ii]['action_x']))))
-                    self.out_data[ii]['state_x'].append(sx)
-                    self.out_data[ii]['state_y'].append(sy)
-                    self.out_data[ii]['action_x'].append(ax)
-                    self.out_data[ii]['action_y'].append(ay)
-                    self.tree.insert(
-                        parent='', index='end',
-                        iid=len(self.out_data[ii]['action_x'])-1,
-                        text=len(self.out_data[ii]['action_x']),
-                        values=tuple(self.dict2mat(
-                            self.out_data[ii])
-                            [len(self.out_data[ii]
-                                 ['action_x'])-1, :].astype(int)))
-                    self.tree.selection_set(str(len(
-                        self.out_data[ii]['action_x'])-1))
-                else:
-                    read = True
+            self.load_data(data)
 
     def reset(self):
 
