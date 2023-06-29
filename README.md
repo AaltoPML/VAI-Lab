@@ -18,6 +18,106 @@ VAI-Lab is a modular, easy-to-use framework for Virtual Laboraties for science a
 >
 > Any contributions, forks, or pull requests are very welcome. Feel free to get in touch
 
+# How it Works
+
+The VAI-Lab framework uses a modular, plugin-based architecture.
+
+![PLUGINDIAGRAM](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_plugin_diagram.png)
+
+Each module represents a process (e.g. Modelling) and each plugin is a specific implementation of that process (e.g. linear regression).
+
+Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
+
+See the [documentation](https://aaltopml.github.io/VAI-Lab/) for more discussion on the project and usage examples.
+
+# Installation
+
+## Requirements
+
+- Python 3.10+
+  
+## Install from PyPi
+
+Install the latest pip release into a [virtual environment](https://docs.python.org/3/library/venv.html)
+```
+python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip vai-lab 
+```
+Alternatively, install the latest pip release into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+```
+conda env create --name vai-lab python=3.10 pip && conda activate vai-lab && python3 -m pip install vai-lab
+```
+
+## Install from source 
+
+Clone this repository and change directory
+```bash,
+git clone https://github.com/AaltoPML/VAI-lab.git && cd VAI-lab
+```
+Install into a [virtual environment](https://docs.python.org/3/library/venv.html)
+```bash
+python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install .
+```
+Alternatively, , install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+```bash
+conda create --file environment.yml && conda activate vai-lab-env
+```
+
+## Install development dependencies from source and run tests
+
+In order to run tests using [pytest](https://docs.pytest.org/en/7.3.x/), install the optional development dependencies.
+
+Clone this repository and change directory
+```bash,
+git clone https://github.com/AaltoPML/VAI-lab.git && cd VAI-lab
+```
+Install into a [virtual environment](https://docs.python.org/3/library/venv.html)
+```bash
+python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install ".[dev]"
+```
+Alternatively, , install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+```bash
+conda create --file dev-environment.yml && conda activate dev-vai-lab-env
+```
+
+Run unit tests with pytest
+```bash
+pytest .
+```
+
+# Documentation
+
+Documentation is available [here](https://aaltopml.github.io/VAI-Lab/). Alternatively, you can build the documentation locally as follows.
+
+Clone this repository and change directory
+```bash,
+git clone https://github.com/AaltoPML/VAI-lab.git
+cd VAI-lab
+```
+Install the dependencies into a [virtual environment](https://docs.python.org/3/library/venv.html)
+```bash
+python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install -r sphinx-requirements.txt
+```
+Alternatively, , install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+```bash
+conda create --file sphinx-environment.yml && conda activate sphinx-env
+```
+
+Build the documentation with
+```
+sphinx-apidoc --templatedir docs/templates/apidoc -o docs/source src/vai_lab
+sphinx-build -M html docs/source docs/build
+```
+The generated HTML pages are in `docs/build/html`. A good place to start is `docs/build/html/index.html`.
+
+
+
+# Feature and Release Schedule :calendar:
+
+- [ ] October/ November 2022: Public repo, API fixing, Testing
+- [ ] January 2023: Representative use case release
+- [ ] Spring 2023: Initial full release of manual pipeline
+- [ ] Fall 2023: Initial release of preliminary AI-Assistance
+
 # How to Contribute
 
 The aim of this framework is to be a community effort that will benefit science, engineering and more.
@@ -29,67 +129,4 @@ We are actively seeking contribution in the form of users, testers, developers, 
  - If want to get invovled in development, [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
  - Noticed a bug or other issue? [get in touch](https://github.com/AaltoPML/VAI-Lab#get-in-touch)!
 
-# How it Works
 
-The VAI-Lab framework uses a modular, plugin-based architecture.
-
-![PLUGINDIAGRAM](https://raw.githubusercontent.com/AaltoPML/VAI-Lab/main/imgs/VAIL_plugin_diagram.png)
-
-Each module represents a process (e.g. Modelling) and each plugin is a specific implementation of that process (e.g. linear regression).
-
-Modules can be chained, looped and modified in real-time to create a highly customisable framework for the user's requirements.
-
-# Installation
-
-## Install from package
-
-To install the latest pip release:
-
-```
-pip install vai-lab
-```
-
-## Install from source 
-
-Clone this repository via HTTPS
-```bash,
-git clone https://github.com/AaltoPML/VAI-lab.git
-```
-or, alternatively, via SSH
-```bash
-git clone git@github.com:AaltoPML/VAI-lab.git
-```
-Change directory
-```bash
-cd VAI-lab
-```
-Install into a [virtual environment](https://docs.python.org/3/library/venv.html)
-```bash
-python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install -U pip && python3 -m pip install .
-```
-or, alternatively, install into a [conda environment](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
-```bash
-conda create --file environment.yml && conda activate vai-lab
-```
-You can verify the installation was successful by [running unit tests](#run-unit-tests).
-
-# Run Unit Tests
-
-Run unit tests with pytest
-```bash
-pytest .
-```
-
-
-# Feature and Release Schedule :calendar:
-
-- [ ] October/ November 2022: Public repo, API fixing, Testing
-- [ ] January 2023: Representative use case release
-- [ ] Spring 2023: Initial full release of manual pipeline
-- [ ] Fall 2023: Initial release of preliminary AI-Assistance
-
-# Get in Touch
-If you would like contribute, test, give feedback, or ask questions about this framework, we'd like to hear from you!
-Email us at:
-- Chris McGreavy, chris.mcgreavy [at] aalto.fi
-- Carlos Sevilla-Salcedo, carlos.sevillasalcedo [at] aalto.fi

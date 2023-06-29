@@ -37,7 +37,7 @@ jobs:
       
       # pip install
       - name: pip install
-        run: python3 -m pip install -U pip && python3 -m pip install ".[pytest]"
+        run: python3 -m pip install -U pip && python3 -m pip install ".[dev]"
 
       # pytest
       - name: Run pytest
