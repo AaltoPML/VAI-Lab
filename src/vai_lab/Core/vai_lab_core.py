@@ -47,7 +47,7 @@ class Core:
         self._xml_handler.load_XML(filedir)
         self._initialised = True
 
-    def _load_data(self, module) -> None:
+    def _load_data(self, module = 'Initialiser') -> None:
         """Loads data from XML file into Data object"""
         init_data_fn = self._xml_handler.data_to_load(module)
         if module not in self.data.keys():
@@ -184,8 +184,8 @@ class Core:
         if not self._initialised:
             self._initialise_with_gui()
         print("Running pipeline...")
-        if not self._debug:
-            self._load_data('Initialiser')
+        if len(self._xml_handler.loaded_modules) > 0:
+            self._load_data()
         
         self._init_status(self._xml_handler.loaded_modules)
         self._execute(self._xml_handler.loaded_modules)
