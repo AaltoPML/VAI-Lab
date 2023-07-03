@@ -178,7 +178,7 @@ class XML_handler:
                              "class": "data",
                              "to_load": {}}
         for child in element:
-            assert "file" in child.attrib or "folder" in child.attrib,\
+            assert "file" in child.attrib or "folder" in child.attrib or "module" in child.attrib,\
                 str("XML Parse Error \
                         \n\tA path to data file must be specified. \
                         \n\t{0} does not contain the \"file\" tag. \
@@ -197,6 +197,9 @@ class XML_handler:
                         \n\tFolder: {0} does not exist"
                         .format(self._check_filename_abs_rel(child.attrib["folder"])))
                 parent[data_name]["to_load"][child.tag] = child.attrib["folder"]
+
+            if "module" in child.attrib:
+                parent[data_name]["to_load"] = child.attrib["module"]          
 
     def _load_exit_point(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with output and appends to parent dict
@@ -267,11 +270,12 @@ class XML_handler:
         :returns out: list containing parsed text data
         """
         if element.text is not None:
-            new = element.text.strip().replace(" ", "")
+            new = element.text.strip()
 
         out: List[Any] = new.split("\n")
         raw_elem_text = str()
         for idx in range(0, len(out)):
+            out[idx] = " ".join(out[idx].split())
             raw_elem_text = (raw_elem_text+"\n{}").format(out[idx])
             if "[" in out[idx] and "]" in out[idx]:
                 out[idx] = literal_eval(out[idx])
@@ -499,15 +503,23 @@ class XML_handler:
         if input_data_elem is None:
             input_data_elem = ET.SubElement(xml_parent, "inputdata")
 
+        data_name_elem = input_data_elem.find("./"+data_name)
+        if data_name_elem is not None:
+            input_data_elem.remove(data_name_elem)
+
         plugin_elem = ET.SubElement(input_data_elem, data_name)
         if save_dir_as_relative:
             data_dir = data_dir.replace(self.lib_base_path, "./")
         data_dir = data_dir.replace("\\", "/")
-        plugin_elem.set('file', data_dir)
+        if path.exists(path.dirname(data_dir)):
+            plugin_elem.set('file', data_dir)
+        else:
+            plugin_elem.set('module', data_dir)
 
     def append_plugin_to_module(self,
                                 plugin_type: str,
                                 plugin_options: dict,
+                                plugin_data: str,
                                 xml_parent: Union[ET.Element, str],
                                 overwrite_existing: Union[bool, int] = False
                                 ):
@@ -515,6 +527,7 @@ class XML_handler:
         
         :param plugin_type: string type of plugin to be loaded into module
         :param plugin_options: dict where keys & values are options & values
+        :param plugin_data: string type of data to be used as input
         :param xml_parent: dict OR str. 
                             If string given, parent elem is found via search,
                             Otherwise, plugin appeneded directly
@@ -531,6 +544,8 @@ class XML_handler:
         if plugin_elem is None:
             plugin_elem = ET.SubElement(xml_parent, "plugin")
             plugin_elem.set('type', plugin_type)
+        if plugin_data is not None and len(plugin_data) > 0:
+            self.append_input_data('X', plugin_data, xml_parent, False)
         self._add_plugin_options(plugin_elem, plugin_options)
 
     def append_pipeline_module(self,
@@ -562,6 +577,7 @@ class XML_handler:
         if plugin_type != None:
             self.append_plugin_to_module(plugin_type,
                                          plugin_options,
+                                         parents[0],
                                          new_mod,
                                          0
                                          )
@@ -609,9 +625,9 @@ class XML_handler:
 
         xml_parent_element.append(new_loop)
 
-    def _get_init_data_structure(self) -> Dict[str, Any]:
+    def _get_data_structure(self, module) -> Dict[str, Any]:
         data_struct = self._find_dict_with_key_val_pair(
-            self.loaded_modules,
+            self.loaded_modules[module],
             "class", "data")
 
         assert len(data_struct) < 2, \
@@ -624,9 +640,9 @@ class XML_handler:
             out = {"to_load": {}}
         return out
 
-    @property
-    def data_to_load(self) -> Dict[str, str]:
-        return (self._get_init_data_structure()["to_load"])
+    #@property
+    def data_to_load(self, module='Initialiser') -> Dict[str, str]:
+        return self._get_data_structure(module)["to_load"]
 
 
 # Use case examples:

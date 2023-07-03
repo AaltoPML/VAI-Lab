@@ -58,7 +58,7 @@ def main():
             args.file[i] = abspath(args.file[i])
         core.load_config_file(args.file)
 
-    # Run pipeline   
+    # Run pipeline
     core.run()
 
 if __name__=='__main__':

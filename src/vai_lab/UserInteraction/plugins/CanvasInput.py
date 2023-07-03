@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import math
 
-_PLUGIN_READABLE_NAMES = {"canvas": "default",
+_PLUGIN_READABLE_NAMES = {"CanvasInput": "default",
                           "state-action": "alias", "robot": "alias"}    # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
                           "required_children": None}                    # type:ignore
@@ -32,7 +32,6 @@ class CanvasInput(tk.Frame, UI):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, columnspan=7,
                            rowspan=12, pady=15)
-        self.frame: List[tk.Frame] = []
         self.tree: List[ttk.Treeview] = []
         self.canvas: List[tk.Canvas] = []
         self.draw: List[tk.StringVar] = []
@@ -84,6 +83,8 @@ class CanvasInput(tk.Frame, UI):
         if not all(islist):
             self._class_list = [list(self._class_list)]
 
+        frame: List[tk.Frame] = []
+
         self.out_data = {}
         self.out_data[0] = {}
         for ii in np.arange(len(self._class_list)):
@@ -94,9 +95,8 @@ class CanvasInput(tk.Frame, UI):
                 self.out_data[ii][self._class_list[ii][k]] = []
 
         for ii in np.arange(len(self.out_data)):
-            self.frame.append(tk.Frame(self, bg=self.parent['bg']))
-            self.frame[-1].grid(row=0, column=0, sticky="nsew", pady=15)
-            # if self._class_list[ii][0].split('_')[1] == 'a':
+            frame.append(tk.Frame(self, bg=self.parent['bg']))
+            frame[-1].grid(row=0, column=0, sticky="nsew", pady=(15,0))
             if self._class_list[ii][0].split('_')[1] == 'a':
                 self.type.append('Rotating')
                 self.clock.append(tk.StringVar())
@@ -105,13 +105,18 @@ class CanvasInput(tk.Frame, UI):
                 self.type.append('Sliding')
                 self.clock.append(-1)
             self.notebook.add(
-                self.frame[-1],
+                frame[-1],
                 text='Object ' + str(ii) + ' - ' + self.type[-1])
-
+            
+            # Frames for canvas, treeview and buttons
+            frame1 = tk.Frame(frame[-1], bg=self.parent['bg'])
+            frame2 = tk.Frame(frame[-1], bg=self.parent['bg'])
+            frame3 = tk.Frame(frame[-1], bg=self.parent['bg'])
+            frame4 = tk.Frame(frame[-1], bg=self.parent['bg'])
             # Create a canvas widget
             self.width, self.height = 600, 600
             self.canvas.append(tk.Canvas(
-                self.frame[-1], width=self.width,
+                frame1, width=self.width,
                 height=self.height, background="white"))
             self.canvas[-1].grid(row=0, column=0, columnspan=4, rowspan=2)
             self.canvas[-1].bind('<Button-1>', self.draw_dot)
@@ -124,64 +129,61 @@ class CanvasInput(tk.Frame, UI):
             self.state.append(tk.StringVar())
             self.state[ii].set('state')
             # Buttons under the canvas
-            self.button_draw = tk.Radiobutton(
-                self.frame[-1], text='Draw', fg='white', bg=self.parent['bg'],
+            tk.Radiobutton(
+                frame4, text='Draw', fg='white', bg=self.parent['bg'],
                 height=3, width=20, var=self.draw[ii],
                 selectcolor='black', value='draw').grid(column=4, row=3)
-            self.button_drag = tk.Radiobutton(
-                self.frame[-1], text='Move', fg='white', bg=self.parent['bg'],
+            tk.Radiobutton(
+                frame4, text='Move', fg='white', bg=self.parent['bg'],
                 height=3, width=20, var=self.draw[ii],
                 selectcolor='black', value='drag').grid(column=5, row=3)
-            self.clock_arc = tk.Radiobutton(
-                self.frame[-1], text='Clockwise', fg='white', bg=self.parent['bg'],
+            tk.Radiobutton(
+                frame4, text='Clockwise', fg='white', bg=self.parent['bg'],
                 height=3, width=20, var=self.clock[ii],
                 selectcolor='black', value='clock').grid(column=6, row=3)
-            self.countclock_arc = tk.Radiobutton(
-                self.frame[-1], text='Counterclockwise', fg='white', bg=self.parent['bg'],
+            tk.Radiobutton(
+                frame4, text='Counterclockwise', fg='white', bg=self.parent['bg'],
                 height=3, width=20, var=self.clock[ii],
                 selectcolor='black', value='countclock').grid(column=7, row=3)
             # self.button_edit = tk.Radiobutton(
-            #     self.frame[-1], text = 'Edit', fg = 'white', bg = self.parent['bg'],
+            #     frame[-1], text = 'Edit', fg = 'white', bg = self.parent['bg'],
             #     height = 3, width = 20, var = self.draw[ii],
             #     selectcolor = 'black', value = 'edit').grid(column = 6,row = 3)
-            self.button_save = tk.Button(
-                self.frame[-1], text='Save', fg='white', bg=self.parent['bg'],
+            tk.Button(
+                frame3, text='Save', fg='white', bg=self.parent['bg'],
                 height=3, width=20,
                 command=self.save_file).grid(column=1, row=3)
-            self.button_upload = tk.Button(
-                self.frame[-1], text='Upload coordinates', fg='white',
+            tk.Button(
+                frame3, text='Upload coordinates', fg='white',
                 bg=self.parent['bg'], height=3, width=20,
                 command=self.upload_sa).grid(column=0, row=3)
-            self.button_reset = tk.Button(
-                self.frame[-1], text='Reset', fg='white',
+            tk.Button(
+                frame3, text='Reset', fg='white',
                 bg=self.parent['bg'], height=3, width=20,
                 command=self.reset).grid(column=2, row=3)
-            button_main = tk.Button(
-                self.frame[-1], text="Done", fg='white',
+            tk.Button(
+                frame3, text="Done", fg='white',
                 bg=self.parent['bg'], height=3, width=20,
                 command=self.check_quit).grid(column=3, row=3)
             style = ttk.Style()
             style.configure(
-                "Treeview", background='white', foreground='white',
+                "Treeview", background='white', foreground='black',
                 rowheight=25, fieldbackground='white',
                 font=self.controller.pages_font)
             style.configure("Treeview.Heading",
                             font=self.controller.pages_font)
             style.map('Treeview', background=[('selected', 'grey')])
 
-            tree_frame = tk.Frame(self.frame[-1])
-            tree_frame.grid(row=0, column=4, columnspan=3, rowspan=10)
-
-            tree_scrollx = tk.Scrollbar(tree_frame, orient='horizontal')
+            tree_scrollx = tk.Scrollbar(frame2, orient='horizontal')
             tree_scrollx.pack(side=tk.BOTTOM, fill=tk.X)
-            tree_scrolly = tk.Scrollbar(tree_frame)
+            tree_scrolly = tk.Scrollbar(frame2)
             tree_scrolly.pack(side=tk.RIGHT, fill=tk.Y)
 
             self.tree.append(ttk.Treeview(
-                tree_frame,
+                frame2,
                 yscrollcommand=tree_scrolly.set,
                 xscrollcommand=tree_scrollx.set))
-            self.tree[-1].pack()
+            self.tree[-1].pack(fill='both', expand=True)
 
             tree_scrollx.config(command=self.tree[-1].xview)
             tree_scrolly.config(command=self.tree[-1].yview)
@@ -221,6 +223,22 @@ class CanvasInput(tk.Frame, UI):
 
             # Define double-click on row action
             self.tree[-1].bind("<Double-1>", self.OnDoubleClick)
+        
+        frame1.grid(column=0, row=0, sticky="nsew", padx=2, pady=2)
+        frame2.grid(column=1, row=0, sticky="nsew", padx=2, pady=2)
+        frame3.grid(column=0, row=1, sticky="nswe")
+        frame4.grid(column=1, row=1, sticky="nsew")
+
+        # self.frame2.grid_columnconfigure(tuple(range(2)), weight=1)
+        # self.frame2.grid_columnconfigure(1, weight=1)
+        # frame3.grid_columnconfigure(tuple(range(2)), weight=2)
+        # # frame3.grid_columnconfigure(2, weight=2)
+        # self.frame4.grid_columnconfigure(tuple(range(2)), weight=2)
+        # self.frame4.grid_columnconfigure(2, weight=2)
+
+        # Load input data
+        if not self._data_in["X"].empty:
+            self.load_data(self._data_in["X"].values, True)
 
     def draw_dot(self, event):
 
@@ -262,6 +280,7 @@ class CanvasInput(tk.Frame, UI):
                                 self.out_data[ii])[n, :].astype(int)),
                             tags=tag)
                         self.tree[ii].selection_set(str(n))
+                        self.tree[ii].yview_moveto(int(n) / (len(self.tree[ii].get_children())))
                     else:
                         self.tree[ii].insert(
                             parent='', index='end', iid=0, text=1,
@@ -269,7 +288,7 @@ class CanvasInput(tk.Frame, UI):
                                 self.out_data[ii])[0, :].astype(int)),
                             tags=('even',))
                         self.tree[ii].selection_set(str(0))
-
+                        self.tree[ii].yview_moveto(0)
                 elif self.state[ii].get() == 'action':
                     if self.clock[ii].get() == 'clock':
                         start = self.out_data[ii]['state_a'][-1]
@@ -313,6 +332,7 @@ class CanvasInput(tk.Frame, UI):
                                 self.out_data[ii])[n, :].astype(int)),
                             tags=tag)
                         self.tree[ii].selection_set(str(n))
+                        self.tree[ii].yview_moveto(int(n) / (len(self.tree[ii].get_children())))
                     else:
                         self.tree[ii].insert(
                             parent='', index='end', iid=0, text=1,
@@ -320,7 +340,7 @@ class CanvasInput(tk.Frame, UI):
                                 self.out_data[ii])[0, :].astype(int)),
                             tags=('even',))
                         self.tree[ii].selection_set(str(0))
-
+                        self.tree[ii].yview_moveto(0)
                 elif self.state[ii].get() == 'action':
                     self.canvas[ii].create_line(
                         self.out_data[ii]['state_x'][-1],
@@ -340,7 +360,7 @@ class CanvasInput(tk.Frame, UI):
     def on_drag(self, event):
 
         ii = self.notebook.index(self.notebook.select())
-        if self.draw[ii].get() == 'drag' and self.canvas[ii].selected:
+        if self.draw[ii].get() == 'drag' and self.canvas[ii].selected and len(self.canvas[ii].gettags("current")) > 0:
             # move the selected item
             n = int(self.canvas[ii].gettags("current")[0].split('-')[1])
 
@@ -416,6 +436,7 @@ class CanvasInput(tk.Frame, UI):
                                values=tuple(self.dict2mat(
                                    self.out_data[ii])[n, :].astype(int)))
             self.tree[ii].selection_set(str(n))
+            self.tree[ii].yview_moveto(int(n) / (len(self.tree[ii].get_children())))
 
     def checkered(self, line_distance):
 
@@ -554,9 +575,46 @@ class CanvasInput(tk.Frame, UI):
                              y=y + pady,
                              anchor=tk.W, width=width)
 
-    def upload_sa(self):
+    def load_data(self, data, read = False):
 
         ii = self.notebook.index(self.notebook.select())
+        self.draw[ii].set('drag')
+        for point in data:
+            if read:  # Not elegant at all, just to omit the header.
+                if isinstance(point, str):
+                    sx, sy, ax, ay = point.split()
+                elif isinstance(point, (list, np.ndarray)):
+                    sx, sy, ax, ay = point
+                # Draw an oval in the given coordinates
+                self.canvas[ii].create_oval(
+                    float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3,
+                    fill="black", width=0,
+                    tags=("state"+str(ii)+"-" + str(len(
+                        self.out_data[ii]['state_x']))))
+                self.canvas[ii].create_line(
+                    float(sx), float(sy), float(ax), float(ay),
+                    fill="red", arrow=tk.LAST,
+                    tags=("action"+str(ii)+"-" + str(len(
+                        self.out_data[ii]['action_x']))))
+                self.out_data[ii]['state_x'].append(sx)
+                self.out_data[ii]['state_y'].append(sy)
+                self.out_data[ii]['action_x'].append(ax)
+                self.out_data[ii]['action_y'].append(ay)
+                self.tree[ii].insert(
+                    parent='', index='end',
+                    iid=len(self.out_data[ii]['action_x'])-1,
+                    text=len(self.out_data[ii]['action_x']),
+                    values=tuple(self.dict2mat(
+                        self.out_data[ii])
+                        [len(self.out_data[ii]
+                                ['action_x'])-1, :].astype(int)))
+                sel_item = len(self.out_data[ii]['action_x'])-1
+                self.tree[ii].selection_set(str(sel_item))
+                self.tree[ii].yview_moveto(int(sel_item) / (len(self.tree[ii].get_children())))
+            else:
+                read = True
+
+    def upload_sa(self):
         filename = askopenfilename(initialdir=os.getcwd(),
                                    title='Select a file',
                                    defaultextension='.txt',
@@ -565,38 +623,7 @@ class CanvasInput(tk.Frame, UI):
                                               ('All Files', '*.*')])
         if filename is not None:
             data = open(filename, 'r')
-            read = False
-            self.draw[ii].set('drag')
-            for n, point in enumerate(data):
-                if read:  # Not elegant at all, just to omit the header.
-                    i, sx, sy, ax, ay = point.split()
-                    # Draw an oval in the given coordinates
-                    self.canvas[ii].create_oval(
-                        float(sx)-3, float(sy)-3, float(sx)+3, float(sy)+3,
-                        fill="black", width=0,
-                        tags=("state-" + str(len(
-                            self.out_data[ii]['state_x']))))
-                    self.canvas[ii].create_line(
-                        float(sx), float(sy), float(ax), float(ay),
-                        fill="red", arrow=tk.LAST,
-                        tags=("action"+str(ii)+"-" + str(len(
-                            self.out_data[ii]['action_x']))))
-                    self.out_data[ii]['state_x'].append(sx)
-                    self.out_data[ii]['state_y'].append(sy)
-                    self.out_data[ii]['action_x'].append(ax)
-                    self.out_data[ii]['action_y'].append(ay)
-                    self.tree.insert(
-                        parent='', index='end',
-                        iid=len(self.out_data[ii]['action_x'])-1,
-                        text=len(self.out_data[ii]['action_x']),
-                        values=tuple(self.dict2mat(
-                            self.out_data[ii])
-                            [len(self.out_data[ii]
-                                 ['action_x'])-1, :].astype(int)))
-                    self.tree.selection_set(str(len(
-                        self.out_data[ii]['action_x'])-1))
-                else:
-                    read = True
+            self.load_data(data)
 
     def reset(self):
 

@@ -1,0 +1,16 @@
+1. Folders correspond to the following binary alloys
+
+   (Cs,FA)PbI3
+   (FA,MA)PbI3
+   (Cs,MA)PbI3
+
+2. fulldata - all the data points for the binary alloys
+3. *.csv file naming - alloyname_temp.csv
+
+   example:
+   CsFA_T300_above.csv - enthalpy data for (Cs,FA)PbI3 alloy at T = 300 K.
+
+   Note: 
+   For T = 300 K, T300_above represents the choice of the reference (pure phase) crystal structure at 300 K. Please refer figure 3 in Energy. Environ. Sci. 12 1341 2019 (DOI:10.1039/c8ee03051k)
+
+4. Data format - {Composition, dE_mix (in eV/formula unit), T*dS_mix (eV/fu), dG_mix (eV/fu)}

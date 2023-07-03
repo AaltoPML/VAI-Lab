@@ -9,6 +9,9 @@
             <X_test file="./examples/supervised_classification/X_tst.csv"/>
             <Y_test file="./examples/supervised_classification/Y_tst.csv"/>
         </inputdata>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
     </Initialiser>
   
     <DataProcessing name="My Data Processing">
@@ -21,6 +24,9 @@
                 X
             </Data>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </DataProcessing>
   
     <Modelling name="My Modelling Module">
@@ -29,13 +35,28 @@
             <child name="Output" />
         </relationships>
         <plugin type="RandomForestClassifier" />
+        <inputdata>
+            <X module="My Data Processing" />
+        </inputdata>        
+        <coordinates>
+            [(350.0,350.0),2,{0:'d0-u2'}]
+        </coordinates>
     </Modelling>
   
     <Output name="Output">
+        <coordinates>
+            [(350.0,650),1,{2:'d2-u1'}]
+        </coordinates>
         <relationships>
             <parent name="My Modelling Module" />
         </relationships>
-      <!-- <outData file="./my_results.csv" /> -->
+        <plugin type="Output">
+            <outdata>
+                My Modelling Module
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
     </Output>
-  
 </pipeline>

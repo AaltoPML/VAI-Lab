@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.filedialog import asksaveasfile
 
-_PLUGIN_READABLE_NAMES = {"manual": "default",
+_PLUGIN_READABLE_NAMES = {"ManualInput": "default",
                           "binary": "alias",
                           "classification": "alias"}            # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
@@ -212,7 +212,7 @@ class ManualInput(tk.Frame, UI):            # type:ignore
 
         # Select the current row
         self.tree.selection_set(str(int(0)))
-
+        self.tree.yview_moveto(0)
         # Define double-click on row action
         self.tree.bind("<Double-1>", self.OnDoubleClick)
 
@@ -302,6 +302,7 @@ class ManualInput(tk.Frame, UI):            # type:ignore
         " Forward button to continue to the next image in the folder."
 
         self.tree.selection_set(str(int(image_number-1)))
+        self.tree.yview_moveto(int(image_number-1) / (len(self.tree.get_children())))
         # Print the corresponding image
         self.resizing((0, 0))
 

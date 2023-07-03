@@ -6,6 +6,14 @@ import numpy as np
 from vai_lab._import_helper import get_lib_parent_dir
 # from ttkwidgets import CheckboxTreeview
 # from sys import platform
+_PLUGIN_READABLE_NAMES = {"dataLoader": "default",
+                          "data_Loader": "alias",
+                          "data loader": "alias"}        # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"layer_priority": 2,
+                          "required_children": None}    # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                          # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                          # type:ignore
+
 
 class dataLoader():
     """ Creates a window 

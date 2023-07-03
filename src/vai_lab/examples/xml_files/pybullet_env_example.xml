@@ -4,7 +4,7 @@
             <child name="MyEnv" />
         </relationships>
         <coordinates>
-            [(300.0,50),0,{}]
+            [(350.0,50),0,{}]
         </coordinates>
     </Initialiser>
     <Environment name="MyEnv">
@@ -13,7 +13,7 @@
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(300.0,300.0),2,{0:'d0-u2'}]
+            [(350.0,350.0),2,{0:'d0-u2'}]
         </coordinates>
         <plugin type="PyBullet">
             <model_dir>
@@ -35,14 +35,24 @@
                     10
             </max_steps>            
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </Environment>
     <Output name="Output">
-        <plugin type="" />
+        <plugin type="Output">
+            <outdata>
+                MyEnv
+            </outdata>
+            <outpath>
+                 .\examples\results\output.pkl
+            </outpath>
+        </plugin>
         <relationships>
             <parent name="MyEnv" />
         </relationships>
         <coordinates>
-            [(300.0,550),1,{2:'d2-u1'}]
+            [(350.0,650),1,{2:'d2-u1'}]
         </coordinates>
     </Output>
 </pipeline>

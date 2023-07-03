@@ -7,3 +7,4 @@ def test_launch():
     core = ai.Core()    
     core._debug = True
     core.run()
+    

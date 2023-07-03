@@ -11,7 +11,7 @@ _PLUGIN_REQUIRED_DATA = {"X", "Y"}                      # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}              # type:ignore
 
 
-class KNNclassifier(ModellingPluginTClass):
+class KNNClassifier(ModellingPluginTClass):
     """
     Classifier implementing the k-nearest neighbors vote
     """

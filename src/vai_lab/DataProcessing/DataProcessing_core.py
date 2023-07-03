@@ -32,8 +32,7 @@ class DataProcessing(object):
         self._plugin.set_data_in(self._data_in)
         self._plugin.configure(self._module_config["plugin"])
         self._plugin.fit()
-        self.output_data = self._data_in.copy()
-        self.output_data = self._plugin.transform(self.output_data)
+        self.output_data = self._plugin.transform(self._data_in)
 
     def get_result(self) -> DataInterface:
         return self.output_data

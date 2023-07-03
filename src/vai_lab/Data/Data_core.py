@@ -92,14 +92,17 @@ class Data:
         :param filename: str, filename of file to be loaded
         :param data_name: str, name of class variable data will be loaded to
         """
-        filename = rel_to_abs(filename).replace(
-            "\\", "/").replace("/", path.sep)
+        filename = rel_to_abs(filename)
         ext = self._get_ext(filename)
         getattr(self, "_import_{0}".format(ext))(filename, data_name)
 
     def import_data_from_config(self: DataT, config: dict) -> None:
         for c in config.keys():
             self.import_data(config[c], c)
+
+    def import_existing_data(self: DataT, config: dict, data: DataT) -> None:
+        for item in data[config].keys():
+            self.data[item] = data[config][item]
 
     def append_data_column(self: DataT, col_name: str, data=None) -> None:
         self.data[col_name] = data
