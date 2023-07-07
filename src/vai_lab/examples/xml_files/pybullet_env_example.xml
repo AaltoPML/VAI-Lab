@@ -42,7 +42,7 @@
     <Output name="Output">
         <plugin type="Output">
             <outdata>
-                Modelling
+                MyEnv
             </outdata>
             <outpath>
                  .\examples\results\output.pkl

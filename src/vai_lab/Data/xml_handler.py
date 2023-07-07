@@ -641,11 +641,8 @@ class XML_handler:
         return out
 
     #@property
-    def data_to_load(self, module=None) -> Dict[str, str]:
-        if module is None:
-            return self._get_data_structure('Initialiser')["to_load"]
-        else:
-            return self._get_data_structure(module)["to_load"]
+    def data_to_load(self, module='Initialiser') -> Dict[str, str]:
+        return self._get_data_structure(module)["to_load"]
 
 
 # Use case examples:
