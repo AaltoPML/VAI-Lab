@@ -5,7 +5,7 @@ from vai_lab._import_helper import get_lib_parent_dir, import_plugin_absolute
 import os
 import numpy as np
 import pandas as pd
-from inspect import getmembers, isfunction
+from inspect import getmembers, isfunction, getfullargspec
 
 from typing import Dict, List
 from PIL import Image, ImageTk
@@ -489,6 +489,9 @@ class pluginCanvas(tk.Frame):
                                                     avail_plugins["_PLUGIN_PACKAGE"],
                                                     avail_plugins["_PLUGIN_CLASS_NAME"])
         function_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
+        func_opt = getfullargspec(plugin().model.__init__).kwonlydefaults
+        func_opt = {p: type(func_opt[p]).__name__ for p in func_opt}
+        self.opt_settings = {**self.opt_settings, **func_opt}
 
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow != None):
