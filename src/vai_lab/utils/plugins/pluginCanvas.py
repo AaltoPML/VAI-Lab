@@ -490,13 +490,21 @@ class pluginCanvas(tk.Frame):
                                                     avail_plugins["_PLUGIN_CLASS_NAME"])
         function_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
         # Update required and optional settings with the actual class
-        func_req = getfullargspec(plugin().model.__init__).args
-        func_req = {p: '' for p in func_req}
-        func_req.pop('self', None)
-        self.req_settings = {**self.req_settings, **func_req}
+        func_args = getfullargspec(plugin().model.__init__).args
+        if func_args is not None:
+            func_args.remove('self')
+            func_def = getfullargspec(plugin().model.__init__).defaults
+            if func_def is None:
+                func_def = []
+            func_req = {p: '' for p in func_args[:(len(func_args)-len(func_def))]}
+            func_opt = {p: type(func_def[i]).__name__ for i,p in enumerate(func_args[(len(func_args)-len(func_def)):])}
+            self.req_settings = {**self.req_settings, **func_req}
+            if func_opt is not None:
+                self.opt_settings = {**self.opt_settings, **func_opt}
         func_opt = getfullargspec(plugin().model.__init__).kwonlydefaults
-        func_opt = {p: type(func_opt[p]).__name__ for p in func_opt}
-        self.opt_settings = {**self.opt_settings, **func_opt}
+        if func_opt is not None:
+            func_opt = {p: type(func_opt[p]).__name__ for p in func_opt}
+            self.opt_settings = {**self.opt_settings, **func_opt}
 
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow != None):
