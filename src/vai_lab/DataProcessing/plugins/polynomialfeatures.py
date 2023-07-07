@@ -7,8 +7,7 @@ _PLUGIN_READABLE_NAMES = {"PolynomialFeatures": "default",
                           "polynomialfeatures": "alias"}    # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "Other"}                  # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}                 # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"degree": "int",
-                             "interaction_only": "bool",
+_PLUGIN_OPTIONAL_SETTINGS = {"interaction_only": "bool",
                              "include_bias": "bool"}        # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                                  # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X", "Y", "X_tst", 'Y_tst'}        # type:ignore

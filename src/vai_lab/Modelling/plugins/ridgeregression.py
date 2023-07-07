@@ -2,10 +2,10 @@ from vai_lab._plugin_templates import ModellingPluginT
 from sklearn.linear_model import Ridge as model
 
 _PLUGIN_READABLE_NAMES = {"RidgeRegression": "default",
-                          "Ridge": "alias"}       # type:ignore
+                          "Ridge": "alias"}                 # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "regression"}             # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                              # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float"}              # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                              # type:ignore
 _PLUGIN_REQUIRED_DATA = {"X", "Y"}                          # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X_tst", 'Y_tst'}                  # type:ignore
 
