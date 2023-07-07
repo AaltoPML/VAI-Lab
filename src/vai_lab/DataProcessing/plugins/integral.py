@@ -22,7 +22,7 @@ class Integral(DataProcessingT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.proc = model()
+        self.model = model()
 
     def fit(self):
         return
