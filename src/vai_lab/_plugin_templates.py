@@ -188,13 +188,13 @@ class DataProcessingT(PluginTemplate, ABC):
     def fit(self):
         cleaned_options = self._clean_solver_options()
         try:
-            self.proc.set_params(**cleaned_options)
+            self.model.set_params(**cleaned_options)
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
         try:
-            self.proc.fit(self.X)
+            self.model.fit(self.X)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -202,14 +202,14 @@ class DataProcessingT(PluginTemplate, ABC):
 
     def transform(self, data: DataInterface) -> DataInterface:
         try:
-            data.append_data_column("X", pd.DataFrame(self.proc.transform(self.X)))
+            data.append_data_column("X", pd.DataFrame(self.model.transform(self.X)))
         except Exception as exc:
             print('The plugin encountered an error when transforming the data with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
         if self.X_tst is not None:
             try:
-                data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
+                data.append_data_column("X_test", pd.DataFrame(self.model.transform(self.X_tst)))
             except Exception as exc:
                 print('The plugin encountered an error when transforming the data with '
                         +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -224,13 +224,13 @@ class ModellingPluginT(PluginTemplate, ABC):
     def solve(self):
         """Sends params to solver, then runs solver"""
         try:
-            self.clf.set_params(**self._config["options"])
+            self.model.set_params(**self._config["options"])
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
         try:
-            self.clf.fit(self.X, self.Y)
+            self.model.fit(self.X, self.Y)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -245,7 +245,7 @@ class ModellingPluginT(PluginTemplate, ABC):
                     Returns predicted values.
         """
         try:
-            return self.clf.predict(data)
+            return self.model.predict(data)
         except Exception as exc:
             print('The plugin encountered an error when predicting with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -261,7 +261,7 @@ class ModellingPluginT(PluginTemplate, ABC):
         :returns: score : float of ``self.predict(X)`` wrt. `y`.
         """
         try:
-            return self.clf.score(X, Y, sample_weight)
+            return self.model.score(X, Y, sample_weight)
         except Exception as exc:
             print('The plugin encountered an error when calculating the score with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
@@ -280,7 +280,7 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
                     Returns predicted values.
         """
         try:
-            return self.clf.predict_proba(data)
+            return self.model.predict_proba(data)
         except Exception as exc:
             print('The plugin encountered an error when predicting the probability with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')

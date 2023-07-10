@@ -478,17 +478,14 @@ class pluginCanvas(tk.Frame):
 
         module = np.array(self.module_list)[self.m == np.array(self.id_mod)][0]
         ps = PluginSpecs()
-        self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get(
-        )]
-        self.req_settings = ps.required_settings[module][self.plugin[self.m].get(
-        )]
-
         file_name = os.path.split(ps.find_from_class_name(self.plugin[self.m].get())['_PLUGIN_DIR'])[-1]
         avail_plugins = ps.available_plugins[module][file_name]
         plugin = import_plugin_absolute(globals(),
-                                                    avail_plugins["_PLUGIN_PACKAGE"],
-                                                    avail_plugins["_PLUGIN_CLASS_NAME"])
+                                        avail_plugins["_PLUGIN_PACKAGE"],
+                                        avail_plugins["_PLUGIN_CLASS_NAME"])
         # Update required and optional settings for the plugin
+        self.req_settings = ps.required_settings[module][self.plugin[self.m].get()]
+        self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get()]
         func_req, func_opt = self.getArgs(plugin().model.__init__)
         if func_req is not None:
             self.req_settings = {**self.req_settings, **func_req}
@@ -589,11 +586,11 @@ class pluginCanvas(tk.Frame):
             if func_def is None:
                 func_def = []
             func_req = {p: '' for p in func_args[:(len(func_args)-len(func_def))]}
-            func_r_opt = {p: type(func_def[i]).__name__ for i,p in enumerate(func_args[(len(func_args)-len(func_def)):])}
+            func_r_opt = {p: func_def[i] for i,p in enumerate(func_args[(len(func_args)-len(func_def)):])}
 
         func_opt = getfullargspec(f).kwonlydefaults
         if func_opt is not None:
-            func_opt = {p: type(func_opt[p]).__name__ for p in func_opt}
+            func_opt = {p: func_opt[p] for p in func_opt}
             if func_r_opt is not None:
                 func_opt = {**func_r_opt, **func_opt}
         return func_req, func_opt
@@ -622,7 +619,7 @@ class pluginCanvas(tk.Frame):
         tree_scrollx.config(command=self.tree.xview)
         tree_scrolly.config(command=self.tree.yview)
 
-        columns_names = ['Name', 'Type', 'Value']
+        columns_names = ['Name', 'Value']
         self.tree['columns'] = columns_names
 
         # Format columns
@@ -689,9 +686,9 @@ class pluginCanvas(tk.Frame):
         val = self.tree.item(self.treerow)['values']
         val[int(self.treecol[1:])-1] = self.entry.get()
         if self.entry.get() != '':
-            self.tree.item(self.treerow, values=tuple([val[0], val[1], self.entry.get()]))
-        elif val[2] == '':
-            self.tree.item(self.treerow, values=tuple([val[0], val[1], 'default']))
+            self.tree.item(self.treerow, values=tuple([val[0], self.entry.get()]))
+        elif val[1] == '':
+            self.tree.item(self.treerow, values=tuple([val[0], 'default']))
         else:
             self.tree.item(self.treerow, values=val)
         self.entry.destroy()
@@ -704,22 +701,22 @@ class pluginCanvas(tk.Frame):
         :param parent: string type of parent name
         """
         self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
-            values=tuple(['Required settings', '', '']), tags=('type',))
+            values=tuple(['Required settings', '']), tags=('type',))
         self.r+=1
         for arg, val in req_settings.items():
             if arg == 'Data':
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                    values=tuple([arg, val, 'Choose X or Y']), tags=('req',))
+                    values=tuple([arg, 'Choose X or Y']), tags=('req',))
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                                    values=tuple([arg, val, '']), tags=('req',))
+                                    values=tuple([arg, val]), tags=('req',))
             self.r+=1
         self.tree.insert(parent=parent, index='end', iid=parent+'_opt', text='',
-            values=tuple(['Optional settings', '', '']), tags=('type',))
+            values=tuple(['Optional settings', '']), tags=('type',))
         self.r+=1
         for arg, val in opt_settings.items():
             self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                                 values=tuple([arg, val, 'default']), tags=('opt',))
+                                 values=tuple([arg, val]), tags=('opt',))
             self.r+=1
 
     def removewindow(self):
@@ -745,15 +742,15 @@ class pluginCanvas(tk.Frame):
     def settingOptions(self, tag, val):
         """ Identifies how the data should be stored """
         if val[0] == 'Data':
-            if val[2] == 'Choose X or Y' or len(val[2]) == 0:
+            if val[1] == 'Choose X or Y' or len(val[1]) == 0:
                 self.updateSettings(tag, val[0], 'X')
             else:
-                self.updateSettings(tag, val[0], val[2])
+                self.updateSettings(tag, val[0], val[1])
         else:
-            if val[2] == 'default' or len(str(val[2])) == 0:
+            if val[1] == 'default' or len(str(val[1])) == 0:
                 self.updateSettings(tag, val[0])
             else:
-                self.updateSettings(tag, val[0], val[2])
+                self.updateSettings(tag, val[0], val[1])
 
     def updateSettings(self, tag, key, value = None):
         """ Return the selected settings 
@@ -763,17 +760,32 @@ class pluginCanvas(tk.Frame):
         tag : str
               tag for the settings
         """
+
+        value = self.str_to_bool(value)
         if tag == 'req':
-            if value is not None or self.req_settings[key] != value:
+            if value is not None or key == 'Data' or self.req_settings[key] != value:
                 self.req_settings[key] = value
             else:
                 self.req_settings.pop(key, None)
         elif tag == 'opt':
-            if value is not None or self.opt_settings[key] != value:
+            if self.opt_settings[key] != value:
                 self.opt_settings[key] = value
             else:
-                self.opt_settings.pop(key, None)
-
+                self.opt_settings.pop(key, None)    
+    
+    def str_to_bool(self, s):
+        if type(s) is str:
+            if s == 'True':
+                return True
+            elif s == 'False':
+                return False
+            elif s == 'None':
+                return None
+            else:
+                return s
+        else:
+            return s
+    
     def on_return_entry(self, r):
         """ Changes focus to the next available entry. When no more, focuses 
         on the finish button.
@@ -1096,7 +1108,7 @@ class pluginCanvas(tk.Frame):
                 self.controller.Plugin.set(True)
                 self.controller._show_frame("MainPage")
         # TODO: Check if loaded
-        elif len(self.xml_handler.loaded_modules) == 0:
+        elif not hasattr(self,"xml_handler") or len(self.xml_handler.loaded_modules) == 0:
             self.controller._show_frame("MainPage")
             self.controller.Plugin.set(False)
         else:
