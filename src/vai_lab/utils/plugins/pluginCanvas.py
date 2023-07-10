@@ -488,23 +488,14 @@ class pluginCanvas(tk.Frame):
         plugin = import_plugin_absolute(globals(),
                                                     avail_plugins["_PLUGIN_PACKAGE"],
                                                     avail_plugins["_PLUGIN_CLASS_NAME"])
-        function_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
-        # Update required and optional settings with the actual class
-        func_args = getfullargspec(plugin().model.__init__).args
-        if func_args is not None:
-            func_args.remove('self')
-            func_def = getfullargspec(plugin().model.__init__).defaults
-            if func_def is None:
-                func_def = []
-            func_req = {p: '' for p in func_args[:(len(func_args)-len(func_def))]}
-            func_opt = {p: type(func_def[i]).__name__ for i,p in enumerate(func_args[(len(func_args)-len(func_def)):])}
+        # Update required and optional settings for the plugin
+        func_req, func_opt = self.getArgs(plugin().model.__init__)
+        if func_req is not None:
             self.req_settings = {**self.req_settings, **func_req}
-            if func_opt is not None:
-                self.opt_settings = {**self.opt_settings, **func_opt}
-        func_opt = getfullargspec(plugin().model.__init__).kwonlydefaults
         if func_opt is not None:
-            func_opt = {p: type(func_opt[p]).__name__ for p in func_opt}
             self.opt_settings = {**self.opt_settings, **func_opt}
+
+        function_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
 
         if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow != None):
@@ -579,6 +570,33 @@ class pluginCanvas(tk.Frame):
 
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(0, weight=1)
+
+    def getArgs(self, f):
+        """ Get required and optional arguments from function.
+
+        Parameters
+        ----------
+        f : function
+                function to extract arguments from
+
+        :returns out: two dictionaries with arguments and default value (if optional)
+        """
+
+        func_args = getfullargspec(f).args
+        if func_args is not None:
+            func_args.remove('self')
+            func_def = getfullargspec(f).defaults
+            if func_def is None:
+                func_def = []
+            func_req = {p: '' for p in func_args[:(len(func_args)-len(func_def))]}
+            func_r_opt = {p: type(func_def[i]).__name__ for i,p in enumerate(func_args[(len(func_args)-len(func_def)):])}
+
+        func_opt = getfullargspec(f).kwonlydefaults
+        if func_opt is not None:
+            func_opt = {p: type(func_opt[p]).__name__ for p in func_opt}
+            if func_r_opt is not None:
+                func_opt = {**func_r_opt, **func_opt}
+        return func_req, func_opt
 
     def create_treeView(self, tree_frame):
         """ Function to create a new tree view in the given frame
