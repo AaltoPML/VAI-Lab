@@ -221,7 +221,7 @@ class ModellingPluginT(PluginTemplate, ABC):
     def __init__(self, plugin_globals: dict) -> None:
         super().__init__(plugin_globals)
 
-    def solve(self):
+    def fit(self):
         """Sends params to solver, then runs solver"""
         try:
             self.model.set_params(**self._config["options"])
