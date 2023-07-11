@@ -511,11 +511,15 @@ class pluginCanvas(tk.Frame):
             # self.newWindow.geometry("350x400")
 
             frame1 = tk.Frame(self.newWindow)
+            frame11 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
 
             # Print settings
             tk.Label(frame1,
-                     text="Please indicate your desired options for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+                     text="Please indicate your desired options for the plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+            # Print settings
+            tk.Label(frame11,
+                     text="Please indicate your desired functions for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
 
             style = ttk.Style()
             style.configure(
@@ -528,11 +532,21 @@ class pluginCanvas(tk.Frame):
             )
             style.map('Treeview', background=[('selected', 'grey')])
 
-            frame2 = tk.Frame(self.newWindow, bg='green')
+            frame12 = tk.Frame(self.newWindow)
+            self.create_treeView(frame12, ['Name'])
+            # self.fill_treeview(self.req_settings, self.opt_settings)
+            frame12.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+    
+            # frame12.grid_rowconfigure(tuple(range(self.r)), weight=1)
+            # frame12.grid_columnconfigure(tuple(range(2)), weight=1)
+
+            frame2 = tk.Frame(self.newWindow)
             self.r = 1
-            self.create_treeView(frame2)
-            self.fill_treeview(self.req_settings, self.opt_settings)
-            frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+            self.create_treeView(frame2, ['Name', 'Value'])
+            self.tree.insert(parent='', index='end', iid='init', text='', values=tuple(['__init__', '']), 
+                             tags=('func','init'), open=True)            
+            self.fill_treeview(self.req_settings, self.opt_settings, 'init')
+            frame2.grid(column=1, row=1, sticky="nswe", pady=10, padx=10)
     
             frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
             frame2.grid_columnconfigure(tuple(range(2)), weight=1)
@@ -560,13 +574,14 @@ class pluginCanvas(tk.Frame):
                 "<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
-            frame1.grid(column=0, row=0, sticky="ew")
-            frame4.grid(column=0, row=20, sticky="se")
-            frame5.grid(column=0, row=2, sticky="ew")
-            frame6.grid(column=0, row=3)
+            frame11.grid(column=0, row=0, sticky="ew")
+            frame1.grid(column=1, row=0, sticky="ew")
+            frame4.grid(column=1, row=20, sticky="se")
+            frame5.grid(column=1, row=2, sticky="ew")
+            frame6.grid(column=1, row=3)
 
             self.newWindow.grid_rowconfigure(1, weight=2)
-            self.newWindow.grid_columnconfigure(0, weight=1)
+            self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
 
     def getArgs(self, f):
         """ Get required and optional arguments from function.
@@ -595,7 +610,7 @@ class pluginCanvas(tk.Frame):
                 func_opt = {**func_r_opt, **func_opt}
         return func_req, func_opt
 
-    def create_treeView(self, tree_frame):
+    def create_treeView(self, tree_frame, columns_names):
         """ Function to create a new tree view in the given frame
 
         Parameters
@@ -619,11 +634,10 @@ class pluginCanvas(tk.Frame):
         tree_scrollx.config(command=self.tree.xview)
         tree_scrolly.config(command=self.tree.yview)
 
-        columns_names = ['Name', 'Value']
         self.tree['columns'] = columns_names
 
         # Format columns
-        self.tree.column("#0", width=20,
+        self.tree.column("#0", width=40,
                         minwidth=0, stretch=tk.NO)
         for n, cl in enumerate(columns_names):
             self.tree.column(
@@ -701,22 +715,22 @@ class pluginCanvas(tk.Frame):
         :param parent: string type of parent name
         """
         self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
-            values=tuple(['Required settings', '']), tags=('type',))
+            values=tuple(['Required settings', '']), tags=('type',parent), open=True)
         self.r+=1
         for arg, val in req_settings.items():
             if arg == 'Data':
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                    values=tuple([arg, 'Choose X or Y']), tags=('req',))
+                    values=tuple([arg, 'Choose X or Y']), tags=('req',parent))
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                                    values=tuple([arg, val]), tags=('req',))
+                                    values=tuple([arg, val]), tags=('req',parent))
             self.r+=1
         self.tree.insert(parent=parent, index='end', iid=parent+'_opt', text='',
-            values=tuple(['Optional settings', '']), tags=('type',))
+            values=tuple(['Optional settings', '']), tags=('type',parent), open=True)
         self.r+=1
         for arg, val in opt_settings.items():
             self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                                 values=tuple([arg, val]), tags=('opt',))
+                                 values=tuple([arg, val]), tags=('opt',parent))
             self.r+=1
 
     def removewindow(self):
