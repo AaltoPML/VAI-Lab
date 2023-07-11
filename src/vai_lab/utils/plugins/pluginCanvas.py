@@ -302,6 +302,7 @@ class pluginCanvas(tk.Frame):
             self.xml_handler.append_plugin_to_module(
                 self.plugin[self.m].get(),
                 {**self.req_settings, **self.opt_settings},
+                self.meths_sort,
                 self.plugin_inputData.get(),
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
@@ -319,8 +320,9 @@ class pluginCanvas(tk.Frame):
 
             self.xml_handler.append_plugin_to_module(
                 'Output',
-                {'outdata': self.out_data_xml, 
-                 'outpath': rel_path},
+                {'__init__': {'outdata': self.out_data_xml,
+                              'outpath': rel_path}},
+                [],
                 None,
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
@@ -487,19 +489,20 @@ class pluginCanvas(tk.Frame):
         self.req_settings = {'__init__': ps.required_settings[module][self.plugin[self.m].get()]}
         self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin[self.m].get()]}
         self.model = plugin().model
-        func_req, func_opt = self.getArgs(self.model.__init__)
-        if func_req is not None:
-            self.req_settings['__init__'] = {**self.req_settings['__init__'], **func_req}
-        if func_opt is not None:
-            self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **func_opt}
+        meth_req, meth_opt = self.getArgs(self.model.__init__)
+        if meth_req is not None:
+            self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
+        if meth_opt is not None:
+            self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **meth_opt}
 
         # Find functions defined for the module
-        plugin_func_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
+        plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
         # Find available methods for the model
-        model_func_list = [func[0] for func in getmembers(self.model, ismethod) if func[0][0] != '_']
+        model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
         # List intersection
-        func_list = list(set(plugin_func_list) & set(model_func_list))[::-1]
-        self.funcs_sort = []
+        # TODO: use only methods from the model
+        meth_list = list(set(plugin_meth_list) & set(model_meth_list))[::-1]
+        self.meths_sort = []
 
         if (len(self.opt_settings['__init__']) != 0) or (len(self.req_settings['__init__']) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow != None):
@@ -544,24 +547,24 @@ class pluginCanvas(tk.Frame):
             style.map('Treeview', background=[('selected', 'grey')])
 
             tk.Label(frame21,
-                     text="Add your desired functions in your required order.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+                     text="Add your desired methods in your required order.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
 
-            self.func2add = tk.StringVar(frameDrop)
-            dropDown = tk.ttk.OptionMenu(frameDrop, self.func2add, func_list[0], *func_list)
+            self.meth2add = tk.StringVar(frameDrop)
+            dropDown = tk.ttk.OptionMenu(frameDrop, self.meth2add, meth_list[0], *meth_list)
             style.configure("TMenubutton", background="white")
             dropDown["menu"].configure(bg="white")
             dropDown.grid(row=0,column=0)
 
-            tk.Button(frameButt, text='Add', command=self.addFunc).grid(row=0,column=0)
-            tk.Button(frameButt, text='Delete', command=self.deleteFunc).grid(row=0,column=1)
-            tk.Button(frameButt, text='Up', command=lambda: self.moveFunc(-1)).grid(row=0,column=2)
-            tk.Button(frameButt, text='Down', command=lambda: self.moveFunc(+1)).grid(row=0,column=3)
+            tk.Button(frameButt, text='Add', command=self.addMeth).grid(row=0,column=0)
+            tk.Button(frameButt, text='Delete', command=self.deleteMeth).grid(row=0,column=1)
+            tk.Button(frameButt, text='Up', command=lambda: self.moveMeth(-1)).grid(row=0,column=2)
+            tk.Button(frameButt, text='Down', command=lambda: self.moveMeth(+1)).grid(row=0,column=3)
 
             self.r = 1
             self.tree = self.create_treeView(frame2, ['Name', 'Value'])
-            self.tree.insert(parent='', index='end', iid='init', text='', values=tuple(['__init__', '']), 
-                             tags=('func','init'))            
-            self.fill_treeview(self.req_settings['__init__'], self.opt_settings['__init__'], 'init')
+            self.tree.insert(parent='', index='end', iid='__init__', text='', values=tuple(['__init__', '']), 
+                             tags=('meth','__init__'))            
+            self.fill_treeview(self.req_settings['__init__'], self.opt_settings['__init__'], '__init__')
 
             tk.Label(frame5,
                      text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
@@ -599,59 +602,59 @@ class pluginCanvas(tk.Frame):
             self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
 
     def getArgs(self, f):
-        """ Get required and optional arguments from function.
+        """ Get required and optional arguments from method.
 
         Parameters
         ----------
-        f : function
-                function to extract arguments from
+        f : method
+                method to extract arguments from
 
         :returns out: two dictionaries with arguments and default value (if optional)
         """
 
-        func_args = getfullargspec(f).args
-        if func_args is not None:
-            func_args.remove('self')
-            func_def = getfullargspec(f).defaults
-            if func_def is None:
-                func_def = []
-            func_req = {p: '' for p in func_args[:(len(func_args)-len(func_def))]}
-            func_r_opt = {p: func_def[i] for i,p in enumerate(func_args[(len(func_args)-len(func_def)):])}
+        meth_args = getfullargspec(f).args
+        if meth_args is not None:
+            meth_args.remove('self')
+            meth_def = getfullargspec(f).defaults
+            if meth_def is None:
+                meth_def = []
+            meth_req = {p: '' for p in meth_args[:(len(meth_args)-len(meth_def))]}
+            meth_r_opt = {p: meth_def[i] for i,p in enumerate(meth_args[(len(meth_args)-len(meth_def)):])}
 
-        func_opt = getfullargspec(f).kwonlydefaults
-        if func_opt is not None:
-            func_opt = {p: func_opt[p] for p in func_opt}
-            if func_r_opt is not None:
-                func_opt = {**func_r_opt, **func_opt}
-            return func_req, func_opt
+        meth_opt = getfullargspec(f).kwonlydefaults
+        if meth_opt is not None:
+            meth_opt = {p: meth_opt[p] for p in meth_opt}
+            if meth_r_opt is not None:
+                meth_opt = {**meth_r_opt, **meth_opt}
+            return meth_req, meth_opt
         else:
-            return func_req, func_r_opt
+            return meth_req, meth_r_opt
     
-    def addFunc(self):
-        """ Adds selected function in dropdown menu to the plugin tree """
-        func = self.func2add.get()
-        self.funcs_sort.append(func)
-        self.tree.insert(parent='', index='end', iid=func, text='', values=tuple([func, '']), 
-                            tags=('func',func))
+    def addMeth(self):
+        """ Adds selected method in dropdown menu to the plugin tree """
+        meth = self.meth2add.get()
+        self.meths_sort.append(meth)
+        self.tree.insert(parent='', index='end', iid=meth, text='', values=tuple([meth, '']), 
+                            tags=('meth',meth))
         # TODO: Remove X and y?
-        self.req_settings[func], self.opt_settings[func] = self.getArgs(getattr(self.model, func))
-        self.fill_treeview(self.req_settings[func], self.opt_settings[func], func)
+        self.req_settings[meth], self.opt_settings[meth] = self.getArgs(getattr(self.model, meth))
+        self.fill_treeview(self.req_settings[meth], self.opt_settings[meth], meth)
 
-    def deleteFunc(self):
-        """ Deletes selected function in dropdown menu from the plugin tree """
-        func = self.func2add.get()
-        if func in self.funcs_sort:
-            self.funcs_sort.remove(func)
-            del self.req_settings[func]
-            del self.opt_settings[func]
-            self.tree.delete(func)
+    def deleteMeth(self):
+        """ Deletes selected method in dropdown menu from the plugin tree """
+        meth = self.meth2add.get()
+        if meth in self.meths_sort:
+            self.meths_sort.remove(meth)
+            del self.req_settings[meth]
+            del self.opt_settings[meth]
+            self.tree.delete(meth)
     
-    def moveFunc(self, m):
-        func = self.func2add.get()
-        if func in self.funcs_sort and self.tree.index(func)+m > 0:
-            idx = self.funcs_sort.index(func)
-            self.funcs_sort.insert(idx+m, self.funcs_sort.pop(idx))
-            self.tree.move(func, self.tree.parent(func), self.tree.index(func)+m)
+    def moveMeth(self, m):
+        meth = self.meth2add.get()
+        if meth in self.meths_sort and self.tree.index(meth)+m > 0:
+            idx = self.meths_sort.index(meth)
+            self.meths_sort.insert(idx+m, self.meths_sort.pop(idx))
+            self.tree.move(meth, self.tree.parent(meth), self.tree.index(meth)+m)
 
     def create_treeView(self, tree_frame, columns_names):
         """ Function to create a new tree view in the given frame
@@ -695,7 +698,7 @@ class pluginCanvas(tk.Frame):
                                 background='#cfe2f3')
         tree.tag_configure('type', foreground='black',
                                 background='#E8E8E8')
-        tree.tag_configure('func', foreground='black',
+        tree.tag_configure('meth', foreground='black',
                                 background='#DFDFDF')
         # Define double-click on row action
         tree.bind("<Double-1>", self.OnDoubleClick)
@@ -779,13 +782,14 @@ class pluginCanvas(tk.Frame):
 
     def removewindow(self):
         """ Stores settings options and closes window """
-        self.req_settings.pop("Data", None)
-        children = self.get_all_children()
-        for child in children:
-            tag = self.tree.item(child)["tags"][0]            
-            if tag in ['req', 'opt']:
-                val = self.tree.item(child)["values"]
-                self.settingOptions(tag, val)
+        for f in self.tree.get_children():
+            self.req_settings[f].pop("Data", None)
+            for c in self.tree.get_children(f):
+                for child in self.tree.get_children(c):
+                    tag = self.tree.item(child)["tags"][0]    
+                    if tag in ['req', 'opt']:
+                        val = self.tree.item(child)["values"]
+                        self.settingOptions(tag, f, val)
         del self.model
         self.newWindow.destroy()
         self.newWindow = None
@@ -798,20 +802,20 @@ class pluginCanvas(tk.Frame):
             children += self.get_all_children(child)
         return children
 
-    def settingOptions(self, tag, val):
+    def settingOptions(self, tag, f, val):
         """ Identifies how the data should be stored """
         if val[0] == 'Data':
             if val[1] == 'Choose X or Y' or len(val[1]) == 0:
-                self.updateSettings(tag, val[0], 'X')
+                self.updateSettings(tag, f, val[0], 'X')
             else:
-                self.updateSettings(tag, val[0], val[1])
+                self.updateSettings(tag, f, val[0], val[1])
         else:
             if val[1] == 'default' or len(str(val[1])) == 0:
-                self.updateSettings(tag, val[0])
+                self.updateSettings(tag, f, val[0])
             else:
-                self.updateSettings(tag, val[0], val[1])
+                self.updateSettings(tag, f, val[0], val[1])
 
-    def updateSettings(self, tag, key, value = None):
+    def updateSettings(self, tag, f, key, value = None):
         """ Return the selected settings 
 
         Parameters
@@ -822,15 +826,15 @@ class pluginCanvas(tk.Frame):
 
         value = self.str_to_bool(value)
         if tag == 'req':
-            if value is not None or key == 'Data' or self.req_settings[key] != value:
-                self.req_settings[key] = value
+            if value is not None or key == 'Data' or self.req_settings[f][key] != value:
+                self.req_settings[f][key] = value
             else:
-                self.req_settings.pop(key, None)
+                self.req_settings[f].pop(key, None)
         elif tag == 'opt':
-            if self.opt_settings[key] != value:
-                self.opt_settings[key] = value
+            if self.opt_settings[f][key] != value:
+                self.opt_settings[f][key] = value
             else:
-                self.opt_settings.pop(key, None)    
+                self.opt_settings[f].pop(key, None)    
     
     def str_to_bool(self, s):
         if type(s) is str:

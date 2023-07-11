@@ -453,12 +453,12 @@ class XML_handler:
         else:
             xml_parent = xml_parent_name
         plugin_elem: ET.Element = xml_parent.find("./plugin")
-        self._add_plugin_options(plugin_elem, options)
+        self._add_options(plugin_elem, options)
         self._parse_XML()
         if save_changes:
             self.write_to_XML()
 
-    def _add_plugin_options(self,
+    def _add_options(self,
                             plugin_elem: ET.Element,
                             options
                             ):
@@ -476,7 +476,7 @@ class XML_handler:
                 new_option.text = "{0} {1}".format(
                     text_lead, str(options[key]))
             elif isinstance(options[key], (dict)):
-                self._add_plugin_options(plugin_elem, options[key])
+                self._add_options(plugin_elem, options[key])
 
     def append_input_data(self,
                           data_name: str,
@@ -516,9 +516,39 @@ class XML_handler:
         else:
             plugin_elem.set('module', data_dir)
 
+    def append_method_to_plugin(self,
+                                method_type: str,
+                                method_options: dict,
+                                xml_parent: Union[ET.Element, str],
+                                overwrite_existing: Union[bool, int] = False
+                                ):
+        """Appened method as subelement to existing plugin element
+        
+        :param method_type: string type of method to be loaded into plugin
+        :param method_options: dict where keys & values are options & values
+        :param xml_parent: dict OR str. 
+                            If string given, parent elem is found via search,
+                            Otherwise, method appeneded directly
+        """
+        if isinstance(xml_parent, str):
+            xml_parent = self._get_element_from_name(xml_parent)
+
+        method_elem = xml_parent.find("./method")
+
+        if method_elem is not None and overwrite_existing:
+            if method_elem.attrib['type'] == method_type:
+                xml_parent.remove(method_elem)
+            method_elem = None
+
+        if method_elem is None:
+            method_elem = ET.SubElement(xml_parent, "method")
+            method_elem.set('type', method_type)
+        self._add_options(method_elem, method_options)
+
     def append_plugin_to_module(self,
                                 plugin_type: str,
                                 plugin_options: dict,
+                                method_list: list,
                                 plugin_data: str,
                                 xml_parent: Union[ET.Element, str],
                                 overwrite_existing: Union[bool, int] = False
@@ -546,7 +576,12 @@ class XML_handler:
             plugin_elem.set('type', plugin_type)
         if plugin_data is not None and len(plugin_data) > 0:
             self.append_input_data('X', plugin_data, xml_parent, False)
-        self._add_plugin_options(plugin_elem, plugin_options)
+        self._add_options(plugin_elem, plugin_options['__init__'])
+        for f in method_list:
+            self.append_method_to_plugin(f,
+                                           plugin_options[f], 
+                                           plugin_elem, 
+                                           overwrite_existing)
 
     def append_pipeline_module(self,
                                module_type: str,
