@@ -5,7 +5,7 @@ from vai_lab._import_helper import get_lib_parent_dir, import_plugin_absolute
 import os
 import numpy as np
 import pandas as pd
-from inspect import getmembers, isfunction, getfullargspec
+from inspect import getmembers, isfunction, ismethod, getfullargspec
 
 from typing import Dict, List
 from PIL import Image, ImageTk
@@ -484,17 +484,24 @@ class pluginCanvas(tk.Frame):
                                         avail_plugins["_PLUGIN_PACKAGE"],
                                         avail_plugins["_PLUGIN_CLASS_NAME"])
         # Update required and optional settings for the plugin
-        self.req_settings = ps.required_settings[module][self.plugin[self.m].get()]
-        self.opt_settings = ps.optional_settings[module][self.plugin[self.m].get()]
-        func_req, func_opt = self.getArgs(plugin().model.__init__)
+        self.req_settings = {'__init__': ps.required_settings[module][self.plugin[self.m].get()]}
+        self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin[self.m].get()]}
+        self.model = plugin().model
+        func_req, func_opt = self.getArgs(self.model.__init__)
         if func_req is not None:
-            self.req_settings = {**self.req_settings, **func_req}
+            self.req_settings['__init__'] = {**self.req_settings['__init__'], **func_req}
         if func_opt is not None:
-            self.opt_settings = {**self.opt_settings, **func_opt}
+            self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **func_opt}
 
-        function_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
+        # Find functions defined for the module
+        plugin_func_list = [func[0] for func in getmembers(plugin, isfunction) if func[0][0] != '_']
+        # Find available methods for the model
+        model_func_list = [func[0] for func in getmembers(self.model, ismethod) if func[0][0] != '_']
+        # List intersection
+        func_list = list(set(plugin_func_list) & set(model_func_list))[::-1]
+        self.funcs_sort = []
 
-        if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
+        if (len(self.opt_settings['__init__']) != 0) or (len(self.req_settings['__init__']) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow != None):
                 self.newWindow.destroy()
             self.newWindow = tk.Toplevel(self.controller)
@@ -510,17 +517,21 @@ class pluginCanvas(tk.Frame):
                     'VAILabsIcon.ico'))))
             # self.newWindow.geometry("350x400")
 
+
             frame1 = tk.Frame(self.newWindow)
-            frame11 = tk.Frame(self.newWindow)
+            frame2 = tk.Frame(self.newWindow)
+            frame21 = tk.Frame(self.newWindow)
+            frame3 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
+            frame5 = tk.Frame(self.newWindow)
+            frame6 = tk.Frame(self.newWindow, highlightbackground="black", highlightthickness=1)
+            frameDrop = tk.Frame(frame3, highlightbackground="black", highlightthickness=1)
+            frameButt = tk.Frame(frame3)
 
             # Print settings
             tk.Label(frame1,
                      text="Please indicate your desired options for the plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
-            # Print settings
-            tk.Label(frame11,
-                     text="Please indicate your desired functions for the "+self.plugin[self.m].get()+" plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
-
+            
             style = ttk.Style()
             style.configure(
                 "Treeview", background='white', foreground='white',
@@ -532,31 +543,29 @@ class pluginCanvas(tk.Frame):
             )
             style.map('Treeview', background=[('selected', 'grey')])
 
-            frame12 = tk.Frame(self.newWindow)
-            self.create_treeView(frame12, ['Name'])
-            # self.fill_treeview(self.req_settings, self.opt_settings)
-            frame12.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
-    
-            # frame12.grid_rowconfigure(tuple(range(self.r)), weight=1)
-            # frame12.grid_columnconfigure(tuple(range(2)), weight=1)
+            tk.Label(frame21,
+                     text="Add your desired functions in your required order.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
 
-            frame2 = tk.Frame(self.newWindow)
+            self.func2add = tk.StringVar(frameDrop)
+            dropDown = tk.ttk.OptionMenu(frameDrop, self.func2add, func_list[0], *func_list)
+            style.configure("TMenubutton", background="white")
+            dropDown["menu"].configure(bg="white")
+            dropDown.grid(row=0,column=0)
+
+            tk.Button(frameButt, text='Add', command=self.addFunc).grid(row=0,column=0)
+            tk.Button(frameButt, text='Delete', command=self.deleteFunc).grid(row=0,column=1)
+            tk.Button(frameButt, text='Up', command=lambda: self.moveFunc(-1)).grid(row=0,column=2)
+            tk.Button(frameButt, text='Down', command=lambda: self.moveFunc(+1)).grid(row=0,column=3)
+
             self.r = 1
-            self.create_treeView(frame2, ['Name', 'Value'])
+            self.tree = self.create_treeView(frame2, ['Name', 'Value'])
             self.tree.insert(parent='', index='end', iid='init', text='', values=tuple(['__init__', '']), 
-                             tags=('func','init'), open=True)            
-            self.fill_treeview(self.req_settings, self.opt_settings, 'init')
-            frame2.grid(column=1, row=1, sticky="nswe", pady=10, padx=10)
-    
-            frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
-            frame2.grid_columnconfigure(tuple(range(2)), weight=1)
+                             tags=('func','init'))            
+            self.fill_treeview(self.req_settings['__init__'], self.opt_settings['__init__'], 'init')
 
-            frame5 = tk.Frame(self.newWindow)
             tk.Label(frame5,
                      text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
             
-            frame6 = tk.Frame(self.newWindow, highlightbackground="black", highlightthickness=1)
-
             current = np.where(self.m == np.array(self.id_mod))[0][0]
             dataSources = [i for j, i in enumerate(self.module_names) if j not in [1,current]]
 
@@ -574,12 +583,18 @@ class pluginCanvas(tk.Frame):
                 "<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
-            frame11.grid(column=0, row=0, sticky="ew")
-            frame1.grid(column=1, row=0, sticky="ew")
-            frame4.grid(column=1, row=20, sticky="se")
-            frame5.grid(column=1, row=2, sticky="ew")
-            frame6.grid(column=1, row=3)
-
+            frameDrop.grid(column=0, row=0)
+            frameButt.grid(column=1, row=0, sticky="w")
+            frame1.grid(column=0, row=0, sticky="ew")
+            frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+            frame21.grid(column=0, row=2, sticky="ew")
+            frame3.grid(column=0, row=3, pady=10, padx=10)
+            frame4.grid(column=0, row=20, sticky="se")
+            frame5.grid(column=0, row=4, sticky="ew")
+            frame6.grid(column=0, row=5)
+    
+            frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
+            frame2.grid_columnconfigure(tuple(range(2)), weight=1)
             self.newWindow.grid_rowconfigure(1, weight=2)
             self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
 
@@ -608,7 +623,35 @@ class pluginCanvas(tk.Frame):
             func_opt = {p: func_opt[p] for p in func_opt}
             if func_r_opt is not None:
                 func_opt = {**func_r_opt, **func_opt}
-        return func_req, func_opt
+            return func_req, func_opt
+        else:
+            return func_req, func_r_opt
+    
+    def addFunc(self):
+        """ Adds selected function in dropdown menu to the plugin tree """
+        func = self.func2add.get()
+        self.funcs_sort.append(func)
+        self.tree.insert(parent='', index='end', iid=func, text='', values=tuple([func, '']), 
+                            tags=('func',func))
+        # TODO: Remove X and y?
+        self.req_settings[func], self.opt_settings[func] = self.getArgs(getattr(self.model, func))
+        self.fill_treeview(self.req_settings[func], self.opt_settings[func], func)
+
+    def deleteFunc(self):
+        """ Deletes selected function in dropdown menu from the plugin tree """
+        func = self.func2add.get()
+        if func in self.funcs_sort:
+            self.funcs_sort.remove(func)
+            del self.req_settings[func]
+            del self.opt_settings[func]
+            self.tree.delete(func)
+    
+    def moveFunc(self, m):
+        func = self.func2add.get()
+        if func in self.funcs_sort and self.tree.index(func)+m > 0:
+            idx = self.funcs_sort.index(func)
+            self.funcs_sort.insert(idx+m, self.funcs_sort.pop(idx))
+            self.tree.move(func, self.tree.parent(func), self.tree.index(func)+m)
 
     def create_treeView(self, tree_frame, columns_names):
         """ Function to create a new tree view in the given frame
@@ -626,36 +669,37 @@ class pluginCanvas(tk.Frame):
         tree_scrolly = tk.Scrollbar(tree_frame)
         tree_scrolly.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.tree = ttk.Treeview(tree_frame,
+        tree = ttk.Treeview(tree_frame,
                                 yscrollcommand=tree_scrolly.set,
                                 xscrollcommand=tree_scrollx.set)
-        self.tree.pack(fill='both', expand=True)
+        tree.pack(fill='both', expand=True)
 
-        tree_scrollx.config(command=self.tree.xview)
-        tree_scrolly.config(command=self.tree.yview)
+        tree_scrollx.config(command=tree.xview)
+        tree_scrolly.config(command=tree.yview)
 
-        self.tree['columns'] = columns_names
+        tree['columns'] = columns_names
 
         # Format columns
-        self.tree.column("#0", width=40,
+        tree.column("#0", width=40,
                         minwidth=0, stretch=tk.NO)
         for n, cl in enumerate(columns_names):
-            self.tree.column(
+            tree.column(
                 cl, width=int(self.controller.pages_font.measure(str(cl)))+20,
                 minwidth=50, anchor=tk.CENTER)
         # Headings
         for cl in columns_names:
-            self.tree.heading(cl, text=cl, anchor=tk.CENTER)
-        self.tree.tag_configure('req', foreground='black',
+            tree.heading(cl, text=cl, anchor=tk.CENTER)
+        tree.tag_configure('req', foreground='black',
                                 background='#9fc5e8')
-        self.tree.tag_configure('opt', foreground='black',
+        tree.tag_configure('opt', foreground='black',
                                 background='#cfe2f3')
-        self.tree.tag_configure('type', foreground='black',
+        tree.tag_configure('type', foreground='black',
                                 background='#E8E8E8')
-        self.tree.tag_configure('func', foreground='black',
+        tree.tag_configure('func', foreground='black',
                                 background='#DFDFDF')
         # Define double-click on row action
-        self.tree.bind("<Double-1>", self.OnDoubleClick)
+        tree.bind("<Double-1>", self.OnDoubleClick)
+        return tree
 
     def OnDoubleClick(self, event):
         """ Executed when a row of the treeview is double clicked.
@@ -741,7 +785,8 @@ class pluginCanvas(tk.Frame):
             tag = self.tree.item(child)["tags"][0]            
             if tag in ['req', 'opt']:
                 val = self.tree.item(child)["values"]
-                self.settingOptions(tag, val) 
+                self.settingOptions(tag, val)
+        del self.model
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
