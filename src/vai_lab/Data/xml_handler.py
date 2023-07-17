@@ -30,6 +30,7 @@ class XML_handler:
             "pipeline": "declaration",
             "relationships": "relationships",
             "plugin": "plugin",
+            "method": "method",
             "coordinates": "list",
             "Initialiser": "entry_point",
             "inputdata": "data",
@@ -462,21 +463,24 @@ class XML_handler:
                             plugin_elem: ET.Element,
                             options
                             ):
+        opt_elem = plugin_elem.find("./options")
+        if opt_elem is None:
+            opt_elem = ET.SubElement(plugin_elem, "options")
         for key in options.keys():
             if isinstance(options[key], list):
-                new_option = ET.SubElement(plugin_elem, key)
+                new_option = ET.SubElement(opt_elem, key)
                 option_text = ("\n{}".format(
                     "\n".join([*options[key]])))
                 new_option.text = option_text
             elif isinstance(options[key], (int, float, str)):
-                new_option = plugin_elem.find(str("./" + key))
+                new_option = opt_elem.find(str("./" + key))
                 if new_option is None:
-                    new_option = ET.SubElement(plugin_elem, key)
+                    new_option = ET.SubElement(opt_elem, key)
                 text_lead = "\n" if "\n" not in str(options[key]) else ""
                 new_option.text = "{0} {1}".format(
                     text_lead, str(options[key]))
             elif isinstance(options[key], (dict)):
-                self._add_options(plugin_elem, options[key])
+                self._add_options(opt_elem, options[key])
 
     def append_input_data(self,
                           data_name: str,
