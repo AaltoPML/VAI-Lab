@@ -31,6 +31,7 @@ class XML_handler:
             "relationships": "relationships",
             "plugin": "plugin",
             "method": "method",
+            "options": "options",
             "coordinates": "list",
             "Initialiser": "entry_point",
             "inputdata": "data",
@@ -145,18 +146,36 @@ class XML_handler:
         """
         parent["plugin"] = {}
         parent["plugin"]["plugin_name"] = element.attrib["type"]
+        parent["plugin"]["methods"] = {"_order" : []}
         parent["plugin"]["options"] = {}
+        self._parse_tags(element, parent["plugin"])
+
+    def _load_method(self, element: ET.Element, parent: dict) -> None:
+        """Parses tags associated with methods and appends to parent dict
+        :param elem: xml.etree.ElementTree.Element to be parsed
+        :param parent: dict or dict fragment parsed tags will be appened to
+        """
+        for key in element.attrib:
+            parent["methods"]["_order"].append(element.attrib[key])
+            parent["methods"][element.attrib[key]] = {'options': {}}
+            self._parse_tags(element, parent["methods"][element.attrib[key]])
+
+    def _load_options(self, element: ET.Element, parent: dict) -> None:
+        """Parses tags associated with options and appends to parent dict
+        :param elem: xml.etree.ElementTree.Element to be parsed
+        :param parent: dict or dict fragment parsed tags will be appened to
+        """
         for child in element:
             if child.text is not None:
                 val = self._parse_text_to_list(child)
                 val = (val[0] if len(val) == 1 else val)
-                parent["plugin"]["options"][child.tag] = val
+                parent["options"][child.tag] = val
+
             for key in child.attrib:
                 if key == "val":
-                    parent["plugin"]["options"][child.tag] = child.attrib[key]
+                    parent["options"][child.tag] = child.attrib[key]
                 else:
-                    parent["plugin"]["options"][child.tag] = {
-                        key: child.attrib[key]}
+                    parent["options"][child.tag] = {key: child.attrib[key]}
 
     def _load_entry_point(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with initialiser and appends to parent dict
