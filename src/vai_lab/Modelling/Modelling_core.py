@@ -29,7 +29,9 @@ class Modelling(object):
     def launch(self):
         self._plugin.set_data_in(self._data_in)
         self._plugin.configure(self._module_config["plugin"])
-        self._plugin.fit()
+        self._plugin.init()
+        for method in self._module_config["plugin"]["methods"]["_order"]:
+            getattr(self._plugin, "{}".format(method))#(self._module_config["plugin"]["methods"][method]["options"])
         self.output_data = self._data_in.copy()
         # self.output_data = self._plugin._test(self.output_data)
 

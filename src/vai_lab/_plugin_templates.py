@@ -185,7 +185,7 @@ class DataProcessingT(PluginTemplate, ABC):
                 _cleaned[key] = False
         return _cleaned
             
-    def fit(self):
+    def fit(self, **args):
         cleaned_options = self._clean_solver_options()
         try:
             self.model.set_params(**cleaned_options)
@@ -194,22 +194,22 @@ class DataProcessingT(PluginTemplate, ABC):
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
         try:
-            self.model.fit(self.X)
+            self.model.fit(self.X, **args)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
 
-    def transform(self, data: DataInterface) -> DataInterface:
+    def transform(self, data: DataInterface, **args) -> DataInterface:
         try:
-            data.append_data_column("X", pd.DataFrame(self.model.transform(self.X)))
+            data.append_data_column("X", pd.DataFrame(self.model.transform(self.X, **args)))
         except Exception as exc:
             print('The plugin encountered an error when transforming the data with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
         if self.X_tst is not None:
             try:
-                data.append_data_column("X_test", pd.DataFrame(self.model.transform(self.X_tst)))
+                data.append_data_column("X_test", pd.DataFrame(self.model.transform(self.X_tst, **args)))
             except Exception as exc:
                 print('The plugin encountered an error when transforming the data with '
                         +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -220,23 +220,26 @@ class DataProcessingT(PluginTemplate, ABC):
 class ModellingPluginT(PluginTemplate, ABC):
     def __init__(self, plugin_globals: dict) -> None:
         super().__init__(plugin_globals)
-
-    def fit(self):
-        """Sends params to solver, then runs solver"""
+    
+    def init(self):
+        """Sends params to model"""
         try:
             self.model.set_params(**self._config["options"])
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
+
+    def fit(self, **args):
+        """Sends params to fit, then runs fit"""
         try:
-            self.model.fit(self.X, self.Y)
+            self.model.fit(self.X, self.Y, **args)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
 
-    def predict(self, data):
+    def predict(self, data, **args):
         """Uses fitted model to predict output of a given Y
         :param data: array-like or sparse matrix, shape (n_samples, n_features)
                     Samples
@@ -245,23 +248,21 @@ class ModellingPluginT(PluginTemplate, ABC):
                     Returns predicted values.
         """
         try:
-            return self.model.predict(data)
+            return self.model.predict(data, **args)
         except Exception as exc:
             print('The plugin encountered an error when predicting with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
 
-    def score(self, X, Y, sample_weight):
+    def score(self, X, Y, **args):
         """Return the coefficient of determination
         :param  X : array-like of shape (n_samples, n_features)
         :param  Y :  array-like of shape (n_samples,) or (n_samples, n_outputs)
-        :param sample_weight : array-like of shape (n_samples,), default=None
-                    Sample weights.
 
         :returns: score : float of ``self.predict(X)`` wrt. `y`.
         """
         try:
-            return self.model.score(X, Y, sample_weight)
+            return self.model.score(X, Y, **args)
         except Exception as exc:
             print('The plugin encountered an error when calculating the score with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
@@ -271,7 +272,7 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
     def __init__(self, plugin_globals: dict) -> None:
         super().__init__(plugin_globals)
 
-    def predict_proba(self, data):
+    def predict_proba(self, data, **args):
         """Uses fitted model to predict the probability of the output of a given Y
         :param data: array-like or sparse matrix, shape (n_samples, n_features)
                     Samples
@@ -280,7 +281,7 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
                     Returns predicted values.
         """
         try:
-            return self.model.predict_proba(data)
+            return self.model.predict_proba(data, **args)
         except Exception as exc:
             print('The plugin encountered an error when predicting the probability with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
