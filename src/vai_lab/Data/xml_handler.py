@@ -599,12 +599,13 @@ class XML_handler:
             plugin_elem.set('type', plugin_type)
         if plugin_data is not None and len(plugin_data) > 0:
             self.append_input_data('X', plugin_data, xml_parent, False)
-        self._add_options(plugin_elem, plugin_options['__init__'])
+        if '__init__' in plugin_options.keys():
+            self._add_options(plugin_elem, plugin_options['__init__'])
         for f in method_list:
             self.append_method_to_plugin(f,
-                                           plugin_options[f], 
-                                           plugin_elem, 
-                                           overwrite_existing)
+                                        plugin_options[f], 
+                                        plugin_elem, 
+                                        overwrite_existing)
 
     def append_pipeline_module(self,
                                module_type: str,
@@ -635,6 +636,7 @@ class XML_handler:
         if plugin_type != None:
             self.append_plugin_to_module(plugin_type,
                                          plugin_options,
+                                         [],
                                          parents[0],
                                          new_mod,
                                          0
