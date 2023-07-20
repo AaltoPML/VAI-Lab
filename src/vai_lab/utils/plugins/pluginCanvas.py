@@ -715,31 +715,56 @@ class pluginCanvas(tk.Frame):
         if len(tags) > 0 and tags[0] in ['opt', 'req']:
             # get column position info
             x, y, width, height = self.tree.bbox(self.treerow, self.treecol)
-
             # y-axis offset
             pady = height // 2
-            # pady = 0
+            if tags[-1] != 'data':
+                if hasattr(self, 'entry'):
+                    self.entry.destroy()
+                self.entry = tk.Entry(self.tree, justify='center')
+                if int(self.treecol[1:]) > 0:
+                    value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
+                    value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
+                    self.entry.insert(0, value)
+                    # self.entry['selectbackground'] = '#123456'
+                    self.entry['exportselection'] = False
 
-            if hasattr(self, 'entry'):
-                self.entry.destroy()
+                    self.entry.focus_force()
+                    self.entry.bind("<Return>", self.on_return)
+                    self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
 
-            self.entry = tk.Entry(self.tree, justify='center')
-
-            if int(self.treecol[1:]) > 0:
-                value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
-                value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
-                self.entry.insert(0, value)
-                # self.entry['selectbackground'] = '#123456'
-                self.entry['exportselection'] = False
-
-                self.entry.focus_force()
-                self.entry.bind("<Return>", self.on_return)
-                self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
-
-                self.entry.place(x=x,
+                    self.entry.place(x=x,
+                                    y=y + pady,
+                                    anchor=tk.W, width=width)
+            else:
+                value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-2]
+                if tags[1]+str(value) not in self.method_inputData.keys(): 
+                    self.method_inputData[tags[1]+str(value)] = tk.StringVar(self.tree)
+                    self.method_inputData[tags[1]+str(value)].set(self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1])
+                    self.method_inputData[tags[1]+str(value)].trace("w", self.on_changeOption)
+                self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData[tags[1]+str(value)], 
+                                             self.method_inputData[tags[1]+str(value)].get(), *['X','Y','X_tst','Y_tst'])
+                bg = '#9fc5e8' if tags[0] == 'req' else '#cfe2f3'
+                self.dropDown["menu"].configure(bg=bg)
+                style = ttk.Style()
+                style.configure("new.TMenubutton", background=bg, highlightbackground="black", highlightthickness=1)
+                self.dropDown.configure(style="new.TMenubutton")
+                self.dropDown.place(x=x,
                                 y=y + pady,
                                 anchor=tk.W, width=width)
-    
+
+    def on_changeOption(self, *args):
+        """ Executed when the optionmenu is selected and pressed enter.
+        Saves the value"""
+        if hasattr(self, 'dropDown'):
+            value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-2] 
+            tags = self.tree.item(self.treerow)["tags"]
+            val = self.tree.item(self.treerow)['values']
+            new_val = self.method_inputData[tags[1]+str(value)].get()
+            val[int(self.treecol[1:])-1] = new_val
+            self.tree.item(self.treerow, values=tuple([val[0], new_val]))
+            self.dropDown.destroy()
+            self.saved = False      
+
     def on_return(self, event):
         """ Executed when the entry is edited and pressed enter.
         Saves the edited value"""
@@ -761,13 +786,14 @@ class pluginCanvas(tk.Frame):
         :param opt_settings: dict type of plugin optional setting options
         :param parent: string type of parent name
         """
+        self.method_inputData = {}
         self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
             values=tuple(['Required settings', '']), tags=('type',parent), open=True)
         self.r+=1
         for arg, val in req_settings.items():
-            if arg == 'Data':
+            if arg.lower() in ['x', 'y']:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                    values=tuple([arg, 'Choose X or Y']), tags=('req',parent))
+                    values=tuple([arg, np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]]), tags=('req',parent,'data'))
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val]), tags=('req',parent))
@@ -776,8 +802,12 @@ class pluginCanvas(tk.Frame):
             values=tuple(['Optional settings', '']), tags=('type',parent), open=True)
         self.r+=1
         for arg, val in opt_settings.items():
-            self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                                 values=tuple([arg, val]), tags=('opt',parent))
+            if arg.lower() in ['x', 'y']:
+                self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
+                    values=tuple([arg, np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]]), tags=('opt',parent,'data'))
+            else:
+                self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
+                                    values=tuple([arg, val]), tags=('opt',parent))
             self.r+=1
 
     def removewindow(self):
