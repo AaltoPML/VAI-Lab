@@ -5,7 +5,7 @@ from sklearn.preprocessing import KBinsDiscretizer as model
 
 _PLUGIN_READABLE_NAMES = {"KBinsDiscretizer":"default"} # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}            # type:ignore
-_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}             # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                          # type:ignore
 _PLUGIN_OPTIONAL_SETTINGS = {}                          # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                              # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst","Y_tst"}       # type:ignore
