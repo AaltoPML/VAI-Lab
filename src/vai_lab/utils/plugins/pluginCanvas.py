@@ -6,6 +6,7 @@ import os
 import numpy as np
 import pandas as pd
 from inspect import getmembers, isfunction, ismethod, getfullargspec
+from functools import reduce
 
 from typing import Dict, List
 from PIL import Image, ImageTk
@@ -301,7 +302,7 @@ class pluginCanvas(tk.Frame):
             self.id_done.append(self.m)
             self.xml_handler.append_plugin_to_module(
                 self.plugin[self.m].get(),
-                {**self.req_settings, **self.opt_settings},
+                self.merge_dicts(self.req_settings, self.opt_settings),
                 self.meths_sort,
                 self.plugin_inputData.get(),
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
@@ -327,6 +328,21 @@ class pluginCanvas(tk.Frame):
                 np.array(self.module_names)[self.m == np.array(self.id_mod)][0],
                 True)
 
+    def merge_dicts(self, a, b, path = None):
+        "merges b into a"
+        if path is None: path = []
+        for key in b:
+            if key in a:
+                if isinstance(a[key], dict) and isinstance(b[key], dict):
+                    self.merge_dicts(a[key], b[key], path + [str(key)])
+                elif a[key] == b[key]:
+                    pass # same leaf value
+                else:
+                    raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+            else:
+                a[key] = b[key]
+        return a
+    
     def display_buttons(self):
         """ Updates the displayed radiobuttons and the description windows.
         It loads the information corresponding to the selected module (self.m)
@@ -736,13 +752,8 @@ class pluginCanvas(tk.Frame):
                                     y=y + pady,
                                     anchor=tk.W, width=width)
             else:
-                value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-2]
-                if tags[1]+str(value) not in self.method_inputData.keys(): 
-                    self.method_inputData[tags[1]+str(value)] = tk.StringVar(self.tree)
-                    self.method_inputData[tags[1]+str(value)].set(self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1])
-                    self.method_inputData[tags[1]+str(value)].trace("w", self.on_changeOption)
-                self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData[tags[1]+str(value)], 
-                                             self.method_inputData[tags[1]+str(value)].get(), *['X','Y','X_tst','Y_tst'])
+                self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData['_'.join(tags)], 
+                                             self.method_inputData['_'.join(tags)].get(), *['X','Y','X_tst','Y_tst'])
                 bg = '#9fc5e8' if tags[0] == 'req' else '#cfe2f3'
                 self.dropDown["menu"].configure(bg=bg)
                 style = ttk.Style()
@@ -759,7 +770,7 @@ class pluginCanvas(tk.Frame):
             value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-2] 
             tags = self.tree.item(self.treerow)["tags"]
             val = self.tree.item(self.treerow)['values']
-            new_val = self.method_inputData[tags[1]+str(value)].get()
+            new_val = self.method_inputData['_'.join(tags)].get()
             val[int(self.treecol[1:])-1] = new_val
             self.tree.item(self.treerow, values=tuple([val[0], new_val]))
             self.dropDown.destroy()
@@ -792,8 +803,12 @@ class pluginCanvas(tk.Frame):
         self.r+=1
         for arg, val in req_settings.items():
             if arg.lower() in ['x', 'y']:
+                value = np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                    values=tuple([arg, np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]]), tags=('req',parent,'data'))
+                    values=tuple([arg, value]), tags=('req',parent,arg,'data'))
+                self.method_inputData['req_'+parent+'_'+str(arg)] = tk.StringVar(self.tree)
+                self.method_inputData['req_'+parent+'_'+str(arg)].set(value)
+                self.method_inputData['req_'+parent+'_'+str(arg)].trace("w", self.on_changeOption)
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val]), tags=('req',parent))
@@ -803,8 +818,12 @@ class pluginCanvas(tk.Frame):
         self.r+=1
         for arg, val in opt_settings.items():
             if arg.lower() in ['x', 'y']:
+                value = np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                    values=tuple([arg, np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]]), tags=('opt',parent,'data'))
+                    values=tuple([arg, value]), tags=('opt',parent,arg,'data'))
+                self.method_inputData['opt_'+parent+'_'+str(value)] = tk.StringVar(self.tree)
+                self.method_inputData['opt_'+parent+'_'+str(value)].set(arg)
+                self.method_inputData['opt_'+parent+'_'+str(value)].trace("w", self.on_changeOption)
             else:
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val]), tags=('opt',parent))
@@ -812,8 +831,10 @@ class pluginCanvas(tk.Frame):
 
     def removewindow(self):
         """ Stores settings options and closes window """
+        for data in self.method_inputData.keys():
+            tags = data.split('_')
+            self.updateSettings(tags[0], tags[1], tags[2], self.method_inputData[data].get())
         for f in self.tree.get_children():
-            self.req_settings[f].pop("Data", None)
             for c in self.tree.get_children(f):
                 for child in self.tree.get_children(c):
                     tag = self.tree.item(child)["tags"][0]    
@@ -834,16 +855,10 @@ class pluginCanvas(tk.Frame):
 
     def settingOptions(self, tag, f, val):
         """ Identifies how the data should be stored """
-        if val[0] == 'Data':
-            if val[1] == 'Choose X or Y' or len(val[1]) == 0:
-                self.updateSettings(tag, f, val[0], 'X')
-            else:
-                self.updateSettings(tag, f, val[0], val[1])
+        if val[1] == 'default' or len(str(val[1])) == 0:
+            self.updateSettings(tag, f, val[0])
         else:
-            if val[1] == 'default' or len(str(val[1])) == 0:
-                self.updateSettings(tag, f, val[0])
-            else:
-                self.updateSettings(tag, f, val[0], val[1])
+            self.updateSettings(tag, f, val[0], val[1])
 
     def updateSettings(self, tag, f, key, value = None):
         """ Return the selected settings 
@@ -856,15 +871,23 @@ class pluginCanvas(tk.Frame):
 
         value = self.str_to_bool(value)
         if tag == 'req':
-            if value is not None or key == 'Data' or self.req_settings[f][key] != value:
+            if value is not None or self.isClose(self.req_settings[f][key], value):
                 self.req_settings[f][key] = value
             else:
                 self.req_settings[f].pop(key, None)
         elif tag == 'opt':
-            if self.opt_settings[f][key] != value:
+            if self.isClose(self.opt_settings[f][key], value):
                 self.opt_settings[f][key] = value
             else:
-                self.opt_settings[f].pop(key, None)    
+                self.opt_settings[f].pop(key, None)   
+
+    def isClose(self, a, b, rel_tol=1e-09, abs_tol=0.0):
+        a = self.xml_handler._str_to_num(a) if isinstance(a, (str)) else a
+        b = self.xml_handler._str_to_num(b) if isinstance(b, (str)) else b
+        if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            return abs(a-b) > max(rel_tol * max(abs(a), abs(b)), abs_tol)
+        else:
+            return a != b
     
     def str_to_bool(self, s):
         if type(s) is str:
