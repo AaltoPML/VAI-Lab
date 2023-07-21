@@ -5,7 +5,6 @@ from PIL import Image, ImageTk
 from tkinter.filedialog import askopenfilename, askdirectory
 import pandas as pd
 
-from vai_lab.Data.xml_handler import XML_handler
 from vai_lab.utils.plugins.dataLoader import dataLoader
 from vai_lab._import_helper import get_lib_parent_dir, rel_to_abs
 
