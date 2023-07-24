@@ -33,7 +33,6 @@ class pluginCanvas(tk.Frame):
         self.bg = parent['bg']
         self.parent = parent
         self.controller = controller
-        self.s = XML_handler()
         self.m: int
         self.w, self.h = 100, 50
         self.cr = 4
@@ -752,8 +751,10 @@ class pluginCanvas(tk.Frame):
                                     y=y + pady,
                                     anchor=tk.W, width=width)
             else:
+                data_list = [self.method_inputData['_'.join(tags)].get()] + list(
+                    set(['X','Y','X_tst','Y_tst']) - set([self.method_inputData['_'.join(tags)].get()]))
                 self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData['_'.join(tags)], 
-                                             self.method_inputData['_'.join(tags)].get(), *['X','Y','X_tst','Y_tst'])
+                                             self.method_inputData['_'.join(tags)].get(), *data_list)
                 bg = '#9fc5e8' if tags[0] == 'req' else '#cfe2f3'
                 self.dropDown["menu"].configure(bg=bg)
                 style = ttk.Style()
@@ -822,7 +823,7 @@ class pluginCanvas(tk.Frame):
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
                     values=tuple([arg, value]), tags=('opt',parent,arg,'data'))
                 self.method_inputData['opt_'+parent+'_'+str(value)] = tk.StringVar(self.tree)
-                self.method_inputData['opt_'+parent+'_'+str(value)].set(arg)
+                self.method_inputData['opt_'+parent+'_'+str(value)].set(val)
                 self.method_inputData['opt_'+parent+'_'+str(value)].trace("w", self.on_changeOption)
             else:
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
