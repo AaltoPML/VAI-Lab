@@ -93,9 +93,43 @@ class XML_handler:
         """
         if filename != None:
             self.set_filename(filename)
-        self.tree = ET.parse(self.filename)
+        if hasattr(self, 'tree'):
+            prev_tree = self.tree
+            self.tree = self._combine_XML(ET.parse(self.filename).getroot(), prev_tree.getroot())
+        else:
+            self.tree = ET.parse(self.filename)
         self._parse_XML()
-
+    
+    def _combine_XML(self, tree1, tree2):
+        """
+        This function recursively updates either the text or the children
+        of an element if another element is found in `tree1`, or adds it
+        from `tree2` if not found.
+        """
+        # Create a mapping from tag name to element, as that's what we are fltering with
+        mapping = {el.tag: el for el in tree1}
+        for el in tree2:
+            if len(el) == 0:
+                # Not nested
+                try:
+                    # Update the text
+                    mapping[el.tag].text = el.text
+                except KeyError:
+                    # An element with this name is not in the mapping
+                    mapping[el.tag] = el
+                    # Add it
+                    tree1.append(el)
+            else:
+                try:
+                    # Recursively process the element, and update it in the same way
+                    self._combine_XML(mapping[el.tag], el)
+                except KeyError:
+                    # Not in the mapping
+                    mapping[el.tag] = el
+                    # Just add it
+                    tree1.append(el)
+        return ET.ElementTree(tree1)
+        
     def _parse_XML(self) -> None:
         self.root = self.tree.getroot()
         self._parse_tags(self.root, self.loaded_modules)

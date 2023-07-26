@@ -1,4 +1,3 @@
-from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._types import DictT
 
 import os
@@ -763,7 +762,6 @@ class aidCanvas(tk.Frame):
             self.reset()
 
             self.controller.xml_handler.load_XML(filename)
-            # s._print_pretty(s.loaded_modules)
             modules = self.controller.xml_handler.loaded_modules
             modout = modules['Output']
             del modules['Initialiser'], modules['Output'] # They are generated when resetting
