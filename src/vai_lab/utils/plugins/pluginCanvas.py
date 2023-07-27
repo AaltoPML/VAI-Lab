@@ -751,10 +751,11 @@ class pluginCanvas(tk.Frame):
                                     y=y + pady,
                                     anchor=tk.W, width=width)
             else:
-                data_list = [self.method_inputData['_'.join(tags)].get()] + list(
-                    set(['X','Y','X_tst','Y_tst']) - set([self.method_inputData['_'.join(tags)].get()]))
-                self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData['_'.join(tags)], 
-                                             self.method_inputData['_'.join(tags)].get(), *data_list)
+                data_list = self.default_inputData['_'.join(tags[:-1])] + list(
+                    set(['X','Y','X_tst','Y_tst']) - set([self.method_inputData['_'.join(tags[:-1])].get()]) 
+                    - set(self.default_inputData['_'.join(tags[:-1])]))
+                self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData['_'.join(tags[:-1])], 
+                                             self.method_inputData['_'.join(tags[:-1])].get(), *data_list)
                 bg = '#9fc5e8' if tags[0] == 'req' else '#cfe2f3'
                 self.dropDown["menu"].configure(bg=bg)
                 style = ttk.Style()
@@ -771,7 +772,7 @@ class pluginCanvas(tk.Frame):
             value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-2] 
             tags = self.tree.item(self.treerow)["tags"]
             val = self.tree.item(self.treerow)['values']
-            new_val = self.method_inputData['_'.join(tags)].get()
+            new_val = self.method_inputData['_'.join(tags[:-1])].get()
             val[int(self.treecol[1:])-1] = new_val
             self.tree.item(self.treerow, values=tuple([val[0], new_val]))
             self.dropDown.destroy()
@@ -799,6 +800,7 @@ class pluginCanvas(tk.Frame):
         :param parent: string type of parent name
         """
         self.method_inputData = {}
+        self.default_inputData = {}
         self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
             values=tuple(['Required settings', '']), tags=('type',parent), open=True)
         self.r+=1
@@ -810,6 +812,7 @@ class pluginCanvas(tk.Frame):
                 self.method_inputData['req_'+parent+'_'+str(arg)] = tk.StringVar(self.tree)
                 self.method_inputData['req_'+parent+'_'+str(arg)].set(value)
                 self.method_inputData['req_'+parent+'_'+str(arg)].trace("w", self.on_changeOption)
+                self.default_inputData['req_'+parent+'_'+str(arg)] = [value]
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val]), tags=('req',parent))
@@ -819,12 +822,12 @@ class pluginCanvas(tk.Frame):
         self.r+=1
         for arg, val in opt_settings.items():
             if arg.lower() in ['x', 'y']:
-                value = np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                    values=tuple([arg, value]), tags=('opt',parent,arg,'data'))
-                self.method_inputData['opt_'+parent+'_'+str(value)] = tk.StringVar(self.tree)
-                self.method_inputData['opt_'+parent+'_'+str(value)].set(val)
-                self.method_inputData['opt_'+parent+'_'+str(value)].trace("w", self.on_changeOption)
+                    values=tuple([arg, val]), tags=('opt',parent,arg,'data'))
+                self.method_inputData['opt_'+parent+'_'+str(arg)] = tk.StringVar(self.tree)
+                self.method_inputData['opt_'+parent+'_'+str(arg)].set(val)
+                self.method_inputData['opt_'+parent+'_'+str(arg)].trace("w", self.on_changeOption)
+                self.default_inputData['opt_'+parent+'_'+str(arg)] = [str(val)]
             else:
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val]), tags=('opt',parent))
@@ -832,16 +835,27 @@ class pluginCanvas(tk.Frame):
 
     def removewindow(self):
         """ Stores settings options and closes window """
-        for data in self.method_inputData.keys():
-            tags = data.split('_')
-            self.updateSettings(tags[0], tags[1], tags[2], self.method_inputData[data].get())
+        # Updates the tree with any unclosed dropDown menu
+        if hasattr(self, 'dropDown'):
+            for data in self.method_inputData.keys():
+                tags = data.split('_')
+                el = self.get_element_from_tags(*tags)
+                val = self.tree.item(el)['values']
+                new_val = self.method_inputData[data].get()
+                val[int(self.treecol[1:])-1] = new_val
+                self.tree.item(el, values=tuple([val[0], new_val]))
+                self.dropDown.destroy()
+        # Updates the modified options and removes the ones that are not
         for f in self.tree.get_children():
             for c in self.tree.get_children(f):
                 for child in self.tree.get_children(c):
-                    tag = self.tree.item(child)["tags"][0]    
-                    if tag in ['req', 'opt']:
-                        val = self.tree.item(child)["values"]
-                        self.settingOptions(tag, f, val)
+                    tags = self.tree.item(child)["tags"]
+                    if tags[0] in ['req', 'opt']:
+                        if tags[-1] == 'data':
+                            self.updateSettings(tags[0], tags[1], tags[2], self.method_inputData['_'.join(tags[:-1])].get())
+                        else:
+                            val = self.tree.item(child)["values"]
+                            self.settingOptions(tags[0], f, val)
         del self.model
         self.newWindow.destroy()
         self.newWindow = None
@@ -853,6 +867,13 @@ class pluginCanvas(tk.Frame):
         for child in children:
             children += self.get_all_children(child)
         return children
+
+    def get_element_from_tags(self, *args):
+        """ Finds item in tree with specified tags """
+        el = set(self.tree.tag_has(args[0]))
+        for arg in args[1:]:
+            el = set.intersection(el, set(self.tree.tag_has(arg)))
+        return list(el)[0]
 
     def settingOptions(self, tag, f, val):
         """ Identifies how the data should be stored """
@@ -872,17 +893,17 @@ class pluginCanvas(tk.Frame):
 
         value = self.str_to_bool(value)
         if tag == 'req':
-            if value is not None or self.isClose(self.req_settings[f][key], value):
+            if value is not None or self.isNotClose(self.req_settings[f][key], value):
                 self.req_settings[f][key] = value
             else:
                 self.req_settings[f].pop(key, None)
         elif tag == 'opt':
-            if self.isClose(self.opt_settings[f][key], value):
+            if self.isNotClose(self.opt_settings[f][key], value):
                 self.opt_settings[f][key] = value
             else:
-                self.opt_settings[f].pop(key, None)   
+                self.opt_settings[f].pop(key, None)
 
-    def isClose(self, a, b, rel_tol=1e-09, abs_tol=0.0):
+    def isNotClose(self, a, b, rel_tol=1e-09, abs_tol=0.0):
         a = self.xml_handler._str_to_num(a) if isinstance(a, (str)) else a
         b = self.xml_handler._str_to_num(b) if isinstance(b, (str)) else b
         if isinstance(a, (int, float)) and isinstance(b, (int, float)):
