@@ -37,7 +37,7 @@ class Modelling(object):
                 getattr(self._plugin, "{}".format(method))()
 
         self.output_data = self._data_in.copy()
-        # self.output_data = self._plugin._test(self.output_data)
+        self.output_data = self._plugin._test(self.output_data)
 
     def get_result(self):
         return self.output_data
