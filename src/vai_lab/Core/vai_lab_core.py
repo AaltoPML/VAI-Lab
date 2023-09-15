@@ -108,6 +108,7 @@ class Core:
 
             with open(rel_to_abs(specs['plugin']['options']['outpath']), 'wb') as handle:
                 pickle.dump(data_out, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                
     def _parse_loop_condition(self, condition):
         try:
             condition = int(condition)
@@ -169,7 +170,6 @@ class Core:
 
                 if not _tracker['terminate']:
                     self.load_config_file(self._xml_handler.filename)
-                    # pass
                 else:
                     print('Pipeline terminated')
                     exit()

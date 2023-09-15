@@ -516,9 +516,11 @@ class pluginCanvas(tk.Frame):
         model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
         # List intersection
         # TODO: use only methods from the model
-        meth_list = list(set(plugin_meth_list) & set(model_meth_list))[::-1]
+        set_2 = frozenset(model_meth_list)
+        meth_list = [x for x in plugin_meth_list if x in set_2]
         self.meths_sort = []
-
+        self.method_inputData = {}
+        self.default_inputData = {}
         if (len(self.opt_settings['__init__']) != 0) or (len(self.req_settings['__init__']) != 0):
             if hasattr(self, 'newWindow') and (self.newWindow != None):
                 self.newWindow.destroy()
@@ -751,9 +753,9 @@ class pluginCanvas(tk.Frame):
                                     y=y + pady,
                                     anchor=tk.W, width=width)
             else:
-                data_list = self.default_inputData['_'.join(tags[:-1])] + list(
-                    set(['X','Y','X_tst','Y_tst']) - set([self.method_inputData['_'.join(tags[:-1])].get()]) 
-                    - set(self.default_inputData['_'.join(tags[:-1])]))
+                data_list = ['X','Y','X_test','Y_test'] # TODO: Substitute with loaded data
+                data_list.insert(0,self.default_inputData['_'.join(tags[:-1])])
+                data_list = list(np.unique(data_list))
                 self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData['_'.join(tags[:-1])], 
                                              self.method_inputData['_'.join(tags[:-1])].get(), *data_list)
                 bg = '#9fc5e8' if tags[0] == 'req' else '#cfe2f3'
@@ -799,8 +801,6 @@ class pluginCanvas(tk.Frame):
         :param opt_settings: dict type of plugin optional setting options
         :param parent: string type of parent name
         """
-        self.method_inputData = {}
-        self.default_inputData = {}
         self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
             values=tuple(['Required settings', '']), tags=('type',parent), open=True)
         self.r+=1
@@ -812,7 +812,7 @@ class pluginCanvas(tk.Frame):
                 self.method_inputData['req_'+parent+'_'+str(arg)] = tk.StringVar(self.tree)
                 self.method_inputData['req_'+parent+'_'+str(arg)].set(value)
                 self.method_inputData['req_'+parent+'_'+str(arg)].trace("w", self.on_changeOption)
-                self.default_inputData['req_'+parent+'_'+str(arg)] = [value]
+                self.default_inputData['req_'+parent+'_'+str(arg)] = value
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val]), tags=('req',parent))
@@ -827,7 +827,7 @@ class pluginCanvas(tk.Frame):
                 self.method_inputData['opt_'+parent+'_'+str(arg)] = tk.StringVar(self.tree)
                 self.method_inputData['opt_'+parent+'_'+str(arg)].set(val)
                 self.method_inputData['opt_'+parent+'_'+str(arg)].trace("w", self.on_changeOption)
-                self.default_inputData['opt_'+parent+'_'+str(arg)] = [str(val)]
+                self.default_inputData['opt_'+parent+'_'+str(arg)] = str(val)
             else:
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
                                     values=tuple([arg, val]), tags=('opt',parent))
@@ -1060,7 +1060,6 @@ class pluginCanvas(tk.Frame):
 
         self.xml_handler = XML_handler()
         self.xml_handler.load_XML(filename)
-        # self.xml_handler._print_pretty(self.xml_handler.loaded_modules)
         modules = self.xml_handler.loaded_modules
         modout = modules['Output']
         # They are generated when resetting

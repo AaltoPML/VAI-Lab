@@ -18,8 +18,8 @@ class PluginTemplate:
         """
         self.X = None
         self.Y = None
-        self.X_tst = None
-        self.Y_tst = None
+        self.X_test = None
+        self.Y_test = None
 
         self._PLUGIN_READABLE_NAMES: dict
         self._PLUGIN_MODULE_OPTIONS: dict
@@ -78,8 +78,8 @@ class PluginTemplate:
         """Parse incoming data and args, sets them as class variables"""
         self.X = np.array(self._get_data_if_exist(self._data_in, "X"))
         self.Y = np.array(self._get_data_if_exist(self._data_in, "Y")).ravel()
-        self.X_tst = self._get_data_if_exist(self._data_in, "X_test")
-        self.Y_tst = np.array(self._get_data_if_exist(self._data_in, "Y_test")).ravel()
+        self.X_test = self._get_data_if_exist(self._data_in, "X_test")
+        self.Y_test = np.array(self._get_data_if_exist(self._data_in, "Y_test")).ravel()
         self._clean_options()
 
     def _get_data_if_exist(self, data_dict: dict, key: str, default=None):
@@ -122,10 +122,14 @@ class PluginTemplate:
                 options_dict[key] = self.X
             elif val == 'Y':
                 options_dict[key] = self.Y
-            elif val == 'X':
-                options_dict[key] = self.X_ts
-            elif val == 'Y_tst':
-                options_dict[key] = self.Y_tst
+            elif val == 'X_test':
+                options_dict[key] = self.X_test
+            elif val == 'Y_test':
+                options_dict[key] = self.Y_test
+            elif key.lower() == 'x':
+                options_dict[key] = self.X
+            elif key.lower() == 'y':
+                options_dict[key] = self.Y
         return options_dict
 
     def _clean_options(self):
@@ -142,25 +146,25 @@ class PluginTemplate:
         if self._PLUGIN_MODULE_OPTIONS['Type'] == 'classification':
             print('Training accuracy: %.2f%%' %
                   (self.score([self.X, self.Y])*100))  # type: ignore
-            if self.Y_tst is not None:
+            if self.Y_test is not None:
                 print('Test accuracy: %.2f%%' %
-                      (self.score([self.X_tst, self.Y_tst])*100))
-            if self.X_tst is not None:
-                data.append_data_column("Y_pred", self.predict([self.X_tst]))
+                      (self.score([self.X_test, self.Y_test])*100))
+            if self.X_test is not None:
+                data.append_data_column("Y_pred", self.predict([self.X_test]))
             return data
         elif self._PLUGIN_MODULE_OPTIONS['Type'] == 'regression':
             print('Training R2 score: %.3f' %
                   (self.score([self.X, self.Y])))  # type: ignore
-            if self.Y_tst is not None:
+            if self.Y_test is not None:
                 print('Test R2 score: %.3f' %
-                      (self.score([self.X_tst, self.Y_tst])))
-            if self.X_tst is not None:
-                data.append_data_column("Y_pred", self.predict([self.X_tst]))
+                      (self.score([self.X_test, self.Y_test])))
+            if self.X_test is not None:
+                data.append_data_column("Y_pred", self.predict([self.X_test]))
             return data
         elif self._PLUGIN_MODULE_OPTIONS['Type'] == 'clustering':
             print('Clustering completed')
-            if self.X_tst is not None:
-                data.append_data_column("Y_pred", self.predict([self.X_tst]))
+            if self.X_test is not None:
+                data.append_data_column("Y_pred", self.predict([self.X_test]))
             return data
         else:
             return data
@@ -194,10 +198,14 @@ class DataProcessingT(PluginTemplate, ABC):
                 _cleaned[key] = self.X
             elif val == 'Y':
                 _cleaned[key] = self.Y
-            elif val == 'X':
-                _cleaned[key] = self.X_tst
-            elif val == 'Y_tst':
-                _cleaned[key] = self.Y_tst
+            elif val == 'X_test':
+                _cleaned[key] = self.X_test
+            elif val == 'Y_test':
+                _cleaned[key] = self.Y_test
+            elif key.lower() == 'x':
+                _cleaned[key] = self.X
+            elif key.lower() == 'y':
+                _cleaned[key] = self.Y
         return _cleaned
 
     def init(self):
@@ -229,12 +237,12 @@ class DataProcessingT(PluginTemplate, ABC):
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
 
-    def transform(self, data: DataInterface, options={}) -> DataInterface:
+    def transform(self, options={}) -> DataInterface:
         try:
             if type(options) == list:
-                data.append_data_column("X", pd.DataFrame(self.model.transform(*options)))
+                return pd.DataFrame(self.model.transform(*options))
             else:
-                data.append_data_column("X", pd.DataFrame(self.model.transform(**options)))
+                return pd.DataFrame(self.model.transform(**options))
         except Exception as exc:
             print('The plugin encountered an error when transforming the data with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
