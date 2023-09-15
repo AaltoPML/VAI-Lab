@@ -95,11 +95,37 @@ class XML_handler:
             self.set_filename(filename)
         if hasattr(self, 'tree'):
             prev_tree = self.tree
-            self.tree = self._combine_XML(ET.parse(self.filename).getroot(), prev_tree.getroot())
+            self.tree = self._combine_Initialiser(ET.parse(self.filename).getroot(), prev_tree.getroot(), False)
         else:
             self.tree = ET.parse(self.filename)
         self._parse_XML()
     
+    def _combine_Initialiser(self, tree1, tree2, module = True):
+
+        # Create a mapping from tag name to element, as that's what we are fltering with
+        mapping = {el.tag: el for el in tree1}
+        for el in tree2:
+            if el.tag == 'Initialiser' or module:
+                if len(el) == 0:
+                    # Not nested
+                    try:
+                        # Update the text
+                        mapping[el.tag].text = el.text
+                    except KeyError:
+                        # An element with this name is not in the mapping
+                        mapping[el.tag] = el
+                        # Add it
+                        tree1.append(el)
+                else:
+                    try:
+                        # Recursively process the element, and update it in the same way
+                        self._combine_XML(mapping[el.tag], el)
+                    except KeyError:
+                        # Not in the mapping
+                        mapping[el.tag] = el
+                        tree1.append(el)
+        return ET.ElementTree(tree1)
+        
     def _combine_XML(self, tree1, tree2):
         """
         This function recursively updates either the text or the children
@@ -119,14 +145,13 @@ class XML_handler:
                     mapping[el.tag] = el
                     # Add it
                     tree1.append(el)
-            else:
+            else :
                 try:
                     # Recursively process the element, and update it in the same way
                     self._combine_XML(mapping[el.tag], el)
                 except KeyError:
                     # Not in the mapping
                     mapping[el.tag] = el
-                    # Just add it
                     tree1.append(el)
         return ET.ElementTree(tree1)
         
