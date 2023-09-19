@@ -3,11 +3,14 @@ import tkinter as tk
 from typing import Dict
 from tkinter import ttk
 
+from inspect import getmembers, isfunction, ismethod, getfullargspec
+from vai_lab._plugin_helpers import PluginSpecs
+
 import numpy as np
 import pandas as pd
 from PIL import Image, ImageTk
 from vai_lab.Data.xml_handler import XML_handler
-from vai_lab._import_helper import get_lib_parent_dir
+from vai_lab._import_helper import get_lib_parent_dir, import_plugin_absolute
 
 _PLUGIN_READABLE_NAMES = {"progress_tracker":"default",
                             "progressTracker":"alias",
@@ -266,20 +269,44 @@ class progressTracker(tk.Frame):
     def optionsWindow(self):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
-        
-        mod_idx = np.where(self.m == np.array(self.id_mod))[0][0]
-        self.module = np.array(self.module_list)[mod_idx]
-        self.plugin = np.array(self.plugin_list)[mod_idx]
-        module_type = np.array(self.type_list)[mod_idx]
-        
-        self.opt_settings = self.controller._avail_plugins.optional_settings[module_type][self.plugin]
-        self.req_settings = self.controller._avail_plugins.required_settings[module_type][self.plugin]
-        if (len(self.opt_settings) != 0) or (len(self.req_settings) != 0):
-            if hasattr(self, 'newWindow') and (self.newWindow!= None):
+
+        if self.m < len(self.module_list)-1:
+            module = np.array(self.module_list)[self.m-1 == np.array(self.id_mod)][0]
+        else:
+            module = np.array(self.module_list)[1 == np.array(self.id_mod)][0]
+        ps = PluginSpecs()
+        file_name = os.path.split(ps.find_from_class_name(self.plugin_list[self.m])['_PLUGIN_DIR'])[-1]
+        avail_plugins = ps.available_plugins[module][file_name]
+        plugin = import_plugin_absolute(globals(),
+                                        avail_plugins["_PLUGIN_PACKAGE"],
+                                        avail_plugins["_PLUGIN_CLASS_NAME"])
+        # Update required and optional settings for the plugin
+        self.req_settings = {'__init__': ps.required_settings[module][self.plugin_list[self.m]]}
+        self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin_list[self.m]]}
+        self.model = plugin().model
+        meth_req, meth_opt = self.getArgs(self.model.__init__)
+        if meth_req is not None:
+            self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
+        if meth_opt is not None:
+            self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **meth_opt}
+
+        # Find functions defined for the module
+        plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
+        # Find available methods for the model
+        model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
+        # List intersection
+        # TODO: use only methods from the model
+        set_2 = frozenset(model_meth_list)
+        meth_list = [x for x in plugin_meth_list if x in set_2]
+        self.meths_sort = []
+        self.method_inputData = {}
+        self.default_inputData = {}
+        if (len(self.opt_settings['__init__']) != 0) or (len(self.req_settings['__init__']) != 0):
+            if hasattr(self, 'newWindow') and (self.newWindow != None):
                 self.newWindow.destroy()
             self.newWindow = tk.Toplevel(self.controller)
             # Window options
-            self.newWindow.title(self.plugin+' plugin options')
+            self.newWindow.title(self.plugin_list[self.m]+' plugin options')
             script_dir = get_lib_parent_dir()
             self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
                 file=os.path.join(os.path.join(
@@ -288,15 +315,21 @@ class progressTracker(tk.Frame):
                     'resources',
                     'Assets',
                     'VAILabsIcon.ico'))))
-            self.newWindow.geometry("350x400")
-            self.raise_above_all(self.newWindow)
+            # self.newWindow.geometry("350x400")
             frame1 = tk.Frame(self.newWindow)
+            frame2 = tk.Frame(self.newWindow)
+            frame21 = tk.Frame(self.newWindow)
+            frame3 = tk.Frame(self.newWindow)
             frame4 = tk.Frame(self.newWindow)
-            
+            frame5 = tk.Frame(self.newWindow)
+            frame6 = tk.Frame(self.newWindow, highlightbackground="black", highlightthickness=1)
+            frameDrop = tk.Frame(frame3, highlightbackground="black", highlightthickness=1)
+            frameButt = tk.Frame(frame3)
+
             # Print settings
             tk.Label(frame1,
-                  text ="Please indicate your desired options for the "+self.plugin+" plugin.", anchor = tk.N, justify=tk.LEFT).pack(expand = True)
-
+                     text="Please indicate your desired options for the plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+            
             style = ttk.Style()
             style.configure(
                 "Treeview", background='white', foreground='white',
@@ -308,14 +341,37 @@ class progressTracker(tk.Frame):
             )
             style.map('Treeview', background=[('selected', 'grey')])
 
-            frame2 = tk.Frame(self.newWindow, bg='green')
-            self.r = 1
-            self.create_treeView(frame2, ['Name', 'Type', 'Value'])
-            self.fill_treeview(frame2, self.req_settings, self.opt_settings)
-            frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+            tk.Label(frame21,
+                     text="Add your desired methods in your required order.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
 
-            frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
-            frame2.grid_columnconfigure(tuple(range(2)), weight=1)
+            self.meth2add = tk.StringVar(frameDrop)
+            dropDown = tk.ttk.OptionMenu(frameDrop, self.meth2add, meth_list[0], *meth_list)
+            style.configure("TMenubutton", background="white")
+            dropDown["menu"].configure(bg="white")
+            dropDown.grid(row=0,column=0)
+
+            tk.Button(frameButt, text='Add', command=self.addMeth).grid(row=0,column=0)
+            tk.Button(frameButt, text='Delete', command=self.deleteMeth).grid(row=0,column=1)
+            tk.Button(frameButt, text='Up', command=lambda: self.moveMeth(-1)).grid(row=0,column=2)
+            tk.Button(frameButt, text='Down', command=lambda: self.moveMeth(+1)).grid(row=0,column=3)
+
+            self.r = 1
+            self.tree = self.create_treeView(frame2, ['Name', 'Value'])
+            self.tree.insert(parent='', index='end', iid='__init__', text='', values=tuple(['__init__', '']), 
+                             tags=('meth','__init__'))            
+            self.fill_treeview(self.req_settings['__init__'], self.opt_settings['__init__'], '__init__')
+
+            tk.Label(frame5,
+                     text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+            
+            current = np.where(self.m == np.array(self.id_mod))[0][0]
+            dataSources = [i for j, i in enumerate(self.module_names) if j not in [1,current]]
+
+            self.plugin_inputData = tk.StringVar(frame6)
+            dropDown = tk.ttk.OptionMenu(frame6, self.plugin_inputData, dataSources[current-2], *dataSources)
+            style.configure("TMenubutton", background="white")
+            dropDown["menu"].configure(bg="white")
+            dropDown.pack()
 
             self.finishButton = tk.Button(
                 frame4, text='Finish', command=self.removewindow)
@@ -325,14 +381,75 @@ class progressTracker(tk.Frame):
                 "<Return>", lambda event: self.removewindow())
             self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
 
+            frameDrop.grid(column=0, row=0)
+            frameButt.grid(column=1, row=0, sticky="w")
             frame1.grid(column=0, row=0, sticky="ew")
-            frame4.grid(column=0, row=2, sticky="se")
+            frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+            frame21.grid(column=0, row=2, sticky="ew")
+            frame3.grid(column=0, row=3, pady=10, padx=10)
+            frame4.grid(column=0, row=20, sticky="se")
+            frame5.grid(column=0, row=4, sticky="ew")
+            frame6.grid(column=0, row=5)
+    
+            frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
+            frame2.grid_columnconfigure(tuple(range(2)), weight=1)
             self.newWindow.grid_rowconfigure(1, weight=2)
-            self.newWindow.grid_columnconfigure(0, weight=1)
+            self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
 
-    def raise_above_all(self, window):
-        window.attributes('-topmost', 1)
-        window.attributes('-topmost', 0)
+    def getArgs(self, f):
+        """ Get required and optional arguments from method.
+
+        Parameters
+        ----------
+        f : method
+                method to extract arguments from
+
+        :returns out: two dictionaries with arguments and default value (if optional)
+        """
+
+        meth_args = getfullargspec(f).args
+        if meth_args is not None:
+            meth_args.remove('self')
+            meth_def = getfullargspec(f).defaults
+            if meth_def is None:
+                meth_def = []
+            meth_req = {p: '' for p in meth_args[:(len(meth_args)-len(meth_def))]}
+            meth_r_opt = {p: meth_def[i] for i,p in enumerate(meth_args[(len(meth_args)-len(meth_def)):])}
+
+        meth_opt = getfullargspec(f).kwonlydefaults
+        if meth_opt is not None:
+            meth_opt = {p: meth_opt[p] for p in meth_opt}
+            if meth_r_opt is not None:
+                meth_opt = {**meth_r_opt, **meth_opt}
+            return meth_req, meth_opt
+        else:
+            return meth_req, meth_r_opt
+    
+    def addMeth(self):
+        """ Adds selected method in dropdown menu to the plugin tree """
+        meth = self.meth2add.get()
+        self.meths_sort.append(meth)
+        self.tree.insert(parent='', index='end', iid=meth, text='', values=tuple([meth, '']), 
+                            tags=('meth',meth))
+        # TODO: Remove X and y?
+        self.req_settings[meth], self.opt_settings[meth] = self.getArgs(getattr(self.model, meth))
+        self.fill_treeview(self.req_settings[meth], self.opt_settings[meth], meth)
+
+    def deleteMeth(self):
+        """ Deletes selected method in dropdown menu from the plugin tree """
+        meth = self.meth2add.get()
+        if meth in self.meths_sort:
+            self.meths_sort.remove(meth)
+            del self.req_settings[meth]
+            del self.opt_settings[meth]
+            self.tree.delete(meth)
+    
+    def moveMeth(self, m):
+        meth = self.meth2add.get()
+        if meth in self.meths_sort and self.tree.index(meth)+m > 0:
+            idx = self.meths_sort.index(meth)
+            self.meths_sort.insert(idx+m, self.meths_sort.pop(idx))
+            self.tree.move(meth, self.tree.parent(meth), self.tree.index(meth)+m)
 
     def create_treeView(self, tree_frame, columns_names):
         """ Function to create a new tree view in the given frame
@@ -350,71 +467,96 @@ class progressTracker(tk.Frame):
         tree_scrolly = tk.Scrollbar(tree_frame)
         tree_scrolly.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.tree = ttk.Treeview(tree_frame,
+        tree = ttk.Treeview(tree_frame,
                                 yscrollcommand=tree_scrolly.set,
                                 xscrollcommand=tree_scrollx.set)
-        self.tree.pack(fill='both', expand=True)
+        tree.pack(fill='both', expand=True)
 
-        tree_scrollx.config(command=self.tree.xview)
-        tree_scrolly.config(command=self.tree.yview)
+        tree_scrollx.config(command=tree.xview)
+        tree_scrolly.config(command=tree.yview)
 
-        self.tree['columns'] = columns_names
+        tree['columns'] = columns_names
 
         # Format columns
-        self.tree.column("#0", width=20,
+        tree.column("#0", width=40,
                         minwidth=0, stretch=tk.NO)
         for n, cl in enumerate(columns_names):
-            self.tree.column(
+            tree.column(
                 cl, width=int(self.controller.pages_font.measure(str(cl)))+20,
                 minwidth=50, anchor=tk.CENTER)
         # Headings
         for cl in columns_names:
-            self.tree.heading(cl, text=cl, anchor=tk.CENTER)
-        self.tree.tag_configure('req', foreground='black',
+            tree.heading(cl, text=cl, anchor=tk.CENTER)
+        tree.tag_configure('req', foreground='black',
                                 background='#9fc5e8')
-        self.tree.tag_configure('opt', foreground='black',
+        tree.tag_configure('opt', foreground='black',
                                 background='#cfe2f3')
-        self.tree.tag_configure('type', foreground='black',
+        tree.tag_configure('type', foreground='black',
                                 background='#E8E8E8')
-        self.tree.tag_configure('func', foreground='black',
+        tree.tag_configure('meth', foreground='black',
                                 background='#DFDFDF')
         # Define double-click on row action
-        self.tree.bind("<Double-1>", self.OnDoubleClick)
+        tree.bind("<Double-1>", self.OnDoubleClick)
+        return tree
 
     def OnDoubleClick(self, event):
         """ Executed when a row of the treeview is double clicked.
         Opens an entry box to edit a cell. """
 
+        # ii = self.notebook.index(self.notebook.select())
         self.treerow = self.tree.identify_row(event.y)
         self.treecol = self.tree.identify_column(event.x)
         tags = self.tree.item(self.treerow)["tags"]
         if len(tags) > 0 and tags[0] in ['opt', 'req']:
             # get column position info
             x, y, width, height = self.tree.bbox(self.treerow, self.treecol)
-
             # y-axis offset
             pady = height // 2
-            # pady = 0
+            if tags[-1] != 'data':
+                if hasattr(self, 'entry'):
+                    self.entry.destroy()
+                self.entry = tk.Entry(self.tree, justify='center')
+                if int(self.treecol[1:]) > 0:
+                    value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
+                    value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
+                    self.entry.insert(0, value)
+                    # self.entry['selectbackground'] = '#123456'
+                    self.entry['exportselection'] = False
 
-            if hasattr(self, 'entry'):
-                self.entry.destroy()
+                    self.entry.focus_force()
+                    self.entry.bind("<Return>", self.on_return)
+                    self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
 
-            self.entry = tk.Entry(self.tree, justify='center')
-
-            if int(self.treecol[1:]) > 0:
-                value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
-                value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
-                self.entry.insert(0, value)
-                # self.entry['selectbackground'] = '#123456'
-                self.entry['exportselection'] = False
-
-                self.entry.focus_force()
-                self.entry.bind("<Return>", self.on_return)
-                self.entry.bind("<Escape>", lambda *ignore: self.entry.destroy())
-
-                self.entry.place(x=x,
+                    self.entry.place(x=x,
+                                    y=y + pady,
+                                    anchor=tk.W, width=width)
+            else:
+                data_list = ['X','Y','X_test','Y_test'] # TODO: Substitute with loaded data
+                data_list.insert(0,self.default_inputData['_'.join(tags[:-1])])
+                data_list = list(np.unique(data_list))
+                self.dropDown = tk.ttk.OptionMenu(self.tree, self.method_inputData['_'.join(tags[:-1])], 
+                                             self.method_inputData['_'.join(tags[:-1])].get(), *data_list)
+                bg = '#9fc5e8' if tags[0] == 'req' else '#cfe2f3'
+                self.dropDown["menu"].configure(bg=bg)
+                style = ttk.Style()
+                style.configure("new.TMenubutton", background=bg, highlightbackground="black", highlightthickness=1)
+                self.dropDown.configure(style="new.TMenubutton")
+                self.dropDown.place(x=x,
                                 y=y + pady,
                                 anchor=tk.W, width=width)
+
+    def on_changeOption(self, *args):
+        """ Executed when the optionmenu is selected and pressed enter.
+        Saves the value"""
+        if hasattr(self, 'dropDown'):
+            value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-2] 
+            tags = self.tree.item(self.treerow)["tags"]
+            val = self.tree.item(self.treerow)['values']
+            new_val = self.method_inputData['_'.join(tags[:-1])].get()
+            val[int(self.treecol[1:])-1] = new_val
+            self.tree.item(self.treerow, values=tuple([val[0], new_val]))
+            self.dropDown.destroy()
+            self.saved = False     
 
     def on_return(self, event):
         """ Executed when the entry is edited and pressed enter.
@@ -423,73 +565,106 @@ class progressTracker(tk.Frame):
         val = self.tree.item(self.treerow)['values']
         val[int(self.treecol[1:])-1] = self.entry.get()
         if self.entry.get() != '':
-            self.tree.item(self.treerow, values=tuple([val[0], val[1], self.entry.get()]))
-        elif val[2] == '':
-            self.tree.item(self.treerow, values=tuple([val[0], val[1], 'default']))
+            self.tree.item(self.treerow, values=tuple([val[0], self.entry.get()]))
+        elif val[1] == '':
+            self.tree.item(self.treerow, values=tuple([val[0], 'default']))
         else:
             self.tree.item(self.treerow, values=val)
         self.entry.destroy()
         self.saved = False
 
-    def fill_treeview(self, frame, req_settings, opt_settings, parent = ''):
+    def fill_treeview(self, req_settings, opt_settings, parent = ''):
         """ Adds an entry for each setting. Displays it in the specified row.
         :param req_settings: dict type of plugin required setting options
         :param opt_settings: dict type of plugin optional setting options
         :param parent: string type of parent name
         """
         self.tree.insert(parent=parent, index='end', iid=parent+'_req', text='',
-            values=tuple(['Required settings', '', '']), tags=('type',))
+            values=tuple(['Required settings', '']), tags=('type',parent), open=True)
         self.r+=1
         for arg, val in req_settings.items():
-            if arg == 'Data':
+            if arg.lower() in ['x', 'y']:
+                value = np.array(['X', 'Y'])[arg.lower() == np.array(['x', 'y'])][0]
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                    values=tuple([arg, val, 'Choose X or Y']), tags=('req',))
+                    values=tuple([arg, value]), tags=('req',parent,arg,'data'))
+                self.method_inputData['req_'+parent+'_'+str(arg)] = tk.StringVar(self.tree)
+                self.method_inputData['req_'+parent+'_'+str(arg)].set(value)
+                self.method_inputData['req_'+parent+'_'+str(arg)].trace("w", self.on_changeOption)
+                self.default_inputData['req_'+parent+'_'+str(arg)] = value
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                                    values=tuple([arg, val, '']), tags=('req',))
+                                    values=tuple([arg, val]), tags=('req',parent))
             self.r+=1
         self.tree.insert(parent=parent, index='end', iid=parent+'_opt', text='',
-            values=tuple(['Optional settings', '', '']), tags=('type',))
+            values=tuple(['Optional settings', '']), tags=('type',parent), open=True)
         self.r+=1
         for arg, val in opt_settings.items():
-            self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                                 values=tuple([arg, val, 'default']), tags=('opt',))
+            if arg.lower() in ['x', 'y']:
+                self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
+                    values=tuple([arg, val]), tags=('opt',parent,arg,'data'))
+                self.method_inputData['opt_'+parent+'_'+str(arg)] = tk.StringVar(self.tree)
+                self.method_inputData['opt_'+parent+'_'+str(arg)].set(val)
+                self.method_inputData['opt_'+parent+'_'+str(arg)].trace("w", self.on_changeOption)
+                self.default_inputData['opt_'+parent+'_'+str(arg)] = str(val)
+            else:
+                self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
+                                    values=tuple([arg, val]), tags=('opt',parent))
             self.r+=1
+
+    def raise_above_all(self, window):
+        window.attributes('-topmost', 1)
+        window.attributes('-topmost', 0)
 
     def removewindow(self):
         """ Stores settings options and closes window """
-        self.req_settings.pop("Data", None)
-        children = self.get_all_children()
-        for child in children:
-            tag = self.tree.item(child)["tags"][0]            
-            if tag in ['req', 'opt']:
-                val = self.tree.item(child)["values"]
-                self.settingOptions(tag, val) 
+        # Updates the tree with any unclosed dropDown menu
+        if hasattr(self, 'dropDown'):
+            for data in self.method_inputData.keys():
+                tags = data.split('_')
+                el = self.get_element_from_tags(*tags)
+                val = self.tree.item(el)['values']
+                new_val = self.method_inputData[data].get()
+                val[int(self.treecol[1:])-1] = new_val
+                self.tree.item(el, values=tuple([val[0], new_val]))
+                self.dropDown.destroy()
+        # Updates the modified options and removes the ones that are not
+        for f in self.tree.get_children():
+            for c in self.tree.get_children(f):
+                for child in self.tree.get_children(c):
+                    tags = self.tree.item(child)["tags"]
+                    if tags[0] in ['req', 'opt']:
+                        if tags[-1] == 'data':
+                            self.updateSettings(tags[0], tags[1], tags[2], self.method_inputData['_'.join(tags[:-1])].get())
+                        else:
+                            val = self.tree.item(child)["values"]
+                            self.settingOptions(tags[0], f, val)
+        del self.model
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
     
     def get_all_children(self, item=""):
-        """ Iterates over the treeview to get all childer """
+        """ Iterates over the treeview to get all children """
         children = self.tree.get_children(item)
         for child in children:
             children += self.get_all_children(child)
         return children
 
-    def settingOptions(self, tag, val):
+    def get_element_from_tags(self, *args):
+        """ Finds item in tree with specified tags """
+        el = set(self.tree.tag_has(args[0]))
+        for arg in args[1:]:
+            el = set.intersection(el, set(self.tree.tag_has(arg)))
+        return list(el)[0]
+    
+    def settingOptions(self, tag, f, val):
         """ Identifies how the data should be stored """
-        if val[0] == 'Data':
-            if val[2] == 'Choose X or Y' or len(val[2]) == 0:
-                self.updateSettings(tag, val[0], 'X')
-            else:
-                self.updateSettings(tag, val[0], val[2])
+        if val[1] == 'default' or len(str(val[1])) == 0:
+            self.updateSettings(tag, f, val[0])
         else:
-            if val[2] == 'default' or len(str(val[2])) == 0:
-                self.updateSettings(tag, val[0])
-            else:
-                self.updateSettings(tag, val[0], val[2])
+            self.updateSettings(tag, f, val[0], val[1])
 
-    def updateSettings(self, tag, key, value = None):
+    def updateSettings(self, tag, f, key, value = None):
         """ Return the selected settings 
 
         Parameters
@@ -497,17 +672,40 @@ class progressTracker(tk.Frame):
         tag : str
               tag for the settings
         """
-        if tag == 'req':
-            if value is not None or self.req_settings[key] != value:
-                self.req_settings[key] = value
-            else:
-                self.req_settings.pop(key, None)
-        elif tag == 'opt':
-            if value is not None or self.opt_settings[key] != value:
-                self.opt_settings[key] = value
-            else:
-                self.opt_settings.pop(key, None)
 
+        value = self.str_to_bool(value)
+        if tag == 'req':
+            if value is not None or self.isNotClose(self.req_settings[f][key], value):
+                self.req_settings[f][key] = value
+            else:
+                self.req_settings[f].pop(key, None)
+        elif tag == 'opt':
+            if self.isNotClose(self.opt_settings[f][key], value):
+                self.opt_settings[f][key] = value
+            else:
+                self.opt_settings[f].pop(key, None)
+
+    def isNotClose(self, a, b, rel_tol=1e-09, abs_tol=0.0):
+        a = self.xml_handler._str_to_num(a) if isinstance(a, (str)) else a
+        b = self.xml_handler._str_to_num(b) if isinstance(b, (str)) else b
+        if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            return abs(a-b) > max(rel_tol * max(abs(a), abs(b)), abs_tol)
+        else:
+            return a != b
+    
+    def str_to_bool(self, s):
+        if type(s) is str:
+            if s == 'True':
+                return True
+            elif s == 'False':
+                return False
+            elif s == 'None':
+                return None
+            else:
+                return s
+        else:
+            return s
+        
     def on_return_entry(self, r):
         """ Changes focus to the next available entry. When no more, focuses 
         on the finish button.
@@ -790,7 +988,7 @@ class progressTracker(tk.Frame):
 
     def check_quit(self):
         self.controller.destroy()
-        
+
 class CanvasTooltip:
     '''
     It creates a tooltip for a given canvas tag or id as the mouse is
