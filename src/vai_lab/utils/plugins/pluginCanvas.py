@@ -503,68 +503,76 @@ class pluginCanvas(tk.Frame):
         # Update required and optional settings for the plugin
         self.req_settings = {'__init__': ps.required_settings[module][self.plugin[self.m].get()]}
         self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin[self.m].get()]}
-        self.model = plugin().model
-        meth_req, meth_opt = self.getArgs(self.model.__init__)
-        if meth_req is not None:
-            self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
-        if meth_opt is not None:
-            self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **meth_opt}
+        # Tries to upload the settings from the actual library 
+        try:
+            self.model = plugin().model
+            meth_req, meth_opt = self.getArgs(self.model.__init__)
+            if meth_req is not None:
+                self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
+            if meth_opt is not None:
+                self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **meth_opt}
+            # Find functions defined for the module
+            plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
+            # Find available methods for the model
+            model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
+            # List intersection
+            # TODO: use only methods from the model
+            set_2 = frozenset(model_meth_list)
+            meth_list = [x for x in plugin_meth_list if x in set_2]
+        except Exception as exc:
+            meth_list = []
 
-        # Find functions defined for the module
-        plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
-        # Find available methods for the model
-        model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
-        # List intersection
-        # TODO: use only methods from the model
-        set_2 = frozenset(model_meth_list)
-        meth_list = [x for x in plugin_meth_list if x in set_2]
+
         self.meths_sort = []
         self.method_inputData = {}
         self.default_inputData = {}
-        if (len(self.opt_settings['__init__']) != 0) or (len(self.req_settings['__init__']) != 0):
-            if hasattr(self, 'newWindow') and (self.newWindow != None):
-                self.newWindow.destroy()
-            self.newWindow = tk.Toplevel(self.controller)
-            # Window options
-            self.newWindow.title(self.plugin[self.m].get()+' plugin options')
-            script_dir = get_lib_parent_dir()
-            self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
-                file=os.path.join(os.path.join(
-                    script_dir,
-                    'utils',
-                    'resources',
-                    'Assets',
-                    'VAILabsIcon.ico'))))
-            # self.newWindow.geometry("350x400")
+
+        if hasattr(self, 'newWindow') and (self.newWindow != None):
+            self.newWindow.destroy()
+        self.newWindow = tk.Toplevel(self.controller)
+        # Window options
+        self.newWindow.title(self.plugin[self.m].get()+' plugin options')
+        script_dir = get_lib_parent_dir()
+        self.tk.call('wm', 'iconphoto', self.newWindow, ImageTk.PhotoImage(
+            file=os.path.join(os.path.join(
+                script_dir,
+                'utils',
+                'resources',
+                'Assets',
+                'VAILabsIcon.ico'))))
+        # self.newWindow.geometry("350x400")
 
 
-            frame1 = tk.Frame(self.newWindow)
-            frame2 = tk.Frame(self.newWindow)
-            frame21 = tk.Frame(self.newWindow)
-            frame3 = tk.Frame(self.newWindow)
-            frame4 = tk.Frame(self.newWindow)
-            frame5 = tk.Frame(self.newWindow)
-            frame6 = tk.Frame(self.newWindow, highlightbackground="black", highlightthickness=1)
-            frameDrop = tk.Frame(frame3, highlightbackground="black", highlightthickness=1)
-            frameButt = tk.Frame(frame3)
+        frame1 = tk.Frame(self.newWindow)
+        frame2 = tk.Frame(self.newWindow)
+        frame3 = tk.Frame(self.newWindow)
+        frame4 = tk.Frame(self.newWindow)
+        frame5 = tk.Frame(self.newWindow)
+        frame6 = tk.Frame(self.newWindow, highlightbackground="black", highlightthickness=1)
 
-            # Print settings
-            tk.Label(frame1,
-                     text="Please indicate your desired options for the plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
-            
-            style = ttk.Style()
-            style.configure(
-                "Treeview", background='white', foreground='white',
-                rowheight=25, fieldbackground='white',
-                # font=self.controller.pages_font
-                )
-            style.configure("Treeview.Heading", 
+        # Print settings
+        tk.Label(frame1,
+                    text="Please indicate your desired options for the plugin.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+        
+        style = ttk.Style()
+        style.configure(
+            "Treeview", background='white', foreground='white',
+            rowheight=25, fieldbackground='white',
             # font=self.controller.pages_font
             )
-            style.map('Treeview', background=[('selected', 'grey')])
+        style.configure("Treeview.Heading", 
+        # font=self.controller.pages_font
+        )
+        style.map('Treeview', background=[('selected', 'grey')])
+
+        # Show method selection if there is any
+        if len(meth_list) > 0:
+            frame21 = tk.Frame(self.newWindow)
+            frameButt = tk.Frame(frame3)
+            frameDrop = tk.Frame(frame3, highlightbackground="black", highlightthickness=1)
 
             tk.Label(frame21,
-                     text="Add your desired methods in your required order.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+                    text="Add your desired methods in your required order.", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
 
             self.meth2add = tk.StringVar(frameDrop)
             dropDown = tk.ttk.OptionMenu(frameDrop, self.meth2add, meth_list[0], *meth_list)
@@ -577,46 +585,47 @@ class pluginCanvas(tk.Frame):
             tk.Button(frameButt, text='Up', command=lambda: self.moveMeth(-1)).grid(row=0,column=2)
             tk.Button(frameButt, text='Down', command=lambda: self.moveMeth(+1)).grid(row=0,column=3)
 
-            self.r = 1
-            self.tree = self.create_treeView(frame2, ['Name', 'Value'])
-            self.tree.insert(parent='', index='end', iid='__init__', text='', values=tuple(['__init__', '']), 
-                             tags=('meth','__init__'))            
-            self.fill_treeview(self.req_settings['__init__'], self.opt_settings['__init__'], '__init__')
-
-            tk.Label(frame5,
-                     text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
-            
-            current = np.where(self.m == np.array(self.id_mod))[0][0]
-            dataSources = [i for j, i in enumerate(self.module_names) if j not in [1,current]]
-
-            self.plugin_inputData = tk.StringVar(frame6)
-            dropDown = tk.ttk.OptionMenu(frame6, self.plugin_inputData, dataSources[current-2], *dataSources)
-            style.configure("TMenubutton", background="white")
-            dropDown["menu"].configure(bg="white")
-            dropDown.pack()
-
-            self.finishButton = tk.Button(
-                frame4, text='Finish', command=self.removewindow)
-            self.finishButton.grid(
-                column=1, row=0, sticky="es", pady=(0, 10), padx=(0, 10))
-            self.finishButton.bind(
-                "<Return>", lambda event: self.removewindow())
-            self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
-
-            frameDrop.grid(column=0, row=0)
-            frameButt.grid(column=1, row=0, sticky="w")
-            frame1.grid(column=0, row=0, sticky="ew")
-            frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
             frame21.grid(column=0, row=2, sticky="ew")
-            frame3.grid(column=0, row=3, pady=10, padx=10)
-            frame4.grid(column=0, row=20, sticky="se")
-            frame5.grid(column=0, row=4, sticky="ew")
-            frame6.grid(column=0, row=5)
-    
-            frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
-            frame2.grid_columnconfigure(tuple(range(2)), weight=1)
-            self.newWindow.grid_rowconfigure(1, weight=2)
-            self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
+            frameButt.grid(column=1, row=0, sticky="w")
+            frameDrop.grid(column=0, row=0)
+
+        self.r = 1
+        self.tree = self.create_treeView(frame2, ['Name', 'Value'])
+        self.tree.insert(parent='', index='end', iid='__init__', text='', values=tuple(['__init__', '']), 
+                            tags=('meth','__init__'))            
+        self.fill_treeview(self.req_settings['__init__'], self.opt_settings['__init__'], '__init__')
+
+        tk.Label(frame5,
+                    text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
+        
+        current = np.where(self.m == np.array(self.id_mod))[0][0]
+        dataSources = [i for j, i in enumerate(self.module_names) if j not in [1,current]]
+
+        self.plugin_inputData = tk.StringVar(frame6)
+        dropDown = tk.ttk.OptionMenu(frame6, self.plugin_inputData, dataSources[current-2], *dataSources)
+        style.configure("TMenubutton", background="white")
+        dropDown["menu"].configure(bg="white")
+        dropDown.pack()
+
+        self.finishButton = tk.Button(
+            frame4, text='Finish', command=self.removewindow)
+        self.finishButton.grid(
+            column=1, row=0, sticky="es", pady=(0, 10), padx=(0, 10))
+        self.finishButton.bind(
+            "<Return>", lambda event: self.removewindow())
+        self.newWindow.protocol('WM_DELETE_WINDOW', self.removewindow)
+
+        frame1.grid(column=0, row=0, sticky="ew")
+        frame2.grid(column=0, row=1, sticky="nswe", pady=10, padx=10)
+        frame3.grid(column=0, row=3, pady=10, padx=10)
+        frame4.grid(column=0, row=20, sticky="se")
+        frame5.grid(column=0, row=4, sticky="ew")
+        frame6.grid(column=0, row=5)
+
+        frame2.grid_rowconfigure(tuple(range(self.r)), weight=1)
+        frame2.grid_columnconfigure(tuple(range(2)), weight=1)
+        self.newWindow.grid_rowconfigure(1, weight=2)
+        self.newWindow.grid_columnconfigure(tuple(range(2)), weight=1)
 
     def getArgs(self, f):
         """ Get required and optional arguments from method.
@@ -856,7 +865,8 @@ class pluginCanvas(tk.Frame):
                         else:
                             val = self.tree.item(child)["values"]
                             self.settingOptions(tags[0], f, val)
-        del self.model
+        if hasattr(self, 'model'):
+            del self.model
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
