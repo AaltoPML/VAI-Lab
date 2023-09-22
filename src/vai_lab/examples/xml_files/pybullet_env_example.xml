@@ -15,25 +15,27 @@
         <coordinates>
             [(350.0,350.0),2,{0:'d0-u2'}]
         </coordinates>
-        <plugin type="PyBullet">
-            <model_dir>
-                 plane.urdf
-                 ./Environment/resources/models/half_cheetah_with_mass.xml
-            </model_dir>
-            <usegui>
-                 False
-            </usegui>
-            <setGravity>
-                    0.0
-                    0.0
-                    -9.81
-            </setGravity>
-            <timestep>
-                    0.01
-            </timestep>
-            <max_steps>
-                    10
-            </max_steps>            
+        <plugin type="PyBullet">           
+            <options>
+                <model_dir>
+                    plane.urdf
+                    ./Environment/resources/models/half_cheetah_with_mass.xml
+                </model_dir>
+                <usegui>
+                    False
+                </usegui>
+                <setGravity>
+                        0.0
+                        0.0
+                        -9.81
+                </setGravity>
+                <timestep>
+                        0.01
+                </timestep>
+                <max_steps>
+                        10
+                </max_steps>  
+            </options>
         </plugin>
         <inputdata>
             <X module="Initialiser" />
@@ -41,12 +43,14 @@
     </Environment>
     <Output name="Output">
         <plugin type="Output">
-            <outdata>
-                MyEnv
-            </outdata>
-            <outpath>
-                 .\examples\results\output.pkl
-            </outpath>
+            <options>
+                <outdata>
+                    MyEnv
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
         </plugin>
         <relationships>
             <parent name="MyEnv" />
