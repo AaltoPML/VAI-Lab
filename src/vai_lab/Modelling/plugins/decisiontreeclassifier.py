@@ -1,7 +1,7 @@
 from vai_lab._plugin_templates import ModellingPluginTClass
 from sklearn.tree import DecisionTreeClassifier as model
 
-_PLUGIN_READABLE_NAMES = {"DecissionTreeClassifier": "default",
+_PLUGIN_READABLE_NAMES = {"DecisionTreeClassifier": "default",
                           "DTClassifier": "alias"}              # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "classification"}             # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                                  # type:ignore
@@ -20,4 +20,4 @@ class DecisionTreeClassifier(ModellingPluginTClass):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.clf = model()
+        self.model = model()

@@ -5,7 +5,7 @@ from sklearn.preprocessing import Binarizer as model
 
 _PLUGIN_READABLE_NAMES = {"Binarizer":"default","binarizer":"alias"}    # type:ignore  
 _PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}                            # type:ignore
-_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}                             # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                             # type:ignore
 _PLUGIN_OPTIONAL_SETTINGS = {"threshold": "float"}                      # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                                              # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst", 'Y_tst'}                      # type:ignore
@@ -20,4 +20,4 @@ class Binarizer(DataProcessingT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.proc = model()
+        self.model = model()

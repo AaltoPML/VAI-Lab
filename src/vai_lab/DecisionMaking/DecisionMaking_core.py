@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from vai_lab._import_helper import import_plugin_absolute
-class Modelling(object):
+class DecisionMaking(object):
     def __init__(self):
         self.output_data = None
 
@@ -29,15 +29,8 @@ class Modelling(object):
     def launch(self):
         self._plugin.set_data_in(self._data_in)
         self._plugin.configure(self._module_config["plugin"])
-        self._plugin.init()
-        for method in self._module_config["plugin"]["methods"]["_order"]:
-            if "options" in self._module_config["plugin"]["methods"][method].keys():
-                getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))
-            else:
-                getattr(self._plugin, "{}".format(method))()
-
-        self.output_data = self._data_in.copy()
-        self.output_data = self._plugin._test(self.output_data)
+        # self._plugin.optimise()
+        self.output_data = self._plugin.suggest_locations()
 
     def get_result(self):
         return self.output_data

@@ -6,9 +6,8 @@ _PLUGIN_READABLE_NAMES = {"PolynomialFeatures": "default",
                           "polyfeat": "alias",
                           "polynomialfeatures": "alias"}    # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "Other"}                  # type:ignore
-_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}                 # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"degree": "int",
-                             "interaction_only": "bool",
+_PLUGIN_REQUIRED_SETTINGS = {}                              # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {"interaction_only": "bool",
                              "include_bias": "bool"}        # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                                  # type:ignore
 _PLUGIN_OPTIONAL_DATA = {"X", "Y", "X_tst", 'Y_tst'}        # type:ignore
@@ -24,4 +23,4 @@ class PolynomialFeatures(DataProcessingT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.proc = model()
+        self.model = model()

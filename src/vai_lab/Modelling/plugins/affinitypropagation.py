@@ -19,4 +19,4 @@ class AffinityPropagation(ModellingPluginT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.clf = model()
+        self.model = model()
