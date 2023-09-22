@@ -112,14 +112,6 @@ class PluginTemplate:
                         val = int(val)
                     cleaned_opts.append(val)
                 options_dict[key] = cleaned_opts
-<<<<<<< HEAD
-            elif type(val) == str and val.lower() in ('y', 'yes', 't', 'true', 'on'):
-                options_dict[key] = True
-            elif type(val) == str and val.lower() in ('n', 'no', 'f', 'false', 'off'):
-                options_dict[key] = False
-            elif type(val) == str and val.lower() in ('none'):
-                options_dict[key] = None
-=======
             elif type(val) == str and val.lower() in ('yes', 'true'):
                 options_dict[key] = True
             elif type(val) == str and val.lower() in ('no', 'false'):
@@ -138,7 +130,6 @@ class PluginTemplate:
                 options_dict[key] = self.X
             elif key.lower() == 'y':
                 options_dict[key] = self.Y
->>>>>>> css-functionSelection
         return options_dict
 
     def _clean_options(self):
@@ -224,15 +215,6 @@ class DataProcessingT(PluginTemplate, ABC):
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-<<<<<<< HEAD
-            raise
-        try:
-            self.proc.fit(self.X)
-        except Exception as exc:
-            print('The plugin encountered an error when fitting '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-=======
->>>>>>> css-functionSelection
             raise
 
     def fit(self, options={}):
@@ -265,16 +247,6 @@ class DataProcessingT(PluginTemplate, ABC):
             print('The plugin encountered an error when transforming the data with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
-<<<<<<< HEAD
-        if self.X_tst is not None:
-            try:
-                data.append_data_column("X_test", pd.DataFrame(self.proc.transform(self.X_tst)))
-            except Exception as exc:
-                print('The plugin encountered an error when transforming the data with '
-                        +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-                raise
-=======
->>>>>>> css-functionSelection
         return data
 
 
@@ -289,15 +261,6 @@ class ModellingPluginT(PluginTemplate, ABC):
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-<<<<<<< HEAD
-            raise
-        try:
-            self.clf.fit(self.X, self.Y)
-        except Exception as exc:
-            print('The plugin encountered an error when fitting '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-=======
->>>>>>> css-functionSelection
             raise
 
     def fit(self, options={}):
@@ -377,14 +340,10 @@ class DecisionMakingPluginT(PluginTemplate, ABC):
         """Extended from PluginTemplate.configure"""
         super().configure(config)
         try:
-<<<<<<< HEAD
-            self.BO = self.model(**self._clean_options())
-=======
             if type(self._clean_options()) == list:
                 self.BO = self.model(*self._clean_options())
             else:
                 self.BO = self.model(**self._clean_options())
->>>>>>> css-functionSelection
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
