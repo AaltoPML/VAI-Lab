@@ -12,6 +12,9 @@
             <X_test file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_classification/X_tst.csv" />
             <Y_test file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_classification/Y_tst.csv" />
         </inputdata>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
     </Initialiser>
     <DataProcessing name="Data Processing">
         <inputdata>
@@ -41,6 +44,9 @@
                 </options>
             </method>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </DataProcessing>
     <Modelling name="Modelling">
         <inputdata>

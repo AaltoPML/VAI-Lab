@@ -24,6 +24,9 @@
         <coordinates>
             [(350.0, 350.0), 2, {0: 'd0-u2'}]
         </coordinates>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <plugin type="SVR">
             <options>
                 <C>

@@ -51,6 +51,9 @@
                 </options>
             </method>
         </plugin>
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
     </Modelling>
     <DataProcessing name="Data Processing">
         <inputdata>
@@ -63,6 +66,9 @@
         <coordinates>
             [(450, 219), 3, {2: 'r2-l3'}]
         </coordinates>
+        <inputdata>
+            <X module="Modelling" />
+        </inputdata>
         <plugin type="StandardScaler">
             <options />
             <method type="fit">
@@ -92,6 +98,9 @@
         <coordinates>
             [(350.0, 350.0), 4, {3: 'd3-u4'}]
         </coordinates>
+        <inputdata>
+            <X module="Data Processing" />
+        </inputdata>
         <plugin type="RidgeRegression">
             <options />
             <method type="fit">
