@@ -270,9 +270,9 @@ class progressTracker(tk.Frame):
         """ Function to create a new window displaying the available options 
         of the selected plugin."""
 
-        m = self.m -1 if self.m < len(self.module_list)-1 else  1
+        self.mt = self.m -1 if self.m < len(self.module_list)-1 else  1
 
-        module = np.array(self.module_list)[m == np.array(self.id_mod)][0]
+        module = np.array(self.module_list)[self.mt == np.array(self.id_mod)][0]
         ps = PluginSpecs()
         file_name = os.path.split(ps.find_from_class_name(self.plugin_list[self.m])['_PLUGIN_DIR'])[-1]
         avail_plugins = ps.available_plugins[module][file_name]
@@ -358,8 +358,14 @@ class progressTracker(tk.Frame):
             self.tree = self.create_treeView(frame2, ['Name', 'Value'])
             self.tree.insert(parent='', index='end', iid='__init__', text='', values=tuple(['__init__', '']), 
                              tags=('meth','__init__'))     
-            self.fill_treeview(self.update_options(self.req_settings['__init__'], self.p_list[m]['options']), 
-                               self.update_options(self.opt_settings['__init__'], self.p_list[m]['options']), '__init__')
+            self.fill_treeview(self.update_options(self.req_settings['__init__'], self.p_list[self.mt]['options']), 
+                               self.update_options(self.opt_settings['__init__'], self.p_list[self.mt]['options']), 
+                               '__init__')
+            meth2add = self.meth2add.get()
+            for meth in self.p_list[self.mt]['methods']['_order']:
+                self.meth2add.set(meth)
+                self.addMeth()
+            self.meth2add.set(meth2add)
 
             tk.Label(frame5,
                      text="Indicate which plugin's output data should be used as input", anchor=tk.N, justify=tk.LEFT).pack(expand=True)
@@ -450,7 +456,16 @@ class progressTracker(tk.Frame):
                             tags=('meth',meth))
         # TODO: Remove X and y?
         self.req_settings[meth], self.opt_settings[meth] = self.getArgs(getattr(self.model, meth))
-        self.fill_treeview(self.req_settings[meth], self.opt_settings[meth], meth)
+        if meth in self.p_list[self.mt]['methods']['_order']:
+            self.fill_treeview(
+                self.update_options(self.req_settings[meth], self.p_list[self.mt]['methods'][meth]['options']),
+                self.update_options(self.opt_settings[meth], self.p_list[self.mt]['methods'][meth]['options']),
+                meth)
+        else:
+            self.fill_treeview(
+                self.req_settings[meth],
+                self.opt_settings[meth], 
+                meth)
 
     def deleteMeth(self):
         """ Deletes selected method in dropdown menu from the plugin tree """
