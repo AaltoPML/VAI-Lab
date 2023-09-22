@@ -313,7 +313,7 @@ class pluginCanvas(tk.Frame):
             self.id_done.append(self.m)
 
             if os.path.normpath(get_lib_parent_dir()) == os.path.normpath(os.path.commonpath([self.path_out, get_lib_parent_dir()])):
-                rel_path = os.path.join('.', os.path.relpath(self.path_out, 
+                rel_path = os.path.join('.', os.path.relpath(self.path_out,
                                                 os.path.commonpath([self.path_out, get_lib_parent_dir()])))
             else:
                 rel_path = self.path_out
@@ -815,7 +815,7 @@ class pluginCanvas(tk.Frame):
                 self.default_inputData['req_'+parent+'_'+str(arg)] = value
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                                    values=tuple([arg, val]), tags=('req',parent))
+                                    values=tuple([arg, str(val)]), tags=('req',parent))
             self.r+=1
         self.tree.insert(parent=parent, index='end', iid=parent+'_opt', text='',
             values=tuple(['Optional settings', '']), tags=('type',parent), open=True)
@@ -830,7 +830,7 @@ class pluginCanvas(tk.Frame):
                 self.default_inputData['opt_'+parent+'_'+str(arg)] = str(val)
             else:
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                                    values=tuple([arg, val]), tags=('opt',parent))
+                                    values=tuple([arg, str(val)]), tags=('opt',parent))
             self.r+=1
 
     def removewindow(self):
