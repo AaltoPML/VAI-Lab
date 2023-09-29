@@ -7,8 +7,8 @@
             [(350.0, 50), 0, {}]
         </coordinates>
         <inputdata>
-            <X file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_regression/X_tr.csv" />
-            <X_test file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_regression/X_tst.csv" />
+            <X file="./examples/supervised_regression/X_tr.csv" />
+            <X_test file="./examples/supervised_regression/X_tst.csv" />
         </inputdata>
     </Initialiser>
     <DataProcessing name="Data Processing">
