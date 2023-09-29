@@ -6,7 +6,7 @@ from tkinter.filedialog import askopenfilename, askdirectory
 import pandas as pd
 
 from vai_lab.utils.plugins.dataLoader import dataLoader
-from vai_lab._import_helper import get_lib_parent_dir, rel_to_abs
+from vai_lab._import_helper import get_lib_parent_dir, abs_to_rel
 
 _PLUGIN_READABLE_NAMES = {"main": "default",
                           "main page": "alias",
@@ -311,7 +311,7 @@ class MainPage(tk.Frame):
                         # Infers by default, should it be None?
                         data[variable] = pd.read_csv(filename)
                         isVar[i] = 1
-                        self.controller.xml_handler.append_input_data(variable, rel_to_abs(filename))
+                        self.controller.xml_handler.append_input_data(variable, abs_to_rel(filename))
                         if i == 0:
                             self.controller.Data.set(True)
                         if any(isVar[1::2]) and (
@@ -337,7 +337,7 @@ class MainPage(tk.Frame):
                               title='Select a folder',
                               mustexist=True)
         if folder is not None and len(folder) > 0:
-            self.controller.xml_handler.append_input_data('X', rel_to_abs(folder))
+            self.controller.xml_handler.append_input_data('X', abs_to_rel(folder))
         
     def upload_data_folder(self):
         """ Stores the directory containing the data that will be later loaded 
