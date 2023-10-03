@@ -9,7 +9,7 @@ if not __package__:
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
-from vai_lab._import_helper import get_lib_parent_dir
+from vai_lab._import_helper import get_lib_parent_dir, rel_to_abs
 
 
 class XML_handler:
@@ -567,7 +567,7 @@ class XML_handler:
         if save_dir_as_relative:
             data_dir = data_dir.replace(self.lib_base_path, "./")
         data_dir = data_dir.replace("\\", "/")
-        if path.exists(path.dirname(data_dir)):
+        if path.exists(path.dirname(rel_to_abs(data_dir))):
             plugin_elem.set('file', data_dir)
         else:
             plugin_elem.set('module', data_dir)
