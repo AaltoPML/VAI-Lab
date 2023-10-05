@@ -200,9 +200,10 @@ class XML_handler:
         """
         for child in element:
             if child.text is not None:
-                val = self._parse_text_to_list(child)
-                val = (val[0] if len(val) == 1 else val)
-                parent["options"][child.tag] = val
+                try:
+                    parent["options"][child.tag] = literal_eval(child.text.strip())
+                except Exception as exc:
+                    parent["options"][child.tag] = child.text.strip()
 
             for key in child.attrib:
                 if key == "val":
@@ -718,10 +719,15 @@ class XML_handler:
 
         xml_parent_element.append(new_loop)
 
-    def _get_data_structure(self, module) -> Dict[str, Any]:
-        data_struct = self._find_dict_with_key_val_pair(
-            self.loaded_modules[module],
-            "class", "data")
+    def _get_data_structure(self, modules, module) -> Dict[str, Any]:
+        try:
+            data_struct = self._find_dict_with_key_val_pair(
+                modules[module],
+                "class", "data")
+        except Exception as exc:
+            data_struct = self._find_dict_with_key_val_pair(
+                modules,
+                "class", "data")
 
         assert len(data_struct) < 2, \
             "Multiple data with same ID, please check XML"
@@ -734,8 +740,10 @@ class XML_handler:
         return out
 
     #@property
-    def data_to_load(self, module='Initialiser') -> Dict[str, str]:
-        return self._get_data_structure(module)["to_load"]
+    def data_to_load(self, modules=False, module='Initialiser') -> Dict[str, str]:
+        if not modules:
+            modules = self.loaded_modules
+        return self._get_data_structure(modules, module)["to_load"]
 
 
 # Use case examples:
