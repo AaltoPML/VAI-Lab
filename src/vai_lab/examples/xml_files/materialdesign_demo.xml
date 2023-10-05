@@ -1,0 +1,59 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Data Processing" />
+        </relationships>
+        <coordinates>
+            [(350.0,50),0,{}]
+        </coordinates>
+    </Initialiser>
+    <DataProcessing name="Data Processing">
+        <plugin type="" />
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Data Processing-1" />
+        </relationships>
+        <coordinates>
+            [(249, 180), 2, {0: 'd0-u2'}]
+        </coordinates>
+    </DataProcessing>
+    <DataProcessing name="Data Processing-1">
+        <plugin type="" />
+        <relationships>
+            <parent name="Data Processing" />
+            <child name="Decision Making" />
+        </relationships>
+        <coordinates>
+            [(447, 179), 3, {2: 'r2-l3'}]
+        </coordinates>
+    </DataProcessing>
+    <DecisionMaking name="Decision Making">
+        <plugin type="" />
+        <relationships>
+            <parent name="Data Processing-1" />
+            <child name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(350.0, 350.0), 4, {3: 'd3-u4'}]
+        </coordinates>
+    </DecisionMaking>
+    <UserInteraction name="User Interaction">
+        <plugin type="" />
+        <relationships>
+            <parent name="Decision Making" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(350, 501), 5, {4: 'd4-u5'}]
+        </coordinates>
+    </UserInteraction>
+    <Output name="Output">
+        <plugin type="" />
+        <relationships>
+            <parent name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(350.0, 650), 1, {5: 'd5-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>
