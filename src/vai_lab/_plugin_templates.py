@@ -104,32 +104,33 @@ class PluginTemplate:
 
     def _parse_options_dict(self,options_dict:Dict):
         for key, val in options_dict.items():
-            if type(val) == str and val.replace('.', '').replace(',', '').isnumeric():
-                cleaned_opts = []
-                for el in val.split(","):
-                    val = float(el)
-                    if val.is_integer():
-                        val = int(val)
-                    cleaned_opts.append(val)
-                options_dict[key] = cleaned_opts
-            elif type(val) == str and val.lower() in ('yes', 'true'):
-                options_dict[key] = True
-            elif type(val) == str and val.lower() in ('no', 'false'):
-                options_dict[key] = False
-            elif type(val) == str and val.lower() in ('none'):
-                options_dict[key] = None
-            elif val == 'X':
-                options_dict[key] = self.X
-            elif val == 'Y':
-                options_dict[key] = self.Y
-            elif val == 'X_test':
-                options_dict[key] = self.X_test
-            elif val == 'Y_test':
-                options_dict[key] = self.Y_test
-            elif key.lower() == 'x':
-                options_dict[key] = self.X
-            elif key.lower() == 'y':
-                options_dict[key] = self.Y
+            if type(val) == str:
+                if val.replace('.', '').replace(',', '').isnumeric():
+                    cleaned_opts = []
+                    for el in val.split(","):
+                        val = float(el)
+                        if val.is_integer():
+                            val = int(val)
+                        cleaned_opts.append(val)
+                    options_dict[key] = cleaned_opts
+                elif val.lower() in ('yes', 'true'):
+                    options_dict[key] = True
+                elif val.lower() in ('no', 'false'):
+                    options_dict[key] = False
+                elif val.lower() in ('none'):
+                    options_dict[key] = None
+                elif val == 'X':
+                    options_dict[key] = self.X
+                elif val == 'Y':
+                    options_dict[key] = self.Y
+                elif val == 'X_test':
+                    options_dict[key] = self.X_test
+                elif val == 'Y_test':
+                    options_dict[key] = self.Y_test
+                elif key.lower() == 'x':
+                    options_dict[key] = self.X
+                elif key.lower() == 'y':
+                    options_dict[key] = self.Y
         return options_dict
 
     def _clean_options(self):

@@ -4,17 +4,13 @@
             <child name="Modelling" />
         </relationships>
         <coordinates>
-<<<<<<< HEAD
-            [(350.0,50),0,{}]
-=======
             [(350.0, 50), 0, {}]
->>>>>>> css-functionSelection
         </coordinates>
         <inputdata>
-            <X file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_regression/X_tr.csv" />
-            <Y file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_regression/Y_tr.csv" />
-            <X_test file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_regression/X_tst.csv" />
-            <Y_test file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/supervised_regression/Y_tst.csv" />
+            <X file="./examples/supervised_regression/X_tr.csv" />
+            <Y file="./examples/supervised_regression/Y_tr.csv" />
+            <X_test file="./examples/supervised_regression/X_tst.csv" />
+            <Y_test file="./examples/supervised_regression/Y_tst.csv" />
         </inputdata>
     </Initialiser>
     <Modelling name="Modelling">
@@ -26,11 +22,7 @@
             <child name="Data Processing" />
         </relationships>
         <coordinates>
-<<<<<<< HEAD
-            [(350,180),2,{0:'d0-u2'}]
-=======
             [(178, 218), 2, {0: 'd0-u2'}]
->>>>>>> css-functionSelection
         </coordinates>
         <plugin type="RidgeRegression">
             <options>
@@ -72,21 +64,12 @@
             <child name="Modelling-1" />
         </relationships>
         <coordinates>
-<<<<<<< HEAD
-            [(350.0,350.0),3,{2:'d2-u3'}]
-=======
             [(450, 219), 3, {2: 'r2-l3'}]
->>>>>>> css-functionSelection
         </coordinates>
         <inputdata>
             <X module="Modelling" />
         </inputdata>
         <plugin type="StandardScaler">
-<<<<<<< HEAD
-            <Data>
-                 X
-            </Data>
-=======
             <options />
             <method type="fit">
                 <options>
@@ -102,7 +85,6 @@
                     </X>
                 </options>
             </method>
->>>>>>> css-functionSelection
         </plugin>
     </DataProcessing>
     <Modelling name="Modelling-1">

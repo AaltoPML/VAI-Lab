@@ -46,10 +46,10 @@
             <method type="score">
                 <options>
                     <X>
-                         X
+                         X_test
                     </X>
                     <y>
-                         Y
+                         Y_test
                     </y>
                 </options>
             </method>

@@ -7,7 +7,7 @@
             [(350.0, 50), 0, {}]
         </coordinates>
         <inputdata>
-            <X file="C:/Users/sevisal/Documents/GitHub/ai-assisted-design-framework/src/vai_lab/examples/state-action/X_data.csv" />
+            <X file="./examples/state-action/X_data.csv" />
         </inputdata>
     </Initialiser>
     <UserInteraction name="User Interaction">

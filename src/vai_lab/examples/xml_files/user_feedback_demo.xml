@@ -1,15 +1,15 @@
 <pipeline>
     <Initialiser name="Initialiser">
-        <inputdata>
-            <X folder="./examples/image_classification/training_images/" />
-            <Y file="./examples/image_classification/Y_data.csv" />
-        </inputdata>
         <relationships>
             <child name="User Interaction" />
         </relationships>
         <coordinates>
             [(350.0, 50), 0, {}]
         </coordinates>
+        <inputdata>
+            <X folder="./examples/image_classification/training_images/" />
+            <Y file="./examples/image_classification/Y_data.csv" />
+        </inputdata>
     </Initialiser>
     <UserInteraction name="User Interaction">
         <inputdata>
@@ -22,7 +22,8 @@
         <coordinates>
             [(350.0, 350.0), 2, {0: 'd0-u2'}]
         </coordinates>
-        <plugin type="ManualInput" />
+        <plugin type="ManualInput">
+        </plugin>
     </UserInteraction>
     <Output name="Output">
         <inputdata>
@@ -35,12 +36,14 @@
             [(350.0, 650), 1, {2: 'd2-u1'}]
         </coordinates>
         <plugin type="Output">
-            <outdata>
-                User Interaction
-            </outdata>
-            <outpath>
-                 .\examples\results\output.pkl
-            </outpath>
+            <options>
+                <outdata>
+                    User Interaction
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
         </plugin>
     </Output>
 </pipeline>
