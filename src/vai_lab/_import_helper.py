@@ -44,3 +44,24 @@ def rel_to_abs(filename: str) -> str:
         elif filename[0] == "/" or (filename[0].isalpha() and filename[0].isupper()):
             filename = filename
         return filename
+
+def abs_to_rel(filename: str) -> str:
+        """Checks if path is relative or absolute
+        If absolute, converts path to relative if possible
+        If relative, returns itself
+        """
+        if filename[0] == ".":
+            #Relative path
+            return filename
+        elif filename[0].isalpha() and filename[0] != get_lib_parent_dir()[0]:
+            #Different drive -> Absolute path
+            return filename
+        else:
+            #Same drive not relative
+            _folder = path.relpath(filename, get_lib_parent_dir())
+            if _folder[:2] == '..':
+                # Absolute path
+                return filename
+            else:
+                # Relative path
+                return path.join('.',_folder)

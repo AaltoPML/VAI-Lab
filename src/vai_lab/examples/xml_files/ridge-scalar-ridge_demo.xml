@@ -4,7 +4,7 @@
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(350.0,50),0,{}]
+            [(350.0, 50), 0, {}]
         </coordinates>
         <inputdata>
             <X file="./examples/supervised_regression/X_tr.csv" />
@@ -14,71 +14,137 @@
         </inputdata>
     </Initialiser>
     <Modelling name="Modelling">
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <relationships>
             <parent name="Initialiser" />
             <child name="Data Processing" />
         </relationships>
         <coordinates>
-            [(350,180),2,{0:'d0-u2'}]
+            [(178, 218), 2, {0: 'd0-u2'}]
         </coordinates>
         <plugin type="RidgeRegression">
-            <alpha>
-                 0.01
-            </alpha>
+            <options>
+                <alpha>
+                     1e-3
+                </alpha>
+            </options>
+            <method type="fit">
+                <options>
+                    <X>
+                         X
+                    </X>
+                    <y>
+                         Y
+                    </y>
+                </options>
+            </method>
+            <method type="score">
+                <options>
+                    <X>
+                         X
+                    </X>
+                    <y>
+                         Y
+                    </y>
+                </options>
+            </method>
         </plugin>
         <inputdata>
             <X module="Initialiser" />
         </inputdata>
     </Modelling>
     <DataProcessing name="Data Processing">
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <relationships>
             <parent name="Modelling" />
             <child name="Modelling-1" />
         </relationships>
         <coordinates>
-            [(350.0,350.0),3,{2:'d2-u3'}]
+            [(450, 219), 3, {2: 'r2-l3'}]
         </coordinates>
         <inputdata>
             <X module="Modelling" />
         </inputdata>
         <plugin type="StandardScaler">
-            <Data>
-                 X
-            </Data>
+            <options />
+            <method type="fit">
+                <options>
+                    <X>
+                         X
+                    </X>
+                </options>
+            </method>
+            <method type="transform">
+                <options>
+                    <X>
+                         X
+                    </X>
+                </options>
+            </method>
         </plugin>
     </DataProcessing>
     <Modelling name="Modelling-1">
+        <inputdata>
+            <X module="Data Processing" />
+        </inputdata>
         <relationships>
             <parent name="Data Processing" />
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(350,408),4,{3:'d3-u4'}]
+            [(350.0, 350.0), 4, {3: 'd3-u4'}]
         </coordinates>
         <inputdata>
             <X module="Data Processing" />
         </inputdata>
         <plugin type="RidgeRegression">
-            <alpha>
-                 0.01
-            </alpha>
+            <options />
+            <method type="fit">
+                <options>
+                    <X>
+                         X
+                    </X>
+                    <y>
+                         Y
+                    </y>
+                </options>
+            </method>
+            <method type="score">
+                <options>
+                    <X>
+                         X
+                    </X>
+                    <y>
+                         Y
+                    </y>
+                </options>
+            </method>
         </plugin>
     </Modelling>
     <Output name="Output">
+        <inputdata>
+            <X module="Modelling-1" />
+        </inputdata>
         <relationships>
             <parent name="Modelling-1" />
         </relationships>
         <coordinates>
-            [(350.0,650),1,{4:'d4-u1'}]
+            [(350.0, 650), 1, {4: 'd4-u1'}]
         </coordinates>
         <plugin type="Output">
-            <outdata>
-                Modelling
-                Modelling-1
-            </outdata>
-            <outpath>
-                 .\examples\results\output.pkl
-            </outpath>
+            <options>
+                <outdata>
+                    Modelling
+                    Modelling-1
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
         </plugin>
     </Output>
 </pipeline>

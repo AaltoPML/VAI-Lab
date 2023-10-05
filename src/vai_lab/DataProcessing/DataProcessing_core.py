@@ -31,8 +31,14 @@ class DataProcessing(object):
     def launch(self) -> None:
         self._plugin.set_data_in(self._data_in)
         self._plugin.configure(self._module_config["plugin"])
-        self._plugin.fit()
-        self.output_data = self._plugin.transform(self._data_in)
+        self._plugin.init()
+        for method in self._module_config["plugin"]["methods"]["_order"]:
+            if "options" in self._module_config["plugin"]["methods"][method].keys():
+                getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))
+            else:
+                getattr(self._plugin, "{}".format(method))()
+
+        self.output_data = self._data_in.copy()
 
     def get_result(self) -> DataInterface:
         return self.output_data

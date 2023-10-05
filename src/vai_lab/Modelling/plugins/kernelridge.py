@@ -5,8 +5,7 @@ _PLUGIN_READABLE_NAMES = {"KernelRidge": "default",
                           "KR": "alias"}                # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "regression"}         # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                          # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"alpha": "float",
-                             "kernel": "str",
+_PLUGIN_OPTIONAL_SETTINGS = {"kernel": "str",
                              "gamma": "float",
                              "degree": "int"}           # type:ignore
 _PLUGIN_REQUIRED_DATA = {"X", "Y"}                      # type:ignore
@@ -23,4 +22,4 @@ class KernelRidge(ModellingPluginT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.clf = model()
+        self.model = model()

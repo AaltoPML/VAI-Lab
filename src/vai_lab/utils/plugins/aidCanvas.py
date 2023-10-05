@@ -1,4 +1,3 @@
-from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._types import DictT
 
 import os
@@ -762,10 +761,8 @@ class aidCanvas(tk.Frame):
         if filename is not None and len(filename) > 0:
             self.reset()
 
-            s = XML_handler()
-            s.load_XML(filename)
-            # s._print_pretty(s.loaded_modules)
-            modules = s.loaded_modules
+            self.controller.xml_handler.load_XML(filename)
+            modules = self.controller.xml_handler.loaded_modules
             modout = modules['Output']
             del modules['Initialiser'], modules['Output'] # They are generated when resetting
             disp_mod = ['Initialiser', 'Output']
@@ -897,13 +894,14 @@ class aidCanvas(tk.Frame):
             if hasattr(self, 'entry2'):
                 self.entry2.destroy()
 
+            self.controller.xml_handler.new_config_file()
+
             self.canvas_startxy = []
             self.out_data = pd.DataFrame()
             self.connections = {}
             self.modules = 0
             self.module_list = []
             self.module_names = []
-
             self.add_module('Initialiser', self.width/2, self.h, ini=True)
             self.add_module('Output', self.width/2,
                             self.height - self.h, out=True)

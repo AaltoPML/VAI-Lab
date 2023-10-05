@@ -5,10 +5,10 @@ from sklearn.preprocessing import KBinsDiscretizer as model
 
 _PLUGIN_READABLE_NAMES = {"KBinsDiscretizer":"default"} # type:ignore
 _PLUGIN_MODULE_OPTIONS = {"Type": "encoder"}            # type:ignore
-_PLUGIN_REQUIRED_SETTINGS = {"Data": "str"}             # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"n_bins": "int"}           # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {}                          # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                          # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                              # type:ignore
-_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst","Y_tst"}      # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X","Y","X_tst","Y_tst"}       # type:ignore
 
 class KBinsDiscretizer(DataProcessingT):
     """
@@ -20,4 +20,4 @@ class KBinsDiscretizer(DataProcessingT):
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.proc = model()
+        self.model = model()

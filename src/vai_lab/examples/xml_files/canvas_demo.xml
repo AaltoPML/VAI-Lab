@@ -1,44 +1,49 @@
 <pipeline>
     <Initialiser name="Initialiser">
+        <relationships>
+            <child name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(350.0, 50), 0, {}]
+        </coordinates>
         <inputdata>
             <X file="./examples/state-action/X_data.csv" />
         </inputdata>
-        <relationships>
-            <child name="My First UserFeedback Module" />
-        </relationships>
-        <coordinates>
-            [(350.0,50),0,{}]
-        </coordinates>
     </Initialiser>
-    <UserInteraction name="My First UserFeedback Module">
-        <plugin type="CanvasInput">
-            <some_param val="2" />
-        </plugin>
-        <relationships>
-            <parent name="Initialiser" />
-            <child name="Output" />
-        </relationships>        
-        <coordinates>
-            [(350.0,350.0),2,{0:'d0-u2'}]
-        </coordinates>        
+    <UserInteraction name="User Interaction">
         <inputdata>
             <X module="Initialiser" />
         </inputdata>
-    </UserInteraction>
-    <Output>
-        <plugin type="Output">
-            <outdata>
-                My First UserFeedback Module
-            </outdata>
-            <outpath>
-                 .\examples\results\output.pkl
-            </outpath>
-        </plugin>
         <relationships>
-            <parent name="My First UserFeedback Module" />
+            <parent name="Initialiser" />
+            <child name="Output" />
         </relationships>
         <coordinates>
-            [(350.0,650),1,{2:'d2-u1'}]
+            [(350.0, 350.0), 2, {0: 'd0-u2'}]
         </coordinates>
+        <plugin type="CanvasInput">
+            <options />
+        </plugin>
+    </UserInteraction>
+    <Output name="Output">
+        <inputdata>
+            <X module="User Interaction" />
+        </inputdata>
+        <relationships>
+            <parent name="User Interaction" />
+        </relationships>
+        <coordinates>
+            [(350.0, 650), 1, {2: 'd2-u1'}]
+        </coordinates>
+        <plugin type="Output">
+            <options>
+                <outdata>
+                    User Interaction
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
+        </plugin>
     </Output>
 </pipeline>

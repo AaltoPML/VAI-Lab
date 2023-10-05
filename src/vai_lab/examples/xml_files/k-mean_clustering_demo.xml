@@ -4,7 +4,7 @@
             <child name="Data Processing" />
         </relationships>
         <coordinates>
-            [(350.0,50),0,{}]
+            [(350.0, 50), 0, {}]
         </coordinates>
         <inputdata>
             <X file="./examples/supervised_regression/X_tr.csv" />
@@ -12,49 +12,86 @@
         </inputdata>
     </Initialiser>
     <DataProcessing name="Data Processing">
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <relationships>
             <parent name="Initialiser" />
             <child name="Modelling" />
         </relationships>
         <coordinates>
-            [(350,200),2,{0:'d0-u2'}]
+            [(227, 254), 2, {0: 'd0-u2'}]
         </coordinates>
-        <inputdata>
-            <X module="Initialiser" />
-        </inputdata>
         <plugin type="MinMaxScaler">
-            <Data>
-                 X
-            </Data>
+            <options>
+                <feature_range>
+                     (0, 1)
+                </feature_range>
+            </options>
+            <method type="fit">
+                <options>
+                    <X>
+                         X
+                    </X>
+                </options>
+            </method>
         </plugin>
     </DataProcessing>
     <Modelling name="Modelling">
+        <inputdata>
+            <X module="Data Processing" />
+        </inputdata>
         <relationships>
             <parent name="Data Processing" />
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(350.0,350.0),3,{2:'d2-u3'}]
+            [(474, 412), 3, {2: 'd2-u3'}]
         </coordinates>
-        <inputdata>
-            <X module="Data Processing" />
-        </inputdata>
-        <plugin type="KMeans" />
+        <plugin type="KMeans">
+            <options>
+                <n_clusters>
+                     4
+                </n_clusters>
+                <max_iter>
+                     500
+                </max_iter>
+            </options>
+            <method type="fit">
+                <options>
+                    <X>
+                         X
+                    </X>
+                </options>
+            </method>
+            <method type="predict">
+                <options>
+                    <X>
+                         X
+                    </X>
+                </options>
+            </method>
+        </plugin>
     </Modelling>
     <Output name="Output">
+        <inputdata>
+            <X module="Modelling" />
+        </inputdata>
         <relationships>
             <parent name="Modelling" />
         </relationships>
         <coordinates>
-            [(350.0,650),1,{3:'d3-u1'}]
+            [(350.0, 650), 1, {3: 'd3-u1'}]
         </coordinates>
         <plugin type="Output">
-            <outdata>
-                Modelling
-            </outdata>
-            <outpath>
-                 .\examples\results\output.pkl
-            </outpath>
+            <options>
+                <outdata>
+                    Modelling
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
         </plugin>
     </Output>
 </pipeline>

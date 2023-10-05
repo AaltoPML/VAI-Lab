@@ -9,7 +9,7 @@ if not __package__:
     root_mod = path.dirname(path.dirname(path.dirname(__file__)))
     sys.path.append(root_mod)
 
-from vai_lab._import_helper import get_lib_parent_dir
+from vai_lab._import_helper import get_lib_parent_dir, rel_to_abs
 
 
 class XML_handler:
@@ -30,6 +30,8 @@ class XML_handler:
             "pipeline": "declaration",
             "relationships": "relationships",
             "plugin": "plugin",
+            "method": "method",
+            "options": "options",
             "coordinates": "list",
             "Initialiser": "entry_point",
             "inputdata": "data",
@@ -91,9 +93,42 @@ class XML_handler:
         """
         if filename != None:
             self.set_filename(filename)
-        self.tree = ET.parse(self.filename)
+        if hasattr(self, 'tree'):
+            prev_tree = self.tree
+            self.tree = self._combine_XML(prev_tree.getroot(), ET.parse(self.filename).getroot())
+        else:
+            self.tree = ET.parse(self.filename)
         self._parse_XML()
 
+    def _combine_XML(self, tree1, tree2):
+        """
+        This function recursively updates either the text or the children
+        of an element if another element is found in `tree1`, or adds it
+        from `tree2` if not found.
+        """
+        # Create a mapping from tag name to element, as that's what we are fltering with
+        mapping = {el.tag: el for el in tree1}
+        for el in tree2:
+            if len(el) == 0:
+                # Not nested
+                try:
+                    # Update the text
+                    mapping[el.tag].text = el.text
+                except KeyError:
+                    # An element with this name is not in the mapping
+                    mapping[el.tag] = el
+                    # Add it
+                    tree1.append(el)
+            else :
+                try:
+                    # Recursively process the element, and update it in the same way
+                    self._combine_XML(mapping[el.tag], el)
+                except KeyError:
+                    # Not in the mapping
+                    mapping[el.tag] = el
+                    tree1.append(el)
+        return ET.ElementTree(tree1)
+        
     def _parse_XML(self) -> None:
         self.root = self.tree.getroot()
         self._parse_tags(self.root, self.loaded_modules)
@@ -144,18 +179,38 @@ class XML_handler:
         """
         parent["plugin"] = {}
         parent["plugin"]["plugin_name"] = element.attrib["type"]
+        parent["plugin"]["methods"] = {"_order" : []}
         parent["plugin"]["options"] = {}
+        self._parse_tags(element, parent["plugin"])
+
+    def _load_method(self, element: ET.Element, parent: dict) -> None:
+        """Parses tags associated with methods and appends to parent dict
+        :param elem: xml.etree.ElementTree.Element to be parsed
+        :param parent: dict or dict fragment parsed tags will be appened to
+        """
+        for key in element.attrib:
+            parent["methods"]["_order"].append(element.attrib[key])
+            parent["methods"][element.attrib[key]] = {'options': {}}
+            self._parse_tags(element, parent["methods"][element.attrib[key]])
+
+    def _load_options(self, element: ET.Element, parent: dict) -> None:
+        """Parses tags associated with options and appends to parent dict
+        :param elem: xml.etree.ElementTree.Element to be parsed
+        :param parent: dict or dict fragment parsed tags will be appened to
+        """
         for child in element:
             if child.text is not None:
-                val = self._parse_text_to_list(child)
-                val = (val[0] if len(val) == 1 else val)
-                parent["plugin"]["options"][child.tag] = val
+                try:
+                    parent["options"][child.tag] = literal_eval(child.text.strip())
+                except Exception as exc:
+                    val = self._parse_text_to_list(child)
+                    parent["options"][child.tag] = (val[0] if len(val) == 1 else val)
+
             for key in child.attrib:
                 if key == "val":
-                    parent["plugin"]["options"][child.tag] = child.attrib[key]
+                    parent["options"][child.tag] = child.attrib[key]
                 else:
-                    parent["plugin"]["options"][child.tag] = {
-                        key: child.attrib[key]}
+                    parent["options"][child.tag] = {key: child.attrib[key]}
 
     def _load_entry_point(self, element: ET.Element, parent: dict) -> None:
         """Parses tags associated with initialiser and appends to parent dict
@@ -453,30 +508,33 @@ class XML_handler:
         else:
             xml_parent = xml_parent_name
         plugin_elem: ET.Element = xml_parent.find("./plugin")
-        self._add_plugin_options(plugin_elem, options)
+        self._add_options(plugin_elem, options)
         self._parse_XML()
         if save_changes:
             self.write_to_XML()
 
-    def _add_plugin_options(self,
+    def _add_options(self,
                             plugin_elem: ET.Element,
                             options
                             ):
+        opt_elem = plugin_elem.find("./options")
+        if opt_elem is None:
+            opt_elem = ET.SubElement(plugin_elem, "options")
         for key in options.keys():
             if isinstance(options[key], list):
-                new_option = ET.SubElement(plugin_elem, key)
+                new_option = ET.SubElement(opt_elem, key)
                 option_text = ("\n{}".format(
                     "\n".join([*options[key]])))
                 new_option.text = option_text
             elif isinstance(options[key], (int, float, str)):
-                new_option = plugin_elem.find(str("./" + key))
+                new_option = opt_elem.find(str("./" + key))
                 if new_option is None:
-                    new_option = ET.SubElement(plugin_elem, key)
+                    new_option = ET.SubElement(opt_elem, key)
                 text_lead = "\n" if "\n" not in str(options[key]) else ""
                 new_option.text = "{0} {1}".format(
                     text_lead, str(options[key]))
             elif isinstance(options[key], (dict)):
-                self._add_plugin_options(plugin_elem, options[key])
+                self._add_options(opt_elem, options[key])
 
     def append_input_data(self,
                           data_name: str,
@@ -511,14 +569,44 @@ class XML_handler:
         if save_dir_as_relative:
             data_dir = data_dir.replace(self.lib_base_path, "./")
         data_dir = data_dir.replace("\\", "/")
-        if path.exists(path.dirname(data_dir)):
+        if path.exists(path.dirname(rel_to_abs(data_dir))):
             plugin_elem.set('file', data_dir)
         else:
             plugin_elem.set('module', data_dir)
 
+    def append_method_to_plugin(self,
+                                method_type: str,
+                                method_options: dict,
+                                xml_parent: Union[ET.Element, str],
+                                overwrite_existing: Union[bool, int] = False
+                                ):
+        """Appened method as subelement to existing plugin element
+        
+        :param method_type: string type of method to be loaded into plugin
+        :param method_options: dict where keys & values are options & values
+        :param xml_parent: dict OR str. 
+                            If string given, parent elem is found via search,
+                            Otherwise, method appeneded directly
+        """
+        if isinstance(xml_parent, str):
+            xml_parent = self._get_element_from_name(xml_parent)
+
+        method_elem = xml_parent.find("./method")
+
+        if method_elem is not None and overwrite_existing:
+            if method_elem.attrib['type'] == method_type:
+                xml_parent.remove(method_elem)
+            method_elem = None
+
+        if method_elem is None:
+            method_elem = ET.SubElement(xml_parent, "method")
+            method_elem.set('type', method_type)
+        self._add_options(method_elem, method_options)
+
     def append_plugin_to_module(self,
                                 plugin_type: str,
                                 plugin_options: dict,
+                                method_list: list,
                                 plugin_data: str,
                                 xml_parent: Union[ET.Element, str],
                                 overwrite_existing: Union[bool, int] = False
@@ -546,7 +634,13 @@ class XML_handler:
             plugin_elem.set('type', plugin_type)
         if plugin_data is not None and len(plugin_data) > 0:
             self.append_input_data('X', plugin_data, xml_parent, False)
-        self._add_plugin_options(plugin_elem, plugin_options)
+        if '__init__' in plugin_options.keys():
+            self._add_options(plugin_elem, plugin_options['__init__'])
+        for f in method_list:
+            self.append_method_to_plugin(f,
+                                        plugin_options[f], 
+                                        plugin_elem, 
+                                        overwrite_existing)
 
     def append_pipeline_module(self,
                                module_type: str,
@@ -577,6 +671,7 @@ class XML_handler:
         if plugin_type != None:
             self.append_plugin_to_module(plugin_type,
                                          plugin_options,
+                                         [],
                                          parents[0],
                                          new_mod,
                                          0
@@ -625,10 +720,15 @@ class XML_handler:
 
         xml_parent_element.append(new_loop)
 
-    def _get_data_structure(self, module) -> Dict[str, Any]:
-        data_struct = self._find_dict_with_key_val_pair(
-            self.loaded_modules[module],
-            "class", "data")
+    def _get_data_structure(self, modules, module) -> Dict[str, Any]:
+        try:
+            data_struct = self._find_dict_with_key_val_pair(
+                modules[module],
+                "class", "data")
+        except Exception as exc:
+            data_struct = self._find_dict_with_key_val_pair(
+                modules,
+                "class", "data")
 
         assert len(data_struct) < 2, \
             "Multiple data with same ID, please check XML"
@@ -641,8 +741,10 @@ class XML_handler:
         return out
 
     #@property
-    def data_to_load(self, module='Initialiser') -> Dict[str, str]:
-        return self._get_data_structure(module)["to_load"]
+    def data_to_load(self, modules=False, module='Initialiser') -> Dict[str, str]:
+        if not modules:
+            modules = self.loaded_modules
+        return self._get_data_structure(modules, module)["to_load"]
 
 
 # Use case examples:
