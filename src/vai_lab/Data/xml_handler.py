@@ -203,7 +203,8 @@ class XML_handler:
                 try:
                     parent["options"][child.tag] = literal_eval(child.text.strip())
                 except Exception as exc:
-                    parent["options"][child.tag] = child.text.strip()
+                    val = self._parse_text_to_list(child)
+                    parent["options"][child.tag] = (val[0] if len(val) == 1 else val)
 
             for key in child.attrib:
                 if key == "val":
