@@ -526,14 +526,14 @@ class XML_handler:
                 option_text = ("\n{}".format(
                     "\n".join([*options[key]])))
                 new_option.text = option_text
-            elif isinstance(options[key], (int, float, str)):
+            elif isinstance(options[key], (int, float, str)) or options[key] is None:
                 new_option = opt_elem.find(str("./" + key))
                 if new_option is None:
                     new_option = ET.SubElement(opt_elem, key)
                 text_lead = "\n" if "\n" not in str(options[key]) else ""
                 new_option.text = "{0} {1}".format(
                     text_lead, str(options[key]))
-            elif isinstance(options[key], (dict)):
+            elif isinstance(options[key], dict):
                 self._add_options(opt_elem, options[key])
 
     def append_input_data(self,

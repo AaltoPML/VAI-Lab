@@ -749,9 +749,7 @@ class pluginCanvas(tk.Frame):
                 self.entry = tk.Entry(self.tree, justify='center')
                 if int(self.treecol[1:]) > 0:
                     value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-1] 
-                    value = str(value) if str(value) not in ['default', 'Choose X or Y'] else ''
                     self.entry.insert(0, value)
-                    # self.entry['selectbackground'] = '#123456'
                     self.entry['exportselection'] = False
 
                     self.entry.focus_force()
@@ -780,14 +778,13 @@ class pluginCanvas(tk.Frame):
         """ Executed when the optionmenu is selected and pressed enter.
         Saves the value"""
         if hasattr(self, 'dropDown'):
-            value = self.tree.item(self.treerow)['values'][int(str(self.treecol[1:]))-2] 
             tags = self.tree.item(self.treerow)["tags"]
             val = self.tree.item(self.treerow)['values']
             new_val = self.method_inputData['_'.join(tags[:-1])].get()
             val[int(self.treecol[1:])-1] = new_val
             self.tree.item(self.treerow, values=tuple([val[0], new_val]))
             self.dropDown.destroy()
-            self.saved = False      
+            self.saved = False
 
     def on_return(self, event):
         """ Executed when the entry is edited and pressed enter.
@@ -903,7 +900,7 @@ class pluginCanvas(tk.Frame):
 
         value = self.str_to_bool(value)
         if tag == 'req':
-            if value is not None or self.isNotClose(self.req_settings[f][key], value):
+            if self.isNotClose(self.req_settings[f][key], value):
                 self.req_settings[f][key] = value
             else:
                 self.req_settings[f].pop(key, None)
