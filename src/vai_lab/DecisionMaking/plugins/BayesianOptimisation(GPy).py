@@ -5,18 +5,11 @@ from typing import Dict
 _PLUGIN_READABLE_NAMES = {"GPyOpt": "default",
                           "BayesianOptimisation": "alias",
                           "BayesianOptimisation_GPy": "alias",} # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "decision making"}        # type:ignore
-_PLUGIN_REQUIRED_SETTINGS = {"f": "function"}              # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {"domain": "list",
-                             "constraints": "list",
-                             "acquisition_type ": "str",
-                             "files": "list",
-                             "normalize_Y": "bool",
-                             "evaluator_type": "str",
-                             "batch_size": "int",
-                             "acquisition_jitter": "float"} # type:ignore
-_PLUGIN_REQUIRED_DATA = {}                                  # type:ignore
-_PLUGIN_OPTIONAL_DATA = {"X","Y"}                           # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "decision making"}            # type:ignore
+_PLUGIN_REQUIRED_SETTINGS = {"f": "function"}                   # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                                  # type:ignore
+_PLUGIN_REQUIRED_DATA = {}                                      # type:ignore
+_PLUGIN_OPTIONAL_DATA = {"X","Y"}                               # type:ignore
 
 class GPyOpt(DecisionMakingPluginT):
     """
@@ -38,7 +31,7 @@ class GPyOpt(DecisionMakingPluginT):
             options_dict['Y'] = self.Y.reshape(-1,1)
         return options_dict
     
-    def optimise(self):
+    def run_optimization(self):
         """Sends parameters to optimizer, then runs Bayesian Optimization for a number 'max_iter' of iterations"""
         try:
             self.BO.run_optimization()
@@ -47,7 +40,7 @@ class GPyOpt(DecisionMakingPluginT):
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
             raise
 
-    def suggest_locations(self):
+    def suggest_next_locations(self):
         """Run a single optimization step and return the next locations to evaluate the objective. 
         Number of suggested locations equals to batch_size.
         :returns: array, shape (n_samples,)
