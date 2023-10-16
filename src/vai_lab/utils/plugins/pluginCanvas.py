@@ -514,14 +514,13 @@ class pluginCanvas(tk.Frame):
             # Find functions defined for the module
             plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
             # Find available methods for the model
-            model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
+            model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) + getmembers(self.model, isfunction) if meth[0][0] != '_']
             # List intersection
             # TODO: use only methods from the model
             set_2 = frozenset(model_meth_list)
             meth_list = [x for x in plugin_meth_list if x in set_2]
         except Exception as exc:
             meth_list = []
-
 
         self.meths_sort = []
         self.method_inputData = {}
@@ -540,8 +539,6 @@ class pluginCanvas(tk.Frame):
                 'resources',
                 'Assets',
                 'VAILabsIcon.ico'))))
-        # self.newWindow.geometry("350x400")
-
 
         frame1 = tk.Frame(self.newWindow)
         frame2 = tk.Frame(self.newWindow)
@@ -784,6 +781,7 @@ class pluginCanvas(tk.Frame):
             val[int(self.treecol[1:])-1] = new_val
             self.tree.item(self.treerow, values=tuple([val[0], new_val]))
             self.dropDown.destroy()
+            self.__dict__.pop('dropDown',None)
             self.saved = False
 
     def on_return(self, event):
@@ -851,6 +849,7 @@ class pluginCanvas(tk.Frame):
                 val[int(self.treecol[1:])-1] = new_val
                 self.tree.item(el, values=tuple([val[0], new_val]))
                 self.dropDown.destroy()
+                self.__dict__.pop('dropDown',None)
         # Updates the modified options and removes the ones that are not
         for f in self.tree.get_children():
             for c in self.tree.get_children(f):
