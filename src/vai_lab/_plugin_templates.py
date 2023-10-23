@@ -209,30 +209,12 @@ class DataProcessingT(PluginTemplate, ABC):
                 _cleaned[key] = self.Y
         return _cleaned
 
-    def init(self):
-        """Sends params to model"""
-        try:
-            self.model.set_params(**self._config["options"])
-        except Exception as exc:
-            print('The plugin encountered an error on the parameters of '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-            raise
-
     def fit(self, options={}):
         try:
-            if type(self._clean_solver_options()) == list:
-                self.model.set_params(*self._clean_solver_options())
-            else:
-                self.model.set_params(**self._clean_solver_options())
-        except Exception as exc:
-            print('The plugin encountered an error on the parameters of '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-            raise
-        try:
             if type(options) == list:
-                return self.model.fit(*options)
+                return self.fit_plugin(*options)
             else:
-                return self.model.fit(**options)
+                return self.fit_plugin(**options)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -241,9 +223,9 @@ class DataProcessingT(PluginTemplate, ABC):
     def transform(self, options={}) -> DataInterface:
         try:
             if type(options) == list:
-                return pd.DataFrame(self.model.transform(*options))
+                return pd.DataFrame(self.transform_plugin(*options))
             else:
-                return pd.DataFrame(self.model.transform(**options))
+                return pd.DataFrame(self.transform_plugin(**options))
         except Exception as exc:
             print('The plugin encountered an error when transforming the data with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -254,23 +236,14 @@ class DataProcessingT(PluginTemplate, ABC):
 class ModellingPluginT(PluginTemplate, ABC):
     def __init__(self, plugin_globals: dict) -> None:
         super().__init__(plugin_globals)
-    
-    def init(self):
-        """Sends params to model"""
-        try:
-            self.model.set_params(**self._config["options"])
-        except Exception as exc:
-            print('The plugin encountered an error on the parameters of '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-            raise
 
     def fit(self, options={}):
         """Sends params to fit, then runs fit"""
         try:
             if type(options) == list:
-                return self.model.fit(*options)
+                return self.fit_plugin(*options)
             else:
-                return self.model.fit(**options)
+                return self.fit_plugin(**options)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -286,9 +259,9 @@ class ModellingPluginT(PluginTemplate, ABC):
         """
         try:
             if type(options) == list:
-                return self.model.predict(*options)
+                return self.predict_plugin(*options)
             else:
-                return self.model.predict(**options)
+                return self.predict_plugin(**options)
         except Exception as exc:
             print('The plugin encountered an error when predicting with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -303,9 +276,9 @@ class ModellingPluginT(PluginTemplate, ABC):
         """
         try:
             if type(options) == list:
-                return self.model.score(*options)
+                return self.score_plugin(*options)
             else:
-                return self.model.score(**options)
+                return self.score_plugin(**options)
         except Exception as exc:
             print('The plugin encountered an error when calculating the score with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
@@ -325,9 +298,9 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
         """
         try:
             if type(options) == list:
-                return self.model.predict_proba(*options)
+                return self.predict_proba_plugin(*options)
             else:
-                return self.model.predict_proba(**options)
+                return self.predict_proba_plugin(**options)
         except Exception as exc:
             print('The plugin encountered an error when predicting the probability with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')

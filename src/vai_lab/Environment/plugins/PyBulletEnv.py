@@ -20,9 +20,11 @@ class PyBulletEnv(EnvironmentPluginT):
     Loads the pybullet library as wildcard and exposes all functions
     """
 
-    def __init__(self) -> None:
+    def __init__(self, config = {}, data_in = [None]) -> None:
         super().__init__(globals())
         self.model_ids: Dict = {}
+        self.set_data_in(data_in)
+        self.configure(config)
 
     def set_gui(self, use_gui: bool = True):
         if type(use_gui) == str:
@@ -97,5 +99,3 @@ class PyBulletEnv(EnvironmentPluginT):
 if __name__ == "__main__":
     pb = PyBulletEnv()
     print(pb.ACTIVATION_STATE_DISABLE_SLEEPING)
-    # pb.set_gui(True)
-    # pb.connect()
