@@ -27,7 +27,6 @@ class Environment(object):
         :param module_config: dict of settings to configure the plugin
         """
         self._module_config = module_config
-        self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
     def launch(self) -> None:
         self._plugin.connect()
