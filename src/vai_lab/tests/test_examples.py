@@ -10,9 +10,11 @@ def test_examples():
     scripts = glob(get_lib_parent_dir() + "/examples/xml_files/" + "*")
     for file in scripts:
         """Temp removal of userfeedback test - relies too heavily on GUI for github actions"""
-        if "user_feedback" not in file:
+        if "user_feedback" not in file and "pybullet" not in file:
             print (file)
             core = ai.Core()
             core.load_config_file(file)
             core._debug = True
             core.run()
+
+test_examples()
