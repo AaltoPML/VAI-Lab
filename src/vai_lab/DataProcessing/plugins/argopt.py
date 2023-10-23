@@ -17,11 +17,16 @@ class argopt(DataProcessingT):
     Calculate the optimum argument
     """
 
-    def __init__(self):
+    def __init__(self, config = {}, data_in = [None]):
         """Initialises parent class. 
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
+        self.set_data_in(data_in)
+        self.configure(config)
+        
+        self.fit_plugin = self.model.fit
+        self.transform_plugin = self.model.transform
 
     def fit(self):
         self.cleaned_options = self._clean_solver_options()
