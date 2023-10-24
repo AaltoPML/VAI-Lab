@@ -838,9 +838,8 @@ class progressTracker(tk.Frame):
                     arrow=tk.LAST,
                     tags=('o'+str(parent_id),
                         'o'+str(1), modout['coordinates'][2][connect[p]]))
-                self.out_data.iloc[int(parent_id)][1] = 1
-                self.connections[1][
-                    int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
+                self.out_data.iloc[int(parent_id)].iloc[1] = 1
+                self.connections[1][int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
             self.m = self.id_mod[2]
 
         else: # There are no coordinates for some modules.
@@ -987,8 +986,7 @@ class progressTracker(tk.Frame):
                             arrow=tk.LAST,
                             tags=('o'+str(parent_id),
                                   'o'+str(self.id_mod[-1]), modules[key]['coordinates'][2][connect[p]]))
-                        self.out_data.iloc[int(parent_id)][int(
-                            self.id_mod[-1])] = 1
+                        self.out_data.iloc[int(parent_id)].iloc[int(self.id_mod[-1])] = 1
                         self.connections[int(self.id_mod[-1])][
                             int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(self.id_mod[-1])
                     else:
