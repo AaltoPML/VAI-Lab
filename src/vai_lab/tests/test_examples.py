@@ -16,4 +16,6 @@ def test_examples():
             core.load_config_file(file)
             core._debug = True
             core.run()
-test_examples()
+
+if __name__ == "__main__":
+    test_examples()

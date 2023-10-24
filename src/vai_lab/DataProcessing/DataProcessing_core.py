@@ -1,6 +1,7 @@
 from vai_lab._import_helper import import_plugin_absolute
 from vai_lab._types import PluginSpecsInterface, DataInterface, DataProcessingPluginInterface
-
+from pandas import DataFrame
+from numpy import array
 class DataProcessing(object):
     def __init__(self) -> None:
         self.output_data: DataInterface
@@ -31,11 +32,13 @@ class DataProcessing(object):
 
         for method in self._module_config["plugin"]["methods"]["_order"]:
             if "options" in self._module_config["plugin"]["methods"][method].keys():
-                getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))
+                out = getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))
             else:
-                getattr(self._plugin, "{}".format(method))()
+                out = getattr(self._plugin, "{}".format(method))()
 
         self.output_data = self._data_in.copy()
+        if len(out) > 0 and (isinstance(out[0], DataFrame) or isinstance(out[0], array)):
+            self.output_data.data[list(out[1])[0]] = out[0]
 
     def get_result(self) -> DataInterface:
         return self.output_data

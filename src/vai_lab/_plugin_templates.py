@@ -76,7 +76,7 @@ class PluginTemplate:
 
     def _parse_config(self):
         """Parse incoming data and args, sets them as class variables"""
-        self.X = np.array(self._get_data_if_exist(self._data_in, "X"))
+        self.X = self._get_data_if_exist(self._data_in, "X")
         self.Y = np.array(self._get_data_if_exist(self._data_in, "Y")).ravel()
         self.X_test = self._get_data_if_exist(self._data_in, "X_test")
         self.Y_test = np.array(self._get_data_if_exist(self._data_in, "Y_test")).ravel()
@@ -151,7 +151,7 @@ class PluginTemplate:
                 print('Test accuracy: %.2f%%' %
                       (self.score([self.X_test, self.Y_test])*100))
             if self.X_test is not None:
-                data.append_data_column("Y_pred", self.predict([self.X_test]))
+                data.append_data_column("Y_pred", self.predict(self.X_test))
             return data
         elif self._PLUGIN_MODULE_OPTIONS['Type'] == 'regression':
             print('Training R2 score: %.3f' %
@@ -160,12 +160,12 @@ class PluginTemplate:
                 print('Test R2 score: %.3f' %
                       (self.score([self.X_test, self.Y_test])))
             if self.X_test is not None:
-                data.append_data_column("Y_pred", self.predict([self.X_test]))
+                data.append_data_column("Y_pred", self.predict_plugin(self.X_test))
             return data
         elif self._PLUGIN_MODULE_OPTIONS['Type'] == 'clustering':
             print('Clustering completed')
             if self.X_test is not None:
-                data.append_data_column("Y_pred", self.predict([self.X_test]))
+                data.append_data_column("Y_pred", self.predict(self.X_test))
             return data
         else:
             return data
@@ -211,10 +211,12 @@ class DataProcessingT(PluginTemplate, ABC):
 
     def fit(self, options={}):
         try:
-            if type(options) == list:
+            if isinstance(options, list):
                 return self.fit_plugin(*options)
-            else:
+            if isinstance(options, dict):
                 return self.fit_plugin(**options)
+            else:
+                return self.fit_plugin(options)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -222,16 +224,16 @@ class DataProcessingT(PluginTemplate, ABC):
 
     def transform(self, options={}) -> DataInterface:
         try:
-            if type(options) == list:
+            if isinstance(options, list):
                 return pd.DataFrame(self.transform_plugin(*options))
+            elif isinstance(options, dict):
+                return pd.DataFrame(self.transform_plugin(**options)), options.keys()
             else:
-                return pd.DataFrame(self.transform_plugin(**options))
+                return pd.DataFrame(self.transform_plugin(options))
         except Exception as exc:
             print('The plugin encountered an error when transforming the data with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
-        return data
-
 
 class ModellingPluginT(PluginTemplate, ABC):
     def __init__(self, plugin_globals: dict) -> None:
@@ -240,10 +242,12 @@ class ModellingPluginT(PluginTemplate, ABC):
     def fit(self, options={}):
         """Sends params to fit, then runs fit"""
         try:
-            if type(options) == list:
+            if isinstance(options, list):
                 return self.fit_plugin(*options)
-            else:
+            if isinstance(options, dict):
                 return self.fit_plugin(**options)
+            else:
+                return self.fit_plugin(options)
         except Exception as exc:
             print('The plugin encountered an error when fitting '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -258,10 +262,13 @@ class ModellingPluginT(PluginTemplate, ABC):
                     Returns predicted values.
         """
         try:
-            if type(options) == list:
+            if isinstance(options, list):
                 return self.predict_plugin(*options)
-            else:
+            elif isinstance(options, dict):
                 return self.predict_plugin(**options)
+            else:
+                return self.predict_plugin(options)
+
         except Exception as exc:
             print('The plugin encountered an error when predicting with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
@@ -275,10 +282,12 @@ class ModellingPluginT(PluginTemplate, ABC):
         :returns: score : float of ``self.predict(X)`` wrt. `y`.
         """
         try:
-            if type(options) == list:
+            if isinstance(options, list):
                 return self.score_plugin(*options)
-            else:
+            elif isinstance(options, dict):
                 return self.score_plugin(**options)
+            else:
+                return self.score_plugin(options)
         except Exception as exc:
             print('The plugin encountered an error when calculating the score with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
@@ -297,10 +306,12 @@ class ModellingPluginTClass(ModellingPluginT, ABC):
                     Returns predicted values.
         """
         try:
-            if type(options) == list:
+            if isinstance(options, list):
                 return self.predict_proba_plugin(*options)
-            else:
+            if isinstance(options, dict):
                 return self.predict_proba_plugin(**options)
+            else:
+                return self.predict_proba_plugin(options)
         except Exception as exc:
             print('The plugin encountered an error when predicting the probability with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
@@ -314,10 +325,12 @@ class DecisionMakingPluginT(PluginTemplate, ABC):
         """Extended from PluginTemplate.configure"""
         super().configure(config)
         try:
-            if type(self._clean_options()) == list:
+            if isinstance(self._clean_options(), list):
                 self.BO = self.model(*self._clean_options())
-            else:
+            if isinstance(self._clean_options(), list):
                 self.BO = self.model(**self._clean_options())
+            else:
+                self.BO = self.model(self._clean_options())
         except Exception as exc:
             print('The plugin encountered an error on the parameters of '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')

@@ -31,9 +31,9 @@ class Modelling(object):
 
         for method in self._module_config["plugin"]["methods"]["_order"]:
             if "options" in self._module_config["plugin"]["methods"][method].keys():
-                getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))
+                out = getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))
             else:
-                getattr(self._plugin, "{}".format(method))()
+                out = getattr(self._plugin, "{}".format(method))()
 
         self.output_data = self._data_in.copy()
         self.output_data = self._plugin._test(self.output_data)
