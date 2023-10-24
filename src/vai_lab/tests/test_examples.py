@@ -16,3 +16,4 @@ def test_examples():
             core.load_config_file(file)
             core._debug = True
             core.run()
+test_examples()

@@ -11,10 +11,9 @@ class DataProcessing(object):
     def set_data_in(self, data_in: DataInterface) -> None:
         self._data_in = data_in
 
-    def _load_plugin(self, data_in) -> None:
+    def _load_plugin(self, data_in: DataInterface) -> None:
         avail_plugins = self._avail_plugins.find_from_readable_name(
             self._module_config["plugin"]["plugin_name"])
-        self._plugin_name = self._module_config["plugin"]["plugin_name"]
         self.set_data_in(data_in)
         self._plugin: DataProcessingPluginInterface = import_plugin_absolute(globals(),
                                               avail_plugins["_PLUGIN_PACKAGE"],
