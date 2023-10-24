@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 from vai_lab._import_helper import import_plugin_absolute
+from vai_lab._types import PluginSpecsInterface, DataInterface
 class DecisionMaking(object):
     def __init__(self):
-        self.output_data = None
+        self.output_data: DataInterface
 
-    def set_avail_plugins(self,avail_plugins):
+    def set_avail_plugins(self,avail_plugins: PluginSpecsInterface):
         self._avail_plugins = avail_plugins
 
-    def set_data_in(self,data_in):
+    def set_data_in(self,data_in: DataInterface):
         self._data_in = data_in
 
-    def _load_plugin(self, data_in):
+    def _load_plugin(self, data_in: DataInterface):
         avail_plugins = self._avail_plugins.find_from_readable_name(self._module_config["plugin"]["plugin_name"])
         self._plugin_name = self._module_config["plugin"]["plugin_name"]
         self.set_data_in(data_in)
