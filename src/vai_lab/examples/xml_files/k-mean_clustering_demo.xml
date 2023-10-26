@@ -35,6 +35,13 @@
                     </X>
                 </options>
             </method>
+            <method type="transform">
+                <options>
+                    <X>
+                         X
+                    </X>
+                </options>
+            </method>
         </plugin>
     </DataProcessing>
     <Modelling name="Modelling">

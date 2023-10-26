@@ -16,12 +16,23 @@ class GPyOpt(DecisionMakingPluginT):
     Bayesian optimisation model using GPyOpt. Compatible with no objective function using tabular data.
     """
 
-    def __init__(self):
+    def __init__(self, config = {}, data_in = [None]):
         """Initialises parent class. 
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.model = model
+        self.set_data_in(data_in)
+        self.configure(config)
+        
+        try:
+            self.model = model(**self._config["options"])
+        except Exception as exc:
+            print('The plugin encountered an error on the parameters of '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
+            raise
+        
+        # self.fit_plugin = self.model.fit
+        # self.transform_plugin = self.model.transform
     
     def _parse_options_dict(self, options_dict:Dict):
         super()._parse_options_dict(options_dict)

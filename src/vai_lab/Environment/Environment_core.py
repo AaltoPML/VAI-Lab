@@ -11,14 +11,14 @@ class Environment(object):
     def set_data_in(self, data_in: DataInterface) -> None:
         self._data_in = data_in
 
-    def _load_plugin(self, plugin_name: str) -> None:
+    def _load_plugin(self, data_in: DataInterface) -> None:
         avail_plugins = self._avail_plugins.find_from_readable_name(
-            plugin_name)
-        self._plugin_name = plugin_name
+            self._module_config["plugin"]["plugin_name"])
+        self.set_data_in(data_in)
         self._plugin: EnvironmentPluginInterface = import_plugin_absolute(globals(),
                                               avail_plugins["_PLUGIN_PACKAGE"],
                                               avail_plugins["_PLUGIN_CLASS_NAME"])\
-            .__call__()
+            .__call__(self._module_config["plugin"], data_in)
 
     def set_options(self, module_config: dict) -> None:
         """Send configuration arguments to plugin
@@ -26,11 +26,8 @@ class Environment(object):
         :param module_config: dict of settings to configure the plugin
         """
         self._module_config = module_config
-        self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
     def launch(self) -> None:
-        self._plugin.set_data_in(self._data_in)
-        self._plugin.configure(self._module_config["plugin"])
         self._plugin.connect()
         self._plugin.load_model()
         self._plugin.run_simulation()

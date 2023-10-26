@@ -23,19 +23,18 @@ class InputData(Data):
         :param module_config: dict of settings to configure the plugin
         """
         self._module_config = module_config
-        self._load_plugin(self._module_config["plugin"]["plugin_name"])
 
     def set_avail_plugins(self, avail_plugins: PluginSpecsInterface) -> None:
         self._avail_plugins = avail_plugins
 
-    def _load_plugin(self, plugin_name: str) -> None:
+    def _load_plugin(self, data_in: DataInterface) -> None:
         avail_plugins = self._avail_plugins.find_from_readable_name(
-            plugin_name)
-        self._plugin_name = plugin_name
+            self._module_config["plugin"]["plugin_name"])
+        self.set_data_in(data_in)
         self._plugin: PluginSpecsInterface = import_plugin_absolute(globals(),
                                                     avail_plugins["_PLUGIN_PACKAGE"],
                                                     avail_plugins["_PLUGIN_CLASS_NAME"])\
-                                                    .__call__()
+                                                    .__call__(self._module_config["plugin"], data_in)
 
     def get_result(self):
         return self._data_in

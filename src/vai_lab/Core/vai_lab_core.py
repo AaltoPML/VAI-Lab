@@ -67,8 +67,12 @@ class Core:
         mod._debug = self._debug
         mod.set_avail_plugins(self._avail_plugins)
         self._load_data(specs, specs["name"])
-        mod.set_data_in(self.data[specs["name"]])
         mod.set_options(specs)
+        if specs["name"] == 'User Interaction':
+            mod._load_plugin(specs["plugin"]["plugin_name"])
+            mod.set_data_in(self.data[specs["name"]])
+        else:
+            mod._load_plugin(self.data[specs["name"]])
         print("\t"*self.loop_level
                 + specs["module_type"]
                 + " module: \"{}\" ".format(specs["name"])
