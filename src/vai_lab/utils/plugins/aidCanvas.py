@@ -650,7 +650,7 @@ class aidCanvas(tk.Frame):
                             arrow = tk.LAST, arrowshape = (12,10,5), 
                             tags = ('o'+str(int(self.tag[1:])), 
                                   'o'+str(int(tag2[1:])), self.tag + '-' + tag2))
-                self.out_data.iloc[int(self.tag[1:])][int(tag2[1:])] = 1
+                self.out_data.iloc[int(self.tag[1:])].iloc[int(tag2[1:])] = 1
                 self.connections[int(tag2[1:])][
                     int(self.tag[1:])] = self.tag + '-' + tag2
             self.draw = False
@@ -786,7 +786,7 @@ class aidCanvas(tk.Frame):
                                 arrow = tk.LAST, arrowshape = (12,10,5), 
                                 tags = ('o'+str(parent_id), 
                                       'o'+str(1), modout['coordinates'][2][connect[p]]))
-                    self.out_data.iloc[int(parent_id)][1] = 1
+                    self.out_data.iloc[int(parent_id)].iloc[1] = 1
                     self.connections[1][
                         int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
             self.controller._append_to_output("xml_filename",filename)

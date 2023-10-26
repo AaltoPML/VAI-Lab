@@ -1092,7 +1092,7 @@ class pluginCanvas(tk.Frame):
                 arrow = tk.LAST, arrowshape = (12,10,5), 
                 tags=('o'+str(parent_id),
                       'o'+str(1), modout['coordinates'][2][connect[p]]))
-            self.out_data.iloc[int(parent_id)][1] = 1
+            self.out_data.iloc[int(parent_id)].iloc[1] = 1
             self.connections[1][
                 int(parent_id)] = out[0]+str(parent_id) + '-' + ins[0]+str(1)
         self.m: int = self.id_mod[2]
@@ -1202,7 +1202,7 @@ class pluginCanvas(tk.Frame):
                                     tags = ('o'+str(parent_id),
                                           # 'o'+str(self.id_mod[-1]), 
                                           modules[key]['coordinates'][2][connect[p]]))
-                        self.out_data.iloc[int(parent_id)][int(ins[1:])] = 1
+                        self.out_data.iloc[int(parent_id)].iloc[int(ins[1:])] = 1
                         self.connections[int(ins[1:])][
                             int(parent_id)] = out[0]+str(out[1:]) + '-' + ins[0]+str(ins[1:])
                     else:
