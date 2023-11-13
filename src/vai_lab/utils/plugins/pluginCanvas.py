@@ -505,7 +505,7 @@ class pluginCanvas(tk.Frame):
         self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin[self.m].get()]}
         # Tries to upload the settings from the actual library 
         try:
-            self.model = plugin().model
+            self.model = plugin(ini = True).model
             meth_req, meth_opt = self.getArgs(self.model.__init__)
             if meth_req is not None:
                 self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
