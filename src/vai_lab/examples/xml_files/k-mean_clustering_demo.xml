@@ -25,10 +25,7 @@
         <plugin type="MinMaxScaler">
             <options>
                 <feature_range>
-                                                                                 (0, 1)
-                                                                            
-                                                        
-                                    
+                    (0, 1)   
                 </feature_range>
             </options>
             <method type="fit">
@@ -61,16 +58,10 @@
         <plugin type="KMeans">
             <options>
                 <n_clusters>
-                                                                                 4
-                                                                            
-                                                        
-                                    
+                    4     
                 </n_clusters>
                 <max_iter>
-                                                                                 500
-                                                                            
-                                                        
-                                    
+                    500
                 </max_iter>
             </options>
             <method type="fit">
