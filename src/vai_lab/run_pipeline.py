@@ -8,7 +8,6 @@ from os.path import abspath
 
 import vai_lab as ai
 
-
 def parse_args():
     """
     Parse command line arguments
@@ -41,7 +40,6 @@ def _config_files_iter(core,files):
             core = ai.Core()
             core.load_config_file(abspath(f))
             core.run()
-
 
 def main():
 

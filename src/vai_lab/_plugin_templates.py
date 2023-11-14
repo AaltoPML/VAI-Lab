@@ -324,19 +324,30 @@ class DecisionMakingPluginT(PluginTemplate, ABC):
     def configure(self, config: dict):
         """Extended from PluginTemplate.configure"""
         super().configure(config)
-        try:
-            if isinstance(self._clean_options(), list):
-                self.BO = self.model(*self._clean_options())
-            if isinstance(self._clean_options(), list):
-                self.BO = self.model(**self._clean_options())
-            else:
-                self.BO = self.model(self._clean_options())
-        except Exception as exc:
-            print('The plugin encountered an error on the parameters of '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
-            raise
         if type(self.X) is None and type(self.Y) is None:
             print('Invalid Data name. Indicate whether to use `X` or `Y`')
+    
+    def run_optimization(self):
+        """Sends parameters to optimizer, then runs Bayesian Optimization for a number 'max_iter' of iterations"""
+        try:
+            self.opt_plugin()
+        except Exception as exc:
+            print('The plugin encountered an error when running the optimization '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
+
+    def suggest_next_locations(self):
+        """Run a single optimization step and return the next locations to evaluate the objective. 
+        Number of suggested locations equals to batch_size.
+        :returns: array, shape (n_samples,)
+                    Returns suggested values.
+        """
+        try:
+            return self.suggest_plugin()
+        except Exception as exc:
+            print('The plugin encountered an error when suggesting points with '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
+            raise
 
 
 class UI(PluginTemplate, ABC):
