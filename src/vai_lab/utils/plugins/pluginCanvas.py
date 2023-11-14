@@ -505,7 +505,7 @@ class pluginCanvas(tk.Frame):
         self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin[self.m].get()]}
         # Tries to upload the settings from the actual library 
         try:
-            self.model = plugin().model
+            self.model = plugin(ini = True).model
             meth_req, meth_opt = self.getArgs(self.model.__init__)
             if meth_req is not None:
                 self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
@@ -514,7 +514,8 @@ class pluginCanvas(tk.Frame):
             # Find functions defined for the module
             plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
             # Find available methods for the model
-            model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) + getmembers(self.model, isfunction) if meth[0][0] != '_']
+            model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
+            model_meth_list += [meth[0] for meth in getmembers(self.model, isfunction) if meth[0][0] != '_']
             # List intersection
             # TODO: use only methods from the model
             set_2 = frozenset(model_meth_list)

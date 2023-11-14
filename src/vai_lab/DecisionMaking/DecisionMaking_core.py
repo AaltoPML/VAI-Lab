@@ -13,7 +13,6 @@ class DecisionMaking(object):
 
     def _load_plugin(self, data_in: DataInterface):
         avail_plugins = self._avail_plugins.find_from_readable_name(self._module_config["plugin"]["plugin_name"])
-        self._plugin_name = self._module_config["plugin"]["plugin_name"]
         self.set_data_in(data_in)
         self._plugin = import_plugin_absolute(globals(),\
                                 avail_plugins["_PLUGIN_PACKAGE"],\
@@ -28,7 +27,6 @@ class DecisionMaking(object):
         self._module_config = module_config
 
     def launch(self):
-
         for method in self._module_config["plugin"]["methods"]["_order"]:
             if "options" in self._module_config["plugin"]["methods"][method].keys():
                 out = getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))

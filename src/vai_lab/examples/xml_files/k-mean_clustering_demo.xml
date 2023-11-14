@@ -25,20 +25,20 @@
         <plugin type="MinMaxScaler">
             <options>
                 <feature_range>
-                     (0, 1)
+                    (0, 1)   
                 </feature_range>
             </options>
             <method type="fit">
                 <options>
                     <X>
-                         X
+                        X
                     </X>
                 </options>
             </method>
             <method type="transform">
                 <options>
                     <X>
-                         X
+                        X
                     </X>
                 </options>
             </method>
@@ -58,23 +58,23 @@
         <plugin type="KMeans">
             <options>
                 <n_clusters>
-                     4
+                    4     
                 </n_clusters>
                 <max_iter>
-                     500
+                    500
                 </max_iter>
             </options>
             <method type="fit">
                 <options>
                     <X>
-                         X
+                        X
                     </X>
                 </options>
             </method>
             <method type="predict">
                 <options>
                     <X>
-                         X
+                        X
                     </X>
                 </options>
             </method>
@@ -96,7 +96,7 @@
                     Modelling
                 </outdata>
                 <outpath>
-                     .\examples\results\output.pkl
+                    .\examples\results\output.pkl
                 </outpath>
             </options>
         </plugin>
