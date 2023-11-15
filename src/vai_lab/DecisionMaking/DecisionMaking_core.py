@@ -34,7 +34,7 @@ class DecisionMaking(object):
                 out = getattr(self._plugin, "{}".format(method))()
 
         self.output_data = self._data_in.copy()
-        self.output_data = self._plugin.suggest_locations()
+        self.output_data = self._plugin.suggest_plugin()
 
     def get_result(self):
         return self.output_data

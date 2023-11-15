@@ -1,6 +1,7 @@
 from vai_lab._plugin_templates import DecisionMakingPluginT
 from  GPyOpt.methods import BayesianOptimization as model
 from typing import Dict
+from pandas.core.frame import DataFrame
 
 _PLUGIN_READABLE_NAMES = {"GPyOpt": "default",
                           "BayesianOptimisation": "alias",
@@ -25,7 +26,13 @@ class GPyOpt(DecisionMakingPluginT):
             # Model configuration
             self.set_data_in(data_in)
             self.configure(config)
-            # Model initialisation    
+            if 'X' in self._config["options"].keys():
+                self._config["options"]['X'] = self._config["options"]['X'].values if isinstance(
+                    self._config["options"]['X'],(DataFrame)) else self._config["options"]['X']
+            if 'Y' in self._config["options"].keys():
+                self._config["options"]['Y'] = self._config["options"]['Y'].reshape(-1,1) if len(
+                    self._config["options"]['Y'].shape) < 2 else self._config["options"]['Y']
+            # Model initialisation
             try:    
                 self.model = model(**self._config["options"])
             except Exception as exc:
@@ -37,11 +44,3 @@ class GPyOpt(DecisionMakingPluginT):
 
         self.opt_plugin = self.model.run_optimization
         self.suggest_plugin = self.model.suggest_next_locations
-    
-    def _parse_options_dict(self, options_dict:Dict):
-        super()._parse_options_dict(options_dict)
-        if self.X is not None:
-            options_dict['X'] = self.X
-        if self.Y is not None:
-            options_dict['Y'] = self.Y.reshape(-1,1)
-        return options_dict

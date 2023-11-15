@@ -44,13 +44,6 @@
                      local_penalization
                 </evaluator_type>
             </options>
-            <method type="run_optimization">
-                <options>
-                    <max_iter>
-                         1000
-                    </max_iter>
-                </options>
-            </method>
             <method type="suggest_next_locations">
                 <options />
             </method>
