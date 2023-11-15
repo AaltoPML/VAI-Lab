@@ -1,32 +1,80 @@
 <pipeline>
     <Initialiser name="Initialiser">
-        <inputdata>            
-            <X file="./examples/optimisation/X.csv" />
-        </inputdata>
         <relationships>
-            <child name="User Interaction" />
+            <child name="Decision Making" />
         </relationships>
         <coordinates>
-            [(350.0,50),0,{}]
+            [(350.0, 50), 0, {}]
         </coordinates>
+        <inputdata>
+            <X file="./examples/optimisation/X.csv" />
+            <Y file="./examples/optimisation/Y.csv" />
+        </inputdata>
     </Initialiser>
-    <UserInteraction name="User Interaction">
+    <DecisionMaking name="Decision Making">
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
         <relationships>
             <parent name="Initialiser" />
             <child name="Output" />
         </relationships>
         <coordinates>
-            [(350.0,350.0),2,{0:'d0-u2'}]
+            [(350.0, 350.0), 2, {0: 'd0-u2'}]
         </coordinates>
-        <plugin type="optimisationUI" />
-    </UserInteraction>
+        <plugin type="GPyOpt">
+            <options>
+                <f>
+                     None
+                </f>
+                <domain> [{'name': 'CsPbI', 'type': 'continuous', 'domain': (0,1)},
+                    {'name': 'MAPbI', 'type': 'continuous', 'domain': (0,1)},
+                    {'name': 'FAPbI', 'type': 'continuous', 'domain': (0,1)}]
+                </domain>
+                <constraints> [{'name': 'constr_1', 'constraint': 'x[:,0] +x[:,1] + x[:,2] - 1'},
+                    {'name': 'constr_2', 'constraint': '0.995-x[:,0] -x[:,1] - x[:,2] '}]
+                </constraints>
+                <X>
+                     X
+                </X>
+                <Y>
+                     Y
+                </Y>
+                <evaluator_type>
+                     local_penalization
+                </evaluator_type>
+            </options>
+            <method type="run_optimization">
+                <options>
+                    <max_iter>
+                         1000
+                    </max_iter>
+                </options>
+            </method>
+            <method type="suggest_next_locations">
+                <options />
+            </method>
+        </plugin>
+    </DecisionMaking>
     <Output name="Output">
-        <plugin type="" />
+        <inputdata>
+            <X module="Decision Making" />
+        </inputdata>
         <relationships>
-            <parent name="User Interaction" />
+            <parent name="Decision Making" />
         </relationships>
         <coordinates>
-            [(350.0,650),1,{2:'d2-u1'}]
+            [(350.0, 650), 1, {2: 'd2-u1'}]
         </coordinates>
+        <plugin type="Output">
+            <options>
+                <outdata>
+                    Decision Making
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
+        </plugin>
     </Output>
 </pipeline>

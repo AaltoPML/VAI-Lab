@@ -16,23 +16,27 @@ class GPyOpt(DecisionMakingPluginT):
     Bayesian optimisation model using GPyOpt. Compatible with no objective function using tabular data.
     """
 
-    def __init__(self, config = {}, data_in = [None]):
+    def __init__(self, config = {}, data_in = [None], ini = False):
         """Initialises parent class. 
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
-        self.set_data_in(data_in)
-        self.configure(config)
-        
-        try:
-            self.model = model(**self._config["options"])
-        except Exception as exc:
-            print('The plugin encountered an error on the parameters of '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
-            raise
-        
-        # self.fit_plugin = self.model.fit
-        # self.transform_plugin = self.model.transform
+        if not ini:
+            # Model configuration
+            self.set_data_in(data_in)
+            self.configure(config)
+            # Model initialisation    
+            try:    
+                self.model = model(**self._config["options"])
+            except Exception as exc:
+                print('The plugin encountered an error on the parameters of '
+                        +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
+                raise
+        else:
+            self.model = model
+
+        self.opt_plugin = self.model.run_optimization
+        self.suggest_plugin = self.model.suggest_next_locations
     
     def _parse_options_dict(self, options_dict:Dict):
         super()._parse_options_dict(options_dict)
@@ -41,25 +45,3 @@ class GPyOpt(DecisionMakingPluginT):
         if self.Y is not None:
             options_dict['Y'] = self.Y.reshape(-1,1)
         return options_dict
-    
-    def run_optimization(self):
-        """Sends parameters to optimizer, then runs Bayesian Optimization for a number 'max_iter' of iterations"""
-        try:
-            self.BO.run_optimization()
-        except Exception as exc:
-            print('The plugin encountered an error when running the optimization '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
-            raise
-
-    def suggest_next_locations(self):
-        """Run a single optimization step and return the next locations to evaluate the objective. 
-        Number of suggested locations equals to batch_size.
-        :returns: array, shape (n_samples,)
-                    Returns suggested values.
-        """
-        try:
-            return self.BO.suggest_next_locations()
-        except Exception as exc:
-            print('The plugin encountered an error when suggesting points with '
-                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
-            raise

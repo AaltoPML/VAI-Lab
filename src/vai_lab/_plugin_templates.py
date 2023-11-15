@@ -327,23 +327,33 @@ class DecisionMakingPluginT(PluginTemplate, ABC):
         if type(self.X) is None and type(self.Y) is None:
             print('Invalid Data name. Indicate whether to use `X` or `Y`')
     
-    def run_optimization(self):
+    def run_optimization(self, options={}):
         """Sends parameters to optimizer, then runs Bayesian Optimization for a number 'max_iter' of iterations"""
         try:
-            self.opt_plugin()
+            if isinstance(options, list):
+                return self.opt_plugin(*options)
+            if isinstance(options, dict):
+                return self.opt_plugin(**options)
+            else:
+                return self.opt_plugin(options)
         except Exception as exc:
             print('The plugin encountered an error when running the optimization '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
             raise
 
-    def suggest_next_locations(self):
+    def suggest_next_locations(self, options={}):
         """Run a single optimization step and return the next locations to evaluate the objective. 
         Number of suggested locations equals to batch_size.
         :returns: array, shape (n_samples,)
                     Returns suggested values.
         """
         try:
-            return self.suggest_plugin()
+            if isinstance(options, list):
+                return self.suggest_plugin(*options)
+            if isinstance(options, dict):
+                return self.suggest_plugin(**options)
+            else:
+                return self.suggest_plugin(options)
         except Exception as exc:
             print('The plugin encountered an error when suggesting points with '
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+'.')
