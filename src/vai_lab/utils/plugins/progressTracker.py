@@ -3,7 +3,7 @@ import tkinter as tk
 from typing import Dict
 from tkinter import ttk
 
-from inspect import getmembers, isfunction, ismethod, getfullargspec
+from inspect import getmembers, isfunction, ismethod, signature, _empty
 from vai_lab._plugin_helpers import PluginSpecs
 
 import numpy as np
@@ -282,21 +282,26 @@ class progressTracker(tk.Frame):
         # Update required and optional settings for the plugin
         self.req_settings = {'__init__': ps.required_settings[module][self.plugin_list[self.m]]}
         self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin_list[self.m]]}
-        self.model = plugin().model
-        meth_req, meth_opt = self.getArgs(self.model.__init__)
-        if meth_req is not None:
-            self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
-        if meth_opt is not None:
-            self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **meth_opt}
+        # Tries to upload the settings from the actual library 
+        try:
+            self.model = plugin(ini = True).model
+            meth_req, meth_opt = self.getArgs(self.model.__init__)
+            if meth_req is not None:
+                self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
+            if meth_opt is not None:
+                self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **meth_opt}
+            # Find functions defined for the module
+            plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
+            # Find available methods for the model
+            model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
+            model_meth_list += [meth[0] for meth in getmembers(self.model, isfunction) if meth[0][0] != '_']
+            # List intersection
+            # TODO: use only methods from the model
+            set_2 = frozenset(model_meth_list)
+            meth_list = [x for x in plugin_meth_list if x in set_2]
+        except Exception as exc:
+            meth_list = []
 
-        # Find functions defined for the module
-        plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
-        # Find available methods for the model
-        model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
-        # List intersection
-        # TODO: use only methods from the model
-        set_2 = frozenset(model_meth_list)
-        meth_list = [x for x in plugin_meth_list if x in set_2]
         self.meths_sort = []
         self.method_inputData = {}
         self.default_inputData = {}
@@ -430,23 +435,10 @@ class progressTracker(tk.Frame):
         :returns out: two dictionaries with arguments and default value (if optional)
         """
 
-        meth_args = getfullargspec(f).args
-        if meth_args is not None:
-            meth_args.remove('self')
-            meth_def = getfullargspec(f).defaults
-            if meth_def is None:
-                meth_def = []
-            meth_req = {p: '' for p in meth_args[:(len(meth_args)-len(meth_def))]}
-            meth_r_opt = {p: meth_def[i] for i,p in enumerate(meth_args[(len(meth_args)-len(meth_def)):])}
-
-        meth_opt = getfullargspec(f).kwonlydefaults
-        if meth_opt is not None:
-            meth_opt = {p: meth_opt[p] for p in meth_opt}
-            if meth_r_opt is not None:
-                meth_opt = {**meth_r_opt, **meth_opt}
-            return meth_req, meth_opt
-        else:
-            return meth_req, meth_r_opt
+        meth_req = {name: param.default for name, param in signature(f).parameters.items() if param.default is _empty}
+        meth_req.pop('self', None)
+        meth_r_opt = {name: param.default for name, param in signature(f).parameters.items() if param.default is not _empty}
+        return meth_req, meth_r_opt
     
     def addMeth(self):
         """ Adds selected method in dropdown menu to the plugin tree """
@@ -625,7 +617,7 @@ class progressTracker(tk.Frame):
                 self.default_inputData['req_'+parent+'_'+str(arg)] = value
             else:
                 self.tree.insert(parent=parent+'_req', index='end', iid=str(self.r), text='',
-                                    values=tuple([arg, val]), tags=('req',parent))
+                                    values=tuple([arg, str(val)]), tags=('req',parent))
             self.r+=1
         self.tree.insert(parent=parent, index='end', iid=parent+'_opt', text='',
             values=tuple(['Optional settings', '']), tags=('type',parent), open=True)
@@ -640,7 +632,7 @@ class progressTracker(tk.Frame):
                 self.default_inputData['opt_'+parent+'_'+str(arg)] = str(val)
             else:
                 self.tree.insert(parent=parent+'_opt', index='end', iid=str(self.r), text='',
-                                    values=tuple([arg, val]), tags=('opt',parent))
+                                    values=tuple([arg, str(val)]), tags=('opt',parent))
             self.r+=1
 
     def raise_above_all(self, window):
@@ -670,7 +662,8 @@ class progressTracker(tk.Frame):
                         else:
                             val = self.tree.item(child)["values"]
                             self.settingOptions(tags[0], f, val)
-        del self.model
+        if hasattr(self, 'model'):
+            del self.model
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()

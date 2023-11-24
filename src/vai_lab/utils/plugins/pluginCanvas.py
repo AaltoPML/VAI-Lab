@@ -5,7 +5,7 @@ from vai_lab._import_helper import get_lib_parent_dir, import_plugin_absolute
 import os
 import numpy as np
 import pandas as pd
-from inspect import getmembers, isfunction, ismethod, getfullargspec
+from inspect import getmembers, isfunction, ismethod, signature, _empty
 from functools import reduce
 
 from typing import Dict, List
@@ -638,24 +638,11 @@ class pluginCanvas(tk.Frame):
 
         :returns out: two dictionaries with arguments and default value (if optional)
         """
-
-        meth_args = getfullargspec(f).args
-        if meth_args is not None:
-            meth_args.remove('self')
-            meth_def = getfullargspec(f).defaults
-            if meth_def is None:
-                meth_def = []
-            meth_req = {p: '' for p in meth_args[:(len(meth_args)-len(meth_def))]}
-            meth_r_opt = {p: meth_def[i] for i,p in enumerate(meth_args[(len(meth_args)-len(meth_def)):])}
-
-        meth_opt = getfullargspec(f).kwonlydefaults
-        if meth_opt is not None:
-            meth_opt = {p: meth_opt[p] for p in meth_opt}
-            if meth_r_opt is not None:
-                meth_opt = {**meth_r_opt, **meth_opt}
-            return meth_req, meth_opt
-        else:
-            return meth_req, meth_r_opt
+        
+        meth_req = {name: param.default for name, param in signature(f).parameters.items() if param.default is _empty}
+        meth_req.pop('self', None)
+        meth_r_opt = {name: param.default for name, param in signature(f).parameters.items() if param.default is not _empty}
+        return meth_req, meth_r_opt
     
     def addMeth(self):
         """ Adds selected method in dropdown menu to the plugin tree """
