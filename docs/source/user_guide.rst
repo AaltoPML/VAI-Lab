@@ -55,7 +55,7 @@ Pre-made `examples <https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/ex
 Some basic use-cases are provided among many others:
  - `user_feedback_demo.xml <https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/user_feedback_demo.xml>`_ Demonstrates manual image classification of chest X-rays
  - `canvas_demo.xml <https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml>`_ Launches the canvas state-action pair visualiser and editor
- - `regression_demo.xml <https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/regression_demo.xml>`_ Demonstrates simple linear regression on a small set of sample data
+ - `regression_demo.xml <https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml>`_ Demonstrates simple linear regression on a small set of sample data
 
 Launching examples:
 ^^^^^^^^^^^^^^^^^^^
@@ -197,7 +197,7 @@ Loops
 
 Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.  
 
-See `basic_operation.xml <https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/basic_operation.xml>`_ for full example.
+See `loop_demo.xml <https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/loop_demo.xml>`_ for full example.
 Current options:
 
  - ``type``: what variety of loop will this be: ``for``, ``while``, ``manual`` (user defined stopping condition on-the-fly)
