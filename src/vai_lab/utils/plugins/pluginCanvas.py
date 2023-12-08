@@ -505,21 +505,14 @@ class pluginCanvas(tk.Frame):
         self.opt_settings = {'__init__': ps.optional_settings[module][self.plugin[self.m].get()]}
         # Tries to upload the settings from the actual library 
         try:
-            self.model = plugin(ini = True).model
-            meth_req, meth_opt = self.getArgs(self.model.__init__)
+            self.plugin_ini = plugin(ini = True)
+            meth_req, meth_opt = self.getArgs(self.plugin_ini.model.__init__)
             if meth_req is not None:
                 self.req_settings['__init__'] = {**self.req_settings['__init__'], **meth_req}
             if meth_opt is not None:
                 self.opt_settings['__init__'] = {**self.opt_settings['__init__'], **meth_opt}
-            # Find functions defined for the module
-            plugin_meth_list = [meth[0] for meth in getmembers(plugin, isfunction) if meth[0][0] != '_']
-            # Find available methods for the model
-            model_meth_list = [meth[0] for meth in getmembers(self.model, ismethod) if meth[0][0] != '_']
-            model_meth_list += [meth[0] for meth in getmembers(self.model, isfunction) if meth[0][0] != '_']
-            # List intersection
-            # TODO: use only methods from the model
-            set_2 = frozenset(model_meth_list)
-            meth_list = [x for x in plugin_meth_list if x in set_2]
+            # Only including mapped methods/functions
+            meth_list = [meth[0].split('_plugin')[0] for meth in getmembers(plugin(ini=True), isfunction) if meth[0][0] != '_']
         except Exception as exc:
             meth_list = []
 
@@ -651,7 +644,7 @@ class pluginCanvas(tk.Frame):
         self.tree.insert(parent='', index='end', iid=meth, text='', values=tuple([meth, '']), 
                             tags=('meth',meth))
         # TODO: Remove X and y?
-        self.req_settings[meth], self.opt_settings[meth] = self.getArgs(getattr(self.model, meth))
+        self.req_settings[meth], self.opt_settings[meth] = self.getArgs(getattr(self.plugin_ini, meth+'_plugin'))
         self.fill_treeview(self.req_settings[meth], self.opt_settings[meth], meth)
 
     def deleteMeth(self):
@@ -854,7 +847,7 @@ class pluginCanvas(tk.Frame):
                             val = self.tree.item(child)["values"]
                             self.settingOptions(tags[0], f, val)
         if hasattr(self, 'model'):
-            del self.model
+            del self.plugin_ini
         self.newWindow.destroy()
         self.newWindow = None
         self.focus()
