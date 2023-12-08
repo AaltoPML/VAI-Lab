@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.11+
   
 ## Install from PyPi
 
@@ -18,7 +18,7 @@ conda env create --name vai-lab python=3.10 pip && conda activate vai-lab && pyt
 ## Install from source 
 
 Clone this repository and change directory
-```bash,
+```bash
 git clone https://github.com/AaltoPML/VAI-lab.git && cd VAI-lab
 ```
 Install into a [virtual environment](https://docs.python.org/3/library/venv.html)

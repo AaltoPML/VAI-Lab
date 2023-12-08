@@ -1,6 +1,7 @@
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._import_helper import import_plugin_absolute
 from vai_lab._types import DataInterface, PluginSpecsInterface, DictT
+from vai_lab.Data.Data_core import Data
 
 from typing import Any
 import tkinter as tk
@@ -165,4 +166,4 @@ class GUI(tk.Tk):
         This is due to the way this module is constructed, it cycles through plugins, 
         which is useful for the startpage, but complicates things when running
         UserInterface plugins"""
-        return self.output_data
+        return self.output_data[-1] #self.output_data[-1][0]
