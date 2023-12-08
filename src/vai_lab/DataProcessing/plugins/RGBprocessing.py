@@ -11,6 +11,7 @@ import seaborn as sns
 from scipy.integrate import simps
 import numpy as np
 from vai_lab._plugin_templates import DataProcessingT
+from vai_lab._import_helper import rel_to_abs
 
 _PLUGIN_READABLE_NAMES = {"RGBprocessing": "default",
                           "rgbprocessing": "alias",}          # type:ignore
@@ -64,7 +65,23 @@ class RGB_data:
         else:
             filenames = ['sample_Ll.csv', 'sample_La.csv', 'sample_Lb.csv']
         
-        os.chdir(folder)
+        if type(compositions) is str:
+            if os.path.isabs(compositions):
+                try:
+                    compositions = pd.read_csv(compositions).get("Sample")
+                except Exception as exc:
+                    print('The plugin encountered an error trying to read the provided path to compositions: \"'
+                            +compositions+'\"')
+                    raise
+            else:
+                try:
+                    compositions = pd.read_csv(rel_to_abs(compositions)).get("Sample")
+                except Exception as exc:
+                    print('The plugin encountered an error trying to read the provided path to compositions: \"'
+                            +compositions+'\"')
+                    raise
+
+        os.chdir(rel_to_abs(folder))
         self.compositions = compositions
         compositions = pd.Series(compositions)
         
@@ -89,7 +106,7 @@ class RGB_data:
             self.green = self.green.iloc[:self.time.shape[0],:]
     
     def preprocess(self, normalize = None):
-        time_col = pd.DataFrame(pd.np.tile(self.time.values, (self.red.shape[1], 1)))
+        time_col = pd.DataFrame(np.tile(self.time.values, (self.red.shape[1], 1)))
         red = self.red.melt(var_name='columns')
         green = self.green.melt(var_name='columns')
         blue = self.blue.melt(var_name='columns')

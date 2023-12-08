@@ -37,7 +37,7 @@ class DataProcessing(object):
                 out = getattr(self._plugin, "{}".format(method))()
 
         self.output_data = self._data_in.copy()
-        if len(out) > 0 and (isinstance(out[0], DataFrame) or isinstance(out[0], array)):
+        if len(self._module_config["plugin"]["methods"]["_order"]) > 0 and len(out) > 0 and (isinstance(out[0], DataFrame) or isinstance(out[0], array)):
             self.output_data.data[list(out[1])[0]] = out[0]
 
     def get_result(self) -> DataInterface:

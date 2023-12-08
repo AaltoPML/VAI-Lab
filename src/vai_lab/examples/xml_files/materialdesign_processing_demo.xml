@@ -8,7 +8,6 @@
         </coordinates>
     </Initialiser>
     <DataProcessing name="Data Processing">
-        <plugin type="" />
         <inputdata>
             <X module="Initialiser" />
         </inputdata>
@@ -19,9 +18,28 @@
         <coordinates>
             [(350.0, 350.0), 2, {0: 'd0-u2'}]
         </coordinates>
+        <plugin type="RGBprocessing">
+            <options>
+                <folder>
+                     .\examples\crystalDesign\20190606-R1-JT\BMP\RGB\Calibrated
+                </folder>
+                <compositions>
+                     .\examples\crystalDesign\20190606-R1-JT\BMP\RGB\Calibrated\Samples.csv
+                </compositions>
+            </options>
+            <method type="fit">
+                <options />
+            </method>
+            <method type="transform">
+                <options>
+                    <method>
+                         area
+                    </method>
+                </options>
+            </method>
+        </plugin>
     </DataProcessing>
     <Output name="Output">
-        <plugin type="" />
         <inputdata>
             <X module="Data Processing" />
         </inputdata>
@@ -31,5 +49,15 @@
         <coordinates>
             [(350.0, 650), 1, {2: 'd2-u1'}]
         </coordinates>
+        <plugin type="Output">
+            <options>
+                <outdata>
+                    Data Processing
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
+        </plugin>
     </Output>
 </pipeline>
