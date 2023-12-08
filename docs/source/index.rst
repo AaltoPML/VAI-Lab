@@ -19,7 +19,6 @@ Contents
    Installation <installation>
    User Guide <user_guide>
    Development <development>
-   Documentation <documentation>   
    Contributing <contributing>
 
 

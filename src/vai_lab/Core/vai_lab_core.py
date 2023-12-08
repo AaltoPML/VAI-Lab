@@ -69,7 +69,6 @@ class Core:
         self._load_data(specs, specs["name"])
         mod.set_options(specs)
         if specs["name"] == 'User Interaction':
-            mod._load_plugin(specs["plugin"]["plugin_name"])
             mod.set_data_in(self.data[specs["name"]])
         else:
             mod._load_plugin(self.data[specs["name"]])
@@ -79,7 +78,11 @@ class Core:
                 + "processing..."
               )
         mod.launch()
-        self.data[specs["name"]] = mod.get_result()
+        
+        if type(mod.get_result()) is Data:
+            self.data[specs["name"]] = mod.get_result()
+        else:
+            self.data[specs["name"]].import_existing_data(specs["name"], self.data)
 
     def _execute_loop(self, specs):
         if  hasattr(self,"_execute_{}_loop".format(specs["type"])):

@@ -3,7 +3,7 @@
 ## Clone repository
 
 To get started with development, clone the VAI-lab repository and change directory
-```bash,
+```bash
 git clone https://github.com/AaltoPML/VAI-lab.git && cd VAI-lab
 ```
 

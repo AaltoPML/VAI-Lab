@@ -5,7 +5,7 @@ from vai_lab._import_helper import get_lib_parent_dir, import_plugin_absolute
 import os
 import numpy as np
 import pandas as pd
-from inspect import getmembers, isfunction, ismethod, signature, _empty
+from inspect import getmembers, isfunction, ismethod, signature
 from functools import reduce
 
 from typing import Dict, List
@@ -636,9 +636,9 @@ class pluginCanvas(tk.Frame):
         :returns out: two dictionaries with arguments and default value (if optional)
         """
         
-        meth_req = {name: param.default for name, param in signature(f).parameters.items() if param.default is _empty}
+        meth_req = {name: '' for name, param in signature(f).parameters.items() if param.default is param.empty}
         meth_req.pop('self', None)
-        meth_r_opt = {name: param.default for name, param in signature(f).parameters.items() if param.default is not _empty}
+        meth_r_opt = {name: param.default for name, param in signature(f).parameters.items() if param.default is not param.empty}
         return meth_req, meth_r_opt
     
     def addMeth(self):
