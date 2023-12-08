@@ -1,0 +1,35 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Data Processing" />
+        </relationships>
+        <coordinates>
+            [(350.0, 50), 0, {}]
+        </coordinates>
+    </Initialiser>
+    <DataProcessing name="Data Processing">
+        <plugin type="" />
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(350.0, 350.0), 2, {0: 'd0-u2'}]
+        </coordinates>
+    </DataProcessing>
+    <Output name="Output">
+        <plugin type="" />
+        <inputdata>
+            <X module="Data Processing" />
+        </inputdata>
+        <relationships>
+            <parent name="Data Processing" />
+        </relationships>
+        <coordinates>
+            [(350.0, 650), 1, {2: 'd2-u1'}]
+        </coordinates>
+    </Output>
+</pipeline>
