@@ -1,4 +1,4 @@
-from typing import Any, Protocol, KeysView, Dict, TypeVar
+from typing import Any, KeysView, Dict, TypeVar
 from pandas.core.frame import DataFrame
 from tkinter.font import Font
 
@@ -6,7 +6,7 @@ DataInterfaceT = TypeVar("DataInterfaceT", bound="DataInterface")
 DictT = Dict[str, Dict]
 
 
-class PluginOptions(Protocol):
+class PluginOptions:
     _PLUGIN_READABLE_NAMES: dict
     _PLUGIN_MODULE_OPTIONS: dict
     _PLUGIN_REQUIRED_SETTINGS: dict
@@ -15,7 +15,7 @@ class PluginOptions(Protocol):
     _PLUGIN_OPTIONAL_DATA: dict
 
 
-class DataInterface(Protocol):
+class DataInterface:
     def __init__(self) -> None:
         ...
 
@@ -38,7 +38,7 @@ class DataInterface(Protocol):
         ...
 
 
-class PluginInterface(Protocol):
+class PluginInterface:
     def configure(self, config: dict) -> None:
         ...
 
@@ -46,14 +46,14 @@ class PluginInterface(Protocol):
         ...
 
 
-class DataProcessingPluginInterface(PluginInterface, Protocol):
+class DataProcessingPluginInterface(PluginInterface):
     def fit(self):
         ...
 
     def transform(self, data: DataInterfaceT) -> DataInterface:
         ...
 
-class EnvironmentPluginInterface(PluginInterface, Protocol):
+class EnvironmentPluginInterface(PluginInterface):
     def load_model(self) -> None:
         ...
 
@@ -70,7 +70,7 @@ class EnvironmentPluginInterface(PluginInterface, Protocol):
         ...
 
 
-class PluginSpecsInterface(Protocol):
+class PluginSpecsInterface:
     @property
     def names(self):
         ...
@@ -109,7 +109,7 @@ class PluginSpecsInterface(Protocol):
         ...
 
 
-class ModuleInterface(Protocol):
+class ModuleInterface:
     _debug: bool
 
     def set_avail_plugins(self, avail_plugins: PluginSpecsInterface):
@@ -127,7 +127,7 @@ class ModuleInterface(Protocol):
     def get_result(self) -> DataInterface:
         ...
 
-class GUICoreInterface(ModuleInterface,Protocol):
+class GUICoreInterface(ModuleInterface):
     title: Any #mypy bug prevents proper typing
     pages_font: Font
 
@@ -137,6 +137,6 @@ class GUICoreInterface(ModuleInterface,Protocol):
     def set_gui(self) -> None:
         ...
 
-class InputDataCoreInterface(ModuleInterface,Protocol):
+class InputDataCoreInterface(ModuleInterface):
     def load_data_from_file(self, filename:str, data_id:str) -> None:
         ...

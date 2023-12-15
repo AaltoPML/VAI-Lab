@@ -2,13 +2,11 @@ import ast
 import os
 from typing import Iterator, List, Union
 
-from vai_lab._types import DictT
-
 
 class PluginSpecs(ast.NodeVisitor):
     def __init__(self) -> None:
-        self.module_dirs: DictT = {}
-        self.available_plugins: DictT = {}
+        self.module_dirs = {}
+        self.available_plugins = {}
         self._get_plugin_files()
         self._get_plugin_specs()
 
@@ -100,7 +98,7 @@ class PluginSpecs(ast.NodeVisitor):
                            "<ast expression>", "eval"))
                 self.available_plugins[self.curr_module][self.curr_plugin][key] = val
 
-    def _get_default_name_from_dict(self, plugin: DictT) -> str:
+    def _get_default_name_from_dict(self, plugin) -> str:
         default = list(plugin.keys())\
             [list(plugin.values()).index("default")]
         return default
@@ -115,7 +113,7 @@ class PluginSpecs(ast.NodeVisitor):
 
         :returns output: nested dict of options by [Module][Plugin Class Name]
         """
-        output: DictT = {}
+        output = {}
         for module in self.available_plugins.keys():
             output[module] = {}
             for plugin in self.available_plugins[module].keys():
@@ -124,7 +122,7 @@ class PluginSpecs(ast.NodeVisitor):
                     output[module][rn] = self.available_plugins[module][plugin][option]
         return output
 
-    def _find_plugin_by_tag_and_value(self, tag: str, name: str) -> Union[DictT, None]:
+    def _find_plugin_by_tag_and_value(self, tag: str, name: str) -> Union[None]:
         for module in self.available_plugins.keys():
             for plugin in self.available_plugins[module].keys():
                 if tag in self.available_plugins[module][plugin]:

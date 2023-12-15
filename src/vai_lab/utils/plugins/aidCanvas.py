@@ -1,9 +1,7 @@
-from vai_lab._types import DictT
-
 import os
 import numpy as np
 import pandas as pd
-from typing import List, Literal,Tuple
+from typing import List, Tuple
 
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -35,7 +33,7 @@ class aidCanvas(tk.Frame):
 
         self.canvas_startxy: List[Tuple] = []
         self.out_data = pd.DataFrame()
-        self.connections: DictT = {}
+        self.connections = {}
         self.modules = 0
         self.module_list: List[str] = []
         self.module_names: List[str] = []

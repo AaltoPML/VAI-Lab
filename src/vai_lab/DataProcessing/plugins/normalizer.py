@@ -1,5 +1,4 @@
 from vai_lab._plugin_templates import DataProcessingT
-from vai_lab._types import DataInterface
 
 from sklearn.preprocessing import Normalizer as model
 import pandas as pd

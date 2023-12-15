@@ -6,7 +6,6 @@ import pickle
 
 from vai_lab._import_helper import import_module, rel_to_abs
 from vai_lab._plugin_helpers import PluginSpecs
-from vai_lab._types import ModuleInterface, PluginSpecsInterface
 from vai_lab.GUI.GUI_core import GUI
 from vai_lab.Data.Data_core import Data
 from vai_lab.Data.xml_handler import XML_handler
@@ -17,7 +16,7 @@ class Core:
         self.data = {}
         self.data['Initialiser'] = Data()
         self._xml_handler = XML_handler()
-        self._avail_plugins: PluginSpecsInterface = PluginSpecs()
+        self._avail_plugins = PluginSpecs()
         
         self.loop_level: int = 0
         self._initialised: bool = False
@@ -28,7 +27,7 @@ class Core:
         gui_app = GUI()
         gui_app._debug = self._debug
         gui_app.set_avail_plugins(self._avail_plugins)
-        gui_app.set_gui_as_startpage()
+        gui_app.set_gui_as_startpage() # FIXME
         gui_output = gui_app.launch()
         if not self._debug:
             try:
@@ -63,7 +62,7 @@ class Core:
 
         :param specs: dict of module to be executed
         """
-        mod: ModuleInterface = import_module(globals(), specs["module_type"]).__call__()
+        mod = import_module(globals(), specs["module_type"]).__call__()
         mod._debug = self._debug
         mod.set_avail_plugins(self._avail_plugins)
         self._load_data(specs, specs["name"])

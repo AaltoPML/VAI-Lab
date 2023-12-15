@@ -14,20 +14,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     'Programming Language :: Python :: 3.11'
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.7"
 version = "0.0.dev4"
 description = "AI assisted Virtual Laboratory framework."
 
 dependencies = [
-    "numpy >= 1.20.0",
-    "pillow >= 9.0.0", # package name of PIL
-    "pandas >= 1.4.0",
-    "scikit-learn >= 0.0",
-    "ttkwidgets >= 0.12.0",
-    "matplotlib >= 3.5.0",
-    "opencv-python >= 4.6.0.65",
-    "pybullet >= 3.2.5",
-    "attrs >= 23.1.0"
 ]
 
 [project.optional-dependencies]

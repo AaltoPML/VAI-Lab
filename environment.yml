@@ -2,8 +2,15 @@ name: vai-lab-env
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
+  - python=3.7
   - c-compiler
+  - pandas
+  - pillow
+  - scikit-learn
+  - ttkwidgets
+  - opencv
+  - pybullet
+  - attrs
   - pip
   - pip:
     - .

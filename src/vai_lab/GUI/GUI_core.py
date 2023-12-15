@@ -1,6 +1,5 @@
 from vai_lab.Data.xml_handler import XML_handler
 from vai_lab._import_helper import import_plugin_absolute
-from vai_lab._types import DataInterface, PluginSpecsInterface, DictT
 from vai_lab.Data.Data_core import Data
 
 from typing import Any
@@ -32,13 +31,13 @@ class GUI(tk.Tk):
         self._is_startpage = False
         self.output = {}
 
-    def set_avail_plugins(self, avail_plugins: PluginSpecsInterface):
+    def set_avail_plugins(self, avail_plugins):
         self._avail_plugins = avail_plugins
 
-    def set_data_in(self, data_in: DataInterface):
+    def set_data_in(self, data_in):
         self._data_in = data_in
 
-    def set_options(self, module_config: DictT):
+    def set_options(self, module_config):
         """Send configuration arguments to GUI
 
         :param module_config: dict of settings to congfigure the plugin
@@ -48,7 +47,7 @@ class GUI(tk.Tk):
 
     def set_gui_as_startpage(self):
         self._is_startpage = True
-        self._load_plugin("main")
+        self._load_plugin("main") # FIXME
         self.xml_handler = XML_handler()
         self.xml_handler.new_config_file()
         
@@ -78,10 +77,10 @@ class GUI(tk.Tk):
         :param ui_name: name of the UI method being loaded
         :type ui_name: str 
         """
+
         plugin = import_plugin_absolute(globals(),
                                         ui_specs["_PLUGIN_PACKAGE"],
-                                        ui_specs["_PLUGIN_CLASS_NAME"])
-
+                                        ui_specs["_PLUGIN_CLASS_NAME"]) # FIXME
         self._desired_ui_types.append(plugin)
         self._compare_layer_priority(ui_specs)
         if ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"] != None:
@@ -98,9 +97,9 @@ class GUI(tk.Tk):
             if isinstance(ui_type, list)\
             else [ui_type]
         for ui in ui_type:
-            ui_specs = self._avail_plugins.find_from_readable_name(ui)
+            ui_specs = self._avail_plugins.find_from_readable_name(ui)           
             try:
-                self._add_UI_type_to_frames(ui_specs)
+                self._add_UI_type_to_frames(ui_specs) # FIXME
             except ModuleNotFoundError as ex:
                 from sys import exit
                 print(ex.msg)

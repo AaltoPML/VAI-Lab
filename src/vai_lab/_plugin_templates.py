@@ -1,5 +1,4 @@
 from typing import Dict
-from vai_lab._types import DataInterface
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -37,7 +36,7 @@ class PluginTemplate:
         self._config = config
         self._parse_config()
 
-    def set_data_in(self, data_in: DataInterface) -> None:
+    def set_data_in(self, data_in) -> None:
         """Sets and parses incoming data
         :param data_in: saves data as class variable
                         expected type: vai_lab.Data.Data_core.Data
@@ -140,7 +139,7 @@ class PluginTemplate:
         """
         return self._parse_options_dict(self._config["options"])
 
-    def _test(self, data: DataInterface) -> DataInterface:
+    def _test(self, data):
         """Run debug tests on data operations
         TODO: Investigate if all plugins need a score and predict method
         """
@@ -222,7 +221,7 @@ class DataProcessingT(PluginTemplate, ABC):
                      +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
             raise
 
-    def transform(self, options={}) -> DataInterface:
+    def transform(self, options={}):
         try:
             if isinstance(options, list):
                 return pd.DataFrame(self.transform_plugin(*options))

@@ -1,6 +1,5 @@
 from vai_lab._plugin_templates import UI
 from vai_lab._import_helper import get_lib_parent_dir
-from vai_lab._types import DictT, DataInterface, GUICoreInterface
 
 import os
 import numpy as np
@@ -27,10 +26,10 @@ _PLUGIN_REQUIRED_DATA = {"X"}                                   # type:ignore
 class OptimisationInput(tk.Frame, UI):            # type:ignore
     """Method of user interaction for optimisation problems"""
 
-    def __init__(self, parent, controller, config: DictT):
+    def __init__(self, parent, controller, config):
         self.parent = parent
         super().__init__(parent, bg=self.parent['bg'])
-        self.controller: GUICoreInterface = controller
+        self.controller = controller
         self.controller.title('Optimisation Interaction')
 
         self.dirpath = get_lib_parent_dir()
@@ -44,7 +43,7 @@ class OptimisationInput(tk.Frame, UI):            # type:ignore
         
         self.assets_path = os.path.join(self.dirpath, 'utils', 'resources', 'Assets')
 
-        self._data_in: DataInterface
+        self._data_in
         self._config = config
         self.save_path = ''
         self.saved = True
