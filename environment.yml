@@ -2,7 +2,7 @@ name: vai-lab-env
 channels:
   - conda-forge
 dependencies:
-  - python=3.7
+  - python=3.6
   - c-compiler
   - pandas
   - pillow

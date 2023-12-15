@@ -27,7 +27,7 @@ class Core:
         gui_app = GUI()
         gui_app._debug = self._debug
         gui_app.set_avail_plugins(self._avail_plugins)
-        gui_app.set_gui_as_startpage() # FIXME
+        gui_app.set_gui_as_startpage()
         gui_output = gui_app.launch()
         if not self._debug:
             try:

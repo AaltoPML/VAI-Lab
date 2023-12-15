@@ -9,26 +9,11 @@ def import_plugin(script_config, plugin_name):
     return plugin_class
 
 def import_plugin_absolute(script_config,plugin_package,plugin_name):
-    print("script_config:", script_config)
-    print()
-    print("plugin_package:", plugin_package)
-    print()
-    print("plugin_name:", plugin_name)
-
-    # FIXME
-    import traceback
-    try:
-        plugin_list = __import__(plugin_package,
-                                script_config,
-                                {},
-                                [plugin_name])
-    except Exception as err:
-        print("\n\nERROR >>>\n\n")
-        print(traceback.format_exc())
-        print("err:", err)
-        print("\n\n<<< ERROR\n\n")
+    plugin_list = __import__(plugin_package,
+                            script_config,
+                            {},
+                            [plugin_name])
         
-
     plugin_class = getattr(plugin_list, plugin_name)
     return plugin_class
 

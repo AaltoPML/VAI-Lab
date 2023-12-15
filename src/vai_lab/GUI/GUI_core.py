@@ -47,7 +47,7 @@ class GUI(tk.Tk):
 
     def set_gui_as_startpage(self):
         self._is_startpage = True
-        self._load_plugin("main") # FIXME
+        self._load_plugin("main")
         self.xml_handler = XML_handler()
         self.xml_handler.new_config_file()
         
@@ -80,7 +80,7 @@ class GUI(tk.Tk):
 
         plugin = import_plugin_absolute(globals(),
                                         ui_specs["_PLUGIN_PACKAGE"],
-                                        ui_specs["_PLUGIN_CLASS_NAME"]) # FIXME
+                                        ui_specs["_PLUGIN_CLASS_NAME"])
         self._desired_ui_types.append(plugin)
         self._compare_layer_priority(ui_specs)
         if ui_specs["_PLUGIN_MODULE_OPTIONS"]["required_children"] != None:
@@ -99,7 +99,7 @@ class GUI(tk.Tk):
         for ui in ui_type:
             ui_specs = self._avail_plugins.find_from_readable_name(ui)           
             try:
-                self._add_UI_type_to_frames(ui_specs) # FIXME
+                self._add_UI_type_to_frames(ui_specs)
             except ModuleNotFoundError as ex:
                 from sys import exit
                 print(ex.msg)
