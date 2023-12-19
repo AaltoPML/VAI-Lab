@@ -14,12 +14,12 @@ from vai_lab._plugin_templates import DataProcessingT
 from vai_lab._import_helper import rel_to_abs
 
 _PLUGIN_READABLE_NAMES = {"RGBprocessing": "default",
-                          "rgbprocessing": "alias",}          # type:ignore
-_PLUGIN_MODULE_OPTIONS = {"Type": "Other"}          # type:ignore
+                          "rgbprocessing": "alias",}            # type:ignore
+_PLUGIN_MODULE_OPTIONS = {"Type": "Other"}                      # type:ignore
 _PLUGIN_REQUIRED_SETTINGS = {}                                  # type:ignore
-_PLUGIN_OPTIONAL_SETTINGS = {}               # type:ignore
+_PLUGIN_OPTIONAL_SETTINGS = {}                                  # type:ignore
 _PLUGIN_REQUIRED_DATA = {}                                      # type:ignore
-_PLUGIN_OPTIONAL_DATA = {}            # type:ignore
+_PLUGIN_OPTIONAL_DATA = {}                                      # type:ignore
 
 class RGBprocessing(DataProcessingT):
     """
@@ -27,7 +27,7 @@ class RGBprocessing(DataProcessingT):
     """
 
     def __init__(self, config = {}, data_in = [None], ini = False):
-        """Initialises parent class. 
+        """Initialises parent class.
             Passes `globals` dict of all current variables
         """
         super().__init__(globals())
