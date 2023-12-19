@@ -380,6 +380,42 @@ class UI(PluginTemplate, ABC):
         pass
 
 
+class InputDataPluginT(PluginTemplate, ABC):
+    def __init__(self, plugin_globals: dict) -> None:
+        super().__init__(plugin_globals)
+
+    def import_data(self, options={}):
+        """Sends params to import data, then import data"""
+        try:
+            if isinstance(options, list):
+                return self.import_plugin(*options)
+            if isinstance(options, dict):
+                return self.import_plugin(**options), options.keys()
+            else:
+                return self.import_plugin(options)
+        except Exception as exc:
+            print('The plugin encountered an error when importing '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
+            raise
+
+    def append_data_column(self, options={}):
+        """ Appends a column to the dataframe
+        :returns: array, shape (n_samples,)
+                    Returns predicted values.
+        """
+        try:
+            if isinstance(options, list):
+                return self.append_plugin(*options)
+            elif isinstance(options, dict):
+                return self.append_plugin(**options)
+            else:
+                return self.append_plugin(options)
+
+        except Exception as exc:
+            print('The plugin encountered an error when appending '
+                     +str(list(self._PLUGIN_READABLE_NAMES.keys())[list(self._PLUGIN_READABLE_NAMES.values()).index('default')])+': '+str(exc)+'.')
+            raise
+
 class EnvironmentPluginT(PluginTemplate, ABC):
     
     @abstractmethod

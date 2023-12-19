@@ -1,31 +1,19 @@
 from vai_lab.Data.Data_core import Data
 from vai_lab._import_helper import import_plugin_absolute
 from vai_lab._types import PluginSpecsInterface, DataInterface
+from pandas import DataFrame
+from numpy import array
 
-class InputData(Data):
-    def __init__(self):
-        super().__init__()
-        self.node_name = None
-        self.plugin_name = None
-        self.output_data = None
+class InputData(object):
+    def __init__(self) -> None:
+        self.output_data: DataInterface
+
+    def set_avail_plugins(self, avail_plugins: PluginSpecsInterface) -> None:
+        self._avail_plugins = avail_plugins
 
     def set_data_in(self, data_in: DataInterface) -> None:
         """Pass existing data from another module to be stored in this class"""
         self._data_in = data_in
-
-    def load_data_from_file(self, filename: str, data_id: str) -> None:
-        """Load data from file. Calls parent class method to store data in self.data"""
-        super().import_data(filename, data_id)
-
-    def set_options(self, module_config: dict) -> None:
-        """Send configuration arguments to plugin
-
-        :param module_config: dict of settings to configure the plugin
-        """
-        self._module_config = module_config
-
-    def set_avail_plugins(self, avail_plugins: PluginSpecsInterface) -> None:
-        self._avail_plugins = avail_plugins
 
     def _load_plugin(self, data_in: DataInterface) -> None:
         avail_plugins = self._avail_plugins.find_from_readable_name(
@@ -36,5 +24,28 @@ class InputData(Data):
                                                     avail_plugins["_PLUGIN_CLASS_NAME"])\
                                                     .__call__(self._module_config["plugin"], data_in)
 
-    def get_result(self):
-        return self._data_in
+    def set_options(self, module_config: dict) -> None:
+        """Send configuration arguments to plugin
+
+        :param module_config: dict of settings to configure the plugin
+        """
+        self._module_config = module_config
+        
+    def launch(self) -> None:
+
+        for method in self._module_config["plugin"]["methods"]["_order"]:
+            if "options" in self._module_config["plugin"]["methods"][method].keys():
+                out = getattr(self._plugin, "{}".format(method))(self._plugin._parse_options_dict(self._module_config["plugin"]["methods"][method]["options"]))
+            else:
+                out = getattr(self._plugin, "{}".format(method))()
+        
+        if len(self._module_config["plugin"]["methods"]["_order"]) > 0:
+            try:
+                out = out[0][next(iter(out[0]))]
+                self.output_data = self._data_in.copy()
+                self.output_data.data[list(out[1])[0]] = out
+            except:
+                return
+
+    def get_result(self) -> DataInterface:
+        return self.output_data

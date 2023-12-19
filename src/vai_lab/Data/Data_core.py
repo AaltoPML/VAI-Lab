@@ -28,7 +28,11 @@ class Data:
     def _import_csv(self: DataT,
                     filename: str,
                     data_name: str,
-                    strip_whitespace: bool = True) -> None:
+                    strip_whitespace: bool = True,
+                    index_col = None,
+                    delimiter=',',
+                    quotechar='|',
+                    usecols=None) -> None:
         """import data directly into DataFrame
         :param filename: str, filename of csv file to be loaded
         :param data_name: str, name of dict key in which data will be stored
@@ -36,15 +40,21 @@ class Data:
         TODO: pandas has a lot of inbuilt read functions, including excel - implement
         """
         self.data[data_name] = pd.read_csv(filename,
-                                           delimiter=',',
-                                           quotechar='|')
+                                           delimiter=delimiter,
+                                           quotechar=quotechar,
+                                           index_col = index_col,
+                                           usecols = usecols)
         if strip_whitespace:
             self.data[data_name].columns = [c.strip()
                                             for c in self.data[data_name].columns]
 
     def _import_png(self: DataT,
                     filename: str,
-                    data_name: str) -> None:
+                    data_name: str,
+                    index_col = None,
+                    delimiter=',',
+                    quotechar='|',
+                    usecols=None) -> None:
         """Loads png into PIL.Image class. Adds instance to self.data
         The image is stored as a function (not a matrix - can be added if needed)
         :param filename: str, filename of csv file to be loaded
@@ -56,7 +66,11 @@ class Data:
 
     def _import_dir(self: DataT,
                     folder_dir: str,
-                    data_name: str) -> None:
+                    data_name: str,
+                    index_col = None,
+                    delimiter=',',
+                    quotechar='|',
+                    usecols=None) -> None:
         """Explores folder, and imports all data items recursively
         
         :param folder_dir: str, directory to be explored
@@ -85,7 +99,11 @@ class Data:
 
     def import_data(self: DataT,
                     filename: str,
-                    data_name: str = "data") -> None:
+                    data_name: str = "data",
+                    index_col = None,
+                    delimiter=',',
+                    quotechar='|',
+                    usecols=None) -> None:
         """Import file directly into DataFrame
         Translates relative files to absolute before parsing - not ideal
         Filename to parsing method based on extension name.
@@ -94,7 +112,13 @@ class Data:
         """
         filename = rel_to_abs(filename)
         ext = self._get_ext(filename)
-        getattr(self, "_import_{0}".format(ext))(filename, data_name)
+        getattr(self, "_import_{0}".format(ext))(filename, 
+                                                 data_name,
+                                                 index_col = index_col,
+                                                 delimiter=delimiter,
+                                                 quotechar=quotechar,
+                                                 usecols=usecols)
+        return self.data
 
     def import_data_from_config(self: DataT, config: dict) -> None:
         for c in config.keys():

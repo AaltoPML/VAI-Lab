@@ -1,0 +1,56 @@
+<pipeline>
+    <Initialiser name="Initialiser">
+        <relationships>
+            <child name="Input Data" />
+        </relationships>
+        <coordinates>
+            [(350.0, 50), 0, {}]
+        </coordinates>
+    </Initialiser>
+    <InputData name="Input Data">
+        <inputdata>
+            <X module="Initialiser" />
+        </inputdata>
+        <relationships>
+            <parent name="Initialiser" />
+            <child name="Output" />
+        </relationships>
+        <coordinates>
+            [(350.0, 350.0), 2, {0: 'd0-u2'}]
+        </coordinates>
+        <plugin type="Input">
+            <options />
+            <method type="import_data">
+                <options>
+                    <filename>
+                         .\examples\crystalDesign\20190606-R1-JT\BMP\RGB\Calibrated\Samples.csv
+                    </filename>
+                    <index_col>
+                         0
+                    </index_col>
+                </options>
+            </method>
+        </plugin>
+    </InputData>
+    <Output name="Output">
+        <inputdata>
+            <X module="Input Data" />
+        </inputdata>
+        <relationships>
+            <parent name="Input Data" />
+        </relationships>
+        <coordinates>
+            [(350.0, 650), 1, {2: 'd2-u1'}]
+        </coordinates>
+        <plugin type="Output">
+            <options>
+                <outdata>
+                    Input Data
+                </outdata>
+                <outpath>
+                     .\examples\results\output.pkl
+                </outpath>
+            </options>
+        </plugin>
+    </Output>
+</pipeline>
