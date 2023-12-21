@@ -1,0 +1,21 @@
+vai\_lab.DecisionMaking package
+===============================
+
+Submodules
+----------
+
+vai\_lab.DecisionMaking.DecisionMaking\_core module
+---------------------------------------------------
+
+.. automodule:: vai_lab.DecisionMaking.DecisionMaking_core
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: vai_lab.DecisionMaking
+   :members:
+   :undoc-members:
+   :show-inheritance:

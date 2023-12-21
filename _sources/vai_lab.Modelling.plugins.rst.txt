@@ -1,0 +1,197 @@
+vai\_lab.Modelling.plugins package
+==================================
+
+Submodules
+----------
+
+vai\_lab.Modelling.plugins.affinitypropagation module
+-----------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.affinitypropagation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.bayesianridge module
+-----------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.bayesianridge
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.birch module
+---------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.birch
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.decisiontreeclassifier module
+--------------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.decisiontreeclassifier
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.decisiontreeregressor module
+-------------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.decisiontreeregressor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.elasticnet module
+--------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.elasticnet
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.gpclassifier module
+----------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.gpclassifier
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.gpregressor module
+---------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.gpregressor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.kernelridge module
+---------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.kernelridge
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.kmeans module
+----------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.kmeans
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.knnclassifier module
+-----------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.knnclassifier
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.knnregressor module
+----------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.knnregressor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.lasso module
+---------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.lasso
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.linearregression module
+--------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.linearregression
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.logisticregression module
+----------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.logisticregression
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.meanshift module
+-------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.meanshift
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.passiveaggressiveclassifier module
+-------------------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.passiveaggressiveclassifier
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.perceptron module
+--------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.perceptron
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.randomforestclassifier module
+--------------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.randomforestclassifier
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.randomforestregressor module
+-------------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.randomforestregressor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.ridgeregression module
+-------------------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.ridgeregression
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.svc module
+-------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.svc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+vai\_lab.Modelling.plugins.svr module
+-------------------------------------
+
+.. automodule:: vai_lab.Modelling.plugins.svr
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: vai_lab.Modelling.plugins
+   :members:
+   :undoc-members:
+   :show-inheritance:

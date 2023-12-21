@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Guide &mdash; VAI-Lab  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Development" href="development.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VAI-Lab
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Intro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#launching">Launching</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#from-command-line">From Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-code">From Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#launching-examples">Launching examples:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">From Command Line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">From code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#defining-pipelines-in-gui">Defining Pipelines in GUI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules">Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connecting-modules">Connecting Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loops">Loops</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-from-xml">Loading from XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plugin-examples">Plugin Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#manual-input">manual_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#canvas-input">canvas_input</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#defining-a-pipeline-in-xml">Defining a pipeline in XML</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#initialising">Initialising</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-definition">Data Definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-data">Writing Data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VAI-Lab</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">User Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/user_guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
+<section id="launching">
+<h2>Launching<a class="headerlink" href="#launching" title="Link to this heading"></a></h2>
+<section id="from-command-line">
+<h3>From Command Line<a class="headerlink" href="#from-command-line" title="Link to this heading"></a></h3>
+<p>To launch the framework with the GUI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vai_lab
+</pre></div>
+</div>
+<p>To launch the framework with an existing config file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vai_lab<span class="w"> </span>--file<span class="w"> </span>&lt;path_to_config_file&gt;
+</pre></div>
+</div>
+</section>
+<section id="from-code">
+<h3>From Code<a class="headerlink" href="#from-code" title="Link to this heading"></a></h3>
+<p>To launch the framework with the GUI:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">vai_lab</span> <span class="k">as</span> <span class="nn">ai</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">core</span> <span class="o">=</span> <span class="n">ai</span><span class="o">.</span><span class="n">Core</span><span class="p">()</span>
+<span class="linenos">4</span><span class="n">core</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>or to execute an existing config file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">vai_lab</span> <span class="k">as</span> <span class="nn">ai</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">core</span> <span class="o">=</span> <span class="n">ai</span><span class="o">.</span><span class="n">Core</span><span class="p">()</span>
+<span class="linenos">4</span><span class="n">core</span><span class="o">.</span><span class="n">load_config_file</span><span class="p">(</span><span class="s2">&quot;&lt;path_to_config_file&gt;&quot;</span><span class="p">)</span>
+<span class="linenos">5</span><span class="n">core</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>Pre-made <a class="reference external" href="https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files">examples</a> show the syntax and form of the config files and pipeline as a whole, and are the best way to get started.</p>
+<dl class="simple">
+<dt>Some basic use-cases are provided among many others:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/user_feedback_demo.xml">user_feedback_demo.xml</a> Demonstrates manual image classification of chest X-rays</p></li>
+<li><p><a class="reference external" href="https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml">canvas_demo.xml</a> Launches the canvas state-action pair visualiser and editor</p></li>
+<li><p><a class="reference external" href="https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml">regression_demo.xml</a> Demonstrates simple linear regression on a small set of sample data</p></li>
+</ul>
+</dd>
+</dl>
+<section id="launching-examples">
+<h3>Launching examples:<a class="headerlink" href="#launching-examples" title="Link to this heading"></a></h3>
+<p>To demonstrate the syntax for launching examples using <code class="docutils literal notranslate"><span class="pre">user_feedback_demo.xml</span></code>.</p>
+<section id="id2">
+<h4>From Command Line<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vai_lab<span class="w"> </span>--file<span class="w"> </span>./src/vai_lab/examples/xml_files/user_feedback_demo.xml
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h4>From code<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">vai_lab</span> <span class="k">as</span> <span class="nn">ai</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">core</span> <span class="o">=</span> <span class="n">ai</span><span class="o">.</span><span class="n">Core</span><span class="p">()</span>
+<span class="linenos">4</span><span class="n">core</span><span class="o">.</span><span class="n">load_config_file</span><span class="p">((</span><span class="s2">&quot;./examples/xml_files/user_feedback_demo.xml&quot;</span><span class="p">))</span>
+<span class="linenos">5</span><span class="n">core</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Absolute paths, as well paths relative to the library’s base directory can be used.
+For library-relative paths, starting a path definition with <code class="docutils literal notranslate"><span class="pre">./</span></code> defaults to the directory <code class="docutils literal notranslate"><span class="pre">&lt;path_to_site_packages&gt;/vai_lab/</span></code></p>
+<p>In addition to path strings, the config file paths can be passed as lists or tuples of directory paths. Therefore, the above command/code are equivalent to</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vai_lab<span class="w"> </span>--file<span class="w"> </span>./src/vai_lab/examples<span class="w"> </span>xml_files<span class="w"> </span>user_feedback_demo.xml
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">vai_lab</span> <span class="k">as</span> <span class="nn">ai</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">core</span> <span class="o">=</span> <span class="n">ai</span><span class="o">.</span><span class="n">Core</span><span class="p">()</span>
+<span class="linenos">4</span><span class="n">core</span><span class="o">.</span><span class="n">load_config_file</span><span class="p">((</span><span class="s2">&quot;./examples&quot;</span><span class="p">,</span><span class="s2">&quot;xml_files&quot;</span><span class="p">,</span><span class="s2">&quot;user_feedback_demo.xml&quot;</span><span class="p">))</span>
+<span class="linenos">5</span><span class="n">core</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="defining-pipelines-in-gui">
+<h2>Defining Pipelines in GUI<a class="headerlink" href="#defining-pipelines-in-gui" title="Link to this heading"></a></h2>
+<p>The VAIL module allows to define a pipeline and the relations within by drawing a flowchart on a canvas. This canvas always starts with an <code class="docutils literal notranslate"><span class="pre">initialiser</span></code> module and an <code class="docutils literal notranslate"><span class="pre">output</span></code> module and allows to define any number of modules between these two. To do so, the user needs to define the modules and the relations between them.</p>
+<section id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>At this moment, there are 7 possible modules for VAIL. <code class="docutils literal notranslate"><span class="pre">initialiser</span></code> and <code class="docutils literal notranslate"><span class="pre">output</span></code> are compulsory for the pipeline, the rest of them can be freely placed in the canvas. These are:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">processing</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Modelling</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Decision</span> <span class="pre">making</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Feedback</span> <span class="pre">Adaptation</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Input</span> <span class="pre">data</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<p>If you click on a module and drag it you can modify its position on the canvas.</p>
+<p>Finally, they can be deleted by clicking on the desired module and then clicking on the <code class="docutils literal notranslate"><span class="pre">Delete</span> <span class="pre">selection</span></code> button.</p>
+</section>
+<section id="connecting-modules">
+<h3>Connecting Modules<a class="headerlink" href="#connecting-modules" title="Link to this heading"></a></h3>
+<p>Each module object has a number of circles that can be used to join two modules. The initially clicked circle will be identified as the parent and the second one as the child (the output of the father is fed to the input of the child). There can be only one connection from each circle. As of this version, if you need to edit an existing connection you need to delete one of the connected modules.</p>
+</section>
+<section id="loops">
+<h3>Loops<a class="headerlink" href="#loops" title="Link to this heading"></a></h3>
+<p>If you click on the canvas and drag, you can draw a rectangle that defines which modules are inside the loop. Upon releasing the button you are requested to input what type of loop you want and what condition should be fulfilled to end the loop.</p>
+</section>
+</section>
+<section id="loading-from-xml">
+<h2>Loading from XML<a class="headerlink" href="#loading-from-xml" title="Link to this heading"></a></h2>
+<p>The pipeline can also be defined uploading an existing XML file. The structure of the XML file is described in the Back-end section.</p>
+</section>
+<section id="plugin-examples">
+<h2>Plugin Examples<a class="headerlink" href="#plugin-examples" title="Link to this heading"></a></h2>
+<section id="manual-input">
+<h3>manual_input<a class="headerlink" href="#manual-input" title="Link to this heading"></a></h3>
+<p>Requires the user to indicate to which class the specified data corresponds to.
+In the current example, the model needs to classify images and the model requires expert knowledge for specific images.
+The user needs to indicate which classes correspond to the image and save the results to send them to the model.</p>
+</section>
+<section id="canvas-input">
+<h3>canvas_input<a class="headerlink" href="#canvas-input" title="Link to this heading"></a></h3>
+<p>Requires the user to give feedback to state-action pairs.
+It opens a tab for each interactable object in the model and either requires adding new state-action samples or to modify the existing ones.
+In the current example, the model has two interactable objects that require feedback in two forms: (1) an <em>angle</em> for the state and for the action or (2) a tuple of Cartesian coordinates for the state and for the action. It has been adapted to be able to give feedback to any number of objects. These, at the same time, can be either <code class="docutils literal notranslate"><span class="pre">sliding</span></code> or <code class="docutils literal notranslate"><span class="pre">rotating</span></code> objects. Specifically, <code class="docutils literal notranslate"><span class="pre">sliding</span></code> refers to objects that need Cartesian feedback in a two-dimensional space, while <code class="docutils literal notranslate"><span class="pre">rotating</span></code> refers to objects that require an angle. In order to give feedback, you can choose to either move the corresponding state-action pairs on the canvas or directly edit the tree view display. This last option results in an automatic update on the canvas of the state-action location.</p>
+</section>
+</section>
+<section id="defining-a-pipeline-in-xml">
+<h2>Defining a pipeline in XML<a class="headerlink" href="#defining-a-pipeline-in-xml" title="Link to this heading"></a></h2>
+<p>The pipeline structure is defined between the <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> tags:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;pipeline&gt;</span>
+<span class="linenos">2</span><span class="w">    </span>...
+<span class="linenos">3</span><span class="nt">&lt;/pipeline&gt;</span>
+</pre></div>
+</div>
+<section id="initialising">
+<h3>Initialising<a class="headerlink" href="#initialising" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Initialise</span></code> tag is the dedicated entry point to the pipeline. No other entry points can be declared.</p>
+<dl class="simple">
+<dt>Current options:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: attribute for user defined name</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">initial_data</span></code>: element for declaring directory for initial data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">relationships</span></code>: User defined names of modules this one is connected to</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example from <a class="reference external" href="https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/canvas_demo.xml">canvas_demo.xml</a>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;Initialiser</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Init&quot;</span><span class="nt">&gt;</span>
+<span class="linenos">2</span><span class="w">    </span><span class="nt">&lt;inputdata&gt;</span>
+<span class="linenos">3</span><span class="w">        </span><span class="nt">&lt;X</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;./examples/state-action/X_data.csv&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos">4</span><span class="w">    </span><span class="nt">&lt;/inputdata&gt;</span>
+<span class="linenos">5</span><span class="w">    </span><span class="nt">&lt;relationships&gt;</span>
+<span class="linenos">6</span><span class="w">        </span><span class="nt">&lt;child</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;My First UserFeedback Module&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos">7</span><span class="w">    </span><span class="nt">&lt;/relationships&gt;</span>
+<span class="linenos">8</span><span class="nt">&lt;/Initialiser&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>Loops<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>Loop tags are used to iterate over a given set of modules until a condition is met. Loops can be nested and named.</p>
+<p>See <a class="reference external" href="https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/loop_demo.xml">loop_demo.xml</a> for full example.
+Current options:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: what variety of loop will this be: <code class="docutils literal notranslate"><span class="pre">for</span></code>, <code class="docutils literal notranslate"><span class="pre">while</span></code>, <code class="docutils literal notranslate"><span class="pre">manual</span></code> (user defined stopping condition on-the-fly)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">condition</span></code>: Termination condition for the loop. I’m not sure how to deal with the criteria for <code class="docutils literal notranslate"><span class="pre">while</span></code> loops</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: User defined name for loop</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;loop</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;for&quot;</span><span class="w"> </span><span class="na">condition=</span><span class="s">&quot;10&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;For Loop 1&quot;</span><span class="nt">&gt;</span>
+<span class="linenos">2</span><span class="w">    </span>...
+<span class="linenos">3</span><span class="nt">&lt;/loop&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>Modules<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>Modules are declared by tags matching their names, e.g. the GUI module is loaded with the <code class="docutils literal notranslate"><span class="pre">GUI</span></code> tag:</p>
+<dl class="simple">
+<dt>Required:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Unique user defined name for module, so can be referenced later</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plugin</span></code>: The type of plugin to be loaded into the module, along with associated options.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">relationships</span></code>: User-defined names of the <code class="docutils literal notranslate"><span class="pre">parent</span></code> modules which this module receives data from and <code class="docutils literal notranslate"><span class="pre">child</span></code> modules that this module passes data to.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example from <a class="reference external" href="https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml">ridge_regression_demo.xml</a>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w"> </span><span class="nt">&lt;Modelling</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Modelling&quot;</span><span class="nt">&gt;</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nt">&lt;relationships&gt;</span>
+<span class="linenos"> 3</span><span class="w">        </span><span class="nt">&lt;parent</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Initialiser&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos"> 4</span><span class="w">        </span><span class="nt">&lt;child</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Output&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="nt">&lt;/relationships&gt;</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nt">&lt;plugin</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;RidgeRegression&quot;</span><span class="nt">&gt;</span>
+<span class="linenos"> 7</span><span class="w">        </span><span class="nt">&lt;alpha&gt;</span>
+<span class="linenos"> 8</span><span class="w">             </span>0.02
+<span class="linenos"> 9</span><span class="w">        </span><span class="nt">&lt;/alpha&gt;</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nt">&lt;/plugin&gt;</span>
+<span class="linenos">11</span><span class="nt">&lt;/Modelling&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="data-definition">
+<h3>Data Definition<a class="headerlink" href="#data-definition" title="Link to this heading"></a></h3>
+<p>Data is loaded from existing files in either the <code class="docutils literal notranslate"><span class="pre">Initialiser</span></code> or <code class="docutils literal notranslate"><span class="pre">Input</span> <span class="pre">Data</span></code> modules and is specified using the <code class="docutils literal notranslate"><span class="pre">inputdata</span></code> tags.</p>
+<p>Example from <cite>ridge_regression_demo.xml &lt;https://github.com/AaltoPML/VAI-lab/tree/main/src/vai_lab/examples/xml_files/ridge_regression_demo.xml&gt;`_</cite>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;inputdata&gt;</span>
+<span class="linenos">2</span><span class="w">    </span><span class="nt">&lt;X</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;./examples/supervised_regression/X_tr.csv&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos">3</span><span class="w">    </span><span class="nt">&lt;Y</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;./examples/supervised_regression/Y_tr.csv&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos">4</span><span class="w">    </span><span class="nt">&lt;X_test</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;./examples/supervised_regression/X_tst.csv&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos">5</span><span class="w">    </span><span class="nt">&lt;Y_test</span><span class="w"> </span><span class="na">file=</span><span class="s">&quot;./examples/supervised_regression/Y_tst.csv&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos">6</span><span class="nt">&lt;/inputdata&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="writing-data">
+<h3>Writing Data<a class="headerlink" href="#writing-data" title="Link to this heading"></a></h3>
+<p>Two methods are given to add data to the XML file. One for modules (<code class="docutils literal notranslate"><span class="pre">append_pipeline_module_to_file</span></code>) and one for data structures (<code class="docutils literal notranslate"><span class="pre">append_data_structure_field_to_file</span></code>).</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="development.html" class="btn btn-neutral float-right" title="Development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 - 2023, VAI Labs Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

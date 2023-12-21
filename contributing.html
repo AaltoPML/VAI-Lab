@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing &mdash; VAI-Lab  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Development" href="development.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            VAI-Lab
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Intro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#where-to-start">Where to start?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#jump-in-and-break-things">Jump in and break things!</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-a-good-grip-on-the-code">Get a good grip on the code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#supervisor-core">Supervisor Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#glossary">Glossary</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">VAI-Lab</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Contributing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/contributing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h1>
+<p>Starting to contribute to a new repo can be daunting and the architecture can be offputting. This section is meant to help you get introduced to the codebase and make your first contribution.</p>
+<section id="where-to-start">
+<h2>Where to start?<a class="headerlink" href="#where-to-start" title="Link to this heading"></a></h2>
+<section id="jump-in-and-break-things">
+<h3>Jump in and break things!<a class="headerlink" href="#jump-in-and-break-things" title="Link to this heading"></a></h3>
+<p>If your preferred way of learning is to jump in a break things, a good starting point is to run an example file, e.g.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vai_lab<span class="w"> </span>--file<span class="w"> </span>./examples/xml_files/user_feedback_demo.xml
+</pre></div>
+</div>
+<p>which will call a module and plugin and give an example of the call stack.</p>
+</section>
+<section id="get-a-good-grip-on-the-code">
+<h3>Get a good grip on the code<a class="headerlink" href="#get-a-good-grip-on-the-code" title="Link to this heading"></a></h3>
+<p>If you prefer to learn by reading, the following sections will give you a high level overview of the codebase.</p>
+</section>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<figure class="align-center" id="id1">
+<img alt="VAIL Architecture Diagram" src="_images/VAIL_plugin_diagram.png" />
+<figcaption>
+<p><span class="caption-text">Fig 1. Architecture Diagram</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The VAI-lab codebase consists of individual <code class="docutils literal notranslate"><span class="pre">modules</span></code> representing individual processes; for each module there are multiple <code class="docutils literal notranslate"><span class="pre">plugins</span></code> , which are specific methods or implementations of performing these processes.</p>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">DataProcessing</span></code> is a <code class="docutils literal notranslate"><span class="pre">Module</span></code> which will manipulate data in some way. The specific type of processing is determined by the <code class="docutils literal notranslate"><span class="pre">plugin</span></code> that is chosen.</p>
+<p>Say we have some data and we want to change all the values to either a 0 or 1, we would use the <code class="docutils literal notranslate"><span class="pre">binarizer</span></code> plugin for the <code class="docutils literal notranslate"><span class="pre">DataProcessing</span></code> module.</p>
+</div>
+<p>While a <code class="docutils literal notranslate"><span class="pre">plugin</span></code> specifies the exact implementation to perform on a process, the <code class="docutils literal notranslate"><span class="pre">core</span></code> deals with setting up and executing the plugin.</p>
+<p>Each module contains a <code class="docutils literal notranslate"><span class="pre">Core</span></code> which dictates the required methods and attributes of a compatible <code class="docutils literal notranslate"><span class="pre">plugin</span></code>, it also instantiates the <code class="docutils literal notranslate"><span class="pre">plugin</span></code> and executes it.</p>
+</section>
+<section id="supervisor-core">
+<h2>Supervisor Core<a class="headerlink" href="#supervisor-core" title="Link to this heading"></a></h2>
+<p>As well as each module having a <code class="docutils literal notranslate"><span class="pre">Core</span></code>, there is an overarching <code class="docutils literal notranslate"><span class="pre">Supervisor</span></code> <code class="docutils literal notranslate"><span class="pre">Core</span></code> which calls each module sequentially, which in turn execute the <code class="docutils literal notranslate"><span class="pre">plugin</span></code>. The supervisor module is the top module in Fig 1. above.</p>
+<p>The supervisor core script is named <a class="reference external" href="https://github.com/AaltoPML/VAI-Lab/blob/main/src/vai_lab/Core/vai_lab_core.py">vai_lab_core.py</a> and can be found in the <code class="docutils literal notranslate"><span class="pre">src/vai_lab/Core</span></code> directory.</p>
+<p>Within this script there are private handler functions for different types of pipeline components, where the function name for each starts with <code class="docutils literal notranslate"><span class="pre">_execute_&lt;name</span> <span class="pre">of</span> <span class="pre">component&gt;</span></code></p>
+<div class="admonition-function-names admonition">
+<p class="admonition-title">Function Names</p>
+<dl class="simple">
+<dt>Functions which handle component executions are named according to the following convention:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_execute_module</span></code>: instantiates a module and executes the plugin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_execute_loop</span></code>: generic handler for loops, calls specific <code class="docutils literal notranslate"><span class="pre">_execute_for_loop</span></code> or <code class="docutils literal notranslate"><span class="pre">_execute_while_loop</span></code> functions in turn</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_execute_entry_point</span></code>: instantiates the unique <code class="docutils literal notranslate"><span class="pre">Initialiser</span></code> entry point to the pipeline which deals with data definitions and config information</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_execute_exit_point</span></code>: handles the exiting of the pipeline, such as saving data to file</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<p>The naming convention of these functions are important, as the functions themselves are called using the python <code class="docutils literal notranslate"><span class="pre">getattr</span></code> function, which takes the name of the function as a string, with the type of component. The component type is determined during setup and appended to the supervisor config.</p>
+</section>
+<section id="glossary">
+<h2>Glossary<a class="headerlink" href="#glossary" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Module</span></code>: An container representing a generic process to manipulate or produce data - all modules are to be populated by a plugin.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Plugin</span></code>: A specific implementation or method to carry out a process. Each plugin will be inserted into a module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Core</span></code>: Each module consists of a <code class="docutils literal notranslate"><span class="pre">Core</span></code> and a set of plugins. The core is responsible for performing the required background processes and handling the plugins</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="development.html" class="btn btn-neutral float-left" title="Development" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 - 2023, VAI Labs Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
