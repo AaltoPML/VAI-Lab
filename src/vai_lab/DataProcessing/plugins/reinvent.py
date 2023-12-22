@@ -71,14 +71,11 @@ class Reinvent(DataProcessingT):
         
 class ReinventModel:
 
-    def __init__(self, seed=1, acquisition="uncertainty"):
-        self.seed = seed
-        self.acquisition = acquisition
+    def __init__(self):
         return
         
-    def do_run(self):
-        seed = self.seed
-        acquisition = self.acquisition
+    def do_run(self, seed=1, acquisition="uncertainty"):
+        
 	##############################
 	# Quick options
         FIT_MODEL = True # whether to fit a Stan model or not
