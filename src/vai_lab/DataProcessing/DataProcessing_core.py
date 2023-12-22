@@ -1,21 +1,22 @@
 from vai_lab._import_helper import import_plugin_absolute
+from vai_lab._types import PluginSpecsInterface, DataInterface, DataProcessingPluginInterface
 from pandas import DataFrame
 from numpy import array
 class DataProcessing(object):
     def __init__(self) -> None:
-        self.output_data
+        self.output_data = None
 
-    def set_avail_plugins(self, avail_plugins) -> None:
+    def set_avail_plugins(self, avail_plugins: PluginSpecsInterface) -> None:
         self._avail_plugins = avail_plugins
 
-    def set_data_in(self, data_in) -> None:
+    def set_data_in(self, data_in: DataInterface) -> None:
         self._data_in = data_in
 
-    def _load_plugin(self, data_in) -> None:
+    def _load_plugin(self, data_in: DataInterface) -> None:
         avail_plugins = self._avail_plugins.find_from_readable_name(
             self._module_config["plugin"]["plugin_name"])
         self.set_data_in(data_in)
-        self._plugin = import_plugin_absolute(globals(),
+        self._plugin: DataProcessingPluginInterface = import_plugin_absolute(globals(),
                                               avail_plugins["_PLUGIN_PACKAGE"],
                                               avail_plugins["_PLUGIN_CLASS_NAME"])\
             .__call__(self._module_config["plugin"], data_in)
@@ -36,8 +37,8 @@ class DataProcessing(object):
                 out = getattr(self._plugin, "{}".format(method))()
 
         self.output_data = self._data_in.copy()
-        if len(out) > 0 and (isinstance(out[0], DataFrame) or isinstance(out[0], array)):
+        if len(self._module_config["plugin"]["methods"]["_order"]) > 0 and len(out) > 0 and (isinstance(out[0], DataFrame) or isinstance(out[0], array)):
             self.output_data.data[list(out[1])[0]] = out[0]
 
-    def get_result(self):
+    def get_result(self) -> DataInterface:
         return self.output_data
