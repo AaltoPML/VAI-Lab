@@ -88,16 +88,14 @@ class XML_handler:
         self.root = self.tree.getroot()
         self.append_initialiser()
 
-    def load_XML(self, filename: str) -> None:
-        """Loads XML file into class. 
-        """
-        if filename != None:
+    def load_XML(self, filename: Optional[str], *, merge: bool = False) -> None:
+        """Load the saved workflow, or merge it into an editor draft on import."""
+        if filename is not None:
             self.set_filename(filename)
-        if hasattr(self, 'tree'):
-            prev_tree = self.tree
-            self.tree = self._combine_XML(prev_tree.getroot(), ET.parse(self.filename).getroot())
-        else:
-            self.tree = ET.parse(self.filename)
+        saved_tree = ET.parse(self.filename)
+        if merge and hasattr(self, "tree"):
+            saved_tree = self._combine_XML(self.tree.getroot(), saved_tree.getroot())
+        self.tree = saved_tree
         self._parse_XML()
 
     def _combine_XML(self, tree1, tree2):
@@ -131,7 +129,11 @@ class XML_handler:
         
     def _parse_XML(self) -> None:
         self.root = self.tree.getroot()
-        self._parse_tags(self.root, self.loaded_modules)
+        modules: Dict[str, Dict] = {}
+        self._parse_tags(self.root, modules)
+        # The running core holds a reference to this dictionary between steps.
+        self.loaded_modules.clear()
+        self.loaded_modules.update(modules)
 
     def _bullet_list(self, val_list: Union[List[Any], Dict[str, str]]) -> str:
         sep = "\n\t\u2022"

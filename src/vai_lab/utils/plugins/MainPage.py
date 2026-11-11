@@ -217,7 +217,7 @@ class MainPage(tk.Frame):
         if filename is not None and len(filename) > 0:
             self.controller._append_to_output("xml_filename", filename)
             self.controller.xml_handler.filename = filename
-            self.controller.xml_handler.load_XML(filename)
+            self.controller.xml_handler.load_XML(filename, merge=True)
             self.controller.xml_handler.write_to_XML()
             self.controller.XML.set(True)
 
