@@ -761,7 +761,7 @@ class aidCanvas(tk.Frame):
         if filename is not None and len(filename) > 0:
             self.reset()
 
-            self.controller.xml_handler.load_XML(filename)
+            self.controller.xml_handler.load_XML(filename, merge=True)
             modules = self.controller.xml_handler.loaded_modules
             modout = modules['Output']
             del modules['Initialiser'], modules['Output'] # They are generated when resetting
